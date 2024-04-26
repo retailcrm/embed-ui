@@ -3,6 +3,7 @@
 node_modules
 
 .gitignore
+.npmrc
 eslint.config.mjs
 tsconfig.json
 yarn.lock
