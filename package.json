@@ -11,7 +11,11 @@
     "Kirill Zaytsev <zaytsev.cmath10@gmail.com>"
   ],
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "release": "standard-version",
+    "release:major": "standard-version --release-as major",
+    "release:minor": "standard-version --release-as minor",
+    "release:patch": "standard-version --release-as patch"
   },
   "dependencies": {
     "@remote-ui/core": "^2.2.4",
