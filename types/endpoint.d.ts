@@ -3,13 +3,13 @@ import type {
   None,
 } from './scaffolding'
 
-import type { RemoteChannel } from '@remote-ui/core'
+import type { Channel } from '@omnicajs/vue-remote/host'
 import type { Endpoint as RemoteEndpoint } from '@remote-ui/rpc'
 
 export interface EndpointApi<
   PageApi extends Record<string, AnyFunction> = None
 > {
-  run (channel: RemoteChannel, api: PageApi): Promise<void>;
+  run (channel: Channel, api: PageApi): Promise<void>;
   release (): void;
 }
 

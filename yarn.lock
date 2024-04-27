@@ -112,6 +112,13 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@omnicajs/vue-remote@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@omnicajs/vue-remote/-/vue-remote-0.1.3.tgz#bc747ea353e923e2934a71585edd33a82488d1ed"
+  integrity sha512-qBz5Z/ItfewbJp58WS9QdPh51ee3khtuW81nHIa+NG3GDch9wsNaQGjr6pqbeKWJ543gaYNoIyMq5yszb2Tvog==
+  dependencies:
+    "@remote-ui/rpc" "^1.4.5"
+
 "@remote-ui/core@^2.2.4":
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/@remote-ui/core/-/core-2.2.4.tgz#56b174b6f041c57d5950811e6f93cfcffb0fbc1a"
