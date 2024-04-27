@@ -1,7 +1,7 @@
 {
   "name": "@retailcrm/embed-ui",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "API and components for creating RetailCRM UI extensions",
   "main": "index.js",
   "repository": "git@github.com:retailcrm/embed-ui.git",
