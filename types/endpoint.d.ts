@@ -6,13 +6,33 @@ import type {
 import type { Channel } from '@omnicajs/vue-remote/host'
 import type { Endpoint as RemoteEndpoint } from '@remote-ui/rpc'
 
+export type Placement =
+  | 'customer/card:main'
+  | 'customer/card:phone'
+  | 'order/card:customer'
+  | 'order/card:customer.email'
+  | 'order/card:customer.phone'
+  | 'order/card:delivery.address'
+
 export interface EndpointApi<
-  PageApi extends Record<string, AnyFunction> = None
+  M extends Record<string, AnyFunction> = None,
+  E extends Record<string, unknown> = None
 > {
-  run (channel: Channel, api: PageApi): Promise<void>;
+  run (
+    channel: Channel,
+    placement: Placement,
+    api: M,
+  ): Promise<void>;
+
   release (): void;
+
+  on <K extends keyof E>(
+    event: K,
+    payload: E[K]
+  ): void;
 }
 
 export type Endpoint<
-  PageApi extends Record<string, AnyFunction> = None
-> = RemoteEndpoint<EndpointApi<PageApi>>
+  MethodList extends Record<string, AnyFunction> = None,
+  EventList extends Record<string, unknown> = None
+> = RemoteEndpoint<EndpointApi<MethodList, EventList>>

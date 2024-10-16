@@ -18,14 +18,14 @@
     "moduleResolution": "node",
     "paths": {
       "@/*": ["./src/*"],
-      "~types/*": ["./types/*"],
-      "~tests/*": ["./tests/*"]
+      "~tests/*": ["./tests/*"],
+      "~types/*": ["./types/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": false,
     "strict": true,
-    "target": "es2016",
+    "target": "es2017",
     "types": [
       "node"
     ],
