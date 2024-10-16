@@ -1,3 +1,4 @@
+/** @deprecated First prototype API */
 export type OrderCardMethods = {
   getCustomerEmail: () => string | null,
   setCustomerEmail: (value: string) => void,
@@ -9,3 +10,4 @@ export type OrderCardMethods = {
   setDeliveryAddress: (value: string) => void,
   parseDeliveryAddress: () => void,
 }
+

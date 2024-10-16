@@ -1,9 +1,10 @@
 .idea
 .vscode
 node_modules
+src
 
 .gitignore
 .npmrc
-eslint.config.mjs
+eslint.config.js
 tsconfig.json
 yarn.lock
