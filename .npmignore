@@ -1,9 +1,17 @@
+.github
 .idea
 .vscode
+meta
 node_modules
+src
+tests
 
 .gitignore
 .npmrc
-eslint.config.mjs
+docker-compose.yml
+eslint.config.js
 tsconfig.json
+tsconfig.test.json
+vite.config.ts
+vitest.config.ts
 yarn.lock
