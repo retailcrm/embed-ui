@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/retailcrm/embed-ui/compare/v0.1.0...v0.2.0) (2024-11-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* Removed all types from types/endpoint.d.ts, old ones were replaced with types from types/widget.d.ts
+* Removed previous pages API, which was replaced with reactive context API
+
+### Features
+
+* Scaffolding logic for widgets, reactive context, json metadata for creating documentation ([9ddd8f8](https://github.com/retailcrm/embed-ui/commit/9ddd8f89759fbeb964556a1401c8f23af6c51467))
+
 ## [0.1.0](https://github.com/retailcrm/embed-ui/compare/v0.0.1...v0.1.0) (2024-04-27)
 
 
