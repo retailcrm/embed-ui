@@ -3,6 +3,7 @@
 .vscode
 meta
 node_modules
+scripts
 src
 tests
 

@@ -8,7 +8,7 @@ import {
   Writable,
 } from '~types/context/schema'
 
-import type { Locale } from '../types/context/settings'
+import type { Locale } from '~types/context/settings'
 
 import type { Schema as CustomerCardSchema } from '~types/context/customer/card'
 import type { Schema as CustomerCardPhoneSchema } from '~types/context/customer/card-phone'
