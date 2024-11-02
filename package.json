@@ -23,10 +23,10 @@
     "build": "vite build",
     "eslint": "eslint .",
     "generate:meta": "yes | npx tsx scripts/generate-meta.ts",
-    "release": "standard-version",
-    "release:major": "standard-version --release-as major",
-    "release:minor": "standard-version --release-as minor",
-    "release:patch": "standard-version --release-as patch",
+    "release": "yes | npx standard-version",
+    "release:major": "yes | npx standard-version --release-as major",
+    "release:minor": "yes | npx standard-version --release-as minor",
+    "release:patch": "yes | npx standard-version --release-as patch",
     "test": "vitest --run"
   },
   "dependencies": {
@@ -52,7 +52,6 @@
     "globals": "^15.11.0",
     "jsdom": "^25.0.1",
     "pinia": "^2.2.4",
-    "standard-version": "^9.5.0",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^8.11.0",
