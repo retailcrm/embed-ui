@@ -52,7 +52,7 @@ const createSetter = <S extends ContextSchema>(id: string, setters: Setters<S>) 
       return
     }
 
-    throw new Error(`[crm:embed:host] Setting field ${field} is not supported in context ${id}`)
+    throw new Error(`[crm:embed:host] Setting field ${String(field)} is not supported in context ${id}`)
   }
 }
 
