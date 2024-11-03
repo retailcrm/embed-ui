@@ -29,7 +29,7 @@ type Setters<S extends ContextSchema> = {
 }
 
 const createGetter = <S extends ContextSchema>(id: string, getters: Getters<S>) => {
-  return <F extends keyof CustomerCardSchema>(field: '~' | F) => {
+  return <F extends keyof S>(field: '~' | F) => {
     if (field === '~') {
       return keysOf(getters).reduce((context, field) => ({
         ...context,
@@ -41,7 +41,7 @@ const createGetter = <S extends ContextSchema>(id: string, getters: Getters<S>) 
       return getters[field]()
     }
 
-    throw new Error(`[crm:embed:host] Field ${field} is not supported in context ${id}`)
+    throw new Error(`[crm:embed:host] Field ${String(field)} is not supported in context ${id}`)
   }
 }
 
