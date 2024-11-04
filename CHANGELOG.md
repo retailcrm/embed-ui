@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.2](https://github.com/retailcrm/embed-ui/compare/v0.2.1...v0.2.2) (2024-11-04)
+
+
+### Fixes
+
+* Missing types field in package.json manifest ([71fe0a5](https://github.com/retailcrm/embed-ui/commit/71fe0a5ea11761a61f076486ea66b2a13b5f302b))
+
 ### [0.2.1](https://github.com/retailcrm/embed-ui/compare/v0.2.0...v0.2.1) (2024-11-04)
 
 
