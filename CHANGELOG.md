@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/retailcrm/embed-ui/compare/v0.2.3...v0.2.4) (2024-11-04)
+
+
+### Fixes
+
+* Types declaration of the main entrypoint ([4c50e51](https://github.com/retailcrm/embed-ui/commit/4c50e51c3b71b30c05871f101617440b32cb2a4c))
+
 ### [0.2.3](https://github.com/retailcrm/embed-ui/compare/v0.2.2...v0.2.3) (2024-11-04)
 
 
