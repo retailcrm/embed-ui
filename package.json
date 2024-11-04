@@ -19,6 +19,7 @@
     "./dist/*": "./dist/*",
     "./types/*": "./types/*"
   },
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "vite build",
     "eslint": "eslint .",
