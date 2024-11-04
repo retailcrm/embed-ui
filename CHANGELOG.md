@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/retailcrm/embed-ui/compare/v0.2.0...v0.2.1) (2024-11-04)
+
+
+### Features
+
+* Added CrmYandexMap to known components ([90621b0](https://github.com/retailcrm/embed-ui/commit/90621b079465970b558d783d5e65bb01aef54586))
+
+
+### Fixes
+
+* ContextAccessor getter return type ([5a98241](https://github.com/retailcrm/embed-ui/commit/5a98241fd230ef0341f4bb8b935d8cf33ae8db11))
+
 ## [0.2.0](https://github.com/retailcrm/embed-ui/compare/v0.1.0...v0.2.0) (2024-11-02)
 
 
