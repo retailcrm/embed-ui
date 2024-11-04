@@ -65,6 +65,7 @@ const createRoot = async (channel: Channel) => {
       'UiScrollbar',
       'UiTag',
       'UiTransition',
+      'CrmYandexMap',
     ],
   })
 
