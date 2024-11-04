@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/retailcrm/embed-ui/compare/v0.2.4...v0.2.5) (2024-11-04)
+
+
+### Fixes
+
+* dts plugin removed from build configuration ([d5c6991](https://github.com/retailcrm/embed-ui/commit/d5c6991dfbfc2e228b67bbf42410943d0fba7d20))
+
 ### [0.2.4](https://github.com/retailcrm/embed-ui/compare/v0.2.3...v0.2.4) (2024-11-04)
 
 
