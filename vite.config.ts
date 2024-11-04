@@ -4,7 +4,7 @@ import {
   resolve,
 } from 'node:path'
 
-import url from 'node:url'
+import * as url from 'node:url'
 
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
