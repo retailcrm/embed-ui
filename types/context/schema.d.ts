@@ -47,13 +47,13 @@ export type EventHandler<
 
 export type ContextAccessor<M extends ContextSchemaMap = ContextSchemaMap> = {
   get <
-    C extends keyof M
-  >(context: C, field: '~'): Context<M[C]>;
-
-  get <
     C extends keyof M,
     F extends keyof M[C]
-  >(context: C, field: F): Context<M[C]>[F];
+  >(context: C, field: F | '~'): If<
+    IsTilda<typeof field>,
+    Context<M[C]>,
+    Context<M[C]>[F]
+  >;
 
   set <
     C extends keyof M,

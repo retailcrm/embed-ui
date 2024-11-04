@@ -60,7 +60,7 @@ export const defineContext = <Id extends string, S extends ContextSchema>(
           [key: string]: S,
         }>>
 
-        const state = await endpoint.call.get(id, '~')
+        const state = await endpoint.call.get(id, '~') as Context<S>
 
         keysOf(schema).forEach(field => {
           context[field] = state[field]
