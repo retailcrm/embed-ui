@@ -1,7 +1,19 @@
 services:
-  node:
+  node: &node
     image: node:22
     user: node
     volumes:
       - ./:/project
     working_dir: /project
+
+  v1-components:
+    <<: *node
+    command: 'yarn storybook:serve'
+    working_dir: /project/packages/v1-components
+    labels:
+      traefik.port: 6006
+      traefik.enable: 'true'
+      traefik.http.routers.embed-ui-v1-components.rule: 'HostRegexp(`v1.embed-ui.{[^.]+}`)'
+      traefik.http.routers.embed-ui-v1-components.priority: 1
+      traefik.http.routers.embed-ui-v1-components.service: embed-ui-v1-components
+      traefik.http.services.embed-ui-v1-components.loadbalancer.server.port: '6006'

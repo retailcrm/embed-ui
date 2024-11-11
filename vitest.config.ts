@@ -1,15 +1,13 @@
-import path from 'node:path'
-
 import { defineConfig } from 'vitest/config'
-
+import { join } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.join(__dirname, './src/'),
-      '~tests': path.join(__dirname, './tests/'),
-      '~types': path.join(__dirname, './types/'),
+      '@': join(__dirname, './src/'),
+      '~tests': join(__dirname, './tests/'),
+      '~types': join(__dirname, './types/'),
     },
   },
   plugins: [

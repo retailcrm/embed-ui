@@ -1,0 +1,63 @@
+@import (reference) '../../../../assets/stylesheets/variables.less';
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) 'mixins.less';
+
+.ui-v1-loader {
+  .reset-box-sizing();
+
+  --color-main: @blue-500;
+  --color-secondary: @grey-500;
+  --diameter: 40px;
+  --thickness: 2px;
+
+  .square(100%);
+  background: none;
+  margin: 0;
+
+  &_fixed { position: fixed; }
+
+  &_overlay {
+    background: fade(@black-200, 40%);
+    .coordinate();
+    z-index: 10000;
+  }
+
+  &__icon {
+    .square(var(--diameter));
+    margin: auto;
+    .coordinate();
+  }
+
+  &__icon::after {
+    content: '';
+    display: block;
+    .square(1em);
+    background: none;
+    border: var(--thickness) solid var(--color-secondary);
+    border-radius: 0.5em;
+    border-top-color: var(--color-main);
+    font-size: var(--diameter);
+    animation: ui-v1-loader-spin 1s linear infinite;
+    .coordinate();
+    margin: auto;
+  }
+
+  &_overlay &__icon::after {
+    --color-secondary: white;
+  }
+}
+
+@keyframes ui-v1-loader-spin {
+  100% {
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.ui-v1-transition-fade-2-leave-active.ui-v1-loader-wrapper {
+  transition: opacity 0.1s;
+}
