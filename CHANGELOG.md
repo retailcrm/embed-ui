@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.6](https://github.com/retailcrm/embed-ui/compare/v0.2.5...v0.2.6) (2024-11-11)
+
+
+### Fixes
+
+* Metadata types for protection from missing fields & generation ([c6541f3](https://github.com/retailcrm/embed-ui/commit/c6541f3cffc8f50a0b1439838e19b4ae08a9a309))
+
 ### [0.2.5](https://github.com/retailcrm/embed-ui/compare/v0.2.4...v0.2.5) (2024-11-04)
 
 
