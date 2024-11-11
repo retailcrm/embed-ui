@@ -131,11 +131,17 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
   },
 }
 
+type UnionToArray<T, U = T> = [T] extends [never]
+  ? []
+  : T extends T
+    ? [T, ...UnionToArray<Exclude<U, T>>]
+    : []
+
 export type TargetListDocumentation = {
   [Target in keyof SchemaListByTarget]: {
     description: TranslationList;
     location: TranslationList;
-    contexts: Array<keyof SchemaListByTarget[Target]>;
+    contexts: UnionToArray<keyof SchemaListByTarget[Target]>;
   }
 }
 
@@ -153,6 +159,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'customer/card',
+      'customer/card.phone',
       'settings',
     ],
   },
