@@ -1,0 +1,36 @@
+@font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Roboto", sans-serif;
+
+@font-size-h1: 40px;
+@font-size-h2: 24px;
+@font-size-h3: 20px;
+@font-size-h4: 18px;
+@font-size-regular: 16px;
+@font-size-small: 14px;
+@font-size-tiny: 12px;
+
+.text (@fw, @fs, @lh) {
+  font-size: @fs;
+  font-weight: @fw;
+  line-height: @lh;
+}
+
+.h1        (@lh: (44/40)) { .text(500, @font-size-h1, @lh); }
+.h1-accent (@lh: (44/40)) { .text(800, @font-size-h1, @lh); }
+
+.h2        (@lh: (32/24)) { .text(400, @font-size-h2, @lh); }
+.h2-accent (@lh: (32/24)) { .text(500, @font-size-h2, @lh); }
+
+.h3        (@lh: (32/20)) { .text(400, @font-size-h3, @lh); }
+.h3-accent (@lh: (32/20)) { .text(500, @font-size-h3, @lh); }
+
+.h4        (@lh: (28/18)) { .text(400, @font-size-h4, @lh); }
+.h4-accent (@lh: (28/18)) { .text(500, @font-size-h4, @lh); }
+
+.text-regular        (@lh: (24/16)) { .text(400, @font-size-regular, @lh); }
+.text-regular-accent (@lh: (24/16)) { .text(500, @font-size-regular, @lh); }
+
+.text-small        (@lh: (20/14)) { .text(400, @font-size-small, @lh); }
+.text-small-accent (@lh: (20/14)) { .text(500, @font-size-small, @lh); }
+
+.text-tiny        (@lh: (14/12)) { .text(400, @font-size-tiny, @lh); }
+.text-tiny-accent (@lh: (14/12)) { .text(500, @font-size-tiny, @lh); }

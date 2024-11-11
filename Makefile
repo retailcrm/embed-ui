@@ -1,11 +1,15 @@
 TARGET_HEADER=@echo -e '===== \e[34m' $@ '\e[0m'
 YARN=docker-compose run --rm node yarn
 
+.PHONY: .yarnrc.yml
+.yarnrc.yml:  ## Generates yarn configuration
+	$(TARGET_HEADER)
+	cp .yarnrc.dist.yml .yarnrc.yml
+
 .PHONY: node_modules
 node_modules: package.json yarn.lock ## Installs dependencies
 	$(TARGET_HEADER)
 	@docker-compose run --rm node yarn install --silent
-	@touch node_modules || true
 
 .PHONY: build
 build: ## Builds the package

@@ -1,0 +1,205 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) 'variables.less';
+
+.ui-v1-link {
+  .reset-box-sizing();
+
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  text-decoration: none;
+  transition: .15s ease;
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+  }
+
+  &__icon {
+    display: inline-flex;
+    color: @blue-500;
+    margin-left: 2px;
+
+    svg {
+      fill: @blue-500;
+    }
+  }
+  
+  &__icon-sprite {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: 0.25s ease;
+  }
+
+  &__inner {
+    display: inline-flex;
+  }
+
+  &_light svg {
+    fill: white;
+  }
+
+  &_light &__icon {
+    color: white;
+  }
+
+  // Типы ссылок
+  &_default&_dark {
+    &, &:visited {
+      color: @blue-600;
+    }
+
+    &:hover,
+    &:active {
+      color: @blue-500;
+    }
+  }
+
+  &_default&_light {
+    &,
+    &:hover,
+    &:active,
+    &:visited {
+      color: white;
+    }
+  }
+
+  &_breadcrumbs&_dark {
+    &, &:visited {
+      color: @grey-900;
+    }
+
+    &:hover,
+    &:active {
+      color: @black-500;
+    }
+  }
+
+  &_breadcrumbs&_light {
+    &, &:visited {
+      color: rgba(255,255,255,0.6);
+    }
+
+    &:hover,
+    &:active {
+      color: white;
+    }
+  }
+
+  &_navigation&_dark {
+    &, &:visited {
+      color: @black-500;
+    }
+
+    &:hover,
+    &:active {
+      color: @blue-500;
+      text-decoration: none;
+    }
+
+    &:active {
+      font-weight: 600;
+    }
+  }
+
+  &_navigation&_light {
+    &, &:visited {
+      color: rgba(255,255,255,0.6);
+    }
+
+    &:hover,
+    &:active {
+      color: white;
+      text-decoration: none;
+    }
+
+    &:active {
+      font-weight: 600;
+    }
+  }
+
+  &_navigation-anchor&_dark {
+    &, &:visited {
+      color: @blue-600;
+      text-decoration: underline;
+    }
+
+    &:hover,
+    &:active {
+      color: @blue-500;
+    }
+  }
+
+  &_navigation-anchor&_light {
+    &, &:visited {
+      color: white;
+      text-decoration: underline;
+    }
+
+    &:hover,
+    &:active {
+      color: white;
+    }
+  }
+
+  &_title&_dark {
+    &,
+    &:hover,
+    &:active,
+    &:visited {
+      color: @black-500;
+    }
+  }
+
+  &_title&_light {
+    &,
+    &:hover,
+    &:active,
+    &:visited {
+      color: white;
+    }
+  }
+
+  &_tiny      { .text-tiny(); }
+  &_small     { .text-small(); }
+  &_body      { .text-regular(); }
+  &_paragraph { .h4(); }
+  &_article   { .h3(); }
+  &_title-02  { .h2(); }
+  &_title-01  { .h1(); }
+
+  &_tiny      &__icon { .square(@icon-size-xs); }
+  &_small     &__icon { .square(@icon-size-sm); }
+  &_article   &__icon { .square(@icon-size-lg); }
+  &_body      &__icon { .square(@icon-size-md); }
+  &_paragraph &__icon { .square(@icon-size-lg); }
+  &_title-02  &__icon { .square(@icon-size-xl); }
+  &_title-01  &__icon { .square(@icon-size-xxl); }
+
+  &_accent {
+    font-weight: 500;
+  }
+
+  &_ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  &_dotted {
+    &,
+    &:hover,
+    &:active,
+    &:visited {
+      text-decoration: none;
+    }
+  }
+
+  &_dotted &__inner {
+    border-bottom: 1px dotted;
+  }
+}
