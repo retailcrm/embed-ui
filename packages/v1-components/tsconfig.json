@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "paths": {
+      "@/*": ["./src/*"],
+      "~assets/*": ["./assets/*"]
+    },
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "strict": true,
+    "target": "ES2017",
+    "types": [
+      "@omnicajs/vue-remote/types/events",
+      "@vue/compiler-core/dist/compiler-core",
+      "@vue/compiler-dom/dist/compiler-dom",
+      "@vue/compiler-sfc/dist/compiler-sfc",
+      "@vue/compiler-ssr/dist/compiler-ssr",
+      "@vue/reactivity/dist/reactivity",
+      "@vue/runtime-core/dist/runtime-core",
+      "@vue/runtime-dom/dist/runtime-dom"
+    ],
+    "useDefineForClassFields": true
+  },
+  "include": [
+    "shims-*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "storybook/**/*.stories.ts",
+    "storybook/**/*.vue"
+  ]
+}
