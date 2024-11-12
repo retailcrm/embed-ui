@@ -21,7 +21,7 @@ export type TranslationList = {
 
 export const schemaList: SchemaList = {
   'customer/card': customerCardSchema,
-  'customer/card.phone': customerCardPhoneSchema,
+  'customer/card:phone': customerCardPhoneSchema,
   'order/card': orderCardSchema,
   'settings': settingsSchema,
 }
@@ -67,7 +67,7 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
       },
     },
   },
-  'customer/card.phone': {
+  'customer/card:phone': {
     'value': {
       description: {
         'en-GB': 'Customer phone',
@@ -159,7 +159,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'customer/card',
-      'customer/card.phone',
+      'customer/card:phone',
       'settings',
     ],
   },

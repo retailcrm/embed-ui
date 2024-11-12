@@ -37,7 +37,7 @@ import { useCustomerCardContext } from '@retailcrm/embed-ui'
 const customer = useCustomerCardContext()
 ```
 
-### `customer/card.phone`
+### `customer/card:phone`
 
 Данные телефона клиента
 

@@ -34,7 +34,7 @@ export type SchemaListOf<T extends WidgetTarget> = SchemaListByTarget[T]
 export type SchemaListByTarget = {
   'customer/card:phone': Pick<SchemaList,
     | 'customer/card'
-    | 'customer/card.phone'
+    | 'customer/card:phone'
     | 'settings'
   >;
   'order/card:customer.after': Pick<SchemaList,

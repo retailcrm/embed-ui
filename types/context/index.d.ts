@@ -5,7 +5,7 @@ import type { Schema as SettingsSchema } from './settings'
 
 export type SchemaList = {
   'customer/card': CustomerCardSchema;
-  'customer/card.phone': CustomerCardPhoneSchema;
+  'customer/card:phone': CustomerCardPhoneSchema;
   'order/card': OrderCardSchema;
   'settings': SettingsSchema;
 }
