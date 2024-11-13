@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.7](https://github.com/retailcrm/embed-ui/compare/v0.2.6...v0.2.7) (2024-11-13)
+
+
+### Features
+
+* Added useHost composable for calling host methods & first method httpCall ([72ec875](https://github.com/retailcrm/embed-ui/commit/72ec87502b8a08238c9e1aa8d3016ee0e2705a86))
+
+
+### Fixes
+
+* Fixed customer/card.phone => customer.card:phone naming ([9356313](https://github.com/retailcrm/embed-ui/commit/9356313b57ae314b65735f83900bb8742dd03c3c))
+
 ### [0.2.6](https://github.com/retailcrm/embed-ui/compare/v0.2.5...v0.2.6) (2024-11-11)
 
 
