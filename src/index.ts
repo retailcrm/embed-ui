@@ -5,6 +5,7 @@ import type {
   MessageEndpoint,
 } from '@remote-ui/rpc'
 
+import type { Callable } from '~types/host/callable'
 import type { ContextAccessor } from '~types/context/schema'
 import type { SchemaList } from '~types/context'
 
@@ -26,7 +27,7 @@ import {
   createRemoteRoot,
 } from '@omnicajs/vue-remote/remote'
 
-import { injectAccessor } from '@/context/store'
+import { injectEndpoint } from '@/pinia'
 
 export {
   schema as customerCardSchema,
@@ -48,7 +49,8 @@ export {
   useContext as useSettingsContext,
 } from '@/context/settings'
 
-export { useField } from '@/context/store'
+export { useHost } from '@/composables'
+export { useField } from '@/composables'
 
 const createRoot = async (channel: Channel) => {
   const root = createRemoteRoot(channel, {
@@ -78,10 +80,10 @@ export const createWidgetEndpoint = (
   widget: WidgetRunner,
   messenger: MessageEndpoint
 ): Endpoint<ContextAccessor<SchemaList>> => {
-  const endpoint = createEndpoint<ContextAccessor<SchemaList>>(messenger)
+  const endpoint = createEndpoint<ContextAccessor<SchemaList> & Callable>(messenger)
   const pinia = createPinia()
 
-  pinia.use(injectAccessor(endpoint))
+  pinia.use(injectEndpoint(endpoint))
 
   let onRelease = () => {}
 

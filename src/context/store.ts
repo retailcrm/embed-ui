@@ -2,38 +2,15 @@ import type {
   Context,
   ContextAccessor,
   ContextSchema,
-  ContextSchemaMap,
   EventMap,
   Writable,
   TypeOf,
-  IsReadonly,
 } from '~types/context/schema'
 
 import type { Endpoint } from '@remote-ui/rpc'
 
-import type {
-  ComputedRef,
-  WritableComputedRef,
-} from 'vue'
-
-import type { PiniaPluginContext, Store } from 'pinia'
-
-import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import { keysOf } from '@/utilities'
-
-declare module 'pinia' {
-  // noinspection JSUnusedGlobalSymbols
-  export interface PiniaCustomProperties {
-    endpoint: Endpoint<ContextAccessor>
-  }
-}
-
-export const injectAccessor = <M extends ContextSchemaMap>(endpoint: Endpoint<ContextAccessor<M>>) => {
-  return (context: PiniaPluginContext) => {
-    context.store.endpoint = endpoint as Endpoint<ContextAccessor>
-  }
-}
 
 export const defineContext = <Id extends string, S extends ContextSchema>(
   id: Id,
@@ -93,29 +70,4 @@ export const defineContext = <Id extends string, S extends ContextSchema>(
       },
     },
   })
-}
-
-type Computed<S extends ContextSchema, F extends keyof S> = IsReadonly<S[F]> extends true
-  ? ComputedRef<TypeOf<S[F]>>
-  : WritableComputedRef<TypeOf<S[F]>>
-
-export const useField = <S extends ContextSchema, F extends keyof S>(
-  store: Store<string, Context<S>, {
-    schema (): S;
-  }, {
-    initialize(): Promise<void>;
-    set<F extends keyof Writable<S>>(field: F, value: TypeOf<S[F]>): void;
-  }>,
-  field: F
-): Computed<S, F> => {
-  if (store.schema[field].readonly) {
-    return computed(() => (store as Context<S>)[field]) as Computed<S, F>
-  }
-
-  return computed({
-    get: () => (store as Context<S>)[field],
-    set: (value: TypeOf<S[F]>): void => {
-      store.set(field, value)
-    },
-  }) as Computed<S, F>
 }

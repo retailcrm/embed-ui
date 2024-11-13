@@ -54,7 +54,7 @@ import { flushPromises } from '@vue/test-utils'
 
 import { useContext as useCustomerCardPhoneContext } from '@/context/customer/card-phone'
 import { useContext as useSettingsContext } from '@/context/settings'
-import { useField } from '@/context/store'
+import { useField } from '@/composables'
 
 const createHost = (messenger: MessageEndpoint) => {
   const contexts = {

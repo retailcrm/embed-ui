@@ -1,3 +1,4 @@
+import type { Callable } from '~types/host/callable'
 import type { ContextAccessor, FieldAccessor } from '~types/context/schema'
 
 import type { MessageEndpoint } from '@remote-ui/rpc'
@@ -28,11 +29,11 @@ import {
   fromMessagePort,
 } from '@remote-ui/rpc'
 
-import { injectAccessor } from '@/context/store'
+import { injectEndpoint } from '@/pinia'
 
 import { useContext as useOrderCardContext } from '@/context/order/card'
 import { useContext as useSettingsContext } from '@/context/settings'
-import { useField } from '@/context/store'
+import { useField } from '@/composables'
 
 import {
   createOrderCardHostContext,
@@ -100,7 +101,7 @@ describe('order/card', () => {
 
     const host = createHost(fromMessagePort(port1))
 
-    const remote = createEndpoint<ContextAccessor<SchemaList>>(fromMessagePort(port2))
+    const remote = createEndpoint<ContextAccessor<SchemaList> & Callable>(fromMessagePort(port2))
 
     const pinia = createPinia()
 
@@ -112,7 +113,7 @@ describe('order/card', () => {
       },
     })
 
-    pinia.use(injectAccessor<SchemaList>(remote))
+    pinia.use(injectEndpoint(remote))
 
     await host.endpoint.call.run()
 
