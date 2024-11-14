@@ -6,6 +6,6 @@ type Pojo = {
 export type Callable = {
   httpCall (
     action: string,
-    payload: string | Pojo
+    payload?: string | Pojo
   ): Promise<{ body: string; status: number }>;
 }

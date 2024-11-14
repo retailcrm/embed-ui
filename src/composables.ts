@@ -51,8 +51,10 @@ export const useHost = (): RemoteCallable<Callable> => {
   const store = useInternal()
 
   return {
-    httpCall (action, payload) {
-      return store.endpoint.call.httpCall(action, payload)
+    httpCall (action, payload = undefined) {
+      return payload
+        ? store.endpoint.call.httpCall(action, payload)
+        : store.endpoint.call.httpCall(action)
     },
   }
 }
