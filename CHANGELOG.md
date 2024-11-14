@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.8](https://github.com/retailcrm/embed-ui/compare/v0.2.7...v0.2.8) (2024-11-14)
+
+
+### Features
+
+* 'payload' argument of httpCall methods was made optional ([103b6a4](https://github.com/retailcrm/embed-ui/commit/103b6a4b608a252d6dc27334ae7bffdd8acbb23b))
+
 ### [0.2.7](https://github.com/retailcrm/embed-ui/compare/v0.2.6...v0.2.7) (2024-11-13)
 
 
