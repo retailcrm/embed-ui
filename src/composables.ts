@@ -1,4 +1,4 @@
-import type {Callable, Pojo} from '~types/host/callable'
+import type { Callable } from '~types/host/callable'
 
 import type {
   Context,
