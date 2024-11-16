@@ -6,7 +6,7 @@ export type Field<Type, Readonly extends boolean = false> = {
   readonly: Readonly;
 }
 
-export type ReadonlyField<Type> = Field<Type, true>
+export type ReadonlyField<Type = unknown> = Field<Type, true>
 
 export type TypeOf<F> = F extends Field<infer T>
   ? T
@@ -33,17 +33,21 @@ export type Context<S extends ContextSchema> = {
 }
 
 export type Writable<S extends ContextSchema> = {
-  [F in keyof S]: IsReadonly<S[F]> extends true ? never : S[F];
+  [F in keyof S as IsReadonly<S[F]> extends true ? never : F]: S[F];
 }
 
 export type EventMap<S extends ContextSchema> = {
-  [K in keyof S as `change:${K}`]: K;
+  [K in keyof S as K extends string ? `change:${K}` : never]: K;
+}
+
+export type EventPayloadMap<S extends ContextSchema> = {
+  [K in keyof S as K extends string ? `change:${K}` : never]: TypeOf<S[K]>;
 }
 
 export type EventHandler<
   S extends ContextSchema,
-  E extends keyof EventMap<S>
-> = (payload: TypeOf<S[EventMap<S>[E]]>) => void
+  E extends keyof EventPayloadMap<S>
+> = (payload: EventPayloadMap<S>[E]) => void
 
 export type ContextAccessor<M extends ContextSchemaMap = ContextSchemaMap> = {
   get <

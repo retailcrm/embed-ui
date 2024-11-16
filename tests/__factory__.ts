@@ -46,7 +46,7 @@ const createGetter = <S extends ContextSchema>(id: string, getters: Getters<S>) 
 }
 
 const createSetter = <S extends ContextSchema>(id: string, setters: Setters<S>) => {
-  return <F extends keyof S>(field: F, value: Context<S>[F]) => {
+  return <F extends keyof Writable<S>>(field: F, value: Context<S>[F]) => {
     if (field in setters) {
       setters[field](value)
       return
