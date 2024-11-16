@@ -41,7 +41,7 @@ export const defineContext = <Id extends string, S extends ContextSchema>(
 
         keysOf(schema).forEach(field => {
           context[field] = state[field]
-          endpoint.call.on(id, `change:${String(field)}` as keyof EventMap<S>, (value) => {
+          endpoint.call.on(id, `change:${field as string}` as keyof EventMap<S>, (value) => {
             context[field] = value as TypeOf<S[typeof field]>
           })
         })

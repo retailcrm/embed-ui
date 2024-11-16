@@ -31,7 +31,7 @@
     "test": "vitest --run"
   },
   "dependencies": {
-    "@omnicajs/vue-remote": "^0.2.0",
+    "@omnicajs/vue-remote": "^0.2.1",
     "@remote-ui/rpc": "^1.4.5"
   },
   "peerDependencies": {

@@ -7,7 +7,7 @@ import type { Channel } from '@omnicajs/vue-remote/dist/remote'
 
 import type { Pinia } from 'pinia'
 
-import type { RemoteRoot } from '@omnicajs/vue-remote/remote'
+import type { RemoteRoot, SchemaOf } from '@omnicajs/vue-remote/remote'
 
 import type { SchemaList } from './context'
 
