@@ -34,10 +34,12 @@
     "useDefineForClassFields": true
   },
   "include": [
+    "meta/**/*.ts",
     "scripts/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/shims-*.d.ts"
+    "src/shims-*.d.ts",
+    "types/**/*.ts"
   ]
 }

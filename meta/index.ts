@@ -163,16 +163,64 @@ export const targetListDocumentation: TargetListDocumentation = {
       'settings',
     ],
   },
-  'order/card:customer.after': {
+  'order/card:common.before': {
     description: {
-      'en-GB': 'Widget for section with customer data',
+      'en-GB': 'Widget for the section with common data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с основными данными',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input fields',
+      'es-ES': '',
+      'ru-RU': 'Начало секции, над полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:common.after': {
+    description: {
+      'en-GB': 'Widget for the section with common data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с основными данными',
+    },
+    location: {
+      'en-GB': 'Section end, right under the input fields',
+      'es-ES': '',
+      'ru-RU': 'Конец секции, под полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:customer.before': {
+    description: {
+      'en-GB': 'Widget for the section with customer data',
       'es-ES': '',
       'ru-RU': 'Виджет для секции с данными клиента',
     },
     location: {
-      'en-GB': 'Right under the input fields',
+      'en-GB': 'Section start, right above the input fields',
       'es-ES': '',
-      'ru-RU': 'Сразу под полями ввода',
+      'ru-RU': 'Начало секции, над полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:customer.after': {
+    description: {
+      'en-GB': 'Widget for the section with customer data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными клиента',
+    },
+    location: {
+      'en-GB': 'Section end, right under the input fields',
+      'es-ES': '',
+      'ru-RU': 'Конец секции, под полями ввода',
     },
     contexts: [
       'order/card',
@@ -211,6 +259,134 @@ export const targetListDocumentation: TargetListDocumentation = {
       'settings',
     ],
   },
+  'order/card:list.before': {
+    description: {
+      'en-GB': 'Widget for the list of ordered items',
+      'es-ES': '',
+      'ru-RU': 'Виджет для списка позиций заказа',
+    },
+    location: {
+      'en-GB': 'Section start, right above the list',
+      'es-ES': '',
+      'ru-RU': 'Начало секции, над списком',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:list.after': {
+    description: {
+      'en-GB': 'Widget for the list of ordered items',
+      'es-ES': '',
+      'ru-RU': 'Виджет для списка позиций заказа',
+    },
+    location: {
+      'en-GB': 'Section start, right under the list',
+      'es-ES': '',
+      'ru-RU': 'Начало секции, под списком',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:store.before': {
+    description: {
+      'en-GB': 'Widget for the section with warehouse data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными склада',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input fields',
+      'es-ES': '',
+      'ru-RU': 'Начало секции, над полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:store.after': {
+    description: {
+      'en-GB': 'Widget for the section with warehouse data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными склада',
+    },
+    location: {
+      'en-GB': 'Section end, right under the input fields',
+      'es-ES': '',
+      'ru-RU': 'Конец секции, под полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:dimensions.before': {
+    description: {
+      'en-GB': 'Widget for the section with dimensions and weight',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными габаритов и веса',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input fields',
+      'es-ES': '',
+      'ru-RU': 'Начало секции, над полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:dimensions.after': {
+    description: {
+      'en-GB': 'Widget for the section with dimensions and weight',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными габаритов и веса',
+    },
+    location: {
+      'en-GB': 'Section end, right under the input fields',
+      'es-ES': '',
+      'ru-RU': 'Конец секции, под полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:delivery.before': {
+    description: {
+      'en-GB': 'Widget for the section with delivery data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными доставки',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input fields',
+      'es-ES': '',
+      'ru-RU': 'Начало секции, над полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:delivery.after': {
+    description: {
+      'en-GB': 'Widget for the section with delivery data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными доставки',
+    },
+    location: {
+      'en-GB': 'Section end, right under the input fields',
+      'es-ES': '',
+      'ru-RU': 'Конец секции, под полями ввода',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
   'order/card:delivery.address': {
     description: {
       'en-GB': 'Widget for delivery address input field',
@@ -221,6 +397,22 @@ export const targetListDocumentation: TargetListDocumentation = {
       'en-GB': 'Right under the input field',
       'es-ES': '',
       'ru-RU': 'Под полем ввода адреса',
+    },
+    contexts: [
+      'order/card',
+      'settings',
+    ],
+  },
+  'order/card:payment.before': {
+    description: {
+      'en-GB': 'Widget for the section with payment data',
+      'es-ES': '',
+      'ru-RU': 'Виджет для секции с данными по оплате',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input fields',
+      'es-ES': '',
+      'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
       'order/card',
