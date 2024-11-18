@@ -1,5 +1,6 @@
 .github
 .idea
+.yarn
 .vscode
 meta
 node_modules
