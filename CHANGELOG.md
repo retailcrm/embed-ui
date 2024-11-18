@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.9](https://github.com/retailcrm/embed-ui/compare/v0.2.8...v0.2.9) (2024-11-18)
+
+
+### Features
+
+* Added new targets' definitions for order/card ([6054272](https://github.com/retailcrm/embed-ui/commit/60542721c4380e702fd7353993304ee37a0d3ac8))
+
 ### [0.2.8](https://github.com/retailcrm/embed-ui/compare/v0.2.7...v0.2.8) (2024-11-14)
 
 
