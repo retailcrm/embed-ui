@@ -41,28 +41,28 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
     'id': {
       description: {
         'en-GB': 'Customer ID',
-        'es-ES': '',
+        'es-ES': 'ID del cliente',
         'ru-RU': 'ID клиента',
       },
     },
     'externalId': {
       description: {
         'en-GB': 'Customer external ID',
-        'es-ES': '',
+        'es-ES': 'ID externo del cliente',
         'ru-RU': 'Внешний ID клиента',
       },
     },
     'email': {
       description: {
         'en-GB': 'Customer email',
-        'es-ES': '',
+        'es-ES': 'Correo electrónico del cliente',
         'ru-RU': 'Email клиента',
       },
     },
     'phones': {
       description: {
         'en-GB': 'Customer phone list',
-        'es-ES': '',
+        'es-ES': 'Lista de teléfonos del cliente',
         'ru-RU': 'Список телефонов клиента',
       },
     },
@@ -71,14 +71,14 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
     'value': {
       description: {
         'en-GB': 'Customer phone',
-        'es-ES': '',
+        'es-ES': 'Teléfono del cliente',
         'ru-RU': 'Телефон клиента',
       },
     },
     'index': {
       description: {
         'en-GB': 'Serial number of the phone in the list',
-        'es-ES': '',
+        'es-ES': 'Número de serie del teléfono en la lista',
         'ru-RU': 'Порядковый номер телефона в списке',
       },
     },
@@ -87,21 +87,21 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
     'customer.email': {
       description: {
         'en-GB': 'Customer email',
-        'es-ES': '',
+        'es-ES': 'Correo electrónico del cliente',
         'ru-RU': 'Email клиента',
       },
     },
     'customer.phone': {
       description: {
         'en-GB': 'Customer phone',
-        'es-ES': '',
+        'es-ES': 'Teléfono del cliente',
         'ru-RU': 'Телефон клиента',
       },
     },
     'delivery.address': {
       description: {
         'en-GB': 'Delivery address',
-        'es-ES': '',
+        'es-ES': 'Dirección de entrega',
         'ru-RU': 'Адрес доставки',
       },
     },
@@ -110,21 +110,21 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
     'order.templates.number.api': {
       description: {
         'en-GB': 'Number template for orders created with API',
-        'es-ES': '',
+        'es-ES': 'Plantilla de número para pedidos creados con API',
         'ru-RU': 'Шаблон номера заказов, создаваемых через API',
       },
     },
     'order.templates.number.crm': {
       description: {
         'en-GB': 'Number template for orders created with CRM\'s interface',
-        'es-ES': '',
+        'es-ES': 'Plantilla de número para pedidos creados con la interfaz de CRM',
         'ru-RU': 'Шаблон номера заказов, создаваемых через интерфейс CRM',
       },
     },
     'system.locale': {
       description: {
         'en-GB': 'Current system\'s locale',
-        'es-ES': '',
+        'es-ES': 'Configuración regional actual del sistema',
         'ru-RU': 'Текущая локаль системы',
       },
     },
@@ -149,12 +149,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'customer/card:phone': {
     description: {
       'en-GB': 'Widget for customer phone list item',
-      'es-ES': '',
+      'es-ES': 'Widget para el elemento de la lista de teléfonos del cliente',
       'ru-RU': 'Виджет для элемента списка телефонов клиента',
     },
     location: {
       'en-GB': 'Right after the phone number in the list',
-      'es-ES': '',
+      'es-ES': 'Justo después del número de teléfono en la lista',
       'ru-RU': 'Сразу после номера телефона в списке',
     },
     contexts: [
@@ -166,12 +166,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:common.before': {
     description: {
       'en-GB': 'Widget for the section with common data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos comunes',
       'ru-RU': 'Виджет для секции с основными данными',
     },
     location: {
       'en-GB': 'Section start, right above the input fields',
-      'es-ES': '',
+      'es-ES': 'Inicio de la sección, justo encima de los campos de entrada',
       'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
@@ -182,12 +182,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:common.after': {
     description: {
       'en-GB': 'Widget for the section with common data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos comunes',
       'ru-RU': 'Виджет для секции с основными данными',
     },
     location: {
       'en-GB': 'Section end, right under the input fields',
-      'es-ES': '',
+      'es-ES': 'Fin de la sección, justo debajo de los campos de entrada',
       'ru-RU': 'Конец секции, под полями ввода',
     },
     contexts: [
@@ -198,12 +198,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:customer.before': {
     description: {
       'en-GB': 'Widget for the section with customer data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos del cliente',
       'ru-RU': 'Виджет для секции с данными клиента',
     },
     location: {
       'en-GB': 'Section start, right above the input fields',
-      'es-ES': '',
+      'es-ES': 'Inicio de la sección, justo encima de los campos de entrada',
       'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
@@ -214,12 +214,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:customer.after': {
     description: {
       'en-GB': 'Widget for the section with customer data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos del cliente',
       'ru-RU': 'Виджет для секции с данными клиента',
     },
     location: {
       'en-GB': 'Section end, right under the input fields',
-      'es-ES': '',
+      'es-ES': 'Fin de la sección, justo debajo de los campos de entrada',
       'ru-RU': 'Конец секции, под полями ввода',
     },
     contexts: [
@@ -230,12 +230,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:customer.email': {
     description: {
       'en-GB': 'Widget for customer email input field',
-      'es-ES': '',
+      'es-ES': 'Widget para el campo de entrada del correo electrónico del cliente',
       'ru-RU': 'Виджет для поля ввода email клиента',
     },
     location: {
       'en-GB': 'Right after the input field',
-      'es-ES': '',
+      'es-ES': 'Justo después del campo de entrada',
       'ru-RU': 'Сразу после поля ввода',
     },
     contexts: [
@@ -246,12 +246,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:customer.phone': {
     description: {
       'en-GB': 'Widget for customer phone input field',
-      'es-ES': '',
+      'es-ES': 'Widget para el campo de entrada del teléfono del cliente',
       'ru-RU': 'Виджет для поля ввода телефона клиента',
     },
     location: {
       'en-GB': 'Right after the input field',
-      'es-ES': '',
+      'es-ES': 'Justo después del campo de entrada',
       'ru-RU': 'Сразу после поля ввода',
     },
     contexts: [
@@ -262,12 +262,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:list.before': {
     description: {
       'en-GB': 'Widget for the list of ordered items',
-      'es-ES': '',
+      'es-ES': 'Widget para la lista de artículos pedidos',
       'ru-RU': 'Виджет для списка позиций заказа',
     },
     location: {
       'en-GB': '[Temporary unavailable]',
-      'es-ES': '',
+      'es-ES': '[Temporalmente no disponible]',
       'ru-RU': '[Временно недоступен]',
     },
     contexts: [
@@ -278,12 +278,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:list.after': {
     description: {
       'en-GB': 'Widget for the list of ordered items',
-      'es-ES': '',
+      'es-ES': 'Widget para la lista de artículos pedidos',
       'ru-RU': 'Виджет для списка позиций заказа',
     },
     location: {
       'en-GB': 'Section start, right under the list',
-      'es-ES': '',
+      'es-ES': 'Inicio de la sección, justo debajo de la lista',
       'ru-RU': 'Начало секции, под списком',
     },
     contexts: [
@@ -294,12 +294,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:store.before': {
     description: {
       'en-GB': 'Widget for the section with warehouse data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos del almacén',
       'ru-RU': 'Виджет для секции с данными склада',
     },
     location: {
       'en-GB': 'Section start, right above the input fields',
-      'es-ES': '',
+      'es-ES': 'Inicio de la sección, justo encima de los campos de entrada',
       'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
@@ -310,12 +310,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:dimensions.before': {
     description: {
       'en-GB': 'Widget for the section with dimensions and weight',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con dimensiones y peso',
       'ru-RU': 'Виджет для секции с данными габаритов и веса',
     },
     location: {
       'en-GB': 'Section start, right above the input fields',
-      'es-ES': '',
+      'es-ES': 'Inicio de la sección, justo encima de los campos de entrada',
       'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
@@ -326,12 +326,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:delivery.before': {
     description: {
       'en-GB': 'Widget for the section with delivery data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos de entrega',
       'ru-RU': 'Виджет для секции с данными доставки',
     },
     location: {
       'en-GB': 'Section start, right above the input fields',
-      'es-ES': '',
+      'es-ES': 'Inicio de la sección, justo encima de los campos de entrada',
       'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
@@ -342,12 +342,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:delivery.after': {
     description: {
       'en-GB': 'Widget for the section with delivery data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos de entrega',
       'ru-RU': 'Виджет для секции с данными доставки',
     },
     location: {
       'en-GB': 'Section end, right under the input fields',
-      'es-ES': '',
+      'es-ES': 'Fin de la sección, justo debajo de los campos de entrada',
       'ru-RU': 'Конец секции, под полями ввода',
     },
     contexts: [
@@ -358,12 +358,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:delivery.address': {
     description: {
       'en-GB': 'Widget for delivery address input field',
-      'es-ES': '',
+      'es-ES': 'Widget para el campo de entrada de la dirección de entrega',
       'ru-RU': 'Виджет для поля ввода адреса доставки',
     },
     location: {
       'en-GB': 'Right under the input field',
-      'es-ES': '',
+      'es-ES': 'Justo debajo del campo de entrada',
       'ru-RU': 'Под полем ввода адреса',
     },
     contexts: [
@@ -374,12 +374,12 @@ export const targetListDocumentation: TargetListDocumentation = {
   'order/card:payment.before': {
     description: {
       'en-GB': 'Widget for the section with payment data',
-      'es-ES': '',
+      'es-ES': 'Widget para la sección con datos de pago',
       'ru-RU': 'Виджет для секции с данными по оплате',
     },
     location: {
       'en-GB': 'Section start, right above the input fields',
-      'es-ES': '',
+      'es-ES': 'Inicio de la sección, justo encima de los campos de entrada',
       'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
@@ -393,7 +393,7 @@ export const pageListDocumentation = [{
   id: 'customer/card',
   description: {
     'en-GB': 'Customer page',
-    'es-ES': '',
+    'es-ES': 'Página del cliente',
     'ru-RU': 'Страница клиента',
   } as TranslationList,
   targets: keysOf(targetListDocumentation).filter(target => target.startsWith('customer/card:')),
@@ -401,7 +401,7 @@ export const pageListDocumentation = [{
   id: 'order/card',
   description: {
     'en-GB': 'Page with the order creation/editing form',
-    'es-ES': '',
+    'es-ES': 'Página con el formulario de creación/edición de pedidos',
     'ru-RU': 'Страница с формой создания/редактирования заказа',
   } as TranslationList,
   targets: keysOf(targetListDocumentation).filter(target => target.startsWith('order/card:')),
