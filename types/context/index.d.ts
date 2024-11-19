@@ -9,3 +9,15 @@ export type SchemaList = {
   'order/card': OrderCardSchema;
   'settings': SettingsSchema;
 }
+
+export type ContextUsageEntry = {
+  import: string;
+  call: string;
+}
+
+export type ContextUsageList = {
+  'customer/card': ContextUsageEntry;
+  'customer/card:phone': ContextUsageEntry;
+  'order/card': ContextUsageEntry;
+  'settings': ContextUsageEntry;
+}

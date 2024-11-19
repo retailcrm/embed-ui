@@ -18,6 +18,7 @@ import {
   schemaListDocumentation,
   targetListDocumentation,
   pageListDocumentation,
+  contextsUsage,
 } from '~meta'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -51,4 +52,5 @@ fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
     ...targetListDocumentation[target],
   })),
   pages: pageListDocumentation,
+  contextsUsage,
 }, null, 2))

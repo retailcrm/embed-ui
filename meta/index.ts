@@ -3,7 +3,7 @@ import type {
   ContextSchemaMap,
 } from '~types/context/schema'
 
-import type { SchemaList } from '~types/context'
+import type { SchemaList, ContextUsageList } from '~types/context'
 import type { SchemaListByTarget } from '~types/widget'
 
 import { keysOf } from '@/utilities'
@@ -24,6 +24,25 @@ export const schemaList: SchemaList = {
   'customer/card:phone': customerCardPhoneSchema,
   'order/card': orderCardSchema,
   'settings': settingsSchema,
+}
+
+export const contextsUsage: ContextUsageList = {
+  'customer/card': {
+    import: 'import { useCustomerCardContext } from \'@retailcrm/embed-ui\'',
+    call: 'const customer = useCustomerCardContext()', 
+  },
+  'customer/card:phone': {
+    import: 'import { useCustomerCardPhoneContext } from \'@retailcrm/embed-ui\'',
+    call: 'const phone = useCustomerCardPhoneContext()', 
+  },
+  'order/card': {
+    import: 'import { useOrderCardContext } from \'@retailcrm/embed-ui\'',
+    call: 'const order = useOrderCardContext()', 
+  },
+  'settings': {
+    import: 'import { useSettingsContext } from \'@retailcrm/embed-ui\'',
+    call: 'const settings = useSettingsContext()', 
+  },
 }
 
 export type SchemaDocumentation<S extends ContextSchema> = {
