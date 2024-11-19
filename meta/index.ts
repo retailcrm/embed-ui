@@ -307,22 +307,6 @@ export const targetListDocumentation: TargetListDocumentation = {
       'settings',
     ],
   },
-  'order/card:store.after': {
-    description: {
-      'en-GB': 'Widget for the section with warehouse data',
-      'es-ES': '',
-      'ru-RU': 'Виджет для секции с данными склада',
-    },
-    location: {
-      'en-GB': 'Section end, right under the input fields',
-      'es-ES': '',
-      'ru-RU': 'Конец секции, под полями ввода',
-    },
-    contexts: [
-      'order/card',
-      'settings',
-    ],
-  },
   'order/card:dimensions.before': {
     description: {
       'en-GB': 'Widget for the section with dimensions and weight',
@@ -333,22 +317,6 @@ export const targetListDocumentation: TargetListDocumentation = {
       'en-GB': 'Section start, right above the input fields',
       'es-ES': '',
       'ru-RU': 'Начало секции, над полями ввода',
-    },
-    contexts: [
-      'order/card',
-      'settings',
-    ],
-  },
-  'order/card:dimensions.after': {
-    description: {
-      'en-GB': 'Widget for the section with dimensions and weight',
-      'es-ES': '',
-      'ru-RU': 'Виджет для секции с данными габаритов и веса',
-    },
-    location: {
-      'en-GB': 'Section end, right under the input fields',
-      'es-ES': '',
-      'ru-RU': 'Конец секции, под полями ввода',
     },
     contexts: [
       'order/card',

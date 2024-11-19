@@ -73,15 +73,7 @@ export type SchemaListByTarget = {
     | 'order/card'
     | 'settings'
   >;
-  'order/card:store.after': Pick<SchemaList,
-    | 'order/card'
-    | 'settings'
-  >;
   'order/card:dimensions.before': Pick<SchemaList,
-    | 'order/card'
-    | 'settings'
-  >;
-  'order/card:dimensions.after': Pick<SchemaList,
     | 'order/card'
     | 'settings'
   >;
