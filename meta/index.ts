@@ -266,9 +266,9 @@ export const targetListDocumentation: TargetListDocumentation = {
       'ru-RU': 'Виджет для списка позиций заказа',
     },
     location: {
-      'en-GB': 'Section start, right above the list',
+      'en-GB': '[Temporary unavailable]',
       'es-ES': '',
-      'ru-RU': 'Начало секции, над списком',
+      'ru-RU': '[Временно недоступен]',
     },
     contexts: [
       'order/card',
