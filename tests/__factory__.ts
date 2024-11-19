@@ -131,8 +131,28 @@ export const createCustomerCardPhoneHostContext = (id: string) => {
 export const createOrderCardHostContext = (id: string) => {
   const data = reactive({
     customer: {
+      id: 1 as number | null,
+      externalId: 'fake externalId' as string | null,
+      number: 'fake number' as string | null,
+      customerType: 1 as number | null,
+      lastName: 'fakeLastName' as string | null,
+      firstName: 'fakeFirstName' as string | null,
+      patronymic: 'fakePatronymic' as string | null,
       email: 'fake@gmail.com' as string | null,
       phone: '+381 11 2345678' as string | null,
+      country: 'Ru' as string | null,
+      currency: 'ru' as string,
+      status: 'fakeStatus' as string,
+      companyName: 'fake companyName' as string | null,
+      companyLegalName: 'fake companyLegalName' as string | null,
+      companyLegalAddress: 'fake companyLegalAddress' as string | null,
+      companyINN: 'fake companyINN' as string | null,
+      companyOKPO: 'fake companyOKPO' as string | null,
+      companyBIK: 'fake companyBIK' as string | null,
+      companyBank: 'fake companyBank',
+      companyBankAddress: 'fake companyBankAddress' as string | null,
+      companyCorrAccount: 'fake companyCorrAccount' as string | null,
+      companyBankAccount: 'fake companyBankAccount' as string | null,
     },
     delivery: {
       address: 'Улица Краља Милутина 2 11000 Београд Србија' as string | null,
@@ -142,12 +162,52 @@ export const createOrderCardHostContext = (id: string) => {
   return {
     data,
     accessor: createAccessor<OrderCardSchema>(id, {
+      'id': () => data.customer.id,
+      'externalId': () => data.customer.externalId,
+      'number': () => data.customer.number,
+      'customer.type': () => data.customer.customerType,
+      'customer.lastName': () => data.customer.lastName,
+      'customer.firstName': () => data.customer.firstName,
+      'customer.patronymic': () => data.customer.patronymic,
       'customer.email': () => data.customer.email,
       'customer.phone': () => data.customer.phone,
+      'country': () => data.customer.country,
+      'currency': () => data.customer.currency,
+      'status': () => data.customer.status,
+      'company.name': () => data.customer.companyName,
+      'company.legalName': () => data.customer.companyLegalName,
+      'company.legalAddress': () => data.customer.companyLegalAddress,
+      'company.INN': () => data.customer.companyINN,
+      'company.OKPO': () => data.customer.companyOKPO,
+      'company.BIK': () => data.customer.companyBIK,
+      'company.bank': () => data.customer.companyBank,
+      'company.bankAddress': () => data.customer.companyBankAddress,
+      'company.corrAccount': () => data.customer.companyCorrAccount,
+      'company.bankAccount': () => data.customer.companyBankAccount,
       'delivery.address': () => data.delivery.address,
     }, {
+      'customer.id': (value) => { data.customer.id = value },
+      'customer.externalId': (value) => { data.customer.externalId = value },
+      'customer.number': (value) => { data.customer.number = value },
+      'customer.type': (value) => { data.customer.customerType = value },
+      'customer.lastName': (value) => { data.customer.lastName = value },
+      'customer.firstName': (value) => { data.customer.firstName = value },
+      'customer.patronymic': (value) => { data.customer.patronymic = value },
       'customer.email': (value) => { data.customer.email = value },
       'customer.phone': (value) => { data.customer.phone = value },
+      'country': (value) => { data.customer.country = value },
+      'currency': (value) => { data.customer.currency = value },
+      'status': (value) => { data.customer.status = value },
+      'company.name': (value) => { data.customer.companyName = value },
+      'company.legalName': (value) => { data.customer.companyLegalName = value },
+      'company.legalAddress': (value) => { data.customer.companyLegalAddress = value },
+      'company.INN': (value) => { data.customer.companyINN = value },
+      'company.OKPO': (value) => { data.customer.companyOKPO = value },
+      'company.BIK': (value) => { data.customer.companyBIK = value },
+      'company.bank': (value) => { data.customer.companyBank = value },
+      'company.bankAddress': (value) => { data.customer.companyBankAddress = value },
+      'company.corrAccount': (value) => { data.customer.companyCorrAccount = value },
+      'company.bankAccount': (value) => { data.customer.companyBankAccount = value },
       'delivery.address': (value) => { data.delivery.address = value },
     }),
   }
@@ -155,14 +215,6 @@ export const createOrderCardHostContext = (id: string) => {
 
 export const createSettingsHostContext = (id: string) => {
   const data = reactive({
-    order: {
-      templates: {
-        number: {
-          api: '{number}A',
-          crm: '{number}C',
-        },
-      },
-    },
     system: {
       locale: 'en-GB' as Locale,
     },
@@ -171,8 +223,6 @@ export const createSettingsHostContext = (id: string) => {
   return {
     data,
     accessor: createAccessor<SettingsSchema>(id, {
-      'order.templates.number.api': () => data.order.templates.number.api,
-      'order.templates.number.crm': () => data.order.templates.number.crm,
       'system.locale': () => data.system.locale,
     }, {} as Setters<SettingsSchema>),
   }

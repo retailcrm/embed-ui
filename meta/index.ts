@@ -34,19 +34,19 @@ export const contextsUsage: {
 } = {
   'customer/card': {
     import: 'import { useCustomerCardContext } from \'@retailcrm/embed-ui\'',
-    call: 'const customer = useCustomerCardContext()', 
+    call: 'const customer = useCustomerCardContext()',
   },
   'customer/card:phone': {
     import: 'import { useCustomerCardPhoneContext } from \'@retailcrm/embed-ui\'',
-    call: 'const phone = useCustomerCardPhoneContext()', 
+    call: 'const phone = useCustomerCardPhoneContext()',
   },
   'order/card': {
     import: 'import { useOrderCardContext } from \'@retailcrm/embed-ui\'',
-    call: 'const order = useOrderCardContext()', 
+    call: 'const order = useOrderCardContext()',
   },
   'settings': {
     import: 'import { useSettingsContext } from \'@retailcrm/embed-ui\'',
-    call: 'const settings = useSettingsContext()', 
+    call: 'const settings = useSettingsContext()',
   },
 }
 
@@ -108,6 +108,55 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
     },
   },
   'order/card': {
+    'id': {
+      description: {
+        'en-GB': 'Order ID in CRM',
+        'es-ES': 'ID del pedido en CRM',
+        'ru-RU': 'Идентификатор заказа в CRM',
+      },
+    },
+    'externalId': {
+      description: {
+        'en-GB': 'The order ID in the external source system',
+        'es-ES': 'El ID del pedido en el sistema de origen externo',
+        'ru-RU': 'Идентифкатор заказа во внешней системе источника',
+      },
+    },
+    'number': {
+      description: {
+        'en-GB': 'Displayed order number',
+        'es-ES': 'Número de pedido mostrado',
+        'ru-RU': 'Отображаемый номер заказа',
+      },
+    },
+    'customer.type': {
+      description: {
+        'en-GB': 'Client type',
+        'es-ES': 'Tipo de cliente',
+        'ru-RU': 'Тип клиента',
+      },
+    },
+    'customer.lastName': {
+      description: {
+        'en-GB': 'Client last name',
+        'es-ES': 'Apellido del cliente',
+        'ru-RU': 'Фамилия клиента',
+      },
+    },
+    'customer.firstName': {
+      description: {
+        'en-GB': 'Client name',
+        'es-ES': 'Nombre del cliente',
+        'ru-RU': 'Имя клиента',
+      },
+    },
+    'customer.patronymic': {
+      description: {
+        'en-GB': 'Patronymic of the client',
+        'es-ES': 'Patronímico del cliente',
+        'ru-RU': 'Отчество клиента',
+      },
+    },
     'customer.email': {
       description: {
         'en-GB': 'Customer email',
@@ -120,6 +169,97 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
         'en-GB': 'Customer phone',
         'es-ES': 'Teléfono del cliente',
         'ru-RU': 'Телефон клиента',
+      },
+    },
+    'country': {
+      description: {
+        'en-GB': 'Character code of the country',
+        'es-ES': 'Código de caracteres del país',
+        'ru-RU': 'Символьный код страны',
+      },
+    },
+    'currency': {
+      description: {
+        'en-GB': 'Currency code',
+        'es-ES': 'Código de moneda',
+        'ru-RU': 'Символьный код валюты',
+      },
+    },
+    'status': {
+      description: {
+        'en-GB': 'Order status',
+        'es-ES': 'Estado del pedido',
+        'ru-RU': 'Статус заказа',
+      },
+    },
+    'company.name': {
+      description: {
+        'en-GB': 'Company\'s name',
+        'es-ES': 'Nombre de la empresa',
+        'ru-RU': 'Название компании',
+      },
+    },
+    'company.legalName': {
+      description: {
+        'en-GB': 'Full name of the company',
+        'es-ES': 'Nombre completo de la empresa',
+        'ru-RU': 'Полное наименование компании',
+      },
+    },
+    'company.legalAddress': {
+      description: {
+        'en-GB': 'Company\'s registration address',
+        'es-ES': 'Dirección de registro de la empresa',
+        'ru-RU': 'Адрес регистрации компании',
+      },
+    },
+    'company.INN': {
+      description: {
+        'en-GB': 'Counterparty\'s INN',
+        'es-ES': 'INN del contraparte',
+        'ru-RU': 'ИНН контрагента',
+      },
+    },
+    'company.OKPO': {
+      description: {
+        'en-GB': 'OKPO of the counterparty',
+        'es-ES': 'OKPO del contraparte',
+        'ru-RU': 'ОКПО контрагента',
+      },
+    },
+    'company.BIK': {
+      description: {
+        'en-GB': 'Counterparty\'s BIC',
+        'es-ES': 'BIC del contraparte',
+        'ru-RU': 'БИК контрагента',
+      },
+    },
+    'company.bank': {
+      description: {
+        'en-GB': 'Counterparty\'s bank',
+        'es-ES': 'Banco del contraparte',
+        'ru-RU': 'Банк контрагента',
+      },
+    },
+    'company.bankAddress': {
+      description: {
+        'en-GB': 'The address of the counterparty\'s bank',
+        'es-ES': 'Dirección del banco del contraparte',
+        'ru-RU': 'Адрес банка контрагента',
+      },
+    },
+    'company.corrAccount': {
+      description: {
+        'en-GB': 'Correspondent account of the counterparty',
+        'es-ES': 'Cuenta corresponsal del contraparte',
+        'ru-RU': 'Корреспондентский счет контрагента',
+      },
+    },
+    'company.bankAccount': {
+      description: {
+        'en-GB': 'Counterparty\'s current account',
+        'es-ES': 'Cuenta corriente del contraparte',
+        'ru-RU': 'Расчетный счет контрагента',
       },
     },
     'delivery.address': {

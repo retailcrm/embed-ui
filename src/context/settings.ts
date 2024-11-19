@@ -6,7 +6,6 @@ import type {
 import { defineContext } from './store'
 
 import {
-  isString,
   withMeta,
 } from '@/predicates'
 
@@ -18,16 +17,6 @@ export const isLocale = withMeta(
 )
 
 export const schema: Schema = {
-  'order.templates.number.api': {
-    accepts: isString,
-    defaults: () => '',
-    readonly: true,
-  },
-  'order.templates.number.crm': {
-    accepts: isString,
-    defaults: () => '',
-    readonly: true,
-  },
   'system.locale': {
     accepts: isLocale,
     defaults: () => 'en-GB',

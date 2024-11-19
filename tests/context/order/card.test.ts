@@ -149,8 +149,29 @@ describe('order/card', () => {
     await address.trigger('input')
 
     expect(host['order/card'].customer).toEqual({
+      id: 1,
+      externalId: 'fake externalId',
+      number: 'fake number',
+      customerType: 1,
+      lastName: 'fakeLastName',
+      lastName: 'fakeLastName',
+      firstName: 'fakeFirstName',
+      patronymic: 'fakePatronymic',
       email: 'fake-changed@gmail.com',
       phone: '+381 11',
+      country: 'Ru',
+      currency: 'ru',
+      status: 'fakeStatus',
+      companyName: 'fake companyName',
+      companyLegalName: 'fake companyLegalName',
+      companyLegalAddress: 'fake companyLegalAddress',
+      companyINN: 'fake companyINN',
+      companyOKPO: 'fake companyOKPO',
+      companyBIK: 'fake companyBIK',
+      companyBank: 'fake companyBank',
+      companyBankAddress: 'fake companyBankAddress',
+      companyCorrAccount: 'fake companyCorrAccount',
+      companyBankAccount: 'fake companyBankAccount',
     })
 
     expect(host['order/card'].delivery).toEqual({
