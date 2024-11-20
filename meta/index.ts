@@ -3,7 +3,7 @@ import type {
   ContextSchemaMap,
 } from '~types/context/schema'
 
-import type { SchemaList, ContextUsageList } from '~types/context'
+import type { SchemaList } from '~types/context'
 import type { SchemaListByTarget } from '~types/widget'
 
 import { keysOf } from '@/utilities'
@@ -26,7 +26,12 @@ export const schemaList: SchemaList = {
   'settings': settingsSchema,
 }
 
-export const contextsUsage: ContextUsageList = {
+export const contextsUsage: {
+  [K in keyof SchemaList]: {
+    import: string;
+    call: string;
+  };
+} = {
   'customer/card': {
     import: 'import { useCustomerCardContext } from \'@retailcrm/embed-ui\'',
     call: 'const customer = useCustomerCardContext()', 
