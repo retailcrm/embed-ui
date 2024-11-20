@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/retailcrm/embed-ui/compare/v0.3.2...v0.3.3) (2024-11-20)
+
+
+### Features
+
+* Добавил блок со списком использований контекстов ([6bdd5d6](https://github.com/retailcrm/embed-ui/commit/6bdd5d65e4516811ae249c128e51f4f302f33589))
+* Добавил испанские переводы ([0329323](https://github.com/retailcrm/embed-ui/commit/032932359996693b70fb48ed05040dd66d5015ac))
+
+
+### Fixes
+
+* Corrections of documentation types ([dc9f297](https://github.com/retailcrm/embed-ui/commit/dc9f297b9f0bae028c25fef9e9480a18953ca15c))
+* tsconfig module type ([a0f01c1](https://github.com/retailcrm/embed-ui/commit/a0f01c1bf396b80c2fced1337eb4acb24ac6b90d))
+
 ### [0.3.2](https://github.com/retailcrm/embed-ui/compare/v0.3.1...v0.3.2) (2024-11-20)
 
 
