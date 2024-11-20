@@ -3,16 +3,9 @@ import type {
   PropType,
 } from 'vue'
 
-import type {
-  ContextAccessor,
-  FieldAccessor,
-} from '~types/context/schema'
-
 import type { MessageEndpoint } from '@remote-ui/rpc'
 
 import type { Receiver } from '@omnicajs/vue-remote/host'
-
-import type { SchemaList } from '~types/context'
 
 import type {
   WidgetEndpoint,
@@ -48,6 +41,7 @@ import {
 import {
   createCustomerCardPhoneHostContext,
   createSettingsHostContext,
+  createContextAccessor,
 } from '~tests/__factory__'
 
 import { flushPromises } from '@vue/test-utils'
@@ -62,44 +56,12 @@ const createHost = (messenger: MessageEndpoint) => {
     'settings': createSettingsHostContext('settings'),
   }
 
-  const guard = (context: string) => {
-    if (!(context in contexts)) {
-      throw new Error(`[crm:embed:host] Context ${context} is not supported`)
-    }
-  }
-
-  const accessor = {
-    get <
-      C extends keyof SchemaList,
-      F extends keyof SchemaList[C]
-    >(context: C, field: '~' | F) {
-      guard(context)
-
-      const accessor = contexts[context as keyof typeof contexts].accessor as FieldAccessor<SchemaList[C]>
-
-      return accessor.get(field)
-    },
-
-    set (context, field, value) {
-      guard(context)
-
-      const accessor = contexts[context as keyof typeof contexts].accessor as FieldAccessor<SchemaList[typeof context]>
-
-      accessor.set(field, value)
-    },
-
-    on (context, event, handler) {
-      guard(context)
-
-      const accessor = contexts[context as keyof typeof contexts].accessor as FieldAccessor<SchemaList[typeof context]>
-
-      accessor.on(event, handler)
-    },
-  } as ContextAccessor<SchemaList>
-
   const endpoint = createEndpoint<WidgetEndpoint>(messenger)
 
-  endpoint.expose(accessor)
+  endpoint.expose(createContextAccessor({
+    'customer/card:phone': contexts['customer/card:phone'].accessor,
+    'settings': contexts['settings'].accessor,
+  }))
 
   return {
     'settings': contexts['settings'].data,
