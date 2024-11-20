@@ -1,6 +1,8 @@
 import {
   Context,
+  ContextAccessor,
   ContextSchema,
+  ContextSchemaMap,
   EventHandler,
   EventMap,
   FieldAccessor,
@@ -173,5 +175,38 @@ export const createSettingsHostContext = (id: string) => {
       'order.templates.number.crm': () => data.order.templates.number.crm,
       'system.locale': () => data.system.locale,
     }, {} as Setters<SettingsSchema>),
+  }
+}
+
+export const createContextAccessor = <M extends ContextSchemaMap>(accessors: {
+  [K in keyof M]: FieldAccessor<M[K]>
+}): ContextAccessor<M> => {
+  const guard = (context: keyof M) => {
+    if (!(context in accessors)) {
+      throw new Error(`[crm:embed:host] Context ${String(context)} is not available`)
+    }
+  }
+
+  return {
+    get <
+      C extends keyof M,
+      F extends keyof M[C]
+    >(context: C, field: '~' | F) {
+      guard(context)
+
+      return accessors[context].get(field)
+    },
+
+    set (context, field, value){
+      guard(context)
+
+      accessors[context].set(field, value)
+    },
+
+    on (context, event, handler) {
+      guard(context)
+
+      accessors[context].on(event, handler)
+    },
   }
 }
