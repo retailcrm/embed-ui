@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/retailcrm/embed-ui/compare/v0.3.1...v0.3.2) (2024-11-20)
+
+
+### Fixes
+
+* Fixed import of SchemaList in index.d.ts ([3da857a](https://github.com/retailcrm/embed-ui/commit/3da857a22767e8a41da3501b9aeae4b551b19e8e))
+
 ### [0.3.1](https://github.com/retailcrm/embed-ui/compare/v0.3.0...v0.3.1) (2024-11-19)
 
 ## [0.3.0](https://github.com/retailcrm/embed-ui/compare/v0.2.9...v0.3.0) (2024-11-19)
