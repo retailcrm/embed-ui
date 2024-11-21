@@ -25,7 +25,6 @@ export type UiButtonProperties = {
   variant?: VARIANT | `${VARIANT}`;
   size?: SIZE | `${SIZE}`;
   active?: boolean;
-  ellipsis?: boolean;
   disabled?: boolean;
   locked?: boolean;
 }

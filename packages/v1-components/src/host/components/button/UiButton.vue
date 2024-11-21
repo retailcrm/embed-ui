@@ -50,12 +50,6 @@ export default defineComponent({
       default: false,
     },
 
-    /** Определяет, будет ли текст обрезаться через многоточие или переноситься на следующую строку */
-    ellipsis: {
-      type: Boolean,
-      default: true,
-    },
-
     /** Если кнопка отключена */
     disabled: {
       type: Boolean,
@@ -102,7 +96,6 @@ export default defineComponent({
           ['ui-v1-button_square']: hasLeadingIcon && content.length === 1,
           ['ui-v1-button_active']: props.active,
           ['ui-v1-button_disabled']: props.disabled,
-          ['ui-v1-button_ellipsis']: props.ellipsis,
           ['ui-v1-button_locked']: props.locked,
         }],
         disabled: props.disabled,

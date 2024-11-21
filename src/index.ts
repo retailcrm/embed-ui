@@ -64,7 +64,7 @@ const createRoot = async (channel: Channel) => {
       'UiModalSidebar',
       'UiModalWindow',
       'UiModalWindowSurface',
-      'UiScrollbar',
+      'UiScrollBox',
       'UiTag',
       'UiTransition',
       'CrmYandexMap',

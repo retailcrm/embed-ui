@@ -1,0 +1,78 @@
+import ToReact from '../ToReact.ts'
+
+import UiTag from './UiTag.example.vue'
+
+# UiTag
+
+Тег, компонент визуального обозначения состояния
+
+## API
+
+### Размеры
+
+Для тегов предусмотрены токены размеров: `lg`, `md`,`sm` и `xs`. Представленные размеры влияют
+на высоту, отступы, размер контента и иконок.
+
+<p style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingLeft: '8px' }}>
+    <ToReact is={UiTag} text="lg" pinned removable />
+    <ToReact is={UiTag} text="md" size="md" pinned removable />
+    <ToReact is={UiTag} text="sm" size="sm" pinned removable />
+    <ToReact is={UiTag} text="xs" size="xs" pinned removable />
+</p>
+
+### Настраиваемый внешний вид
+
+Изменение внешнего вида элемента осуществляется настройкой следующих свойств:
+* `background` — фоновый цвет тега. Задавать цвет можно с использованием любой доступной цветовой модели;
+* `saturated` — инверсия цвета текста и иконки в белой цвет;
+* `ticker` — анимация бегущей строки при наведении;
+* `interactive` — курсор и анимация при наведении.
+
+<p style={{
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    gap: '12px',
+    paddingLeft: '8px'
+}}>
+    <strong>Background:</strong>
+    <div style={{ display: 'flex', gap: '8px' }}>
+        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} />
+        <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} />
+        <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} />
+    </div>
+
+    <strong>Saturated:</strong>
+    <div style={{ display: 'flex', gap: '8px' }}>
+        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} saturated />
+        <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} saturated />
+        <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} saturated />
+    </div>
+
+    <strong>Ticker:</strong>
+    <div style={{ display: 'flex', gap: '8px' }}>
+        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} style={{ width: '100px' }} />
+        <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} style={{ width: '100px' }} />
+        <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} style={{ width: '100px' }} />
+    </div>
+
+    <strong>Interactive:</strong>
+    <div style={{ display: 'flex', gap: '8px' }}>
+        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} interactive />
+        <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} interactive />
+        <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} interactive />
+    </div>
+</p>
+
+
+## События
+
+Компонент предоставляет нативные события `click`, `focus` и `blur`. Если для тега установлено свойство `removable`, то
+клик по иконке удаления вызывает появление события `remove`.
+
+## Слоты
+
+Для адаптации компонента под более широкий спектр применения выделены слоты:
+* `icon` — иконка слева от основного контента тега;
+* `default` — основной контент тега;
+* `remove-icon` — иконка удаления, расположенная справа от основного контента.
