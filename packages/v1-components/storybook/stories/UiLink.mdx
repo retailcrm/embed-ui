@@ -1,3 +1,101 @@
+import ToReact from '../ToReact.ts'
+import UiLink from './UiLink.example.vue'
+
 # UiLink
 
 Якорь
+
+## API
+
+### Размеры
+
+Для ссылок предусмотрены следующие размеры текста:
+* `article` — `20px`;
+* `body` — `16px`;
+* `paragraph` — `18px`;
+* `small` — `14px`;
+* `tiny` — `12px`;
+* `title-01` — `40px`;
+* `title-02` — `24px`.
+
+Помимо размера шрифта изменяется размер иконок. По-умолчанию установлен размер `body`.
+
+<p style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <ToReact is={UiLink} text="title-01" size="title-01" external />
+    <ToReact is={UiLink} text="title-02" size="title-02" external />
+    <ToReact is={UiLink} text="article" size="article" external />
+    <ToReact is={UiLink} text="body" size="body" external />
+    <ToReact is={UiLink} text="paragraph" size="paragraph" external />
+    <ToReact is={UiLink} text="small" size="small" external />
+    <ToReact is={UiLink} text="tiny" size="tiny" external />
+</p>
+
+
+### Типы ссылок
+
+В зависимости от применения ссылок на форме выделены следующие типы: `breadcrumbs`, `default`, `navigation`, `navigation-anchor` и
+`title`. Предустановленный тип для ссылок — `default`.
+
+<p style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <ToReact is={UiLink} text="breadcrumbs" appearance="breadcrumbs" />
+    <ToReact is={UiLink} text="default" />
+    <ToReact is={UiLink} text="navigation" appearance="navigation" />
+    <ToReact is={UiLink} text="navigation-anchor" appearance="navigation-anchor" />
+    <ToReact is={UiLink} text="title" appearance="title" />
+</p>
+
+
+### Переполненный контент
+
+Если включено свойство `ellipsis`, то при переполнении текстового содержимого, оно будет обрезаться через многоточие. Иначе текст
+переносится на следующую строку.
+
+<p style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '16px', maxWidth: '130px' }}>
+    <ToReact is={UiLink} text="Long error message" external />
+    <ToReact is={UiLink} text="Long error message" ellipsis external />
+</p>
+
+
+### Переход на новую вкладку
+
+При необходимости по клику открывать ссылку в новой вкладке необходимо включить свойство `external`. Если установлен
+компонент UiIcon или задан слот `icon`, то справа от текста ссылки также появится иконка.
+
+
+### Дополнительная настройка внешнего вида
+
+Для дополнительной настройки визуализации ссылки предоставлены свойства:
+<ul>
+    <li>
+        <p style={{ display: 'inline', marginRight: '4px' }}>`accent` — добавляет тексту ссылки жирное начертание. Например,</p>
+        <ToReact is={UiLink} tag="span" text="Accent link" accent external />
+    </li>
+
+    <li>
+        <p style={{ display: 'inline', marginRight: '4px' }}>`dotted` — добавляет подчёркивание тексту ссылки. Например,</p>
+        <ToReact is={UiLink} tag="span" text="Dotted link" dotted external />
+    </li>
+
+    <li>
+        <p style={{ display: 'inline', marginRight: '4px' }}>`light` — инвертирует цвет ссылки и иконки в белый. Например,</p>
+
+        <ToReact
+            is={UiLink}
+            tag="span"
+            text="Accent link"
+            style={{ paddingLeft: '4px', background: '#4880e8' }}
+            light
+            external
+            ellipsis
+        />
+
+        <p style={{ display: 'inline', marginLeft: '4px' }}>Фон добавлен для демонстрации примера.</p>
+    </li>
+</ul>
+
+
+### Слоты
+
+В рамках компонента предоставлено два слота:
+* `default` — текст ссылки;
+* `icon` — иконка справа от текста ссылки.

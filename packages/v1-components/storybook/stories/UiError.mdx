@@ -1,0 +1,40 @@
+import ToReact from '../ToReact.ts'
+
+import UiError from './UiError.example.vue'
+
+# UiError
+
+Компонент визуализации текстовой ошибки
+
+## API
+
+### Контент
+
+Передачу текстового сообщения ошибки можно осуществлять через свойство `message`. Для реализации кастомного контента
+ошибки предусмотрен базовый слот.
+
+<p style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '16px' }}>
+    <ToReact is={UiError} message="Error message" />
+    <ToReact is={UiError} useSlot />
+</p>
+
+
+### Ориентация содержимого
+
+В рамках компонента допускается ориентирование текста по левому или правому краю.
+
+<p style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '16px' }}>
+    <ToReact is={UiError} message="Error text on the left" />
+    <ToReact is={UiError} message="Error text on the right" align="right" />
+</p>
+
+
+### Переполненный контент
+
+Если включено свойство `ellipsis`, то при переполнении текстового содержимого, оно будет обрезаться через многоточие. Иначе текст
+переносится на следующую строку.
+
+<p style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '16px', width: '100px' }}>
+    <ToReact is={UiError} message="Long error message" />
+    <ToReact is={UiError} message="Long error message" ellipsis />
+</p>

@@ -1,0 +1,18 @@
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+
+.ui-v1-error {
+  color: @red-500;
+  .text-small();
+  text-align: left;
+
+  &_ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  &_right {
+    text-align: right;
+  }
+}
