@@ -1,0 +1,141 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+
+// Container
+.ps {
+  overflow: hidden !important;
+  overflow-anchor: none;
+  -ms-overflow-style: none;
+  touch-action: auto;
+  -ms-touch-action: auto;
+
+  &, & * {
+    box-sizing: border-box;
+  }
+}
+
+.ps_visible-on-hover {
+  .ps__rail-x,
+  .ps__rail-y {
+    opacity: 0;
+  }
+}
+
+// ScrollBox rail
+.ps__rail-x {
+  display: none;
+  opacity: 1;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  height: 15px;
+  /* please don't change 'position' */
+  position: absolute;
+  /* there must be 'bottom' or 'top' for ps__rail-x */
+  bottom: 0;
+  z-index: 1000;
+}
+
+.ps__rail-y {
+  display: none;
+  opacity: 1;
+  transition: background-color .2s linear, opacity .2s linear;
+  -webkit-transition: background-color .2s linear, opacity .2s linear;
+  width: 15px;
+  /* there must be 'right' or 'left' for ps__rail-y */
+  right: 0;
+  left: auto !important;
+  /* please don't change 'position' */
+  position: absolute;
+  z-index: 1000;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+  display: block;
+  background-color: transparent;
+}
+
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+  opacity: 1;
+}
+
+.ps .ps__rail-x:hover,
+.ps .ps__rail-y:hover,
+.ps .ps__rail-x:focus,
+.ps .ps__rail-y:focus,
+.ps .ps__rail-x.ps--clicking,
+.ps .ps__rail-y.ps--clicking {
+  background-color: transparent;
+  opacity: 1;
+}
+
+/*
+* ScrollBox thumb styles
+*/
+.ps__thumb-x {
+  height: 2px;
+  background-color: @grey-500;
+  border-radius: @border-radius-md;
+  transition: background-color .2s linear, height .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, height .2s ease-in-out;
+  /* please don't change 'position' */
+  position: absolute;
+  /* there must be 'bottom' for ps__thumb-x */
+  bottom: 2px;
+}
+
+.ps__thumb-y {
+  width: 2px;
+  background-color: @grey-500;
+  border-radius: @border-radius-md;
+  transition: background-color .2s linear, width .2s ease-in-out;
+  -webkit-transition: background-color .2s linear, width .2s ease-in-out;
+  /* please don't change 'position' */
+  position: absolute;
+  /* there must be 'right' for ps__thumb-y */
+  right: 2px;
+}
+
+.ps:hover .ps__thumb-x {
+  height: 6px;
+}
+
+.ps:hover .ps__thumb-y {
+  width: 6px;
+}
+
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x,
+.ps__rail-x.ps--clicking .ps__thumb-x {
+  height: 11px;
+  background-color: @grey-500;
+}
+
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y,
+.ps__rail-y.ps--clicking .ps__thumb-y {
+  width: 11px;
+  background-color: @grey-500;
+}
+
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+  .ps { overflow: auto !important; }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .ps { overflow: auto !important; }
+}
+
+.ps { position: relative; }
+
+.ui-v1-scroll-box {
+  overflow-y: auto;
+}

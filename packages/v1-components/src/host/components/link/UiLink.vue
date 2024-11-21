@@ -29,7 +29,7 @@
         >
             <!-- @slot Слот для иконки -->
             <slot name="icon">
-                <OmnicaIconOpenInNew class="ui-v1-link__icon-sprite" />
+                <IconOpenInNew class="ui-v1-link__icon-sprite" />
             </slot>
         </span>
     </a>
@@ -38,7 +38,7 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
 
-import OmnicaIconOpenInNew from '~assets/sprites/actions/open-in-new.svg'
+import IconOpenInNew from '~assets/sprites/actions/open-in-new.svg'
 
 import {
   APPEARANCE,

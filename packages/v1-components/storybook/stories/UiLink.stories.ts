@@ -29,6 +29,9 @@ const meta = {
       control: 'select',
       options: Object.values(SIZE),
     },
+    
+    default: { control: false },
+    icon: { control: false },
   },
 
   render: (args: unknown) => ({

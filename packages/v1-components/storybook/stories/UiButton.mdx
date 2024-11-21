@@ -5,9 +5,100 @@ import UiButton from './UiButton.example.vue'
 
 Стандартная кнопка в системе
 
-<p style={{ display: 'flex', gap: '16px' }}>
-  <ToReact tag={'span'} is={UiButton} text={'Create'} appearance={'primary'} />
-  <ToReact tag={'span'} is={UiButton} text={'Create'} appearance={'secondary'} />
-  <ToReact tag={'span'} is={UiButton} text={'Create'} appearance={'tertiary'} />
-  <ToReact tag={'span'} is={UiButton} text={'Create'} appearance={'outlined'} />
-</p>
+## API
+
+### Внешний вид
+
+Для кнопок предусмотрено три визуализации согласно их приоритетов на форме: `outlined`, `primary`, `secondary` и
+`tertiary`. Значением по-умолчанию установлено `primary`.
+
+<div style={{ display: 'flex', gap: '16px' }}>
+  <ToReact tag="span" is={UiButton} text="Primary" appearance="primary" showIcon />
+  <ToReact tag="span" is={UiButton} text="Secondary" appearance="secondary" showIcon />
+  <ToReact tag="span" is={UiButton} text="Tertiary" appearance="tertiary" showIcon />
+  <ToReact tag="span" is={UiButton} text="Outlined" appearance="outlined" showIcon />
+</div>
+
+
+### Размеры
+
+Для кнопок предусмотрены токены размеров: `lg`, `md`,`sm` и `xs`. Представленные размеры влияют
+на высоту, отступы, размер контента и иконок, а также на скругление рамки кнопки. По-умолчанию принят размер `sm`.
+
+<div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <ToReact tag="span" is={UiButton} text="LG" appearance="secondary" size="lg" showIcon />
+    <ToReact tag="span" is={UiButton} text="MD" appearance="secondary" size="md" showIcon />
+    <ToReact tag="span" is={UiButton} text="SM" appearance="secondary" showIcon />
+    <ToReact tag="span" is={UiButton} text="XS" appearance="secondary" size="xs" showIcon />
+</div>
+
+
+### Цветовая схема
+
+Цветовая схема кнопки позволяет показать её роль на форме. В компоненте представлены три разновидности схем: `default`,
+`success` и `danger`. Базовой схемой является `default`.
+
+<div style={{ display: 'flex', gap: '16px' }}>
+    <ToReact tag="span" is={UiButton} text="Default" />
+    <ToReact tag="span" is={UiButton} text="Success" variant="success"/>
+    <ToReact tag="span" is={UiButton} text="Danger" variant="danger" />
+</div>
+
+
+### Тип кнопки
+
+Данное свойство позволяет задать наименование html-тега, которое будет служить обёрткой для кнопки. Доступными
+являются все базовые теги.
+
+
+### Ссылка
+
+Если для кнопки задано свойство `href`, то её можно использовать как ссылку с переходом на указанный ресурс.
+
+
+### Состояния
+
+Для кнопки доступно три состояния:
+* `active` — кнопка активна;
+* `disabled` — кнопка отключена;
+* `locked` — кнопка заблокирована.
+
+<div>
+    <i>Primary:</i>
+    <div style={{ display: 'flex', gap: '16px', margin: '8px auto' }}>
+        <ToReact tag="span" is={UiButton} text="Active" active showIcon />
+        <ToReact tag="span" is={UiButton} text="Disabled" disabled showIcon />
+        <ToReact tag="span" is={UiButton} text="Locked" locked showIcon />
+    </div>
+
+    <i>Secondary:</i>
+    <div style={{ display: 'flex', gap: '16px', margin: '8px auto' }}>
+        <ToReact tag="span" is={UiButton} text="Active" appearance="secondary" active showIcon />
+        <ToReact tag="span" is={UiButton} text="Disabled" appearance="secondary" disabled showIcon />
+        <ToReact tag="span" is={UiButton} text="Locked" appearance="secondary" locked showIcon />
+    </div>
+
+    <i>Tertiary:</i>
+    <div style={{ display: 'flex', gap: '16px', margin: '8px auto' }}>
+        <ToReact tag="span" is={UiButton} text="Active" appearance="tertiary" active showIcon />
+        <ToReact tag="span" is={UiButton} text="Disabled" appearance="tertiary" disabled showIcon />
+        <ToReact tag="span" is={UiButton} text="Locked" appearance="tertiary" locked showIcon />
+    </div>
+
+    <i>Outlined:</i>
+    <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+        <ToReact tag="span" is={UiButton} text="Active" appearance="outlined" active showIcon />
+        <ToReact tag="span" is={UiButton} text="Disabled" appearance="outlined" disabled showIcon />
+        <ToReact tag="span" is={UiButton} text="Locked" appearance="outlined" locked showIcon />
+    </div>
+</div>
+
+
+## События
+
+Компонент предоставляет нативные события `click`, `focus` и `blur`.
+
+
+## Слоты
+
+Для кастомизации контента кнопки выделен слот `default`.

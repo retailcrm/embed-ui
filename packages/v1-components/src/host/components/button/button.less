@@ -289,6 +289,11 @@
   &_sm &__icon { .square(@button-icon-size-sm); }
   &_xs &__icon { .square(@button-icon-size-xs); }
 
+  &__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &__icon + &__text, &__text + &__icon { margin-left: @button-content-gap; }
 
   &_xs &__icon + &__text,
@@ -303,9 +308,4 @@
   &_md&_has-trailing-icon { padding-right: @button-padding-alt-md; }
   &_sm&_has-trailing-icon { padding-right: @button-padding-alt-sm; }
   &_xs&_has-trailing-icon { padding-right: @button-padding-alt-xs; }
-
-  &_ellipsis &__text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
