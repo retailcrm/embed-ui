@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.3.5 (2024-11-22)
+
+
+### Fixes
+
+* TypeScript types: Writable, WidgetRunner ([4b0f656](https://github.com/retailcrm/embed-ui/commit/4b0f656cb88494e3a60ca2bc5afced33f75219b7))
+
 ### 0.3.4 (2024-11-21)
 
 ### [0.3.3](https://github.com/retailcrm/embed-ui/compare/v0.3.2...v0.3.3) (2024-11-20)
