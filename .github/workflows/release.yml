@@ -2,6 +2,16 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      prerelease:
+        type: choice
+        options:
+          - 'alpha'
+          - 'beta'
+          - 'rc'
+          - ''
+        description: Prerelease type
+        default: ''
 
 jobs:
   release:
@@ -18,8 +28,8 @@ jobs:
         with:
           node-version: '20.x'
 
-      #- name: Yarn configuration
-      #  run: make .yarnrc.yml
+      - name: Yarn configuration
+        run: make .yarnrc.yml
 
       - name: Configure Git
         run: |
@@ -35,14 +45,19 @@ jobs:
       - name: Run tests
         run: yarn test
 
+      - name: Run release [${{ inputs.prerelease }}]
+        if: ${{ inputs.prerelease != '' }}
+        run: yes | npx tsx scripts/release.ts -p ${{ inputs.prerelease }}
+
       - name: Run release
-        run: yarn release
+        if: ${{ inputs.prerelease == '' }}
+        run: yes | npx tsx scripts/release.ts
 
       - name: Build project
-        run: yarn build
-
-      - name: Generate meta
-        run: yarn generate:meta
+        run: |
+          yarn build
+          yarn workspace @retailcrm/embed-ui-v1-components run build
+          yarn generate:meta
 
       - name: Push tags to repository
         env:
@@ -54,4 +69,4 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Publish to npm
-        run: npm publish
+        run: yes | npx tsx scripts/publish.ts
