@@ -22,11 +22,17 @@ export const UiScrollBoxType = 'UiScrollBox' as SchemaType<
 
 export const UiScrollBox = defineRemoteComponent(
   UiScrollBoxType,
-  ['click', 'focus', 'blur', 'ps-y-reach-start', 'ps-y-reach-end'] as unknown as {
+  [
+    'click',
+    'focus',
+    'blur',
+    'ps-y-reach-start',
+    'ps-y-reach-end',
+  ] as unknown as {
     'click': (event: SerializedEvent) => boolean,
     'focus': (event: SerializedFocusEvent) => boolean,
     'blur': (event: SerializedEvent) => boolean,
-    'ps-y-reach-start': (event: Event) => boolean,
-    'ps-y-reach-end': (event: Event) => boolean,
+    'ps-y-reach-start': (event: SerializedEvent) => boolean,
+    'ps-y-reach-end': (event: SerializedEvent) => boolean,
   }
 )
