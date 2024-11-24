@@ -1,0 +1,19 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) 'variables.less';
+
+.ui-v1-modal {
+  .reset-box-sizing();
+
+  background: @modal-background;
+  transition: background-color .3s ease;
+  z-index: @modal-z-index;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+
+  &_overlapped {
+    background: transparent;
+  }
+}
