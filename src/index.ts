@@ -30,6 +30,11 @@ import {
 import { injectEndpoint } from '@/pinia'
 
 export {
+  schema as currentUserSchema,
+  useContext as useCurrentUserContext,
+} from '@/context/user/current'
+
+export {
   schema as customerCardSchema,
   useContext as useCustomerCardContext,
 } from '@/context/customer/card'

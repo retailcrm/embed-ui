@@ -35,62 +35,77 @@ export type SchemaListByTarget = {
   'customer/card:phone': Pick<SchemaList,
     | 'customer/card'
     | 'customer/card:phone'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:common.before': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:common.after': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:customer.before': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:customer.after': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:customer.email': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:customer.phone': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:list.before': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:list.after': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:store.before': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:dimensions.before': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:delivery.before': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:delivery.after': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:delivery.address': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
   'order/card:payment.before': Pick<SchemaList,
     | 'order/card'
+    | 'user/current'
     | 'settings'
   >;
 }
