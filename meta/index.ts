@@ -8,6 +8,7 @@ import type { SchemaListByTarget } from '~types/widget'
 
 import { keysOf } from '@/utilities'
 
+import { schema as currentUserSchema } from '@/context/user/current'
 import { schema as customerCardSchema } from '@/context/customer/card'
 import { schema as customerCardPhoneSchema } from '@/context/customer/card-phone'
 import { schema as orderCardSchema } from '@/context/order/card'
@@ -20,6 +21,7 @@ export type TranslationList = {
 }
 
 export const schemaList: SchemaList = {
+  'user/current': currentUserSchema,
   'customer/card': customerCardSchema,
   'customer/card:phone': customerCardPhoneSchema,
   'order/card': orderCardSchema,
@@ -44,6 +46,10 @@ export const contextsUsage: {
     import: 'import { useOrderCardContext } from \'@retailcrm/embed-ui\'',
     call: 'const order = useOrderCardContext()',
   },
+  'user/current': {
+    import: 'import { useCurrentUserContext } from \'@retailcrm/embed-ui\'',
+    call: 'const user = useCurrentUserContext()',
+  },
   'settings': {
     import: 'import { useSettingsContext } from \'@retailcrm/embed-ui\'',
     call: 'const settings = useSettingsContext()',
@@ -61,6 +67,50 @@ export type SchemaListDocumentation<M extends ContextSchemaMap> = {
 }
 
 export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
+  'user/current': {
+    'lastName': {
+      description: {
+        'en-GB': 'User last name',
+        'es-ES': 'Apellido del usuario',
+        'ru-RU': 'Фамилия пользователя',
+      },
+    },
+    'firstName': {
+      description: {
+        'en-GB': 'User name',
+        'es-ES': 'Nombre del usuario',
+        'ru-RU': 'Имя пользователя',
+      },
+    },
+    'patronymic': {
+      description: {
+        'en-GB': 'Patronymic of the user',
+        'es-ES': 'Patronímico del usuario',
+        'ru-RU': 'Отчество пользователя',
+      },
+    },
+    'email': {
+      description: {
+        'en-GB': 'User email',
+        'es-ES': 'Correo electrónico del usuario',
+        'ru-RU': 'Email пользователя',
+      },
+    },
+    'id': {
+      description: {
+        'en-GB': 'User ID',
+        'es-ES': 'ID del usuario',
+        'ru-RU': 'ID пользователя',
+      },
+    },
+    'permissions': {
+      description: {
+        'en-GB': 'Character codes of available user permissions',
+        'es-ES': 'Códigos de caracteres de los permisos disponibles para el usuario',
+        'ru-RU': 'Символьные коды доступных пользователю разрешений',
+      },
+    },
+  },
   'customer/card': {
     'id': {
       description: {
