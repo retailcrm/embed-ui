@@ -1,6 +1,7 @@
 # Changelog
 
 
+## [0.4.1-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.3...v0.4.1-alpha.4) (2024-11-25)
 ## [0.4.1-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.2...v0.4.1-alpha.3) (2024-11-25)
 ## [0.4.1-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.1...v0.4.1-alpha.2) (2024-11-25)
 
