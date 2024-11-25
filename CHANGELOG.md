@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.7](https://github.com/retailcrm/embed-ui/compare/v0.3.6...v0.3.7) (2024-11-25)
+
+
+### Fixes
+
+* Added generation of meta.json to ci ([1b3b776](https://github.com/retailcrm/embed-ui/commit/1b3b77648a4a7cf71264566f71cd1ff81e792f44))
+
 ### [0.3.6](https://github.com/retailcrm/embed-ui/compare/v0.3.5...v0.3.6) (2024-11-22)
 
 ### 0.3.5 (2024-11-22)
