@@ -374,6 +374,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     contexts: [
       'customer/card',
       'customer/card:phone',
+      'user/current',
       'settings',
     ],
   },
@@ -390,6 +391,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -406,6 +408,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -422,6 +425,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -438,6 +442,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -454,6 +459,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -470,6 +476,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -486,6 +493,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -502,6 +510,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -518,6 +527,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -534,6 +544,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -550,6 +561,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -566,6 +578,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -582,6 +595,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
@@ -598,6 +612,7 @@ export const targetListDocumentation: TargetListDocumentation = {
     },
     contexts: [
       'order/card',
+      'user/current',
       'settings',
     ],
   },
