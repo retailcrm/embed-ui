@@ -39,6 +39,8 @@
   "files": [
     "assets",
     "dist",
+    "index.cjs",
+    "index.mjs",
     "README.md"
   ],
   "scripts": {
