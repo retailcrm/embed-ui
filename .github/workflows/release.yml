@@ -93,12 +93,6 @@ jobs:
       - name: Build Storybook
         run: yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
 
-      - name: Extract version from package.json
-        id: version
-        run: |
-          VERSION=$(grep -oP '"version":\s*"\K[^"]+' package.json)
-          echo "version=$VERSION" >> $GITHUB_ENV
-
       - name: Upload Storybook artifact
         uses: actions/upload-artifact@v4
         with:
@@ -118,6 +112,13 @@ jobs:
         with:
           name: v1-components-storybook
           path: packages/v1-components/storybook/dist
+
+      - name: Extract version from package.json
+        id: version
+        run: |
+          VERSION=$(grep -oP '"version":\s*"\K[^"]+' package.json)
+          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "${VERSION}"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
