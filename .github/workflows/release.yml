@@ -41,6 +41,9 @@ jobs:
       - name: Build project
         run: yarn build
 
+      - name: Generate meta
+        run: yarn generate:meta
+
       - name: Push tags to repository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
