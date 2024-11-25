@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.8](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.7...v0.4.1-alpha.8) (2024-11-25)
+
+### Bug Fixes
+
+* Missing contexts in meta.json ([52d3529](https://github.com/retailcrm/embed-ui/commit/52d3529519c43580ef846a98881cec1dbd3265e8))
 ## [0.4.1-alpha.7](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.6...v0.4.1-alpha.7) (2024-11-25)
 ## [0.4.1-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.5...v0.4.1-alpha.6) (2024-11-25)
 ## [0.4.1-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.4...v0.4.1-alpha.5) (2024-11-25)
