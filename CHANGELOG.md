@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.1...v0.4.1-alpha.2) (2024-11-25)
+
+### Bug Fixes
+
+* **v1-components:** Missing exported files ([9166a30](https://github.com/retailcrm/embed-ui/commit/9166a30ea3fdcca3533d61a0530bcaa8ce850261))
 ## [0.4.1-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.4.0...v0.4.1-alpha.1) (2024-11-25)
 
 ### Features
