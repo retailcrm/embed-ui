@@ -154,7 +154,6 @@ describe('order/card', () => {
       number: 'fake number',
       customerType: 1,
       lastName: 'fakeLastName',
-      lastName: 'fakeLastName',
       firstName: 'fakeFirstName',
       patronymic: 'fakePatronymic',
       email: 'fake-changed@gmail.com',
