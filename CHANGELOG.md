@@ -1,7 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.1-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.4.0...v0.4.1-alpha.1) (2024-11-25)
+
+### Features
+
+* **v1-components:** Added UiButton, UiLink, UiLoader, UiTransition & scaffolding ([9685390](https://github.com/retailcrm/embed-ui/commit/96853906bea7e7e9a69245d0f5ac35b97458c39f))
+* **v1-components:** Added UiError, UiScrollBox, UiTag, i18n and documentation for UiButton and UiLink ([e2d2b21](https://github.com/retailcrm/embed-ui/commit/e2d2b219cd8dddc00e4467fdabe3c1558d720008))
+* **v1-components:** Added UiModal, UiModalSidebar, UiModalWindow and UiModalWindowSurface ([24d3705](https://github.com/retailcrm/embed-ui/commit/24d3705cb9ec3b33970cf8a6e50743c19f8e631d))
 ## [0.4.0](https://github.com/retailcrm/embed-ui/compare/v0.3.7...v0.4.0) (2024-11-25)
 
 
