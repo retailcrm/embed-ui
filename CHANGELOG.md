@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/retailcrm/embed-ui/compare/v0.3.7...v0.4.0) (2024-11-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Удалены поля order.templates.number.api и 
+order.templates.number.crm из контекста settings
+
+### Features
+
+* ref [#98287](https://github.com/retailcrm/embed-ui/issues/98287) Completed order/card with data ([23129cc](https://github.com/retailcrm/embed-ui/commit/23129cc47e8f4b84b5f357954b5fa4c4a501ea1b))
+* ref [#98287](https://github.com/retailcrm/embed-ui/issues/98287) Контекст с данными о текущем пользователе  ([a6cdb78](https://github.com/retailcrm/embed-ui/commit/a6cdb7872b0650bbda6bdac694cac2c30a4e4c55))
+
 ### [0.3.7](https://github.com/retailcrm/embed-ui/compare/v0.3.6...v0.3.7) (2024-11-25)
 
 
