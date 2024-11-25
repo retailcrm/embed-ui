@@ -71,8 +71,21 @@ jobs:
       - name: Publish to npm
         run: yes | npx tsx scripts/publish.ts
 
+      - name: Upload .yarnrc.yml as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarnrc
+          path: .yarnrc.yml
+
+      - name: Upload node_modules as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node_modules
+          path: '**/node_modules'
+
   storybook:
     runs-on: ubuntu-latest
+    needs: release
 
     steps:
       - name: Checkout repository
@@ -83,11 +96,17 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Yarn configuration
-        run: make .yarnrc.yml
+      - name: Download .yarnrc.yml artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: yarnrc
+          path: .
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Download node_modules artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: node_modules
+          path: .
 
       - name: Build Storybook
         run: yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
