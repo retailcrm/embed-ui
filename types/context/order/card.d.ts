@@ -1,4 +1,4 @@
-import type { Field } from '../schema'
+import type { Field, ReadonlyField } from '../schema'
 
 export type Schema = {
   'id': ReadonlyField<number | null>;
