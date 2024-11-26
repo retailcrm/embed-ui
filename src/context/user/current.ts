@@ -3,36 +3,36 @@ import type { Schema } from '~types/context/user/current'
 import { defineContext } from '@/context/store'
 
 import {
+  arrayOf,
   isNull,
   isNumber,
   isString,
-  arrayOf,
   oneOf,
 } from '@/predicates'
 
 export const schema: Schema = {
-  'lastName': {
-    accepts: oneOf(isString, isNull),
+  'id': {
+    accepts: oneOf(isNumber, isNull),
     defaults: () => null,
-    readonly: false,
-  },
-  'firstName': {
-    accepts: oneOf(isString, isNull),
-    defaults: () => null,
-    readonly: false,
-  },
-  'patronymic': {
-    accepts: oneOf(isString, isNull),
-    defaults: () => null,
-    readonly: false,
+    readonly: true,
   },
   'email': {
     accepts: isString,
     defaults: () => '',
     readonly: true,
   },
-  'id': {
-    accepts: oneOf(isNumber, isNull),
+  'firstName': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
+  'lastName': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
+  'patronymic': {
+    accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: true,
   },
