@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.15](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.14...v0.4.1-alpha.15) (2024-11-26)
+
+### Bug Fixes
+
+* Types across schemas, removed artifacts from unsuccessful rebase ([d34514d](https://github.com/retailcrm/embed-ui/commit/d34514df0e6fcdd9b0e9a1a2e9c909e299138284))
 ## [0.4.1-alpha.14](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.13...v0.4.1-alpha.14) (2024-11-26)
 ## [0.4.1-alpha.13](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.12...v0.4.1-alpha.13) (2024-11-26)
 ## [0.4.1-alpha.12](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.11...v0.4.1-alpha.12) (2024-11-26)
