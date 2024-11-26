@@ -47,6 +47,7 @@ export const UiModalWindow = defineRemoteComponent(
     'update:opened': (opened: boolean) => boolean;
   },
   [
+    'icon',
     'title',
     'footer',
   ]
