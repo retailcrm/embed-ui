@@ -137,3 +137,15 @@ jobs:
           publish_dir: packages/v1-components/storybook/dist
           publish_branch: gh-pages
           destination_dir: v1-components/${{ needs.storybook.outputs.version }}
+
+      - name: Clone gh-pages branch
+        run: |
+          git clone --branch=gh-pages https://github.com/${{ github.repository }} gh-pages
+          cd gh-pages
+          rm -rf v1-components/latest
+          ln -sfn v1-components/${{ needs.storybook.outputs.version }} v1-components/latest
+          git config --global user.email "integration@retailcrm.ru"
+          git config --global user.name "RetailCRM.CI"
+          git add .
+          git commit -m "Update latest symlink to ${{ needs.storybook.outputs.version }}"
+          git push origin gh-pages
