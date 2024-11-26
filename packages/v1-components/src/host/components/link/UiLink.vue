@@ -40,6 +40,8 @@ import type { PropType } from 'vue'
 
 import IconOpenInNew from '~assets/sprites/actions/open-in-new.svg'
 
+import { isURL } from '@/common/predicate'
+
 import {
   APPEARANCE,
   SIZE,
@@ -49,6 +51,7 @@ defineProps({
   /** Атрибут ссылки */
   href: {
     type: String,
+    validator: (href: unknown) => typeof href === 'string' && isURL(href as string),
     default: 'javascript:void(0);',
   },
 

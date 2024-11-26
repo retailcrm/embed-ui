@@ -23,6 +23,8 @@ const meta = {
   },
 
   argTypes: {
+    href: { control: 'text' },
+
     appearance: {
       control: 'select',
       options: Object.values(APPEARANCE),
