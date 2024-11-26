@@ -5,20 +5,14 @@ import { defineContext } from '@/context/store'
 import {
   arrayOf,
   isNull,
-  isNumber,
   isString,
   oneOf,
 } from '@/predicates'
 
 export const schema: Schema = {
-  'id': {
-    accepts: oneOf(isNumber, isNull),
-    defaults: () => null,
-    readonly: true,
-  },
   'email': {
-    accepts: isString,
-    defaults: () => '',
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
     readonly: true,
   },
   'firstName': {
@@ -36,7 +30,7 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: true,
   },
-  'permissions': {
+  'groupCodes': {
     accepts: arrayOf(isString),
     defaults: (): string[] => [],
     readonly: true,

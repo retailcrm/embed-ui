@@ -1,10 +1,9 @@
 import type { ReadonlyField } from '../schema'
 
 export type Schema = {
-  'id': ReadonlyField<number | null>;
-  'email': ReadonlyField<string>;
-  'firstName': ReadonlyField<number | null>;
+  'email': ReadonlyField<string | null>;
+  'firstName': ReadonlyField<string | null>;
   'lastName': ReadonlyField<string | null>;
-  'patronymic': ReadonlyField<number | null>;
-  'permissions': ReadonlyField<string[]>;
+  'patronymic': ReadonlyField<string | null>;
+  'groupCodes': ReadonlyField<string[]>;
 }

@@ -134,7 +134,7 @@ export const createOrderCardHostContext = (id: string) => {
       id: 1 as number | null,
       externalId: 'fake externalId' as string | null,
       number: 'fake number' as string | null,
-      customerType: 1 as number | null,
+      customerType: 'customer' as string | null,
       lastName: 'fakeLastName' as string | null,
       firstName: 'fakeFirstName' as string | null,
       patronymic: 'fakePatronymic' as string | null,

@@ -26,7 +26,7 @@ export const schema: Schema = {
     readonly: true,
   },
   'customer.type': {
-    accepts: oneOf(isNumber, isNull),
+    accepts: oneOf(isString, isNull), // возвращается customer / customer_corporate
     defaults: () => null,
     readonly: false,
   },

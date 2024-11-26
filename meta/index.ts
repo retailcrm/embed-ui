@@ -96,14 +96,7 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
         'ru-RU': 'Email пользователя',
       },
     },
-    'id': {
-      description: {
-        'en-GB': 'User ID',
-        'es-ES': 'ID del usuario',
-        'ru-RU': 'ID пользователя',
-      },
-    },
-    'permissions': {
+    'groupCodes': {
       description: {
         'en-GB': 'Character codes of available user permissions',
         'es-ES': 'Códigos de caracteres de los permisos disponibles para el usuario',
