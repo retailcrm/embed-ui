@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.4.1-alpha.9](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.8...v0.4.1-alpha.9) (2024-11-26)
+
+### Bug Fixes
+
+* Types declaration in index.d.ts ([2751630](https://github.com/retailcrm/embed-ui/commit/2751630db649592bc4e8f2b8e16aaf86a7971e0f))
+* **v1-components:** Missing slot of remote UiModalWindow definition ([2bf97a3](https://github.com/retailcrm/embed-ui/commit/2bf97a33e2eee41090195038733bc89baf72bc3d))
 ## [0.4.1-alpha.8](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.7...v0.4.1-alpha.8) (2024-11-25)
 
 ### Bug Fixes
