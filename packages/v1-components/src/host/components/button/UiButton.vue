@@ -2,7 +2,13 @@
 import type { PropType } from 'vue'
 import type { UiButtonMethods } from '@/common/components/button'
 
-import { defineComponent, h, ref } from 'vue'
+import {
+  defineComponent,
+  h,
+  ref,
+} from 'vue'
+
+import { isURL } from '@/common/predicate'
 import { normalize } from '@/host/render'
 
 import {
@@ -22,7 +28,7 @@ export default defineComponent({
     /** Устанавливает атрибут href якоря */
     href: {
       type: null as unknown as PropType<string | null>,
-      validator: (href: unknown) => typeof href === 'string' || href === null,
+      validator: (href: unknown) => (typeof href === 'string' && isURL(href as string)) || href === null,
       default: null,
     },
 
