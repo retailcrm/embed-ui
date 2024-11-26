@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.4.1-alpha.11](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.10...v0.4.1-alpha.11) (2024-11-26)
+
+### Features
+
+* **v1-components:** Added links validator for UiButton and UiLink ([94788df](https://github.com/retailcrm/embed-ui/commit/94788df863f1c25d80ec5ad537fe40b2b10d27ef))
+* **v1-components:** Added UiToolbar, UiToolbarButton and UiToolbarLink ([2bba2b5](https://github.com/retailcrm/embed-ui/commit/2bba2b5ba422ced4649f4d634672b3fdf52c8b01))
 ## [0.4.1-alpha.10](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.9...v0.4.1-alpha.10) (2024-11-26)
 
 ### Bug Fixes
