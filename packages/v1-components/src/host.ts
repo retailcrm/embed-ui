@@ -7,6 +7,8 @@ export { default as UiModalSidebar } from '@/host/components/modal-sidebar/UiMod
 export { default as UiModalWindow } from '@/host/components/modal-window/UiModalWindow.vue'
 export { default as UiModalWindowSurface } from '@/host/components/modal-window-surface/UiModalWindowSurface.vue'
 export { default as UiTag } from '@/host/components/tag/UiTag.vue'
+export { default as UiToolbarButton } from '@/host/components/toolbar-button/UiToolbarButton.vue'
+export { default as UiToolbarLink } from '@/host/components/toolbar-link/UiToolbarLink.vue'
 export { default as UiTransition } from '@/host/components/transition/UiTransition.vue'
 
 // UiYandexMap // отдельно

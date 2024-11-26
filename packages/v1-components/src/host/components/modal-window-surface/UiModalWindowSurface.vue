@@ -25,7 +25,7 @@ import {
   withDirectives,
 } from 'vue'
 
-import { expect } from '@/host/utils'
+import { expect } from '@/common/utils'
 import { ModalInjectKey } from '@/host/components/modal/plugin'
 import { layers } from '@/host/components/modal/layer'
 import { nextAnimationFrame } from '@/host/dom'
