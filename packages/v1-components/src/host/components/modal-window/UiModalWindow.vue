@@ -115,7 +115,7 @@ import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
 import IconClear from '~assets/sprites/actions/clear.svg'
 import IconWarning from '~assets/sprites/alerts/warning.svg'
 
-import { expect } from '@/host/utils'
+import { expect } from '@/common/utils'
 import uid from '@/host/uid'
 
 import {
