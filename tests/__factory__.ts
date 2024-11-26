@@ -15,7 +15,7 @@ import type { Locale } from '~types/context/settings'
 import type { Schema as CustomerCardSchema } from '~types/context/customer/card'
 import type { Schema as CustomerCardPhoneSchema } from '~types/context/customer/card-phone'
 import type { Schema as OrderCardSchema } from '~types/context/order/card'
-import type { Schema as SettingsSchema } from '../types/context/settings'
+import type { Schema as SettingsSchema } from '~types/context/settings'
 
 import { keysOf } from '@/utilities'
 
@@ -134,7 +134,7 @@ export const createOrderCardHostContext = (id: string) => {
       id: 1 as number | null,
       externalId: 'fake externalId' as string | null,
       number: 'fake number' as string | null,
-      customerType: 1 as number | null,
+      customerType: 'customer' as 'customer' | 'customer_corporate',
       lastName: 'fakeLastName' as string | null,
       firstName: 'fakeFirstName' as string | null,
       patronymic: 'fakePatronymic' as string | null,
@@ -149,7 +149,7 @@ export const createOrderCardHostContext = (id: string) => {
       companyINN: 'fake companyINN' as string | null,
       companyOKPO: 'fake companyOKPO' as string | null,
       companyBIK: 'fake companyBIK' as string | null,
-      companyBank: 'fake companyBank',
+      companyBank: 'fake companyBank' as string | null,
       companyBankAddress: 'fake companyBankAddress' as string | null,
       companyCorrAccount: 'fake companyCorrAccount' as string | null,
       companyBankAccount: 'fake companyBankAccount' as string | null,
@@ -186,18 +186,11 @@ export const createOrderCardHostContext = (id: string) => {
       'company.bankAccount': () => data.customer.companyBankAccount,
       'delivery.address': () => data.delivery.address,
     }, {
-      'customer.id': (value) => { data.customer.id = value },
-      'customer.externalId': (value) => { data.customer.externalId = value },
-      'customer.number': (value) => { data.customer.number = value },
-      'customer.type': (value) => { data.customer.customerType = value },
       'customer.lastName': (value) => { data.customer.lastName = value },
       'customer.firstName': (value) => { data.customer.firstName = value },
       'customer.patronymic': (value) => { data.customer.patronymic = value },
       'customer.email': (value) => { data.customer.email = value },
       'customer.phone': (value) => { data.customer.phone = value },
-      'country': (value) => { data.customer.country = value },
-      'currency': (value) => { data.customer.currency = value },
-      'status': (value) => { data.customer.status = value },
       'company.name': (value) => { data.customer.companyName = value },
       'company.legalName': (value) => { data.customer.companyLegalName = value },
       'company.legalAddress': (value) => { data.customer.companyLegalAddress = value },

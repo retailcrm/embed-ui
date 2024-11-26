@@ -36,6 +36,11 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: true,
   },
+  'groups': {
+    accepts: arrayOf(isString),
+    defaults: (): string[] => [],
+    readonly: true,
+  },
   'permissions': {
     accepts: arrayOf(isString),
     defaults: (): string[] => [],

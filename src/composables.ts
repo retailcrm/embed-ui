@@ -24,24 +24,26 @@ type Computed<S extends ContextSchema, F extends keyof S> = IsReadonly<S[F]> ext
   ? ComputedRef<TypeOf<S[F]>>
   : WritableComputedRef<TypeOf<S[F]>>
 
+type ContextStore<S extends ContextSchema> = Store<string, Context<S>, {
+  schema (): S;
+}, {
+  initialize(): Promise<void>;
+  set<F extends keyof Writable<S>>(field: F, value: TypeOf<S[F]>): void;
+}>
+
 export const useField = <S extends ContextSchema, F extends keyof S>(
-  store: Store<string, Context<S>, {
-    schema (): S;
-  }, {
-    initialize(): Promise<void>;
-    set<F extends keyof Writable<S>>(field: F, value: TypeOf<S[F]>): void;
-  }>,
+  store: ContextStore<S>,
   field: F
 ): Computed<S, F> => {
   if (store.schema[field].readonly) {
     return computed(() => (store as Context<S>)[field]) as Computed<S, F>
   }
 
+  const set = store.set as (field: F, value: TypeOf<S[F]>) => void
+
   return computed({
     get: () => (store as Context<S>)[field],
-    set: (value: TypeOf<S[F]>): void => {
-      store.set(field, value)
-    },
+    set: (value: TypeOf<S[F]>): void => set(field, value),
   }) as Computed<S, F>
 }
 

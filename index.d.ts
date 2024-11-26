@@ -18,7 +18,10 @@ import type { TypeOf } from './types/context/schema'
 import type { WidgetRunner } from './types/widget'
 import type { WritableComputedRef } from 'vue'
 
-declare type Computed<S extends ContextSchema, F extends keyof S> = IsReadonly<S[F]> extends true ? ComputedRef<TypeOf<S[F]>> : WritableComputedRef<TypeOf<S[F]>>;
+declare type Computed<
+  S extends ContextSchema,
+  F extends keyof S
+> = IsReadonly<S[F]> extends true ? ComputedRef<TypeOf<S[F]>> : WritableComputedRef<TypeOf<S[F]>>;
 
 export declare const createWidgetEndpoint: (
   widget: WidgetRunner,
@@ -42,7 +45,7 @@ export type ContextStoreDefinition<
   Id extends string,
   S extends ContextSchema
 > = StoreDefinition<Id, Context<S>, {
-  schema: () => S;
+  schema(): S;
 }, {
   initialize(): Promise<void>;
   set<F extends keyof S>(field: F, value: TypeOf<S[F]>): void;
@@ -51,7 +54,7 @@ export type ContextStoreDefinition<
 export declare const useCustomerCardContext: ContextStoreDefinition<'customer/card', CustomerCardSchema>
 export declare const useCustomerCardPhoneContext: ContextStoreDefinition<'customer/card:phone', CustomerCardPhoneSchema>
 export declare const useOrderCardContext: ContextStoreDefinition<'order/card', OrderCardSchema>
-export declare const useCurrentUserContext = DefineStore<'user/current', CurrentUserSchema>
+export declare const useCurrentUserContext: ContextStoreDefinition<'user/current', CurrentUserSchema>
 export declare const useSettingsContext: ContextStoreDefinition<'settings', SettingsSchema>
 
 export declare const useField: <S extends ContextSchema, F extends keyof S>(

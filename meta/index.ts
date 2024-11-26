@@ -21,10 +21,10 @@ export type TranslationList = {
 }
 
 export const schemaList: SchemaList = {
-  'user/current': currentUserSchema,
   'customer/card': customerCardSchema,
   'customer/card:phone': customerCardPhoneSchema,
   'order/card': orderCardSchema,
+  'user/current': currentUserSchema,
   'settings': settingsSchema,
 }
 
@@ -68,25 +68,11 @@ export type SchemaListDocumentation<M extends ContextSchemaMap> = {
 
 export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
   'user/current': {
-    'lastName': {
+    'id': {
       description: {
-        'en-GB': 'User last name',
-        'es-ES': 'Apellido del usuario',
-        'ru-RU': 'Фамилия пользователя',
-      },
-    },
-    'firstName': {
-      description: {
-        'en-GB': 'User name',
-        'es-ES': 'Nombre del usuario',
-        'ru-RU': 'Имя пользователя',
-      },
-    },
-    'patronymic': {
-      description: {
-        'en-GB': 'Patronymic of the user',
-        'es-ES': 'Patronímico del usuario',
-        'ru-RU': 'Отчество пользователя',
+        'en-GB': 'User ID',
+        'es-ES': 'ID del usuario',
+        'ru-RU': 'ID пользователя',
       },
     },
     'email': {
@@ -96,11 +82,32 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
         'ru-RU': 'Email пользователя',
       },
     },
-    'id': {
+    'firstName': {
       description: {
-        'en-GB': 'User ID',
-        'es-ES': 'ID del usuario',
-        'ru-RU': 'ID пользователя',
+        'en-GB': 'User name',
+        'es-ES': 'Nombre del usuario',
+        'ru-RU': 'Имя пользователя',
+      },
+    },
+    'lastName': {
+      description: {
+        'en-GB': 'User last name',
+        'es-ES': 'Apellido del usuario',
+        'ru-RU': 'Фамилия пользователя',
+      },
+    },
+    'patronymic': {
+      description: {
+        'en-GB': 'Patronymic of the user',
+        'es-ES': 'Patronímico del usuario',
+        'ru-RU': 'Отчество пользователя',
+      },
+    },
+    'groups': {
+      description: {
+        'en-GB': 'Symbolic codes of the groups the user belongs to',
+        'es-ES': 'Códigos simbólicos de los grupos a los que pertenece el usuario',
+        'ru-RU': 'Символьные коды групп, в которых состоит пользователь',
       },
     },
     'permissions': {
@@ -321,20 +328,6 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
     },
   },
   'settings': {
-    'order.templates.number.api': {
-      description: {
-        'en-GB': 'Number template for orders created with API',
-        'es-ES': 'Plantilla de número para pedidos creados con API',
-        'ru-RU': 'Шаблон номера заказов, создаваемых через API',
-      },
-    },
-    'order.templates.number.crm': {
-      description: {
-        'en-GB': 'Number template for orders created with CRM\'s interface',
-        'es-ES': 'Plantilla de número para pedidos creados con la interfaz de CRM',
-        'ru-RU': 'Шаблон номера заказов, создаваемых через интерфейс CRM',
-      },
-    },
     'system.locale': {
       description: {
         'en-GB': 'Current system\'s locale',
@@ -487,9 +480,9 @@ export const targetListDocumentation: TargetListDocumentation = {
       'ru-RU': 'Виджет для списка позиций заказа',
     },
     location: {
-      'en-GB': '[Temporary unavailable]',
-      'es-ES': '[Temporalmente no disponible]',
-      'ru-RU': '[Временно недоступен]',
+      'en-GB': 'Section start, right above the input fields',
+      'es-ES': 'Inicio de la sección, justo encima de los campos de entrada',
+      'ru-RU': 'Начало секции, над полями ввода',
     },
     contexts: [
       'order/card',

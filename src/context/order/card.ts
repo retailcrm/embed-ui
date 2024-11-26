@@ -3,6 +3,7 @@ import type { Schema } from '~types/context/order/card'
 import { defineContext } from '@/context/store'
 
 import {
+  isExactly,
   isNull,
   isNumber,
   isString,
@@ -26,9 +27,12 @@ export const schema: Schema = {
     readonly: true,
   },
   'customer.type': {
-    accepts: oneOf(isNumber, isNull),
-    defaults: () => null,
-    readonly: false,
+    accepts: oneOf(
+      isExactly('customer'),
+      isExactly('customer_corporate')
+    ),
+    defaults: () => 'customer',
+    readonly: true,
   },
   'customer.lastName': {
     accepts: oneOf(isString, isNull),

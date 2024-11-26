@@ -6,19 +6,14 @@ import type {
 import { defineContext } from './store'
 
 import {
-  withMeta,
+  isExactly,
+  oneOf,
 } from '@/predicates'
 
 export const locales = ['en-GB', 'es-ES', 'ru-RU'] as Locale[]
-
-export const isLocale = withMeta(
-  (value: unknown): value is Locale => locales.includes(value as Locale),
-  locales.map(l => `'${l}'`).join(' | ')
-)
-
 export const schema: Schema = {
   'system.locale': {
-    accepts: isLocale,
+    accepts: oneOf(...locales.map(isExactly)),
     defaults: () => 'en-GB',
     readonly: true,
   },

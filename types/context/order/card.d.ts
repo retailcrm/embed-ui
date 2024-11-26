@@ -4,7 +4,7 @@ export type Schema = {
   'id': ReadonlyField<number | null>;
   'externalId': ReadonlyField<string | null>;
   'number': ReadonlyField<string | null>;
-  'customer.type': ReadonlyField<number | null>;
+  'customer.type': ReadonlyField<'customer' | 'customer_corporate'>;
   'customer.lastName': Field<string | null>;
   'customer.firstName': Field<string | null>;
   'customer.patronymic': Field<string | null>;

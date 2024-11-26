@@ -7,6 +7,10 @@ export const withMeta = <T>(predicate: Predicate<T>, type: string): PredicateWit
   return Object.assign(predicate, { type })
 }
 
+export const isExactly = <T extends string | number>(expected: T) => {
+  return withMeta((value: unknown): value is T => value === expected, JSON.stringify(expected))
+}
+
 export const isNull = withMeta((value: unknown): value is null => value === null, 'null')
 export const isNumber = withMeta((value: unknown): value is number => typeof value === 'number', 'number')
 export const isString = withMeta((value: unknown): value is string => typeof value === 'string', 'string')
