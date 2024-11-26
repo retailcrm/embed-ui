@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.10](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.9...v0.4.1-alpha.10) (2024-11-26)
+
+### Bug Fixes
+
+* Missing import of ReadonlyField ([5a068ce](https://github.com/retailcrm/embed-ui/commit/5a068cead28bb40ee5c2b66116c4ae615b9661ad))
 ## [0.4.1-alpha.9](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.8...v0.4.1-alpha.9) (2024-11-26)
 
 ### Bug Fixes
