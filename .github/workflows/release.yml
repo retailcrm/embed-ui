@@ -143,7 +143,7 @@ jobs:
           git clone --branch=gh-pages https://github.com/${{ github.repository }} gh-pages
           cd gh-pages
           rm -rf v1-components/latest
-          ln -sfn v1-components/${{ needs.storybook.outputs.version }} v1-components/latest
+          cp -r v1-components/${{ needs.storybook.outputs.version }} v1-components/latest
           git config --global user.email "integration@retailcrm.ru"
           git config --global user.name "RetailCRM.CI"
           git add .
