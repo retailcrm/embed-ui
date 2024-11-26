@@ -27,7 +27,7 @@ import {
   withDirectives,
 } from 'vue'
 
-import { expect } from '@/host/utils'
+import { expect } from '@/common/utils'
 import { nextAnimationFrame } from '@/host/dom'
 import uid from '@/host/uid'
 
