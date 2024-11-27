@@ -7,21 +7,21 @@
   "repository": "git@github.com:retailcrm/embed-ui.git",
   "exports": {
     ".": {
-      "import": "./index.mjs",
+      "import": "./index.js",
       "require": "./index.cjs",
-      "default": "./index.mjs"
+      "default": "./index.js"
     },
     "./host": {
       "types": "./dist/host.d.ts",
-      "import": "./dist/host.mjs",
+      "import": "./dist/host.js",
       "require": "./dist/host.cjs",
-      "default": "./dist/host.mjs"
+      "default": "./dist/host.js"
     },
     "./remote": {
       "types": "./dist/remote.d.ts",
-      "import": "./dist/remote.mjs",
+      "import": "./dist/remote.js",
       "require": "./dist/remote.cjs",
-      "default": "./dist/remote.mjs"
+      "default": "./dist/remote.js"
     },
     "./assets/*": "./assets/*",
     "./dist/*": "./dist/*"
@@ -40,7 +40,7 @@
     "assets",
     "dist",
     "index.cjs",
-    "index.mjs",
+    "index.js",
     "README.md"
   ],
   "scripts": {
