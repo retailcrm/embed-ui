@@ -54,8 +54,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { PropType } from 'vue'
 import type { I18nLocalized } from '@/host/i18n'
+import type { PropType } from 'vue'
 
 import {
   computed,
@@ -63,10 +63,10 @@ import {
   ref,
 } from 'vue'
 
-import { VueI18nInjectKey } from '@/host/i18n/plugin'
-
 import IconClear from '~assets/sprites/actions/clear.svg'
 import IconPinned from '~assets/sprites/map-and-places/pinned.svg'
+
+import { I18nInjectKey } from '@/host/i18n/plugin'
 
 import { deltaTransition, SIZE } from '@/common/components/tag'
 
@@ -116,11 +116,10 @@ const props = defineProps({
   },
 })
 
-const vueI18n = inject(VueI18nInjectKey)
-
 defineEmits(['remove'])
 
-const i18n = computed((): I18nLocalized => _i18n.init(vueI18n?.locale ?? _i18n.fallback, null))
+const i18nBus = inject(I18nInjectKey)
+const i18n = computed((): I18nLocalized => _i18n.init(i18nBus?.locale ?? _i18n.fallback, null))
 
 const textRef = ref<HTMLDivElement | null>(null)
 const textStyle = ref({})
