@@ -14,4 +14,5 @@ export { default as UiTransition } from '@/host/components/transition/UiTransiti
 
 // UiYandexMap // отдельно
 
+export { default as I18nPlugin } from '@/host/i18n/plugin'
 export { default as ModalPlugin } from '@/host/components/modal/plugin'
