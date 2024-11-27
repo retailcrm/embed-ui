@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.16](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.15...v0.4.1-alpha.16) (2024-11-27)
+
+### Bug Fixes
+
+* **v1-components:** exports configuration ([4756f47](https://github.com/retailcrm/embed-ui/commit/4756f4723afb79238c4f543bc8ddabebd55411d1))
 ## [0.4.1-alpha.15](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.14...v0.4.1-alpha.15) (2024-11-26)
 
 ### Bug Fixes
