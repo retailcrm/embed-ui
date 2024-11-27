@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.20](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.19...v0.4.1-alpha.20) (2024-11-27)
+
+### Bug Fixes
+
+* **v1-components:** Missing i18n plugin ([635b839](https://github.com/retailcrm/embed-ui/commit/635b839b0d533e00c04fba00e8293b4793bd0b42))
 ## [0.4.1-alpha.19](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.18...v0.4.1-alpha.19) (2024-11-27)
 
 ### Features
