@@ -36,6 +36,11 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: true,
   },
+  'photo': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
   'groups': {
     accepts: arrayOf(isString),
     defaults: (): string[] => [],

@@ -6,6 +6,7 @@ export type Schema = {
   'firstName': ReadonlyField<string | null>;
   'lastName': ReadonlyField<string | null>;
   'patronymic': ReadonlyField<string | null>;
+  'photo': ReadonlyField<string | null>;
   'groups': ReadonlyField<string[]>;
   'permissions': ReadonlyField<string[]>;
 }

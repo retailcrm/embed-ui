@@ -103,6 +103,13 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
         'ru-RU': 'Отчество пользователя',
       },
     },
+    'photo': {
+      description: {
+        'en-GB': 'User photo',
+        'es-ES': 'Foto del usuario',
+        'ru-RU': 'Фото пользователя',
+      },
+    },
     'groups': {
       description: {
         'en-GB': 'Symbolic codes of the groups the user belongs to',
