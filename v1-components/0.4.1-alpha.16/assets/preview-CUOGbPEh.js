@@ -1,0 +1,1 @@
+const e={parameters:{backgrounds:{disable:!0},controls:{matchers:{color:/(background|color)$/i,date:/Date$/i}},options:{storySort:(o,d)=>o.id.endsWith("docs")&&!d.id.endsWith("docs")?-1:!o.id.endsWith("docs")&&d.id.endsWith("docs")?1:o.id===d.id?0:o.id.localeCompare(d.id,void 0,{numeric:!0})}},decorators:[],tags:["autodocs"]};export{e as default};
