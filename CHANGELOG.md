@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.18](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.17...v0.4.1-alpha.18) (2024-11-27)
+
+### Bug Fixes
+
+* Missing components info for remote root ([ee0cf4a](https://github.com/retailcrm/embed-ui/commit/ee0cf4a33d5f9fe41462f66eb65b1715081cd8c8))
 ## [0.4.1-alpha.17](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.16...v0.4.1-alpha.17) (2024-11-27)
 ## [0.4.1-alpha.16](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.15...v0.4.1-alpha.16) (2024-11-27)
 
