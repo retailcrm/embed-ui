@@ -1,85 +1,10 @@
-import ToReact from '../ToReact.ts'
-
-import UiToolbarButton from './UiToolbarButton.example.vue'
-
 # UiToolbarButton
 
-Является аналогом стандартной кнопки с узконаправленным применением за исключением следующих ограничений:
-* предусмотрен только один внешний вид — `secondary`. В связи с этим данное свойство отсутствует для компонента;
-* в качестве обёртки для кнопки допускается только тэг — `button`. Поэтому свойство является предустановленным и недопустимым
-для изменения;
-* токены размеров ограничены до `sm` и `lg` и могут задаваться только через компонент-обёртку `UiToolbar`.
+Повторяет функционал стандартной кнопки `UiButton` с некоторыми ограничениями:
 
+* `appearance` &ndash; значение принудительно установлено в `secondary` и не может быть изменено;
+* `size` &ndash; значение принудительно устанавливается на стороне CRM в зависимости от того, где расширение запускается;
+* `type` &ndash; значение принудительно установлено в `button` и не может быть изменено;
 
-### Настройка размеров
-
-Компонент `UiToolbar` является связующим звеном для настройки ограниченных параметров, посредством провайда необходимых
-свойств для узкоспециализированных компонентов. На данный момент в `UiToolbar` доступно только свойство `size`,
-определяющее размеры дочерних компонентов с префиксом `UiToolbar`.
-
-Пример проброса размера кнопки через `UiToolbar` компонент:
-<ToReact is={UiToolbarButton} text="Button" size="sm" />
-
-```vue
-<UiToolbar size="sm">
-    <UiToolbarButton>
-        Button
-    </UiToolbarButton>
-</UiToolbar>
-```
-
-В рамках компонента `UiToolbar` представлено два размера `sm` и `lg`. Схема соответствия токенов размера компонентов
-следующая:
-* `sm` (`UiToolbar`) — `xs` (`UiButton`);
-* `lg` (`UiToolbar`) — `SM` (`UiButton`).
-
-Доступные размеры идентичны соответствующим размерам стандартной кнопки. Каждый токен влияет на высоту,
-отступы, размер контента и иконок, а также на скругление рамки кнопки. По-умолчанию принят размер `sm`.
-
-<div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-    <ToReact is={UiToolbarButton} text="LG" size="lg" showIcon />
-    <ToReact is={UiToolbarButton} text="SM" showIcon />
-</div>
-
-
-## API
-
-### Цветовая схема
-
-Цветовая схема кнопки позволяет показать её роль на форме. В компоненте представлены три разновидности схем: `default`,
-`success` и `danger`. Базовой схемой является `default`.
-
-<div style={{ display: 'flex', gap: '16px' }}>
-    <ToReact is={UiToolbarButton} text="Default" />
-    <ToReact is={UiToolbarButton} text="Success" variant="success"/>
-    <ToReact is={UiToolbarButton} text="Danger" variant="danger" />
-</div>
-
-
-### Ссылка
-
-Если для кнопки задано свойство `href`, то её можно использовать как ссылку с переходом на указанный ресурс.
-
-
-### Состояния
-
-Для кнопки доступно три состояния:
-* `active` — кнопка активна;
-* `disabled` — кнопка отключена;
-* `locked` — кнопка заблокирована.
-
-<div style={{ display: 'flex', gap: '16px', margin: '8px auto' }}>
-    <ToReact is={UiToolbarButton} text="Active" active showIcon />
-    <ToReact is={UiToolbarButton} text="Disabled" disabled showIcon />
-    <ToReact is={UiToolbarButton} text="Locked" locked showIcon />
-</div>
-
-
-## События
-
-Компонент предоставляет нативные события `click`, `focus` и `blur`.
-
-
-## Слоты
-
-Для кастомизации контента кнопки выделен слот `default`.
+Данный тип кнопки нужен для корректной стилизации элементов, используемых на основном слое интерфейса,
+элементов, размещенных не внутри некоторого модального элемента, вроде `UiModalSidebar` или `UiModalWindow`

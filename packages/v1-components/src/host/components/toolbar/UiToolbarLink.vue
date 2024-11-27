@@ -12,7 +12,7 @@
     >
         <slot />
 
-        <template v-if="$slots.icon || external" #icon>
+        <template v-if="$slots.icon" #icon>
             <slot name="icon" />
         </template>
     </UiLink>
