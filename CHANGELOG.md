@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.21](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.20...v0.4.1-alpha.21) (2024-11-27)
+
+### Bug Fixes
+
+* **v1-components:** Missing VueI18n export ([ed6ef3a](https://github.com/retailcrm/embed-ui/commit/ed6ef3ab50a5879c18b205d24db0c3c9c9da537a))
 ## [0.4.1-alpha.20](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.19...v0.4.1-alpha.20) (2024-11-27)
 
 ### Bug Fixes
