@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.19](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.18...v0.4.1-alpha.19) (2024-11-27)
+
+### Features
+
+* Added field 'photo' to 'user/current' context ([4d6aece](https://github.com/retailcrm/embed-ui/commit/4d6aece931d23ad74d2afa54fcfc1cc821846ca2))
 ## [0.4.1-alpha.18](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.17...v0.4.1-alpha.18) (2024-11-27)
 
 ### Bug Fixes
