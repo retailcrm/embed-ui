@@ -9,6 +9,7 @@ export default [
   {
     languageOptions: {
       globals: {
+        ymaps3: true,
         ...globals.browser,
         ...globals.node,
       },
