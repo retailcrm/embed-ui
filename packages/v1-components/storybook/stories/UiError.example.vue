@@ -28,9 +28,10 @@ defineProps({
 @import (reference) '~assets/stylesheets/variables.less';
 
 .container {
+  padding: 8px;
+  background: #FFF;
   border: 1px solid @grey-300;
   border-radius: 8px;
-  padding: 8px;
 }
 
 .content {

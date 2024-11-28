@@ -951,6 +951,7 @@ __metadata:
     "@storybook/manager-api": "npm:^8.4.5"
     "@storybook/test": "npm:^8.4.5"
     "@storybook/theming": "npm:^8.4.5"
+    "@storybook/types": "npm:^8.4.5"
     "@storybook/vue3": "npm:^8.4.5"
     "@storybook/vue3-vite": "npm:^8.4.5"
     "@vitejs/plugin-vue": "npm:^5.1.4"
@@ -1584,6 +1585,15 @@ __metadata:
   peerDependencies:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
   checksum: 10/0eefd3a3bea58e557f1e303270910046f05aa971ceba6ca6c1cd706c25b537243be6663dba5b2b3aa2edb7fc40279e93403131d76eae7da26da70f8a1c8d1c96
+  languageName: node
+  linkType: hard
+
+"@storybook/types@npm:^8.4.5":
+  version: 8.4.5
+  resolution: "@storybook/types@npm:8.4.5"
+  peerDependencies:
+    storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+  checksum: 10/9c6d8aef05a475ed42faa63618ee6a958803115fb124281d2724576935630c769166ea5ea3dcabe69a28658d7f190ea3acffbeddd9c0aeb0894688df2ed4fe40
   languageName: node
   linkType: hard
 

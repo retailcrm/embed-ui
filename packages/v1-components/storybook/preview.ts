@@ -2,7 +2,7 @@ import type { Preview } from '@storybook/vue3'
 
 import theme from './theme'
 
-export default {
+const preview: Preview = {
   parameters: {
     backgrounds: { disable: true },
     controls: {
@@ -14,7 +14,26 @@ export default {
     docs: {
       theme,
     },
+    options: {
+      storySort: (a, b) => {
+        const rules = [
+          id => id.includes('intro'),
+          id => id.endsWith('docs'),
+        ]
+
+        if (a.id === b.id) return 0
+
+        for (const rule of rules) {
+          if (rule(a.id) && !rule(b.id)) return -1
+          if (!rule(a.id) && rule(b.id)) return 1
+        }
+
+        return a.id.localeCompare(b.id, undefined, { numeric: true })
+      },
+    },
   },
   decorators: [],
   tags: ['autodocs'],
-} as Preview
+}
+
+export default preview
