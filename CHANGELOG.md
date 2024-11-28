@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-alpha.22](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.21...v0.4.1-alpha.22) (2024-11-28)
+
+### Bug Fixes
+
+* **v1-components:** Added slot 'icon' to remote UiLink definition ([c15bd98](https://github.com/retailcrm/embed-ui/commit/c15bd989d0c1ed08f185b35104e09e678e90dfb6))
 ## [0.4.1-alpha.21](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.20...v0.4.1-alpha.21) (2024-11-27)
 
 ### Bug Fixes
