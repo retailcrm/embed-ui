@@ -1,4 +1,4 @@
-import {I18nLocalized, Locale, Options} from '@/host/i18n'
+import { I18nLocalized, Locale, Options } from '@/host/i18n'
 import I18n, { localize } from '@/host/i18n'
 
 import messages_en_GB from './i18n/ru-RU.json'
@@ -29,6 +29,6 @@ export const init = (
 )
 
 export default {
-  fallback: 'en-GB',
+  fallback,
   init,
 }

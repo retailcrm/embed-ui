@@ -956,6 +956,7 @@ __metadata:
     "@storybook/vue3-vite": "npm:^8.4.5"
     "@vitejs/plugin-vue": "npm:^5.1.4"
     "@vue/compiler-sfc": "npm:^3.5.12"
+    "@yandex/ymaps3-types": "npm:^0.0.21"
     less: "npm:^4.2.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -2364,6 +2365,24 @@ __metadata:
     "@vue/language-core": "npm:2.1.10"
     "@vue/shared": "npm:^3.5.0"
   checksum: 10/d3451fcb66dddc76cfa7f50a768800612752ec6641740d0e9212de2184cbd4684a43569690c54818fe7b1b756a1322602ca879880673aacc61b506e260d9c783
+  languageName: node
+  linkType: hard
+
+"@yandex/ymaps3-types@npm:^0.0.21":
+  version: 0.0.21
+  resolution: "@yandex/ymaps3-types@npm:0.0.21"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    "@vue/runtime-core": 3
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+    "@vue/runtime-core":
+      optional: true
+  checksum: 10/32a7dbf40f7dea0ddec00602c4b0fc8f73c280ddef3f83969326a9eb937ecc59b5668e4450a619c7d79ed6696c3100e0635b764759a01cc696fe673cb9cecdcd
   languageName: node
   linkType: hard
 

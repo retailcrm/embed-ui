@@ -73,6 +73,7 @@
     "@storybook/vue3-vite": "^8.4.5",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/compiler-sfc": "^3.5.12",
+    "@yandex/ymaps3-types": "^0.0.21",
     "less": "^4.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
