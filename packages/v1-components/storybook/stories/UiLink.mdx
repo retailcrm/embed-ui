@@ -20,7 +20,7 @@ import UiLink from './UiLink.example.vue'
 
 Помимо размера шрифта изменяется размер иконок. По-умолчанию установлен размер `body`.
 
-<p style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+<p className="flex-column gap-4">
     <ToReact is={UiLink} text="title-01" size="title-01" external />
     <ToReact is={UiLink} text="title-02" size="title-02" external />
     <ToReact is={UiLink} text="article" size="article" external />
@@ -36,7 +36,7 @@ import UiLink from './UiLink.example.vue'
 В зависимости от применения ссылок на форме выделены следующие типы: `breadcrumbs`, `default`, `navigation`, `navigation-anchor` и
 `title`. Предустановленный тип для ссылок — `default`.
 
-<p style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+<p className="flex-column gap-4">
     <ToReact is={UiLink} text="breadcrumbs" appearance="breadcrumbs" />
     <ToReact is={UiLink} text="default" />
     <ToReact is={UiLink} text="navigation" appearance="navigation" />
@@ -50,7 +50,7 @@ import UiLink from './UiLink.example.vue'
 Если включено свойство `ellipsis`, то при переполнении текстового содержимого, оно будет обрезаться через многоточие. Иначе текст
 переносится на следующую строку.
 
-<p style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '16px', maxWidth: '130px' }}>
+<p className="flex-column pl-4 gap-2" style={{ maxWidth: '130px' }}>
     <ToReact is={UiLink} text="Long error message" external />
     <ToReact is={UiLink} text="Long error message" ellipsis external />
 </p>
@@ -67,29 +67,29 @@ import UiLink from './UiLink.example.vue'
 Для дополнительной настройки визуализации ссылки предоставлены свойства:
 <ul>
     <li>
-        <p style={{ display: 'inline', marginRight: '4px' }}>`accent` — добавляет тексту ссылки жирное начертание. Например,</p>
+        <span className="mr-1">`accent` — добавляет тексту ссылки жирное начертание. Например,</span>
         <ToReact is={UiLink} tag="span" text="Accent link" accent external />
     </li>
 
     <li>
-        <p style={{ display: 'inline', marginRight: '4px' }}>`dotted` — добавляет подчёркивание тексту ссылки. Например,</p>
+        <span className="mr-1">`dotted` — добавляет подчёркивание тексту ссылки. Например,</span>
         <ToReact is={UiLink} tag="span" text="Dotted link" dotted external />
     </li>
 
     <li>
-        <p style={{ display: 'inline', marginRight: '4px' }}>`light` — инвертирует цвет ссылки и иконки в белый. Например,</p>
+        <span className="mr-1">`light` — инвертирует цвет ссылки и иконки в белый. Например,</span>
 
         <ToReact
             is={UiLink}
             tag="span"
             text="Accent link"
-            style={{ paddingLeft: '4px', background: '#4880e8' }}
+            style={{ display: 'inline-flex', background: '#4880e8' }}
             light
             external
             ellipsis
         />
 
-        <p style={{ display: 'inline', marginLeft: '4px' }}>Фон добавлен для демонстрации примера.</p>
+        <span className="ml-1">Фон добавлен для демонстрации примера.</span>
     </li>
 </ul>
 

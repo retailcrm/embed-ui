@@ -13,7 +13,7 @@ import UiTag from './UiTag.example.vue'
 Для тегов предусмотрены токены размеров: `lg`, `md`,`sm` и `xs`. Представленные размеры влияют
 на высоту, отступы, размер контента и иконок.
 
-<p style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingLeft: '8px' }}>
+<p className="d-flex gap-4" style={{ alignItems: 'center' }}>
     <ToReact is={UiTag} text="lg" pinned removable />
     <ToReact is={UiTag} text="md" size="md" pinned removable />
     <ToReact is={UiTag} text="sm" size="sm" pinned removable />
@@ -28,51 +28,58 @@ import UiTag from './UiTag.example.vue'
 * `ticker` — анимация бегущей строки при наведении;
 * `interactive` — курсор и анимация при наведении.
 
-<p style={{
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    gap: '12px',
-    paddingLeft: '8px'
-}}>
+<div className="flex-column gap-3">
     <strong>Background:</strong>
-    <div style={{ display: 'flex', gap: '8px' }}>
-        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} />
+    <div className="d-flex gap-2">
+        <ToReact is={UiTag} text="#19976E" background={'#19976E'} />
         <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} />
         <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} />
     </div>
 
     <strong>Saturated:</strong>
-    <div style={{ display: 'flex', gap: '8px' }}>
-        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} saturated />
+    <div className="d-flex gap-2">
+        <ToReact is={UiTag} text="#19976E" background={'#19976E'} saturated />
         <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} saturated />
         <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} saturated />
     </div>
 
     <strong>Ticker:</strong>
-    <div style={{ display: 'flex', gap: '8px' }}>
-        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} style={{ width: '100px' }} />
-        <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} style={{ width: '100px' }} />
-        <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} style={{ width: '100px' }} />
+    <div className="d-flex gap-2">
+        <ToReact is={UiTag} text="#19976E" background={'#19976E'} style={{ width: '80px' }} />
+        <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} style={{ width: '80px' }} />
+        <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} style={{ width: '80px' }} />
     </div>
 
     <strong>Interactive:</strong>
-    <div style={{ display: 'flex', gap: '8px' }}>
-        <ToReact is={UiTag} text="#66d2b6" background={'#66d2b6'} interactive />
+    <div className="d-flex gap-2">
+        <ToReact is={UiTag} text="#19976E" background={'#19976E'} interactive />
         <ToReact is={UiTag} text="rgb(83, 154, 218)" background={'rgb(83, 154, 218)'} interactive />
         <ToReact is={UiTag} text="rgb(83, 154, 218, 0.4)" background={'rgb(83, 154, 218, 0.4)'} interactive />
     </div>
-</p>
+</div>
 
-
-## События
+### События
 
 Компонент предоставляет нативные события `click`, `focus` и `blur`. Если для тега установлено свойство `removable`, то
 клик по иконке удаления вызывает появление события `remove`.
 
-## Слоты
+### Слоты
 
 Для адаптации компонента под более широкий спектр применения выделены слоты:
 * `icon` — иконка слева от основного контента тега;
 * `default` — основной контент тега;
 * `remove-icon` — иконка удаления, расположенная справа от основного контента.
+
+## Пример
+
+```html
+<template>
+    <UiTag background="#FEA530" saturated>
+        VIP
+    </UiTag>
+</template>
+
+<script lang="ts" setup>
+import { UiTag } from '@retailcrm/embed-ui-v1-components/remote'
+</script>
+```

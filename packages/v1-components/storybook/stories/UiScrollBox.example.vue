@@ -25,8 +25,8 @@ import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
 .block {
   width: 120px;
   height: 147px;
+  border: 1px solid rgba(30, 34, 72, 0.16);
   border-radius: @border-radius-lg;
-  box-shadow: @drop-shadow-m;
 
   &:not(:last-child) {
     margin-right: @spacing-xs;

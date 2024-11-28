@@ -12,7 +12,7 @@ import UiButton from './UiButton.example.vue'
 Для кнопок предусмотрено три визуализации согласно их приоритетов на форме: `outlined`, `primary`, `secondary` и
 `tertiary`. Значением по-умолчанию установлено `primary`.
 
-<div style={{ display: 'flex', gap: '16px' }}>
+<div className="flex-container gap-4">
   <ToReact tag="span" is={UiButton} text="Primary" appearance="primary" showIcon />
   <ToReact tag="span" is={UiButton} text="Secondary" appearance="secondary" showIcon />
   <ToReact tag="span" is={UiButton} text="Tertiary" appearance="tertiary" showIcon />
@@ -25,7 +25,7 @@ import UiButton from './UiButton.example.vue'
 Для кнопок предусмотрены токены размеров: `lg`, `md`,`sm` и `xs`. Представленные размеры влияют
 на высоту, отступы, размер контента и иконок, а также на скругление рамки кнопки. По-умолчанию принят размер `sm`.
 
-<div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+<div className="flex-container gap-4" style={{ alignItems: 'center' }}>
     <ToReact tag="span" is={UiButton} text="LG" appearance="secondary" size="lg" showIcon />
     <ToReact tag="span" is={UiButton} text="MD" appearance="secondary" size="md" showIcon />
     <ToReact tag="span" is={UiButton} text="SM" appearance="secondary" showIcon />
@@ -38,7 +38,7 @@ import UiButton from './UiButton.example.vue'
 Цветовая схема кнопки позволяет показать её роль на форме. В компоненте представлены три разновидности схем: `default`,
 `success` и `danger`. Базовой схемой является `default`.
 
-<div style={{ display: 'flex', gap: '16px' }}>
+<div className="flex-container gap-4">
     <ToReact tag="span" is={UiButton} text="Default" />
     <ToReact tag="span" is={UiButton} text="Success" variant="success"/>
     <ToReact tag="span" is={UiButton} text="Danger" variant="danger" />
@@ -65,28 +65,28 @@ import UiButton from './UiButton.example.vue'
 
 <div>
     <i>Primary:</i>
-    <div style={{ display: 'flex', gap: '16px', margin: '8px auto' }}>
+    <div className="flex-container gap-4 mx-auto my-2">
         <ToReact tag="span" is={UiButton} text="Active" active showIcon />
         <ToReact tag="span" is={UiButton} text="Disabled" disabled showIcon />
         <ToReact tag="span" is={UiButton} text="Locked" locked showIcon />
     </div>
 
     <i>Secondary:</i>
-    <div style={{ display: 'flex', gap: '16px', margin: '8px auto' }}>
+    <div className="flex-container gap-4 mx-auto my-2">
         <ToReact tag="span" is={UiButton} text="Active" appearance="secondary" active showIcon />
         <ToReact tag="span" is={UiButton} text="Disabled" appearance="secondary" disabled showIcon />
         <ToReact tag="span" is={UiButton} text="Locked" appearance="secondary" locked showIcon />
     </div>
 
     <i>Tertiary:</i>
-    <div style={{ display: 'flex', gap: '16px', margin: '8px auto' }}>
+    <div className="flex-container gap-4 mx-auto my-2">
         <ToReact tag="span" is={UiButton} text="Active" appearance="tertiary" active showIcon />
         <ToReact tag="span" is={UiButton} text="Disabled" appearance="tertiary" disabled showIcon />
         <ToReact tag="span" is={UiButton} text="Locked" appearance="tertiary" locked showIcon />
     </div>
 
     <i>Outlined:</i>
-    <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+    <div className="flex-container gap-4 mx-auto mt-2">
         <ToReact tag="span" is={UiButton} text="Active" appearance="outlined" active showIcon />
         <ToReact tag="span" is={UiButton} text="Disabled" appearance="outlined" disabled showIcon />
         <ToReact tag="span" is={UiButton} text="Locked" appearance="outlined" locked showIcon />
@@ -102,3 +102,18 @@ import UiButton from './UiButton.example.vue'
 ## Слоты
 
 Для кастомизации контента кнопки выделен слот `default`.
+
+## Пример
+
+```html
+<template>
+    <UiButton variant="danger">
+        <IconDelete /> Удалить
+    </UiButton>
+</template>
+
+<script lang="ts" setup>
+import IconDelete from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete-outlined.svg'
+import { UiButton } from '@retailcrm/embed-ui-v1-components/remote'
+</script>
+```

@@ -14,9 +14,11 @@ import UiModalSidebar from './UiModalSidebar.example.vue'
 типом его контента. Это могут быть дополнительные настройки для параметров на странице, а также информационный материал
 по новым сущностям.
 
-<div style={{ display: 'flex', columnGap: '16px' }}>
-    <ToReact is={UiModalSidebar} buttonTitle="Стандартная панель (sm)" />
-    <ToReact is={UiModalSidebar} buttonTitle="Стандартная панель (lg)" size="lg" />
+Стандартная панель:
+
+<div className="flex-container gap-4">
+    <ToReact is={UiModalSidebar} buttonTitle="Открыть (sm)" />
+    <ToReact is={UiModalSidebar} buttonTitle="Открыть (lg)" size="lg" />
 </div>
 
 Профиль — выводится слева, по клику на иконку профиля. На панели показаны данные пользователя, тариф системы и

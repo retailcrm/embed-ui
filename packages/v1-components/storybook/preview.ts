@@ -2,6 +2,8 @@ import type { Preview } from '@storybook/vue3'
 
 import theme from './theme'
 
+import './utilities.less'
+
 const preview: Preview = {
   parameters: {
     backgrounds: { disable: true },

@@ -25,8 +25,8 @@ const meta = {
         height: '250px',
         width: '300px',
         padding: '0px 16px 16px',
+        border: '1px solid rgba(30, 34, 72, 0.16)',
         borderRadius: '4px',
-        boxShadow: 'rgba(30, 34, 72, 0.16) 0px 8px 16px',
       },
     }),
 
