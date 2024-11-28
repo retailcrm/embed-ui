@@ -1,5 +1,7 @@
 import type { Preview } from '@storybook/vue3'
 
+import theme from './theme'
+
 export default {
   parameters: {
     backgrounds: { disable: true },
@@ -9,16 +11,8 @@ export default {
         date: /Date$/i,
       },
     },
-    options: {
-      storySort: (a, b) => {
-        return a.id.endsWith('docs') && !b.id.endsWith('docs')
-          ? -1
-          : !a.id.endsWith('docs') && b.id.endsWith('docs')
-            ? 1
-            : a.id === b.id
-              ? 0
-              : a.id.localeCompare(b.id, undefined, { numeric: true })
-      },
+    docs: {
+      theme,
     },
   },
   decorators: [],
