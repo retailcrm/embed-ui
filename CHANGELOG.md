@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-beta.2](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.1...v0.4.1-beta.2) (2024-11-29)
+
+### Features
+
+* Replaced typeCode / siteCode with type / site in order/card schema ([102124b](https://github.com/retailcrm/embed-ui/commit/102124b2a591f034a89a53976b094979985fc48a))
 ## [0.4.1-beta.1](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.25...v0.4.1-beta.1) (2024-11-29)
 
 ### Features
