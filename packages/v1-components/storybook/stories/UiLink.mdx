@@ -20,7 +20,7 @@ import UiLink from './UiLink.example.vue'
 
 Помимо размера шрифта изменяется размер иконок. По-умолчанию установлен размер `body`.
 
-<p className="flex-column gap-4">
+<div className="flex-column gap-4">
     <ToReact is={UiLink} text="title-01" size="title-01" external />
     <ToReact is={UiLink} text="title-02" size="title-02" external />
     <ToReact is={UiLink} text="article" size="article" external />
@@ -28,7 +28,7 @@ import UiLink from './UiLink.example.vue'
     <ToReact is={UiLink} text="paragraph" size="paragraph" external />
     <ToReact is={UiLink} text="small" size="small" external />
     <ToReact is={UiLink} text="tiny" size="tiny" external />
-</p>
+</div>
 
 
 ### Типы ссылок
@@ -36,13 +36,13 @@ import UiLink from './UiLink.example.vue'
 В зависимости от применения ссылок на форме выделены следующие типы: `breadcrumbs`, `default`, `navigation`, `navigation-anchor` и
 `title`. Предустановленный тип для ссылок — `default`.
 
-<p className="flex-column gap-4">
+<div className="flex-column gap-4">
     <ToReact is={UiLink} text="breadcrumbs" appearance="breadcrumbs" />
     <ToReact is={UiLink} text="default" />
     <ToReact is={UiLink} text="navigation" appearance="navigation" />
     <ToReact is={UiLink} text="navigation-anchor" appearance="navigation-anchor" />
     <ToReact is={UiLink} text="title" appearance="title" />
-</p>
+</div>
 
 
 ### Переполненный контент
@@ -50,10 +50,10 @@ import UiLink from './UiLink.example.vue'
 Если включено свойство `ellipsis`, то при переполнении текстового содержимого, оно будет обрезаться через многоточие. Иначе текст
 переносится на следующую строку.
 
-<p className="flex-column pl-4 gap-2" style={{ maxWidth: '130px' }}>
+<div className="flex-column pl-4 gap-2" style={{ maxWidth: '130px' }}>
     <ToReact is={UiLink} text="Long error message" external />
     <ToReact is={UiLink} text="Long error message" ellipsis external />
-</p>
+</div>
 
 
 ### Переход на новую вкладку
