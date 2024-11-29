@@ -13,15 +13,15 @@ import{_ as l,A as c,S as a}from"./UiLink-BlQNkdjy.js";import{j as e}from"./jsx-
 `,e.jsxs(s.li,{children:[e.jsx(s.code,{children:"title-02"})," — ",e.jsx(s.code,{children:"24px"}),"."]}),`
 `]}),`
 `,e.jsxs(s.p,{children:["Помимо размера шрифта изменяется размер иконок. По-умолчанию установлен размер ",e.jsx(s.code,{children:"body"}),"."]}),`
-`,e.jsxs("p",{className:"flex-column gap-4",children:[e.jsx(t,{is:n,text:"title-01",size:"title-01",external:!0}),e.jsx(t,{is:n,text:"title-02",size:"title-02",external:!0}),e.jsx(t,{is:n,text:"article",size:"article",external:!0}),e.jsx(t,{is:n,text:"body",size:"body",external:!0}),e.jsx(t,{is:n,text:"paragraph",size:"paragraph",external:!0}),e.jsx(t,{is:n,text:"small",size:"small",external:!0}),e.jsx(t,{is:n,text:"tiny",size:"tiny",external:!0})]}),`
+`,e.jsxs("div",{className:"flex-column gap-4",children:[e.jsx(t,{is:n,text:"title-01",size:"title-01",external:!0}),e.jsx(t,{is:n,text:"title-02",size:"title-02",external:!0}),e.jsx(t,{is:n,text:"article",size:"article",external:!0}),e.jsx(t,{is:n,text:"body",size:"body",external:!0}),e.jsx(t,{is:n,text:"paragraph",size:"paragraph",external:!0}),e.jsx(t,{is:n,text:"small",size:"small",external:!0}),e.jsx(t,{is:n,text:"tiny",size:"tiny",external:!0})]}),`
 `,e.jsx(s.h3,{id:"типы-ссылок",children:"Типы ссылок"}),`
 `,e.jsxs(s.p,{children:["В зависимости от применения ссылок на форме выделены следующие типы: ",e.jsx(s.code,{children:"breadcrumbs"}),", ",e.jsx(s.code,{children:"default"}),", ",e.jsx(s.code,{children:"navigation"}),", ",e.jsx(s.code,{children:"navigation-anchor"}),` и
 `,e.jsx(s.code,{children:"title"}),". Предустановленный тип для ссылок — ",e.jsx(s.code,{children:"default"}),"."]}),`
-`,e.jsxs("p",{className:"flex-column gap-4",children:[e.jsx(t,{is:n,text:"breadcrumbs",appearance:"breadcrumbs"}),e.jsx(t,{is:n,text:"default"}),e.jsx(t,{is:n,text:"navigation",appearance:"navigation"}),e.jsx(t,{is:n,text:"navigation-anchor",appearance:"navigation-anchor"}),e.jsx(t,{is:n,text:"title",appearance:"title"})]}),`
+`,e.jsxs("div",{className:"flex-column gap-4",children:[e.jsx(t,{is:n,text:"breadcrumbs",appearance:"breadcrumbs"}),e.jsx(t,{is:n,text:"default"}),e.jsx(t,{is:n,text:"navigation",appearance:"navigation"}),e.jsx(t,{is:n,text:"navigation-anchor",appearance:"navigation-anchor"}),e.jsx(t,{is:n,text:"title",appearance:"title"})]}),`
 `,e.jsx(s.h3,{id:"переполненный-контент",children:"Переполненный контент"}),`
 `,e.jsxs(s.p,{children:["Если включено свойство ",e.jsx(s.code,{children:"ellipsis"}),`, то при переполнении текстового содержимого, оно будет обрезаться через многоточие. Иначе текст
 переносится на следующую строку.`]}),`
-`,e.jsxs("p",{className:"flex-column pl-4 gap-2",style:{maxWidth:"130px"},children:[e.jsx(t,{is:n,text:"Long error message",external:!0}),e.jsx(t,{is:n,text:"Long error message",ellipsis:!0,external:!0})]}),`
+`,e.jsxs("div",{className:"flex-column pl-4 gap-2",style:{maxWidth:"130px"},children:[e.jsx(t,{is:n,text:"Long error message",external:!0}),e.jsx(t,{is:n,text:"Long error message",ellipsis:!0,external:!0})]}),`
 `,e.jsx(s.h3,{id:"переход-на-новую-вкладку",children:"Переход на новую вкладку"}),`
 `,e.jsxs(s.p,{children:["При необходимости по клику открывать ссылку в новой вкладке необходимо включить свойство ",e.jsx(s.code,{children:"external"}),`. Если установлен
 компонент UiIcon или задан слот `,e.jsx(s.code,{children:"icon"}),", то справа от текста ссылки также появится иконка."]}),`
@@ -37,4 +37,4 @@ import{_ as l,A as c,S as a}from"./UiLink-BlQNkdjy.js";import{j as e}from"./jsx-
       <UiLink v-bind="args">
           Hyperlink
       </UiLink>
-    `}),parameters:{docs:{page:N},layout:"centered"}},r={};var x,p,h;r.parameters={...r.parameters,docs:{...(x=r.parameters)==null?void 0:x.docs,source:{originalSource:"{}",...(h=(p=r.parameters)==null?void 0:p.docs)==null?void 0:h.source}}};const B=["Sandbox"];export{r as Sandbox,B as __namedExportsOrder,T as default};
+    `}),parameters:{docs:{page:N},layout:"centered"}},r={};var x,h,p;r.parameters={...r.parameters,docs:{...(x=r.parameters)==null?void 0:x.docs,source:{originalSource:"{}",...(p=(h=r.parameters)==null?void 0:h.docs)==null?void 0:p.source}}};const B=["Sandbox"];export{r as Sandbox,B as __namedExportsOrder,T as default};
