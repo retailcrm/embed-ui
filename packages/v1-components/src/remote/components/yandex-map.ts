@@ -13,7 +13,11 @@ export const UiYandexMapType = 'UiYandexMap' as SchemaType<
 
 export const UiYandexMap = defineRemoteComponent(
   UiYandexMapType,
-  ['change'] as unknown as {
+  [
+    'change',
+    'update:address',
+  ] as unknown as {
     'change': (address: string) => boolean,
+    'update:address': (address: string) => boolean,
   }
 )

@@ -72,7 +72,7 @@ const createRoot = async (channel: Channel) => {
       'UiToolbarButton',
       'UiToolbarLink',
       'UiTransition',
-      'CrmYandexMap',
+      'UiYandexMap',
     ],
   })
 
