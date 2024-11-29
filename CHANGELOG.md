@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-beta.4](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.3...v0.4.1-beta.4) (2024-11-29)
+
+### Bug Fixes
+
+* **v1-components:** Missing event in UiYandexMap remote component declaration, replaced CrmYandexMap with UiYandexMap in remote root known components list ([e18c3cf](https://github.com/retailcrm/embed-ui/commit/e18c3cf6deb8768e3982c393be692605e80a35a6))
 ## [0.4.1-beta.3](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.2...v0.4.1-beta.3) (2024-11-29)
 
 ### Features
