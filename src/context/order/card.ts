@@ -21,12 +21,12 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: true,
   },
-  'typeCode': {
+  'type': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: true,
   },
-  'siteCode': {
+  'site': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: true,

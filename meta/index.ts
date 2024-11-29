@@ -186,14 +186,14 @@ export const schemaListDocumentation: SchemaListDocumentation<SchemaList> = {
         'ru-RU': 'Идентифкатор заказа во внешней системе источника',
       },
     },
-    'typeCode': {
+    'type': {
       description: {
         'en-GB': 'Order type code',
         'es-ES': 'Código del tipo de pedido',
         'ru-RU': 'Код типа заказа',
       },
     },
-    'siteCode': {
+    'site': {
       description: {
         'en-GB': 'Store code associated with the order',
         'es-ES': 'Código de la tienda asociado al pedido',
