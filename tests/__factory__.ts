@@ -164,6 +164,8 @@ export const createOrderCardHostContext = (id: string) => {
     accessor: createAccessor<OrderCardSchema>(id, {
       'id': () => data.customer.id,
       'externalId': () => data.customer.externalId,
+      'typeCode': () => 'main',
+      'siteCode': () => 'shop',
       'number': () => data.customer.number,
       'customer.type': () => data.customer.customerType,
       'customer.lastName': () => data.customer.lastName,

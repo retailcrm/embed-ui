@@ -21,6 +21,16 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: true,
   },
+  'typeCode': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
+  'siteCode': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
   'number': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
