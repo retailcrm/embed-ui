@@ -118,7 +118,7 @@ const props = defineProps({
 
 defineEmits(['remove'])
 
-const i18nBus = inject(I18nInjectKey)
+const i18nBus = inject(I18nInjectKey, null)
 const i18n = computed((): I18nLocalized => _i18n.init(i18nBus?.locale ?? _i18n.fallback, null))
 
 const textRef = ref<HTMLDivElement | null>(null)

@@ -51,7 +51,7 @@ const emit = defineEmits([
   'update:address',
 ])
 
-const vueI18n = inject(I18nInjectKey)
+const i18nBus = inject(I18nInjectKey, null)
 
 const iframe = ref<HTMLIFrameElement | null>(null)
 
@@ -93,7 +93,7 @@ const apiLocale = computed(() => ({
   'en-GB': 'en_US',
   'es-ES': 'en_US',
   'ru-RU': 'ru_RU',
-}[ vueI18n?.locale ?? 'en-GB' ]))
+}[i18nBus?.locale ?? 'en-GB']))
 
 const apiUrl = computed(() => `https://api-maps.yandex.ru/v3/?apikey=${props.apiKey}&lang=${apiLocale.value}`)
 const apiUrlVersion = ref(0)
