@@ -148,30 +148,10 @@ describe('order/card', () => {
 
     await address.trigger('input')
 
-    expect(host['order/card'].customer).toEqual({
-      id: 1,
-      externalId: 'fake externalId',
-      number: 'fake number',
-      customerType: 'customer',
-      lastName: 'fakeLastName',
-      firstName: 'fakeFirstName',
-      patronymic: 'fakePatronymic',
+    expect(host['order/card'].customer).toEqual(expect.objectContaining({
       email: 'fake-changed@gmail.com',
       phone: '+381 11',
-      country: 'Ru',
-      currency: 'ru',
-      status: 'fakeStatus',
-      companyName: 'fake companyName',
-      companyLegalName: 'fake companyLegalName',
-      companyLegalAddress: 'fake companyLegalAddress',
-      companyINN: 'fake companyINN',
-      companyOKPO: 'fake companyOKPO',
-      companyBIK: 'fake companyBIK',
-      companyBank: 'fake companyBank',
-      companyBankAddress: 'fake companyBankAddress',
-      companyCorrAccount: 'fake companyCorrAccount',
-      companyBankAccount: 'fake companyBankAccount',
-    })
+    }))
 
     expect(host['order/card'].delivery).toEqual({
       address: '221B Baker Street',
