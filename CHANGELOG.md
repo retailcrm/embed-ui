@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1-beta.3](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.2...v0.4.1-beta.3) (2024-11-29)
+
+### Features
+
+* **v1-components:** Added experimental component - UiYandexMap ([19219dd](https://github.com/retailcrm/embed-ui/commit/19219ddcfb326810554a262d54d0ca88ec4c2a68))
 ## [0.4.1-beta.2](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.1...v0.4.1-beta.2) (2024-11-29)
 
 ### Features
