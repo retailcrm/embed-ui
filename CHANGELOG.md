@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.4.1-beta.1](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.25...v0.4.1-beta.1) (2024-11-29)
+
+### Features
+
+* Added typeCode / siteCode to order/card schema ([c3c4a27](https://github.com/retailcrm/embed-ui/commit/c3c4a278497aceb179791a5476df08a7666d36fa))
+
+### Bug Fixes
+
+* **v1-components:** Styles of ellipsis modifier of UiLink ([c3b2189](https://github.com/retailcrm/embed-ui/commit/c3b2189712a036bec982360f1e7fcccd75038423))
 ## [0.4.1-alpha.25](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.24...v0.4.1-alpha.25) (2024-11-28)
 ## [0.4.1-alpha.24](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.23...v0.4.1-alpha.24) (2024-11-28)
 ## [0.4.1-alpha.23](https://github.com/retailcrm/embed-ui/compare/v0.4.1-alpha.22...v0.4.1-alpha.23) (2024-11-28)
