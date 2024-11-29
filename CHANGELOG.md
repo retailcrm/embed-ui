@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.1](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.4...v0.4.1) (2024-11-29)
+
+### Bug Fixes
+
+* **v1-components:** Fallback i18n injection to null ([2c9250f](https://github.com/retailcrm/embed-ui/commit/2c9250fc2e9639404455af0be5fbc00390e586ba))
 ## [0.4.1-beta.4](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.3...v0.4.1-beta.4) (2024-11-29)
 
 ### Bug Fixes
