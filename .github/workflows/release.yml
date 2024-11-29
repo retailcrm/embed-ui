@@ -9,9 +9,9 @@ on:
           - 'alpha'
           - 'beta'
           - 'rc'
-          - ''
+          - 'none'
         description: Prerelease type
-        default: ''
+        default: 'none'
 
 jobs:
   release:
@@ -46,11 +46,11 @@ jobs:
         run: yarn test
 
       - name: Run release [${{ inputs.prerelease }}]
-        if: ${{ inputs.prerelease != '' }}
+        if: ${{ inputs.prerelease != 'none' }}
         run: yes | npx tsx scripts/release.ts -p ${{ inputs.prerelease }}
 
       - name: Run release
-        if: ${{ inputs.prerelease == '' }}
+        if: ${{ inputs.prerelease == 'none' }}
         run: yes | npx tsx scripts/release.ts
 
       - name: Build project
