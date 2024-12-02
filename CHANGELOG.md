@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.2](https://github.com/retailcrm/embed-ui/compare/v0.4.1...v0.4.2) (2024-12-02)
+
+### Bug Fixes
+
+* Exporting types from scaffolding.d.ts ([504500f](https://github.com/retailcrm/embed-ui/commit/504500f1ed978bf965ef29e6379f5a1031e4f11b))
 ## [0.4.1](https://github.com/retailcrm/embed-ui/compare/v0.4.1-beta.4...v0.4.1) (2024-11-29)
 
 ### Bug Fixes
