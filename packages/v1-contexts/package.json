@@ -1,0 +1,106 @@
+{
+  "name": "@retailcrm/embed-ui-v1-contexts",
+  "description": "Reactive contexts for RetailCRM JS API",
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "RetailDriverLLC <integration@retailcrm.ru>",
+  "repository": "git@github.com:retailcrm/embed-ui.git",
+  "exports": {
+    ".": null,
+    "./host": {
+      "types": "./dist/host.d.ts",
+      "import": "./dist/host.js",
+      "require": "./dist/host.cjs",
+      "default": "./dist/host.js"
+    },
+    "./remote": {
+      "types": "./dist/remote.d.ts",
+      "import": "./dist/remote.js",
+      "require": "./dist/remote.cjs",
+      "default": "./dist/remote.js"
+    },
+    "./remote/customer/card": {
+      "types": "./dist/remote/customer/card.d.ts",
+      "import": "./dist/remote/customer/card.js",
+      "require": "./dist/remote/customer/card.cjs",
+      "default": "./dist/remote/customer/card.js"
+    },
+    "./remote/customer/card-phone": {
+      "types": "./dist/remote/customer/card-phone.d.ts",
+      "import": "./dist/remote/customer/card-phone.js",
+      "require": "./dist/remote/customer/card-phone.cjs",
+      "default": "./dist/remote/customer/card-phone.js"
+    },
+    "./remote/order/card": {
+      "types": "./dist/remote/order/card.d.ts",
+      "import": "./dist/remote/order/card.js",
+      "require": "./dist/remote/order/card.cjs",
+      "default": "./dist/remote/order/card.js"
+    },
+    "./remote/user/current": {
+      "types": "./dist/remote/user/current.d.ts",
+      "import": "./dist/remote/user/current.js",
+      "require": "./dist/remote/user/current.cjs",
+      "default": "./dist/uremote/ser/current.js"
+    },
+    "./remote/settings": {
+      "types": "./dist/remote/settings.d.ts",
+      "import": "./dist/remote/settings.js",
+      "require": "./dist/remote/settings.cjs",
+      "default": "./dist/remote/settings.js"
+    },
+    "./*": "./*"
+  },
+  "typesVersions": {
+    "*": {
+      "host": [
+        "./dist/host.d.ts"
+      ],
+      "remote": [
+        "./dist/remote.d.ts"
+      ],
+      "remote/customer/card": [
+        "./dist/remote/customer/card.d.ts"
+      ],
+      "remote/customer/card-phone": [
+        "./dist/remote/customer/card-phone.d.ts"
+      ],
+      "remote/order/card": [
+        "./dist/remote/order/card.d.ts"
+      ],
+      "remote/user/current": [
+        "./dist/remote/user/current.d.ts"
+      ],
+      "remote/settings": [
+        "./dist/remote/settings.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "types",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "yarn build:code && yarn build:meta",
+    "build:code": "vite build",
+    "build:meta": "npx tsx scripts/build.meta.ts",
+    "test": "vitest --run"
+  },
+  "peerDependencies": {
+    "@remote-ui/rpc": "^1.4.5",
+    "pinia": "^2.2"
+  },
+  "dependencies": {
+    "@retailcrm/embed-ui-v1-testing": "^0.0.0",
+    "@retailcrm/embed-ui-v1-types": "^0.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-dts": "^4.3.0",
+    "vitest": "^2.1.8"
+  }
+}
