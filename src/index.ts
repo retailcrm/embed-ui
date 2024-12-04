@@ -6,8 +6,8 @@ import type {
 } from '@remote-ui/rpc'
 
 import type { Callable } from '~types/host/callable'
-import type { ContextAccessor } from '~types/context/schema'
-import type { SchemaList } from '~types/context'
+import type { ContextAccessor } from '@retailcrm/embed-ui-v1-types/context'
+import type { SchemaList } from '@retailcrm/embed-ui-v1-contexts/types'
 
 import type {
   WidgetRunner,
@@ -27,32 +27,32 @@ import {
   createRemoteRoot,
 } from '@omnicajs/vue-remote/remote'
 
-import { injectEndpoint } from '@/pinia'
-
-export {
-  schema as currentUserSchema,
-  useContext as useCurrentUserContext,
-} from '@/context/user/current'
+import { injectEndpoint } from '@retailcrm/embed-ui-v1-contexts/remote'
 
 export {
   schema as customerCardSchema,
   useContext as useCustomerCardContext,
-} from '@/context/customer/card'
+} from '@retailcrm/embed-ui-v1-contexts/remote/customer/card'
 
 export {
   schema as customerCardPhoneSchema,
   useContext as useCustomerCardPhoneContext,
-} from '@/context/customer/card-phone'
+} from '@retailcrm/embed-ui-v1-contexts/remote/customer/card-phone'
 
 export {
   schema as orderCardSchema,
   useContext as useOrderCardContext,
-} from '@/context/order/card'
+} from '@retailcrm/embed-ui-v1-contexts/remote/order/card'
+
+export {
+  schema as currentUserSchema,
+  useContext as useCurrentUserContext,
+} from '@retailcrm/embed-ui-v1-contexts/remote/user/current'
 
 export {
   schema as settingsSchema,
   useContext as useSettingsContext,
-} from '@/context/settings'
+} from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
 export { useHost } from '@/composables'
 export { useField } from '@/composables'
@@ -88,7 +88,7 @@ export const createWidgetEndpoint = (
   const endpoint = createEndpoint<ContextAccessor<SchemaList> & Callable>(messenger)
   const pinia = createPinia()
 
-  pinia.use(injectEndpoint(endpoint))
+  pinia.use(injectEndpoint(endpoint as Endpoint<ContextAccessor<SchemaList>>))
 
   let onRelease = () => {}
 

@@ -1,5 +1,10 @@
-import { defineConfig } from 'vitest/config'
+import {
+  defineConfig,
+  defaultExclude,
+} from 'vitest/config'
+
 import { join } from 'node:path'
+
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
@@ -15,6 +20,7 @@ export default defineConfig({
   ],
   test: {
     environment: 'jsdom',
+    exclude: [...defaultExclude, './packages/**'],
     coverage: {
       provider: 'istanbul',
       include: ['src/**'],

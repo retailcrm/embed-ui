@@ -32,7 +32,8 @@ export default defineConfig({
       external: [
         ...Object.keys(dependencies),
         ...Object.keys(peerDependencies),
-        '@omnicajs/vue-remote/remote',
+        /^@omnicajs\/vue-remote\/.*/,
+        /^@retailcrm\/embed-ui-v1-contexts\/.*/,
       ],
       output: {
         exports: 'named',

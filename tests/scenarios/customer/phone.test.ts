@@ -14,7 +14,7 @@ import type {
 
 import { HostedTree } from '@omnicajs/vue-remote/host'
 
-import { MessageChannel } from '~tests/utilities'
+import { MessageChannel } from '@retailcrm/embed-ui-v1-testing/lib/rpc'
 
 import {
   afterEach,
@@ -31,6 +31,7 @@ import {
   createReceiver,
 } from '@omnicajs/vue-remote/host'
 
+import { createContextAccessor } from '@retailcrm/embed-ui-v1-contexts/host'
 import { createWidgetEndpoint } from '@/index'
 
 import {
@@ -38,54 +39,15 @@ import {
   fromMessagePort,
 } from '@remote-ui/rpc'
 
-import {
-  createCustomerCardPhoneHostContext,
-  createSettingsHostContext,
-  createContextAccessor,
-} from '~tests/__factory__'
+import { createHostContext as createCustomerHostContext } from '~tests/__util__/customer/card'
+import { createHostContext as createCustomerPhoneHostContext } from '~tests/__util__/customer/card-phone'
+import { createHostContext as createSettingsHostContext } from '~tests/__util__/settings'
 
 import { flushPromises } from '@vue/test-utils'
 
-import { useContext as useCustomerCardPhoneContext } from '@/context/customer/card-phone'
-import { useContext as useSettingsContext } from '@/context/settings'
+import { useContext as usePhone } from '@retailcrm/embed-ui-v1-contexts/remote/customer/card-phone'
+import { useContext as useSettings } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 import { useField } from '@/composables'
-
-const createHost = (messenger: MessageEndpoint) => {
-  const contexts = {
-    'customer/card:phone': createCustomerCardPhoneHostContext('customer/card:phone'),
-    'settings': createSettingsHostContext('settings'),
-  }
-
-  const endpoint = createEndpoint<WidgetEndpoint>(messenger)
-
-  endpoint.expose(createContextAccessor({
-    'customer/card:phone': contexts['customer/card:phone'].accessor,
-    'settings': contexts['settings'].accessor,
-  }))
-
-  return {
-    'settings': contexts['settings'].data,
-    endpoint,
-  }
-}
-
-const createHostApp = (receiver: Receiver, components: {
-  [key: string]: Component<NonNullable<unknown>>;
-} = {}) => {
-  const provider = createProvider(components)
-
-  return createApp({
-    setup () {
-      const tree = ref<{ forceUpdate (): void } | null>(null)
-
-      return () => h(HostedTree, {
-        ref: tree,
-        provider,
-        receiver,
-      })
-    },
-  })
-}
 
 describe('scenarios/customer/phone', () => {
   let el: HTMLElement | null = null
@@ -108,7 +70,7 @@ describe('scenarios/customer/phone', () => {
 
     const receiver = createReceiver()
 
-    const host = createHost(fromMessagePort(port1))
+    const host = createHostContext(fromMessagePort(port1))
 
     createHostApp(receiver).mount(el as HTMLElement)
 
@@ -123,20 +85,17 @@ describe('scenarios/customer/phone', () => {
           },
 
           setup (props) {
-            const phoneContext = useCustomerCardPhoneContext()
-            const settingsContext = useSettingsContext()
+            const phone = usePhone()
+            const settings = useSettings()
 
-            phoneContext.initialize()
-            settingsContext.initialize()
-
-            const phone = useField(phoneContext, 'value')
-            const index = useField(phoneContext, 'index')
-            const locale = useField(settingsContext, 'system.locale')
+            const value = useField(phone, 'value')
+            const index = useField(phone, 'index')
+            const locale = useField(settings, 'system.locale')
 
             return () => h('div', [
               h('div', `Target: ${props.target}`),
               h('div', `Locale: ${locale.value}`),
-              h('div', `Phone: ${phone.value}`),
+              h('div', `Phone: ${value.value}`),
               h('div', `Index: ${index.value}`),
             ])
           },
@@ -145,6 +104,12 @@ describe('scenarios/customer/phone', () => {
         })
 
         app.use(pinia)
+
+        await Promise.all([
+          usePhone(),
+          useSettings(),
+        ].map(c => c.initialize()))
+
         app.mount(root)
 
         return () => app.unmount()
@@ -152,8 +117,8 @@ describe('scenarios/customer/phone', () => {
     }, fromMessagePort(port2))
 
     await host.endpoint.call.run(receiver.receive, 'customer/card:phone')
-
     await receiver.flush()
+
     await flushPromises()
 
     expect(el?.innerHTML).toContain('Target: customer/card:phone')
@@ -177,3 +142,42 @@ describe('scenarios/customer/phone', () => {
     expect(el?.innerHTML).toBe('')
   })
 })
+
+function createHostContext (messenger: MessageEndpoint) {
+  const contexts = {
+    'customer/card': createCustomerHostContext('customer/card'),
+    'customer/card:phone': createCustomerPhoneHostContext('customer/card:phone'),
+    'settings': createSettingsHostContext('settings'),
+  }
+
+  const endpoint = createEndpoint<WidgetEndpoint>(messenger)
+
+  endpoint.expose(createContextAccessor({
+    'customer/card': contexts['customer/card'].accessor,
+    'customer/card:phone': contexts['customer/card:phone'].accessor,
+    'settings': contexts['settings'].accessor,
+  }))
+
+  return {
+    'settings': contexts['settings'].data,
+    endpoint,
+  }
+}
+
+function createHostApp (receiver: Receiver, components: {
+  [key: string]: Component<NonNullable<unknown>>;
+} = {}) {
+  const provider = createProvider(components)
+
+  return createApp({
+    setup () {
+      const tree = ref<{ forceUpdate (): void } | null>(null)
+
+      return () => h(HostedTree, {
+        ref: tree,
+        provider,
+        receiver,
+      })
+    },
+  })
+}
