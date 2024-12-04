@@ -53,10 +53,11 @@ jobs:
         if: ${{ inputs.prerelease == 'none' }}
         run: yes | npx tsx scripts/release.ts
 
-      - name: Build project
+      - name: Build worktree
         run: |
-          yarn build
           yarn workspace @retailcrm/embed-ui-v1-components run build
+          yarn workspace @retailcrm/embed-ui-v1-contexts run build
+          yarn build
           yarn generate:meta
 
       - name: Push tags to repository

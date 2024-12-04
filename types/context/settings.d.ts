@@ -1,6 +1,1 @@
-import type { ReadonlyField } from './schema'
-
-export type Locale = 'en-GB' | 'es-ES' | 'ru-RU'
-export type Schema = {
-  'system.locale': ReadonlyField<Locale>;
-}
+export type * from '@retailcrm/embed-ui-v1-contexts/types/settings'

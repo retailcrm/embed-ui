@@ -38,6 +38,11 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build workspaces
+        run: |
+          yarn workspace @retailcrm/embed-ui-v1-components run build
+          yarn workspace @retailcrm/embed-ui-v1-contexts run build
+
       - name: Run eslint
         run: yarn eslint
 
@@ -75,6 +80,11 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
+
+      - name: Build workspaces
+        run: |
+          yarn workspace @retailcrm/embed-ui-v1-components run build
+          yarn workspace @retailcrm/embed-ui-v1-contexts run build
 
       - name: Run tests
         run: yarn test

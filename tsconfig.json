@@ -1,6 +1,21 @@
 {
-  "extends": "./tsconfig.basic.json",
   "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable",
+      "ScriptHost"
+    ],
+    "module": "ES2022",
+    "moduleResolution": "Node",
     "paths": {
       "@/*": ["./src/*"],
       "~meta": ["./meta/index.ts"],
@@ -8,9 +23,15 @@
       "~tests/*": ["./tests/*"],
       "~types/*": ["./types/*"]
     },
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "strict": true,
+    "target": "ES2017",
     "types": [
       "node"
-    ]
+    ],
+    "useDefineForClassFields": true
   },
   "include": [
     "meta/**/*.ts",

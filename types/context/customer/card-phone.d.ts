@@ -1,6 +1,1 @@
-import type { ReadonlyField } from '../schema'
-
-export type Schema = {
-  'value': ReadonlyField<string>;
-  'index': ReadonlyField<number>;
-}
+export type { Schema } from '@retailcrm/embed-ui-v1-contexts/types/customer/card-phone'
