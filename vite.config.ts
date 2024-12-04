@@ -1,10 +1,7 @@
 import {
-  dirname,
   join,
   resolve,
 } from 'node:path'
-
-import * as url from 'node:url'
 
 import { defineConfig } from 'vite'
 
@@ -12,8 +9,6 @@ import {
   dependencies,
   peerDependencies,
 } from './package.json'
-
-const __dirname = dirname(url.fileURLToPath(import.meta.url))
 
 export default defineConfig({
   resolve: {
