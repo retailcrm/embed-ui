@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.4.5](https://github.com/retailcrm/embed-ui/compare/v0.4.4...v0.4.5) (2024-12-06)
+
+### Bug Fixes
+
+* **v1-testing:** Missing exports field in package.json - reason why v0.4.4 is missing in npm ([a7601df](https://github.com/retailcrm/embed-ui/commit/a7601dfad9b27f0ba564c2e4d3dfad9551f3eb3e))
+* **v1-types:** Missing exports field in package.json - reason why v0.4.4 is missing in npm ([2dcfd9c](https://github.com/retailcrm/embed-ui/commit/2dcfd9cf8cfb61a4387ce66b70ec89d3639e1d0e))
 ## [0.4.4](https://github.com/retailcrm/embed-ui/compare/v0.4.3...v0.4.4) (2024-12-06)
 
 ### Features
