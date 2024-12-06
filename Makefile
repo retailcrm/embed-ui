@@ -14,8 +14,7 @@ node_modules: package.json yarn.lock ## Installs dependencies
 .PHONY: build
 build: ## Builds the package
 	$(TARGET_HEADER)
-	$(YARN) build
-	$(YARN) generate:meta
+	$(YARN) workspaces foreach -A --topological-dev run build
 
 .PHONY: release
 release: ## Bumps version and creates tag
