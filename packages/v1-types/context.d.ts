@@ -118,10 +118,18 @@ export interface RuntimeRejection extends Rejection {
   type: 'runtime';
 }
 
-export type Dictionary = DictionaryItem[]
-export type DictionaryItem = {
+export type CustomDictionary = CustomDictionaryItem[]
+export type CustomDictionaryItem = {
   code: string;
   text: string;
+  cursor: string;
+}
+
+export type CustomDictionaryFilter = {
+  after?: string;
+  before?: string;
+  first?: number;
+  last?: number;
 }
 
 export interface BasicCustomField<K extends string, T> {
@@ -164,15 +172,34 @@ export type CustomContext = {
   [code: string]: CustomFieldType
 }
 
-export interface CustomContextAccessor {
-  getCustomSchema (entity: string, onReject?: Maybe<RejectionHandler>): CustomContextSchema | null | undefined;
-  getCustomField (entity: string, code: string): unknown;
+export type CustomContextAccessor = {
+  getCustomSchema (entity: string, onReject?: Maybe<RejectionHandler>): CustomContextSchema | null;
+
+  getCustomDictionary (
+    code: string,
+    filter?: CustomDictionaryFilter,
+    onReject?: Maybe<RejectionHandler>
+  ): Promise<CustomDictionary>;
+
+  getCustomField (entity: string, code: string, onReject?: Maybe<RejectionHandler>): unknown;
   setCustomField (entity: string, code: string, value: CustomFieldType, onReject?: Maybe<RejectionHandler>): unknown;
-  onCustomFieldChange (entity: string, code: string, handler: (value: CustomFieldType) => void);
-  getDictionary (code: string, parameters?: {
-    after?: string;
-    before?: string;
-    first?: number;
-    last?: number;
-  }, onReject?: Maybe<RejectionHandler>): Promise<Dictionary>;
+
+  onCustomFieldChange (
+    entity: string,
+    code: string,
+    handler: (value: CustomFieldType) => void,
+    onReject?: Maybe<RejectionHandler>
+  ): void | (() => void);
+}
+
+export type CustomFieldAccessor = {
+  readonly schema: CustomContextSchema;
+
+  get (code: string): unknown;
+  set (code: string, value: CustomFieldType): void;
+
+  onChange (
+    code: string,
+    handler: (value: CustomFieldType) => void
+  ): void | (() => void);
 }
