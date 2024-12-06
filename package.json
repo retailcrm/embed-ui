@@ -24,9 +24,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "yarn build:code && yarn build:meta",
+    "build:code": "vite build",
+    "build:meta": "npx tsx scripts/build.meta.ts",
     "eslint": "eslint .",
-    "generate:meta": "tsx scripts/build.meta.ts",
     "test": "vitest --run"
   },
   "dependencies": {
