@@ -85,7 +85,7 @@ try {
     paths.push(relative(cwd, update(pkg.path, diff)))
   })
 
-  await runner.runCommand('yarn', ['install'])
+  await runner.runCommand('yarn', ['install', '--no-immutable'])
 
   paths.push(relative(cwd, 'yarn.lock'))
 
