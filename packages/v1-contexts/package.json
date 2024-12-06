@@ -2,7 +2,7 @@
   "name": "@retailcrm/embed-ui-v1-contexts",
   "description": "Reactive contexts for RetailCRM JS API",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.4.4",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
   "repository": "git@github.com:retailcrm/embed-ui.git",
@@ -93,8 +93,8 @@
     "pinia": "^2.2"
   },
   "dependencies": {
-    "@retailcrm/embed-ui-v1-testing": "^0.0.0",
-    "@retailcrm/embed-ui-v1-types": "^0.0.0"
+    "@retailcrm/embed-ui-v1-testing": "^0.4.4",
+    "@retailcrm/embed-ui-v1-types": "^0.4.4"
   },
   "devDependencies": {
     "tsx": "^4.19.2",

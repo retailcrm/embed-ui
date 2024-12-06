@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [0.4.4](https://github.com/retailcrm/embed-ui/compare/v0.4.3...v0.4.4) (2024-12-06)
+
+### Features
+
+* **v1-contexts:** Reactive contexts logic moved to a separated package ([025c68b](https://github.com/retailcrm/embed-ui/commit/025c68bad92c33fb2ef9c84ea41fc0b76a77b041))
+* **v1-testing:** Package for testing utils ([2670e5a](https://github.com/retailcrm/embed-ui/commit/2670e5a2a8d67e4538c0005c271a663aa881ba07))
+* **v1-types:** Package for basic types ([a80bf8f](https://github.com/retailcrm/embed-ui/commit/a80bf8f3046ec93cb130e0e247a56d0eae3b4902))
+
+### Bug Fixes
+
+* **v1-components:** Updated @omnicajs/vue-remote to v0.2.3 with fixed logic of TouchEvent serialization ([09d447f](https://github.com/retailcrm/embed-ui/commit/09d447f3f82f554fb3b5bb1ad7eeac7b55abe49e))
 ## [0.4.3](https://github.com/retailcrm/embed-ui/compare/v0.4.2...v0.4.3) (2024-12-03)
 ## [0.4.2](https://github.com/retailcrm/embed-ui/compare/v0.4.1...v0.4.2) (2024-12-02)
 
