@@ -39,6 +39,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build worktree
+        run: yarn workspaces foreach -A --topological-dev run build
+
       - name: Run eslint
         run: yarn eslint
 
@@ -52,9 +55,6 @@ jobs:
       - name: Run release
         if: ${{ inputs.prerelease == 'none' }}
         run: yes | npx tsx scripts/release.ts
-
-      - name: Build worktree
-        run: yarn workspaces foreach -A --topological-dev run build
 
       - name: Push tags to repository
         env:
