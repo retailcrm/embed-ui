@@ -55,17 +55,24 @@ try {
     dry: options.dry,
   })
 
-  const paths = [
-    relative(cwd, await changelog.write(nextVersion)),
-    relative(cwd, update(cwd, { version: nextVersion }, options.dry)),
-  ]
-
   const keysOf = <T extends object>(o: T) => Object.keys(o) as (keyof T)[]
   const empty = (o: object) => keysOf(o).length === 0
   const actualize = (dependencies: PackageDependencies) => keysOf(dependencies).reduce((all, name) => ({
     ...all,
     [name]: name.startsWith('@retailcrm/embed-ui-') ? '^' + nextVersion : dependencies[name],
   }), {} as PackageDependencies)
+
+  const diff = { version: nextVersion } as Partial<PackageManifest>
+
+  if (!empty(root.peerDependencies)) diff.peerDependencies = actualize(root.peerDependencies)
+  if (!empty(root.dependencies)) diff.dependencies = actualize(root.dependencies)
+  if (!empty(root.optionalDependencies)) diff.optionalDependencies = actualize(root.optionalDependencies)
+  if (!empty(root.devDependencies)) diff.devDependencies = actualize(root.devDependencies)
+
+  const paths = [
+    relative(cwd, await changelog.write(nextVersion)),
+    relative(cwd, update(cwd, diff, options.dry)),
+  ]
 
   await walk(root.worktree, async (pkg) => {
     const diff = { version: nextVersion } as Partial<PackageManifest>
