@@ -5,5 +5,9 @@
   "version": "0.4.4",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
-  "repository": "git@github.com:retailcrm/embed-ui.git"
+  "repository": "git@github.com:retailcrm/embed-ui.git",
+  "exports": {
+    ".": null,
+    "./*": "./*"
+  }
 }
