@@ -54,7 +54,9 @@ jobs:
 
       - name: Run release
         if: ${{ inputs.prerelease == 'none' }}
-        run: yes | npx tsx scripts/release.ts
+        run: |
+          echo "YARN_ENABLE_IMMUTABLE_INSTALLS=false" >> $GITHUB_ENV
+          yes | npx tsx scripts/release.ts
 
       - name: Push tags to repository
         env:
