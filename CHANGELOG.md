@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.4.6](https://github.com/retailcrm/embed-ui/compare/v0.4.5...v0.4.6) (2024-12-08)
+
+### Bug Fixes
+
+* **v1-context:** Fixed exported ContextStore ts type ([5496f3e](https://github.com/retailcrm/embed-ui/commit/5496f3e353b35dd489d60d51674d5bfcd19b2dfb))
+* **v1-contexts:** Moved v1-testing to dev dependencies, where it was intended to be ([88f3d06](https://github.com/retailcrm/embed-ui/commit/88f3d06bd47b9d2e4877be6cb9395f7c5c5a212e))
 ## [0.4.5](https://github.com/retailcrm/embed-ui/compare/v0.4.4...v0.4.5) (2024-12-06)
 
 ### Bug Fixes
