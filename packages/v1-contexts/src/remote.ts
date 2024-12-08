@@ -13,17 +13,10 @@ import type { Endpoint } from '@remote-ui/rpc'
 
 import type { Maybe } from '@retailcrm/embed-ui-v1-types/scaffolding'
 
-import type { PiniaPluginContext, Store } from 'pinia'
+import type { PiniaPluginContext } from 'pinia'
 
 import { defineStore } from 'pinia'
 import { keysOf } from '@/utilities'
-
-export type ContextStore<S extends ContextSchema> = Store<string, Context<S>, {
-  schema (): S;
-}, {
-  initialize(): Promise<void>;
-  set<F extends keyof Writable<S>>(field: F, value: TypeOf<S[F]>): void;
-}>
 
 declare module 'pinia' {
   // noinspection JSUnusedGlobalSymbols
@@ -96,6 +89,12 @@ export const defineContext = <Id extends string, S extends ContextSchema>(
     },
   })
 }
+
+export type ContextStore<S extends ContextSchema> = ReturnType<ContextStoreDefinition<string, S>>
+export type ContextStoreDefinition<
+  Id extends string,
+  S extends ContextSchema
+> = ReturnType<typeof defineContext<Id, S>>
 
 function guard<
   S extends ContextSchema,
