@@ -1,6 +1,7 @@
 # Changelog
 
 
+## [0.4.7](https://github.com/retailcrm/embed-ui/compare/v0.4.6...v0.4.7) (2024-12-08)
 ## [0.4.6](https://github.com/retailcrm/embed-ui/compare/v0.4.5...v0.4.6) (2024-12-08)
 
 ### Bug Fixes
