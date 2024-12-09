@@ -92,7 +92,8 @@ export const schema: Schema = {
   'contragent.type': {
     accepts: oneOf(
       isExactly('enterpreneur'),
-      isExactly('legal-entity')
+      isExactly('legal-entity'),
+      isExactly('individual')
     ),
     defaults: () => 'legal-entity',
     readonly: true,
