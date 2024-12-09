@@ -53,7 +53,7 @@ export class RuntimeError extends HostError {
 }
 
 export const createGetter = <S extends ContextSchema>(id: string, getters: FieldGetters<S>) => {
-  return <F extends keyof S>(field: '~' | F) => {
+  return (<F extends keyof S>(field: '~' | F) => {
     if (field === '~') {
       return keysOf(getters).reduce((context, field) => ({
         ...context,
@@ -66,17 +66,17 @@ export const createGetter = <S extends ContextSchema>(id: string, getters: Field
     }
 
     throw new LogicalError(`Field ${String(field)} is not supported in context ${id}`)
-  }
+  }) as FieldAccessor<S>['get']
 }
 
 export const createSetter = <S extends ContextSchema>(id: string, setters: FieldSetters<S>) => {
-  return <F extends keyof Writable<S>>(field: F, value: Context<S>[F]) => {
+  return (<F extends keyof Writable<S>>(field: F, value: Context<S>[F]) => {
     if (!(field in setters)) {
       throw new LogicalError(`Setting field ${String(field)} is not supported in context ${id}`)
     }
 
     setters[field](value)
-  }
+  }) as FieldAccessor<S>['set']
 }
 
 export const createContextAccessor = <M extends ContextSchemaMap>(accessors: {
@@ -113,9 +113,11 @@ export const createContextAccessor = <M extends ContextSchemaMap>(accessors: {
     },
 
     on (context, event, handler) {
-      guard(context)
+      run(() => {
+        guard(context)
 
-      accessors[context].on(event, handler)
+        accessors[context].on(event, handler)
+      }, null, onError)
     },
   }
 }
