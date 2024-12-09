@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.4.8](https://github.com/retailcrm/embed-ui/compare/v0.4.7...v0.4.8) (2024-12-09)
+
+### Features
+
+* **v1-contexts:** Added fields to order/card context ([1320580](https://github.com/retailcrm/embed-ui/commit/1320580af5b05d7b857211c03a76ea5f685f40e3))
+* **v1-contexts:** Types clarification, processing errors in changes handler method 'on' of ContextAccessor, created by createContextAccessor ([111a08c](https://github.com/retailcrm/embed-ui/commit/111a08cd4bd46076b5902f8bf095db43c72c3344))
 ## [0.4.7](https://github.com/retailcrm/embed-ui/compare/v0.4.6...v0.4.7) (2024-12-08)
 ## [0.4.6](https://github.com/retailcrm/embed-ui/compare/v0.4.5...v0.4.6) (2024-12-08)
 
