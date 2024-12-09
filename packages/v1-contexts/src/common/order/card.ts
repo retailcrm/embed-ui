@@ -89,6 +89,34 @@ export const schema: Schema = {
     defaults: () => '',
     readonly: true,
   },
+  'contragent.type': {
+    accepts: oneOf(
+      isExactly('enterpreneur'),
+      isExactly('legal-entity')
+    ),
+    defaults: () => 'legal-entity',
+    readonly: true,
+  },
+  'contragent.certificateNumber': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: false,
+  },
+  'contragent.certificateDate': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: false,
+  },
+  'contragent.OGRN': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: false,
+  },
+  'contragent.OGRNIP': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: false,
+  },
   'company.name': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
@@ -243,6 +271,41 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Order status',
       'es-ES': 'Estado del pedido',
       'ru-RU': 'Статус заказа',
+    },
+  },
+  'contragent.type': {
+    description: {
+      'en-GB': 'Legal entity type',
+      'es-ES': 'Tipo de entidad legal',
+      'ru-RU': 'Тип юридического лица',
+    },
+  },
+  'contragent.certificateNumber': {
+    description: {
+      'en-GB': 'Certificate number',
+      'es-ES': 'Número de certificado',
+      'ru-RU': 'Номер свидетельства',
+    },
+  },
+  'contragent.certificateDate': {
+    description: {
+      'en-GB': 'Certificate date',
+      'es-ES': 'Fecha del certificado',
+      'ru-RU': 'Дата свидетельства',
+    },
+  },
+  'contragent.OGRN': {
+    description: {
+      'en-GB': 'PSRN of the counterparty',
+      'es-ES': 'PSRN del contraparte',
+      'ru-RU': 'ОГРН контрагента',
+    },
+  },
+  'contragent.OGRNIP': {
+    description: {
+      'en-GB': 'PSRN of Individual entrepreneur',
+      'es-ES': 'PSRN del emprendedor individual',
+      'ru-RU': 'ОГРНИП',
     },
   },
   'company.name': {
