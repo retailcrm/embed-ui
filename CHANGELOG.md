@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.4.9](https://github.com/retailcrm/embed-ui/compare/v0.4.8...v0.4.9) (2024-12-10)
+
+### Features
+
+* **v1-contexts:** Added additional value to contragent.type ([95ad354](https://github.com/retailcrm/embed-ui/commit/95ad3548c9dbd5ab2a6bfbc7fad49d179d1f2c28))
 ## [0.4.8](https://github.com/retailcrm/embed-ui/compare/v0.4.7...v0.4.8) (2024-12-09)
 
 ### Features

@@ -1,7 +1,7 @@
 {
   "name": "@retailcrm/embed-ui",
   "type": "module",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "API and components for creating RetailCRM UI extensions",
   "repository": "git@github.com:retailcrm/embed-ui.git",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
@@ -33,8 +33,8 @@
   "dependencies": {
     "@omnicajs/vue-remote": "^0.2.3",
     "@remote-ui/rpc": "^1.4.5",
-    "@retailcrm/embed-ui-v1-contexts": "^0.4.8",
-    "@retailcrm/embed-ui-v1-types": "^0.4.8"
+    "@retailcrm/embed-ui-v1-contexts": "^0.4.9",
+    "@retailcrm/embed-ui-v1-types": "^0.4.9"
   },
   "peerDependencies": {
     "pinia": "^2.2",
@@ -43,7 +43,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
     "@eslint/js": "^9.13.0",
-    "@retailcrm/embed-ui-v1-testing": "^0.4.8",
+    "@retailcrm/embed-ui-v1-testing": "^0.4.9",
     "@types/git-semver-tags": "^7.0.0",
     "@types/node": "^22.7.9",
     "@types/semver": "^7.5.8",
