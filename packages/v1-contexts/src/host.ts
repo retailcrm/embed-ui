@@ -1,8 +1,13 @@
-import {
+import type {
   Context,
   ContextAccessor,
   ContextSchema,
   ContextSchemaList,
+  CustomContextAccessor,
+  CustomDictionary,
+  CustomDictionaryFilter,
+  CustomFieldAccessor,
+  CustomFieldType,
   FieldAccessor,
   FieldGetters,
   FieldSetters,
@@ -122,6 +127,78 @@ export const createContextAccessor = <M extends ContextSchemaList>(accessors: {
   }
 }
 
+export const createCustomContextAccessor = (
+  accessors: CustomFieldAccessor[],
+  queryDictionary: Maybe<(code: string, filter?: CustomDictionaryFilter) => Promise<CustomDictionary>> = null,
+  onError: Maybe<ErrorHandler> = null
+): CustomContextAccessor => {
+  const _accessors = accessors.reduce((all, a) => {
+    all[a.schema.entity] = a
+
+    return all
+  }, {} as Record<string, CustomFieldAccessor>)
+
+  const guard = (entity: string) => {
+    if (!(entity in _accessors)) {
+      throw new LogicalError(`No custom context for entity ${String(entity)}`)
+    }
+  }
+
+  return {
+    getCustomSchema (entity: string, onReject: Maybe<RejectionHandler> = null) {
+      return run(() => {
+        guard(entity)
+
+        return _accessors[entity].schema
+      }, onReject, onError) ?? null
+    },
+
+    async getCustomDictionary (code: string, parameters?: {
+      after?: string;
+      before?: string;
+      first?: number;
+      last?: number;
+    }, onReject?: Maybe<RejectionHandler>): Promise<CustomDictionary> {
+      return (await runAsync(() => {
+        if (!queryDictionary) {
+          throw new LogicalError('No dictionary source provided')
+        }
+
+        return queryDictionary(code, parameters)
+      }, onReject, onError)) ?? []
+    },
+
+    getCustomField (entity: string, code: string, onReject: Maybe<RejectionHandler> = null) {
+      return run(() => {
+        guard(entity)
+
+        return _accessors[entity].get(code)
+      }, onReject, onError) ?? null
+    },
+
+    setCustomField (entity: string, code: string, value: CustomFieldType, onReject: Maybe<RejectionHandler> = null) {
+      return run(() => {
+        guard(entity)
+
+        _accessors[entity].set(code, value)
+      }, onReject, onError)
+    },
+
+    onCustomFieldChange (
+      entity: string,
+      code: string,
+      handler: (value: CustomFieldType) => void,
+      onReject: Maybe<RejectionHandler> = null
+    ) {
+      return run(() => {
+        guard(entity)
+
+        return _accessors[entity].onChange(code, handler)
+      }, onReject, onError)
+    },
+  }
+}
+
 export type ErrorHandler = (e: unknown) => void
 
 function run <T>(
@@ -134,17 +211,46 @@ function run <T>(
   try {
     return fn()
   } catch (e) {
-    if (onReject) {
-      onReject(e instanceof HostError ? e.rejection : { message: String(e) })
-    }
+    handle(e, onReject, onError)
 
-    if (onError) {
-      onError(e)
-      return
+    if (!onError) {
+      throw e
     }
-
-    throw e
   } finally {
     release(onReject)
+  }
+}
+
+async function runAsync <T>(
+  fn: () => Promise<T>,
+  onReject: Maybe<RejectionHandler> = null,
+  onError: Maybe<ErrorHandler> = null
+): Promise<T | void> {
+  retain(onReject)
+
+  try {
+    return await fn()
+  } catch (e) {
+    handle(e, onReject, onError)
+
+    if (!onError) {
+      throw e
+    }
+  } finally {
+    release(onReject)
+  }
+}
+
+function handle (
+  e: unknown,
+  onReject: Maybe<RejectionHandler> = null,
+  onError: Maybe<ErrorHandler> = null
+) {
+  if (onReject) {
+    onReject(e instanceof HostError ? e.rejection : { message: String(e) })
+  }
+
+  if (onError) {
+    onError(e)
   }
 }
