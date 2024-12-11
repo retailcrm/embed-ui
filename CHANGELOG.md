@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.5.0](https://github.com/retailcrm/embed-ui/compare/v0.4.9...v0.5.0) (2024-12-11)
+
+### ⚠ BREAKING CHANGES
+
+* Renaming fields of order/card context
+
+### Features
+
+* Renaming fields of order/card context ([cc8f72f](https://github.com/retailcrm/embed-ui/commit/cc8f72f95ee0481b14562a8ae1937d83459517a2))
 ## [0.4.9](https://github.com/retailcrm/embed-ui/compare/v0.4.8...v0.4.9) (2024-12-10)
 
 ### Features
