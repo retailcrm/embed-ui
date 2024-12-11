@@ -5,7 +5,7 @@ import type {
   CustomContext,
   CustomContextAccessor,
   CustomContextSchema,
-  Dictionary,
+  CustomDictionary,
   Rejection,
   RejectionHandler,
 } from '@retailcrm/embed-ui-v1-types/context'
@@ -74,14 +74,6 @@ export const defineContext = <T extends string>(entity: T) => defineStore(`custo
       })
 
       return schema
-    },
-
-    has (code: string) {
-      if (!this.schema) {
-        throw new Error(`[crm:embed:remote] Custom context for entity=${entity} is not initialized`)
-      }
-
-      return this.schema.fields.some(f => f.code === code)
     },
 
     set (code: string, value: CustomFieldType, onReject: Maybe<RejectionHandler> = null) {
@@ -153,10 +145,10 @@ export const useDictionary = defineStore('@retailcrm/embed-ui/_dictionary', {
     } = {}) {
       const accessor = this[CustomContextAccessorKey]
 
-      return new Promise<Dictionary>((resolve, reject) => {
+      return new Promise<CustomDictionary>((resolve, reject) => {
         let rejection: Rejection | null = null
 
-        accessor.getDictionary(code, parameters, r => rejection = r).then(dictionary => {
+        accessor.getCustomDictionary(code, parameters, r => rejection = r).then(dictionary => {
           if (!rejection) {
             resolve(dictionary)
           } else {
