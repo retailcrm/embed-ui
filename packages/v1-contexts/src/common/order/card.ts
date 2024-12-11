@@ -89,7 +89,7 @@ export const schema: Schema = {
     defaults: () => '',
     readonly: true,
   },
-  'contragent.type': {
+  'company.contragentType': {
     accepts: oneOf(
       isExactly('enterpreneur'),
       isExactly('legal-entity'),
@@ -98,22 +98,22 @@ export const schema: Schema = {
     defaults: () => 'legal-entity',
     readonly: true,
   },
-  'contragent.certificateNumber': {
+  'company.certificateNumber': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: false,
   },
-  'contragent.certificateDate': {
+  'company.certificateDate': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: false,
   },
-  'contragent.OGRN': {
+  'company.OGRN': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: false,
   },
-  'contragent.OGRNIP': {
+  'company.OGRNIP': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: false,
@@ -274,35 +274,35 @@ export const description: ContextSchemaDescription<Schema> = {
       'ru-RU': 'Статус заказа',
     },
   },
-  'contragent.type': {
+  'company.contragentType': {
     description: {
       'en-GB': 'Legal entity type',
       'es-ES': 'Tipo de entidad legal',
       'ru-RU': 'Тип юридического лица',
     },
   },
-  'contragent.certificateNumber': {
+  'company.certificateNumber': {
     description: {
       'en-GB': 'Certificate number',
       'es-ES': 'Número de certificado',
       'ru-RU': 'Номер свидетельства',
     },
   },
-  'contragent.certificateDate': {
+  'company.certificateDate': {
     description: {
       'en-GB': 'Certificate date',
       'es-ES': 'Fecha del certificado',
       'ru-RU': 'Дата свидетельства',
     },
   },
-  'contragent.OGRN': {
+  'company.OGRN': {
     description: {
       'en-GB': 'PSRN of the counterparty',
       'es-ES': 'PSRN del contraparte',
       'ru-RU': 'ОГРН контрагента',
     },
   },
-  'contragent.OGRNIP': {
+  'company.OGRNIP': {
     description: {
       'en-GB': 'PSRN of Individual entrepreneur',
       'es-ES': 'PSRN del emprendedor individual',

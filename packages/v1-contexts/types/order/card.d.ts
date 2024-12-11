@@ -15,11 +15,11 @@ export type Schema = {
   'country': ReadonlyField<string | null>;
   'currency': ReadonlyField<string>;
   'status': ReadonlyField<string>;
-  'contragent.type': ReadonlyField<'enterpreneur' | 'legal-entity' | 'individual'>;
-  'contragent.certificateNumber': Field<string | null>;
-  'contragent.certificateDate': Field<string | null>;
-  'contragent.OGRN': Field<string | null>;
-  'contragent.OGRNIP': Field<string | null>;
+  'company.contragentType': ReadonlyField<'enterpreneur' | 'legal-entity' | 'individual'>;
+  'company.certificateNumber': Field<string | null>;
+  'company.certificateDate': Field<string | null>;
+  'company.OGRN': Field<string | null>;
+  'company.OGRNIP': Field<string | null>;
   'company.name': Field<string | null>;
   'company.legalName': Field<string | null>;
   'company.legalAddress': Field<string | null>;
