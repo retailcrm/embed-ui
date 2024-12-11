@@ -4,12 +4,14 @@ import type {
   Context,
   ContextAccessor,
   ContextSchema,
+  CustomFieldType,
   IsReadonly,
   RejectionHandler,
   TypeOf,
 } from '@retailcrm/embed-ui-v1-types/context'
 
 import type { ContextStore } from '@retailcrm/embed-ui-v1-contexts/remote'
+import type { CustomContextStore } from '@retailcrm/embed-ui-v1-contexts/remote/custom'
 
 import type { Endpoint, RemoteCallable } from '@remote-ui/rpc'
 
@@ -42,6 +44,13 @@ export const useField = <S extends ContextSchema, F extends keyof S>(
     get: () => (store as Context<S>)[field],
     set: (value: TypeOf<S[F]>): void => set(field, value, onReject ?? _onReject),
   }) as Computed<S, F>
+}
+
+export const useCustomField = <T extends string>(store: CustomContextStore<T>, code: string) => {
+  return computed({
+    get: () => code in store.values ? store.values[code] : undefined,
+    set: (value: CustomFieldType) => store.set(code, value),
+  })
 }
 
 const useInternal = defineStore('@retailcrm/embed-ui/_internal', {})
