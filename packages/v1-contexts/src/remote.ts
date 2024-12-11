@@ -2,7 +2,7 @@ import type {
   Context,
   ContextAccessor,
   ContextSchema,
-  ContextSchemaMap,
+  ContextSchemaList,
   EventMap,
   RejectionHandler,
   TypeOf,
@@ -26,7 +26,7 @@ declare module 'pinia' {
 }
 
 export const injectEndpoint = <
-  M extends ContextSchemaMap,
+  M extends ContextSchemaList,
   A extends ContextAccessor<M> = ContextAccessor<M>
 >(endpoint: Endpoint<A>) => {
   return (context: PiniaPluginContext) => {

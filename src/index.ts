@@ -6,7 +6,13 @@ import type {
 } from '@remote-ui/rpc'
 
 import type { Callable } from '~types/host/callable'
-import type { ContextAccessor } from '@retailcrm/embed-ui-v1-types/context'
+
+import type {
+  ContextAccessor,
+  ContextSchemaList,
+  CustomContextAccessor,
+} from '@retailcrm/embed-ui-v1-types/context'
+
 import type { SchemaList } from '@retailcrm/embed-ui-v1-contexts/types'
 
 import type {
@@ -28,6 +34,7 @@ import {
 } from '@omnicajs/vue-remote/remote'
 
 import { injectEndpoint } from '@retailcrm/embed-ui-v1-contexts/remote'
+import { injectAccessor } from '@retailcrm/embed-ui-v1-contexts/remote/custom'
 
 export {
   schema as customerCardSchema,
@@ -54,8 +61,7 @@ export {
   useContext as useSettingsContext,
 } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
-export { useHost } from '@/composables'
-export { useField } from '@/composables'
+export * from '@/composables'
 
 const createRoot = async (channel: Channel) => {
   const root = createRemoteRoot(channel, {
@@ -81,14 +87,17 @@ const createRoot = async (channel: Channel) => {
   return root
 }
 
+type HostCallable<M extends ContextSchemaList = ContextSchemaList> = ContextAccessor<M> & CustomContextAccessor & Callable
+
 export const createWidgetEndpoint = (
   widget: WidgetRunner,
   messenger: MessageEndpoint
 ): Endpoint<ContextAccessor<SchemaList>> => {
-  const endpoint = createEndpoint<ContextAccessor<SchemaList> & Callable>(messenger)
+  const endpoint = createEndpoint<HostCallable>(messenger)
   const pinia = createPinia()
 
   pinia.use(injectEndpoint(endpoint as Endpoint<ContextAccessor<SchemaList>>))
+  pinia.use(injectAccessor(endpoint))
 
   let onRelease = () => {}
 

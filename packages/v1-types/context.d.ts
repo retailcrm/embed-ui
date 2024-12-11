@@ -24,9 +24,11 @@ export type ContextSchema = {
   [key: string]: Field<unknown, boolean>;
 }
 
-export type ContextSchemaMap = {
+export type ContextSchemaList = {
   [key: string]: ContextSchema;
 }
+
+export type ContextSchemaMap = ContextSchemaList
 
 export type Context<S extends ContextSchema> = {
   [F in keyof S]: TypeOf<S[F]>;
@@ -49,7 +51,7 @@ export type EventHandler<
   E extends keyof EventPayloadMap<S>
 > = (payload: EventPayloadMap<S>[E]) => void
 
-export type ContextAccessor<M extends ContextSchemaMap = ContextSchemaMap> = {
+export type ContextAccessor<M extends ContextSchemaList = ContextSchemaList> = {
   get <
     C extends keyof M,
     F extends keyof M[C]
@@ -114,4 +116,63 @@ export interface LogicalRejection extends Rejection {
 
 export interface RuntimeRejection extends Rejection {
   type: 'runtime';
+}
+
+export type Dictionary = DictionaryItem[]
+export type DictionaryItem = {
+  code: string;
+  text: string;
+}
+
+export interface BasicCustomField<K extends string, T> {
+  kind: K;
+  code: string;
+  readonly: boolean;
+  initial: T;
+}
+
+export interface ChoiceCustomField extends BasicCustomField<'choice', string[]> {
+  dictionaryCode: string;
+  multiple: boolean;
+}
+
+export type CustomField<K extends CustomFieldKind = CustomFieldKind> = CustomFieldList[K]
+
+export type CustomFieldType = TypeOfCustom<CustomFieldKind>
+export type CustomFieldKind = keyof CustomFieldList
+export type CustomFieldList = {
+  'boolean': BasicCustomField<'boolean', boolean>;
+  'choice': ChoiceCustomField;
+  'date': BasicCustomField<'date', string>;
+  'datetime': BasicCustomField<'datetime', string>;
+  'email': BasicCustomField<'email', string>;
+  'float': BasicCustomField<'float', number>;
+  'integer': BasicCustomField<'integer', number>;
+  'string': BasicCustomField<'string', string>;
+}
+
+export type TypeOfCustom<K extends string> = K extends CustomFieldKind
+  ? CustomFieldList[K] extends BasicCustomField<string, infer T> ? T : never
+  : unknown;
+
+export type CustomContextSchema = {
+  entity: string;
+  fields: CustomField[];
+}
+
+export type CustomContext = {
+  [code: string]: CustomFieldType
+}
+
+export interface CustomContextAccessor {
+  getCustomSchema (entity: string, onReject?: Maybe<RejectionHandler>): CustomContextSchema | null | undefined;
+  getCustomField (entity: string, code: string): unknown;
+  setCustomField (entity: string, code: string, value: CustomFieldType, onReject?: Maybe<RejectionHandler>): unknown;
+  onCustomFieldChange (entity: string, code: string, handler: (value: CustomFieldType) => void);
+  getDictionary (code: string, parameters?: {
+    after?: string;
+    before?: string;
+    first?: number;
+    last?: number;
+  }, onReject?: Maybe<RejectionHandler>): Promise<Dictionary>;
 }

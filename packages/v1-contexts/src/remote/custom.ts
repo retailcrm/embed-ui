@@ -1,0 +1,169 @@
+import type {
+  CustomField,
+  CustomFieldKind,
+  CustomFieldType,
+  CustomContext,
+  CustomContextAccessor,
+  CustomContextSchema,
+  Dictionary,
+  Rejection,
+  RejectionHandler,
+} from '@retailcrm/embed-ui-v1-types/context'
+
+import type { Endpoint } from '@remote-ui/rpc'
+import type { Maybe } from '@retailcrm/embed-ui-v1-types/scaffolding'
+
+import type { PiniaPluginContext } from 'pinia'
+
+import { defineStore } from 'pinia'
+
+export const CustomContextAccessorKey = Symbol('CustomContextAccessor')
+
+declare module 'pinia' {
+  // noinspection JSUnusedGlobalSymbols
+  export interface PiniaCustomProperties {
+    [CustomContextAccessorKey]: Endpoint<CustomContextAccessor>['call']
+  }
+}
+
+// noinspection JSUnusedGlobalSymbols
+export const injectAccessor = (endpoint: Endpoint<CustomContextAccessor>) => {
+  return (context: PiniaPluginContext) => {
+    context.store[CustomContextAccessorKey] = endpoint.call
+  }
+}
+
+// noinspection JSUnusedGlobalSymbols
+export const isTypeOf = <T extends CustomFieldKind>(field: CustomField, type: T): field is CustomField<T> => {
+  return field.kind === type
+}
+
+export const defineContext = <T extends string>(entity: T) => defineStore(`custom/${entity}`, {
+  state () {
+    return {
+      schema: null as CustomContextSchema | null,
+      values: {} as CustomContext,
+    }
+  },
+
+  getters: {
+    entity: () => entity,
+  },
+
+  actions: {
+    async initialize (onReject: Maybe<RejectionHandler> = null) {
+      const accessor = this[CustomContextAccessorKey]
+      const schema = await accessor.getCustomSchema(entity, onReject)
+      if (!schema) {
+        return null
+      }
+
+      this.schema = schema
+      this.values = schema.fields.reduce((state, field) => {
+        state[field.code] = Array.isArray(field.initial)
+          ? [...field.initial]
+          : field.initial
+
+        return state
+      }, {} as CustomContext)
+
+      schema.fields.forEach(field => {
+        accessor.onCustomFieldChange(entity, field.code, (value) => {
+          this.values[field.code] = value
+        })
+      })
+
+      return schema
+    },
+
+    has (code: string) {
+      if (!this.schema) {
+        throw new Error(`[crm:embed:remote] Custom context for entity=${entity} is not initialized`)
+      }
+
+      return this.schema.fields.some(f => f.code === code)
+    },
+
+    set (code: string, value: CustomFieldType, onReject: Maybe<RejectionHandler> = null) {
+      if (!this.schema) {
+        throw new Error(`[crm:embed:remote] Custom context for entity=${entity} is not initialized`)
+      }
+
+      const field = this.schema.fields.find(f => f.code === code)
+      if (!field) {
+        throw new Error(`[crm:embed:remote] Custom context for entity=${entity} does not contain field with code ${code}`)
+      }
+
+      guardReadonly(entity, field)
+      guardType(entity, field, value)
+
+      this[CustomContextAccessorKey].setCustomField(entity, code, value, onReject)
+    },
+  },
+})
+
+export const useContext = <T extends string>(entity: T) => defineContext(entity)()
+
+// noinspection JSUnusedGlobalSymbols
+export type CustomContextStore<T extends string> = ReturnType<CustomContextStoreDefinition<T>>
+export type CustomContextStoreDefinition<T extends string> = ReturnType<typeof defineContext<T>>
+
+function guardReadonly (entity: string, field: CustomField) {
+  if (field.readonly) {
+    throw new Error(`[crm:embed:remote] Field with code ${field.code} is not writable according to schema for entity=${entity}`)
+  }
+}
+
+function guardType (entity: string, field: CustomField, value: CustomFieldType) {
+  if (!accepts(field, value)) {
+    throw new Error(`[crm:embed:remote] Invalid value for field kind ${field.kind} with code ${field.code} in entity=${entity}`)
+  }
+}
+
+function accepts (field: CustomField, value: CustomFieldType) {
+  switch (field.kind) {
+    case 'boolean':
+      return typeof value === 'boolean'
+    case 'choice':
+      return Array.isArray(value) && value.every((v: unknown) => typeof v === 'string')
+    case 'date':
+      return typeof value === 'string'
+    case 'datetime':
+      return typeof value === 'string'
+    case 'email':
+      return typeof value === 'string'
+    case 'float':
+      return typeof value === 'number'
+    case 'integer':
+      return typeof value === 'number'
+    case 'string':
+      return typeof value === 'string'
+    default:
+      return false
+  }
+}
+
+export const useDictionary = defineStore('@retailcrm/embed-ui/_dictionary', {
+  actions: {
+    async query (code: string, parameters: {
+      after?: string;
+      before?: string;
+      first?: number;
+      last?: number;
+    } = {}) {
+      const accessor = this[CustomContextAccessorKey]
+
+      return new Promise<Dictionary>((resolve, reject) => {
+        let rejection: Rejection | null = null
+
+        accessor.getDictionary(code, parameters, r => rejection = r).then(dictionary => {
+          if (!rejection) {
+            resolve(dictionary)
+          } else {
+            reject(rejection)
+          }
+        })
+      })
+    },
+  },
+})
