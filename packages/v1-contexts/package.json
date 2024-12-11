@@ -50,6 +50,12 @@
       "require": "./dist/remote/settings.cjs",
       "default": "./dist/remote/settings.js"
     },
+    "./remote/custom": {
+      "types": "./dist/remote/custom.d.ts",
+      "import": "./dist/remote/custom.js",
+      "require": "./dist/remote/custom.cjs",
+      "default": "./dist/remote/custom.js"
+    },
     "./*": "./*"
   },
   "typesVersions": {
@@ -74,6 +80,9 @@
       ],
       "remote/settings": [
         "./dist/remote/settings.d.ts"
+      ],
+      "remote/custom": [
+        "./dist/remote/custom.d.ts"
       ]
     }
   },

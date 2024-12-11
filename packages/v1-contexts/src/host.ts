@@ -2,7 +2,7 @@ import {
   Context,
   ContextAccessor,
   ContextSchema,
-  ContextSchemaMap,
+  ContextSchemaList,
   FieldAccessor,
   FieldGetters,
   FieldSetters,
@@ -79,7 +79,7 @@ export const createSetter = <S extends ContextSchema>(id: string, setters: Field
   }) as FieldAccessor<S>['set']
 }
 
-export const createContextAccessor = <M extends ContextSchemaMap>(accessors: {
+export const createContextAccessor = <M extends ContextSchemaList>(accessors: {
   [K in keyof M]: FieldAccessor<M[K]>
 }, onError: Maybe<ErrorHandler> = null): ContextAccessor<M> => {
   const guard = (context: keyof M) => {
