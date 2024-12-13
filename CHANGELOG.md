@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.5.1-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.0...v0.5.1-alpha.1) (2024-12-13)
+
+### Features
+
+* Added useCustomField composable ([8290af2](https://github.com/retailcrm/embed-ui/commit/8290af2468308de132c24f17bb1be983b5c96d2e))
+* **v1-contexts:** Logic of custom contexts ([b4e3dff](https://github.com/retailcrm/embed-ui/commit/b4e3dff92a9c258237d14e5ad8e25be1f87b9f1b))
+* **v1-types:** Added types for custom contexts ([a86c795](https://github.com/retailcrm/embed-ui/commit/a86c795e2bd77c4086705c760277ecc03cfd8072))
 ## [0.5.0](https://github.com/retailcrm/embed-ui/compare/v0.4.9...v0.5.0) (2024-12-11)
 
 ### ⚠ BREAKING CHANGES
