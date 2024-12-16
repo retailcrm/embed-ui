@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.1-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.2...v0.5.1-alpha.3) (2024-12-16)
+
+### Features
+
+* **v1-types:** All fields except 'choice' were made nullable ([0311cb5](https://github.com/retailcrm/embed-ui/commit/0311cb506c97463279381cae17ea3bf0e18797b7))
 ## [0.5.1-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.1...v0.5.1-alpha.2) (2024-12-16)
 
 ### Bug Fixes
