@@ -149,14 +149,14 @@ export type CustomField<K extends CustomFieldKind = CustomFieldKind> = CustomFie
 export type CustomFieldType = TypeOfCustom<CustomFieldKind>
 export type CustomFieldKind = keyof CustomFieldList
 export type CustomFieldList = {
-  'boolean': BasicCustomField<'boolean', boolean>;
+  'boolean': BasicCustomField<'boolean', boolean | null>;
   'choice': ChoiceCustomField;
-  'date': BasicCustomField<'date', string>;
-  'datetime': BasicCustomField<'datetime', string>;
-  'email': BasicCustomField<'email', string>;
-  'float': BasicCustomField<'float', number>;
-  'integer': BasicCustomField<'integer', number>;
-  'string': BasicCustomField<'string', string>;
+  'date': BasicCustomField<'date', string | null>;
+  'datetime': BasicCustomField<'datetime', string | null>;
+  'email': BasicCustomField<'email', string | null>;
+  'float': BasicCustomField<'float', number | null>;
+  'integer': BasicCustomField<'integer', number | null>;
+  'string': BasicCustomField<'string', string | null>;
 }
 
 export type TypeOfCustom<K extends string> = K extends CustomFieldKind
