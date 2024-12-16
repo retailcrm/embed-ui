@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.5.1-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.1...v0.5.1-alpha.2) (2024-12-16)
+
+### Bug Fixes
+
+* **v1-contexts:** Missing utilities, renaming according to types changes ([5cdd029](https://github.com/retailcrm/embed-ui/commit/5cdd02923015ff12cf10f15699c517a7896099df))
+* **v1-types:** Replacing experimental types ([3ebc4d2](https://github.com/retailcrm/embed-ui/commit/3ebc4d2809b80954ed4e53fcab3cf37624dffc97))
 ## [0.5.1-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.0...v0.5.1-alpha.1) (2024-12-13)
 
 ### Features
