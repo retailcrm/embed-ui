@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.1-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.3...v0.5.1-alpha.4) (2024-12-17)
+
+### Bug Fixes
+
+* Missing useCustomField declaration in index.d.ts ([4babd03](https://github.com/retailcrm/embed-ui/commit/4babd0373e2047288e12dd712cc636a530e25a41))
 ## [0.5.1-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.2...v0.5.1-alpha.3) (2024-12-16)
 
 ### Features
