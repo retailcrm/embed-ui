@@ -49,6 +49,11 @@ export declare const useField: <S extends ContextSchema, F extends keyof S>(
   ? ComputedRef<TypeOf<S[F]>>
   : WritableComputedRef<TypeOf<S[F]>>
 
+export declare const useCustomField: <T extends string>(
+  store: CustomContextStore<T>,
+  code: string
+) => WritableComputedRef<CustomFieldType>
+
 export declare const useHost = () => RemoteCallable<Callable>
 
 declare module 'pinia' {
