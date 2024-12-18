@@ -116,20 +116,23 @@ function accepts (field: CustomField, value: CustomFieldType) {
   switch (field.kind) {
     case 'boolean':
       return typeof value === 'boolean'
-    case 'choice':
-      return Array.isArray(value) && value.every((v: unknown) => typeof v === 'string')
     case 'date':
-      return typeof value === 'string'
+      return typeof value === 'string' || value === null
     case 'datetime':
-      return typeof value === 'string'
+      return typeof value === 'string' || value === null
+    case 'dictionary':
+      return typeof value === 'string' || value === null
+    case 'multiselect_dictionary':
+      return Array.isArray(value) && (value.length === 0 || value.every((v: unknown) => typeof v === 'string'))
     case 'email':
-      return typeof value === 'string'
-    case 'float':
-      return typeof value === 'number'
+      return typeof value === 'string' || value === null
     case 'integer':
-      return typeof value === 'number'
+      return typeof value === 'number' && Number.isInteger(value) || value === null
+    case 'numeric':
+      return typeof value === 'number' || value === null
     case 'string':
-      return typeof value === 'string'
+    case 'text':
+      return typeof value === 'string' || value === null
     default:
       return false
   }
