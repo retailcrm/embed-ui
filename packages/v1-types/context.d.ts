@@ -139,9 +139,12 @@ export interface BasicCustomField<K extends string, T> {
   initial: T;
 }
 
-export interface ChoiceCustomField extends BasicCustomField<'choice', string[]> {
+export interface DictionaryCustomField extends BasicCustomField<'dictionary', string | null> {
   dictionaryCode: string;
-  multiple: boolean;
+}
+
+export interface MultiselectDictionaryCustomField extends BasicCustomField<'multiselect_dictionary', string[]> {
+  dictionaryCode: string;
 }
 
 export type CustomField<K extends CustomFieldKind = CustomFieldKind> = CustomFieldList[K]
@@ -150,13 +153,15 @@ export type CustomFieldType = TypeOfCustom<CustomFieldKind>
 export type CustomFieldKind = keyof CustomFieldList
 export type CustomFieldList = {
   'boolean': BasicCustomField<'boolean', boolean | null>;
-  'choice': ChoiceCustomField;
   'date': BasicCustomField<'date', string | null>;
   'datetime': BasicCustomField<'datetime', string | null>;
+  'dictionary': DictionaryCustomField;
+  'multiselect_dictionary': MultiselectDictionaryCustomField;
   'email': BasicCustomField<'email', string | null>;
-  'float': BasicCustomField<'float', number | null>;
   'integer': BasicCustomField<'integer', number | null>;
+  'numeric': BasicCustomField<'numeric', number | null>;
   'string': BasicCustomField<'string', string | null>;
+  'text': BasicCustomField<'text', string | null>;
 }
 
 export type TypeOfCustom<K extends string> = K extends CustomFieldKind
@@ -182,7 +187,12 @@ export type CustomContextAccessor = {
   ): Promise<CustomDictionary>;
 
   getCustomField (entity: string, code: string, onReject?: Maybe<RejectionHandler>): unknown;
-  setCustomField (entity: string, code: string, value: CustomFieldType, onReject?: Maybe<RejectionHandler>): unknown;
+  setCustomField (
+    entity: string,
+    code: string,
+    value: CustomFieldType,
+    onReject?: Maybe<RejectionHandler>
+  ): void;
 
   onCustomFieldChange (
     entity: string,
