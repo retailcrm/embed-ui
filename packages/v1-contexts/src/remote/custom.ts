@@ -142,9 +142,7 @@ export const useDictionary = defineStore('@retailcrm/embed-ui/_dictionary', {
   actions: {
     async query (code: string, parameters: {
       after?: string;
-      before?: string;
       first?: number;
-      last?: number;
     } = {}) {
       const accessor = this[CustomContextAccessorKey]
 
