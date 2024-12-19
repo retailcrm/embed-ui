@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.5.1-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.4...v0.5.1-alpha.5) (2024-12-19)
+
+### Features
+
+* **v1-contexts:** Adjusted validator to changed custom fields' kinds ([3f730be](https://github.com/retailcrm/embed-ui/commit/3f730bedae5fd2489f7ffcf7bd3cd43e92d0f9f6))
+* **v1-contexts:** Removed before & last filters from custom dictionary query ([9e53e28](https://github.com/retailcrm/embed-ui/commit/9e53e28de6da07dfe3e02c92ec9a717e412b6f1f))
+* **v1-types:** Renamed custom field kinds, additional custom fields ([0100148](https://github.com/retailcrm/embed-ui/commit/0100148b435b0e188dffd1fa8b4c7563e6f9af20))
 ## [0.5.1-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.3...v0.5.1-alpha.4) (2024-12-17)
 
 ### Bug Fixes
