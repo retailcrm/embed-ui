@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.1-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.5...v0.5.1-alpha.6) (2024-12-20)
+
+### Features
+
+* **v1-components:** Added UiCheckbox component ([87cbaa8](https://github.com/retailcrm/embed-ui/commit/87cbaa8b0381056a342bb1c70e5b2b45121641cb))
 ## [0.5.1-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.4...v0.5.1-alpha.5) (2024-12-19)
 
 ### Features
