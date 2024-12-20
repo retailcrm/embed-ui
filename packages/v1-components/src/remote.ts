@@ -1,4 +1,5 @@
 export * from '@/remote/components/button'
+export * from '@/remote/components/checkbox'
 export * from '@/remote/components/error'
 export * from '@/remote/components/link'
 export * from '@/remote/components/loader'

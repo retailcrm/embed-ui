@@ -1,0 +1,119 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-checkbox {
+  .reset-box-sizing();
+
+  display: inline-flex;
+  align-items: flex-start;
+  font-style: normal;
+  cursor: pointer;
+  margin-bottom: 0;
+  position: relative;
+  vertical-align: text-bottom;
+
+  &_disabled {
+    cursor: default;
+  }
+
+  &__input {
+    width: 100%;
+    height: 100%;
+    appearance: none;
+    cursor: inherit;
+    outline: none;
+    z-index: 1;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &__checkmark {
+    display: inline-block;
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: @border-radius-sm;
+    border: 2px solid @grey-500;
+    color: #fff;
+    transition: @transition;
+    transition-property: color, box-shadow, background-color, border-color;
+    vertical-align: top;
+    position: relative;
+  }
+
+  &:not(&_checked):not(&_active):not(&_disabled) &__input:hover  ~ &__checkmark { border-color: @blue-500; }
+  &:not(&_checked):not(&_active):not(&_disabled) &__input:active ~ &__checkmark { background: @blue-100; }
+
+  &:not(&_disabled) &__input:hover ~ &__checkmark {
+    box-shadow: 0 0 0 @spacing-xxs @blue-transparent;
+  }
+
+  &:not(&_disabled):active &__checkmark {
+    border-color: @blue-600;
+    box-shadow: 0 0 0 @spacing-xxs @blue-transparent !important;
+  }
+
+  &:not(&_disabled):not(&_checked):not(&_indeterminate):active &__checkmark {
+    background-color: @blue-transparent;
+  }
+
+  &_checked &__checkmark {
+    border-color: @blue-500;
+    background: @blue-500;
+  }
+
+  &_disabled:not(&_checked):not(&_indeterminate) &__checkmark {
+    background: @grey-300;
+    border-color: @grey-600;
+  }
+
+  &_disabled &__checkmark {
+    border-color: @blue-200;
+    background: @blue-200;
+  }
+
+  &_indeterminate                   &__checkmark,
+  &_indeterminate &__input:hover  ~ &__checkmark,
+  &_indeterminate &__input:active ~ &__checkmark {
+    border-color: @blue-500;
+    background: @blue-500
+    url("data:image/svg+xml,%3csvg width='12' height='4' viewBox='0 0 12 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3e %3cpath d='M0.583415 3.04165C0.353296 3.04165 0.166748 2.80846 0.166748 2.52081V1.47915C0.166748 1.1915 0.353296 0.958313 0.583415 0.958313H11.4167C11.6469 0.958313 11.8334 1.1915 11.8334 1.47915V2.52081C11.8334 2.80846 11.6469 3.04165 11.4167 3.04165H0.583415Z' fill='white'/%3e %3c/svg%3e")
+    no-repeat center !important;
+  }
+
+  &_disabled&_indeterminate                   &__checkmark,
+  &_disabled&_indeterminate &__input:hover  ~ &__checkmark,
+  &_disabled&_indeterminate &__input:active ~ &__checkmark {
+    background-color: @blue-200 !important;
+    border-color: @blue-200;
+    box-shadow: none;
+  }
+
+  &_small &__checkmark {
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+  }
+
+  &_small&_indeterminate &__checkmark {
+    background-size: 8px 4px !important;
+  }
+
+  &__checkmark-icon {
+    width: 22px;
+    height: 22px;
+    margin-left: -3px;
+    margin-top: -3px;
+  }
+  &_small &__checkmark-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: -2px;
+    margin-top: -2px;
+  }
+}
