@@ -1,0 +1,116 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+@color-active: var(--ui-radio-active-color, @blue-600);
+@color-checked: var(--ui-radio-checked-color, @blue-500);
+@color-disabled: var(--ui-radio-disabled-color, @blue-200);
+@color-focus: var(--ui-radio-focus-color, @blue-300);
+@color-hover: var(--ui-radio-hover-color, @blue-400);
+
+@color-on-surface: var(--ui-radio-on-surface-color, @blue-transparent);
+
+.ui-v1-radio {
+  .reset-box-sizing();
+
+  display: inline-flex;
+  cursor: pointer;
+  transition: @transition;
+  position: relative;
+  vertical-align: top;
+
+  &_disabled {
+    cursor: default;
+  }
+
+  &__input {
+    .square(100%);
+
+    appearance: none;
+    cursor: inherit;
+    outline: none;
+    z-index: 1;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &__checkmark {
+    .circle(20px);
+
+    --background: #fff;
+    --border-color: @grey-500;
+    --bullet-color: @color-checked;
+    --shadow: none;
+
+    display: inline-block;
+    background: var(--background);
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow);
+    transition: @transition;
+    transition-property: background-color, border-color, box-shadow, color;
+    position: relative;
+
+    &::after {
+      .circle(12px);
+
+      content: '';
+      background: var(--bullet-color);
+      transform: scale(0);
+      transition: 0.15s ease;
+      margin: auto;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }
+
+  &__input:not([disabled]):hover ~ &__checkmark {
+    --border-color: @color-hover;
+    --bullet-color: @color-hover;
+    --shadow: 0 0 0 6px @color-on-surface;
+  }
+
+  &__input:not([disabled]):focus ~ &__checkmark {
+    --border-color: @color-focus;
+    --bullet-color: @color-focus;
+    --shadow: 0 0 0 6px @color-on-surface;
+  }
+
+  &__input:not([disabled]):active ~ &__checkmark {
+    --background: @color-on-surface;
+    --border-color: @color-active;
+    --bullet-color: @color-active;
+  }
+
+  &_checked &__checkmark {
+    border-color: @color-checked;
+  }
+
+  &_checked &__checkmark::after {
+    background: @color-checked;
+    transform: scale(1);
+  }
+
+  &_checked &__input:not([disabled]):active ~ &__checkmark::after {
+    background: @color-active;
+  }
+
+  &_disabled &__checkmark {
+    border-color: @grey-600;
+    background: @grey-300;
+    box-shadow: none;
+  }
+
+  &_checked&_disabled &__checkmark {
+    border-color: @color-disabled;
+
+    &::after {
+      background: @color-disabled;
+    }
+  }
+}
