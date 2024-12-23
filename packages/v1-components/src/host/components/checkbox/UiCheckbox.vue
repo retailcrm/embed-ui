@@ -1,6 +1,5 @@
 <template>
     <span
-        ref="root"
         :class="{
             'ui-v1-checkbox': true,
             'ui-v1-checkbox_small': small,
@@ -43,9 +42,10 @@ import type { PropType } from 'vue'
 import type { Primitive } from '@/common/types'
 import type { UiCheckboxMethods } from '@/common/components/checkbox'
 
-import { computed, ref } from 'vue'
-
 import IconDone from '~assets/sprites/actions/done.svg'
+
+import { computed, ref } from 'vue'
+import { pick } from '@/common/utils'
 
 const isArray = Array.isArray
 
@@ -59,7 +59,7 @@ const props = defineProps({
   /** Атрибут name нативного поля ввода */
   name: {
     type: String,
-    default: () => 'ui-checkbox-' + ++counter,
+    default: () => 'ui-v1-checkbox-' + ++counter,
   },
 
   /** Значение модели используемое с директивой v-model */
@@ -105,15 +105,14 @@ const props = defineProps({
   },
 })
 
-const root = ref<HTMLElement | null>(null)
-const checkbox = ref<HTMLInputElement | null>(null)
+const emit = defineEmits([
+  /** Изменение значения модели */
+  'change',
+  /** Изменение значения модели. Для v-model */
+  'update:model',
+])
 
-const pick = (attrs: Record<string, unknown>, criteria: (key: string) => boolean) => {
-  return Object.keys(attrs).filter(criteria).reduce((picked, key) => ({
-    ...picked,
-    [key]: attrs[key],
-  }), {} as typeof attrs)
-}
+const checkbox = ref<HTMLInputElement | null>(null)
 
 const click = () => checkbox.value?.click()
 const focus = () => checkbox.value?.focus()
@@ -124,13 +123,6 @@ defineExpose({
   focus,
   blur,
 } satisfies UiCheckboxMethods)
-
-const emit = defineEmits([
-  /** Переключение чекбокса */
-  'change',
-  /** Изменение значения модели */
-  'update:model',
-])
 
 const contains = (array: unknown[], value: unknown) => array.some(v => v === value)
 

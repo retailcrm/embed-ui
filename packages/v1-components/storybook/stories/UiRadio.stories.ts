@@ -3,27 +3,28 @@ import type {
   StoryObj,
 } from '@storybook/vue3'
 
-import type { UiCheckboxProperties } from '@/common/components/checkbox'
+import type { UiRadioProperties } from '@/common/components/radio'
 
-import UiCheckbox from '@/host/components/checkbox/UiCheckbox.vue'
+import UiRadio from '@/host/components/radio/UiRadio.vue'
 
 import { computed, ref } from 'vue'
 import { without } from '@/common/utils'
 
-import page from './UiCheckbox.mdx'
+import page from './UiRadio.mdx'
 
 const meta = {
-  title: 'Components/UiCheckbox',
+  title: 'Components/UiRadio',
 
-  component: UiCheckbox,
+  component: UiRadio,
 
   argTypes: {
     id: { control: false },
+    model: { control: false },
   },
 
-  render: (args: UiCheckboxProperties) => ({
+  render: (args: UiRadioProperties) => ({
     components: {
-      UiCheckbox,
+      UiRadio,
     },
 
     setup () {
@@ -34,15 +35,15 @@ const meta = {
     },
 
     template: `
-      <UiCheckbox
-          id="checkbox"
+      <UiRadio
+          id="radio"
           v-model:model="model"
           v-bind="props"
           style="margin-right: 8px"
       />
 
-      <label for="checkbox">
-          Checkbox
+      <label for="radio">
+          Radio
       </label>
     `,
   }),
@@ -51,11 +52,15 @@ const meta = {
     docs: { page },
     layout: 'centered',
   },
-} satisfies Meta<typeof UiCheckbox>
+} satisfies Meta<typeof UiRadio>
 
 // noinspection JSUnusedGlobalSymbols
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Sandbox: Story = {}
+export const Sandbox: Story = {
+  args: {
+    value: 'radio',
+  },
+}
