@@ -267,6 +267,23 @@ export const targetListDocumentation: {
       'settings',
     ],
   },
+  'order/card:comment.manager.before': {
+    description: {
+      'en-GB': 'Widget for the block "Customer Comments"',
+      'es-ES': 'Widget para el bloque "Comentarios del Cliente"',
+      'ru-RU': 'Виджет для блока "Комментарии клиента"',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input field',
+      'es-ES': 'Inicio de la sección, justo encima del campo de entrada',
+      'ru-RU': 'Начало секции, над полем ввода',
+    },
+    contexts: [
+      'order/card',
+      'user/current',
+      'settings',
+    ],
+  },
 }
 
 export const pageListDocumentation = [{
