@@ -138,6 +138,11 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: false,
   },
+  'company.KPP': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: false,
+  },
   'company.OKPO': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
@@ -335,6 +340,13 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Counterparty\'s INN',
       'es-ES': 'INN del contraparte',
       'ru-RU': 'ИНН контрагента',
+    },
+  },
+  'company.KPP': {
+    description: {
+      'en-GB': 'Counterparty\'s KPP',
+      'es-ES': 'KPP del contraparte',
+      'ru-RU': 'КПП контрагента',
     },
   },
   'company.OKPO': {
