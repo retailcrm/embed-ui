@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1](https://github.com/retailcrm/embed-ui/compare/v0.5.0...v0.5.1) (2024-12-23)
+
+Special release for features included. Please take a note here that alpha versions' changes were not included.
+
+### Features
+
+* New target definition 'order/card:comment.manager.before' for widgets in 'Client comments' block ([556ce64](https://github.com/retailcrm/embed-ui/commit/556ce64ab7b4405297a537a3b4c14a70a1dbe793))
+* **v1-contexts:** Added company.KPP field to order/card context ([c188ccb](https://github.com/retailcrm/embed-ui/commit/c188ccb1544904242fe2e00fa5054f8bbb7068bd))
 
 ## [0.5.1-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.5.1-alpha.5...v0.5.1-alpha.6) (2024-12-20)
 
