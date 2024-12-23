@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.2-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.5.2-alpha.1...v0.5.2-alpha.2) (2024-12-23)
+
+### Bug Fixes
+
+* **v1-components:** Missing UiRadio host export ([8811cf6](https://github.com/retailcrm/embed-ui/commit/8811cf6ca5a74f50aedcd354163e25da172a9c2b))
 ## [0.5.2-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.1-1.0...v0.5.2-alpha.1) (2024-12-23)
 
 ### Features
