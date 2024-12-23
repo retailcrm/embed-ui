@@ -1,5 +1,11 @@
 # Changelog
 
+
+## [0.5.2-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.1-1.0...v0.5.2-alpha.1) (2024-12-23)
+
+### Features
+
+* **v1-components:** Added UiRadio component ([a29ab06](https://github.com/retailcrm/embed-ui/commit/a29ab061f995cb118d4f534ebdf2034e8235cccb))
 ## [0.5.1](https://github.com/retailcrm/embed-ui/compare/v0.5.0...v0.5.1) (2024-12-23)
 
 Special release for features included. Please take a note here that alpha versions' changes were not included.
