@@ -108,4 +108,9 @@ export type SchemaListByTarget = {
     | 'user/current'
     | 'settings'
   >;
+  'order/card:comment.manager.before': Pick<SchemaList,
+    | 'order/card'
+    | 'user/current'
+    | 'settings'
+  >
 }
