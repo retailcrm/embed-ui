@@ -24,6 +24,7 @@ export type Schema = {
   'company.legalName': Field<string | null>;
   'company.legalAddress': Field<string | null>;
   'company.INN': Field<string | null>;
+  'company.KPP': Field<string | null>;
   'company.OKPO': Field<string | null>;
   'company.BIK': Field<string | null>;
   'company.bank': Field<string | null>;
