@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.2-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.5.2-alpha.2...v0.5.2-alpha.3) (2024-12-23)
+
+### Bug Fixes
+
+* **v1-contexts:** Missing company.KPP field of order/card context from v0.5.1 ([11c3cc4](https://github.com/retailcrm/embed-ui/commit/11c3cc41e66312b695e3fa500f07b352dde7812d))
 ## [0.5.2-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.5.2-alpha.1...v0.5.2-alpha.2) (2024-12-23)
 
 ### Bug Fixes
