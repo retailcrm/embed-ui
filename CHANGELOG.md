@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.5.2-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.5.2-alpha.3...v0.5.2-alpha.4) (2024-12-24)
+
+### Features
+
+* **v1-types:** Removed before/last fields from CustomDictionaryFilter ([54f64ab](https://github.com/retailcrm/embed-ui/commit/54f64aba383016a081d5efe3ff6ee05cb6ecbb47))
+
+### Bug Fixes
+
+* Missing UiCheckbox/UiRadio in components' names list passed to remote root ([2d0981e](https://github.com/retailcrm/embed-ui/commit/2d0981eed28e076c51b4a4afb562a1fa69f0fd40))
 ## [0.5.2-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.5.2-alpha.2...v0.5.2-alpha.3) (2024-12-23)
 
 ### Bug Fixes
