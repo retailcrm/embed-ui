@@ -1,6 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/retailcrm/embed-ui/compare/v0.5.1...v0.5.2) (2024-12-24)
 
+Special release for the fixes included. Please take a note here that alpha versions' changes were not included.
+
+### Bug Fixes
+
+* Fixed description of target 'order/card:comment.manager.before' ([dbe61c7](https://github.com/retailcrm/embed-ui/commit/dbe61c7425d86a4cf85e56ba3fdc7684d4e75241))
 ## [0.5.2-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.5.2-alpha.3...v0.5.2-alpha.4) (2024-12-24)
 
 ### Features
@@ -27,7 +33,7 @@
 * **v1-components:** Added UiRadio component ([a29ab06](https://github.com/retailcrm/embed-ui/commit/a29ab061f995cb118d4f534ebdf2034e8235cccb))
 ## [0.5.1](https://github.com/retailcrm/embed-ui/compare/v0.5.0...v0.5.1) (2024-12-23)
 
-Special release for features included. Please take a note here that alpha versions' changes were not included.
+Special release for the features included. Please take a note here that alpha versions' changes were not included.
 
 ### Features
 
