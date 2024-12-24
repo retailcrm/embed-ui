@@ -2,7 +2,7 @@
   "name": "@retailcrm/embed-ui-v1-types",
   "description": "Basic types declarations for RetailCRM JS API",
   "type": "module",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
   "repository": "git@github.com:retailcrm/embed-ui.git",

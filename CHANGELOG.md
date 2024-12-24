@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.2](https://github.com/retailcrm/embed-ui/compare/v0.5.1...v0.5.2) (2024-12-24)
+
+### Bug Fixes
+
+* Fixed description of target 'order/card:comment.manager.before' ([dbe61c7](https://github.com/retailcrm/embed-ui/commit/dbe61c7425d86a4cf85e56ba3fdc7684d4e75241))
 ## [0.5.1](https://github.com/retailcrm/embed-ui/compare/v0.5.0...v0.5.1) (2024-12-23)
 
 ### Features
