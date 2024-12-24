@@ -1,5 +1,7 @@
 # Changelog
 
+
+## [0.5.3-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.2-1.0...v0.5.3-alpha.1) (2024-12-24)
 ## [0.5.2](https://github.com/retailcrm/embed-ui/compare/v0.5.1...v0.5.2) (2024-12-24)
 
 Special release for the fixes included. Please take a note here that alpha versions' changes were not included.
