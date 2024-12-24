@@ -269,9 +269,9 @@ export const targetListDocumentation: {
   },
   'order/card:comment.manager.before': {
     description: {
-      'en-GB': 'Widget for the block "Customer Comments"',
-      'es-ES': 'Widget para el bloque "Comentarios del Cliente"',
-      'ru-RU': 'Виджет для блока "Комментарии клиента"',
+      'en-GB': 'Widget for the block "Manager comment"',
+      'es-ES': 'Widget para el bloque "Comentario del asesor"',
+      'ru-RU': 'Виджет для блока "Комментарии оператора"',
     },
     location: {
       'en-GB': 'Section start, right above the input field',
