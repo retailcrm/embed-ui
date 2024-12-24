@@ -127,9 +127,7 @@ export type CustomDictionaryItem = {
 
 export type CustomDictionaryFilter = {
   after?: string;
-  before?: string;
   first?: number;
-  last?: number;
 }
 
 export interface BasicCustomField<K extends string, T> {
