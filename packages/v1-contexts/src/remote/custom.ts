@@ -89,6 +89,7 @@ export const defineContext = <T extends string>(entity: T) => defineStore(`custo
       guardReadonly(entity, field)
       guardType(entity, field, value)
 
+      this.values[code] = value
       this[CustomContextAccessorKey].setCustomField(entity, code, value, onReject)
     },
   },
