@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.4](https://github.com/retailcrm/embed-ui/compare/v0.5.3...v0.5.4) (2024-12-25)
+
+### Bug Fixes
+
+* **v1-contexts:** Setting value in reactive state for custom context ([226669d](https://github.com/retailcrm/embed-ui/commit/226669d64604c6246e6fea0e0758394a7f260847))
 ## [0.5.3](https://github.com/retailcrm/embed-ui/compare/v0.5.3-alpha.1...v0.5.3) (2024-12-25)
 ## [0.5.3-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.2-1.0...v0.5.3-alpha.1) (2024-12-24)
 ## [0.5.2](https://github.com/retailcrm/embed-ui/compare/v0.5.1...v0.5.2) (2024-12-24)
