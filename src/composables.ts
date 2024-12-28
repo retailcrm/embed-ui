@@ -1,13 +1,15 @@
 import type { Callable } from '~types/host/callable'
 
-import type {
+import {
   Context,
   ContextAccessor,
   ContextSchema,
-  CustomFieldType,
+  CustomField,
+  CustomFieldKind,
   IsReadonly,
   RejectionHandler,
   TypeOf,
+  TypeOfCustom,
 } from '@retailcrm/embed-ui-v1-types/context'
 
 import type { ContextStore } from '@retailcrm/embed-ui-v1-contexts/remote'
@@ -46,10 +48,38 @@ export const useField = <S extends ContextSchema, F extends keyof S>(
   }) as Computed<S, F>
 }
 
-export const useCustomField = <T extends string>(store: CustomContextStore<T>, code: string) => {
+type ComputedCustom<K extends CustomFieldKind, R extends boolean> = R extends false
+  ? WritableComputedRef<TypeOfCustom<K> | null, TypeOfCustom<K>>
+  : ComputedRef<TypeOfCustom<K> | null>
+
+export const useCustomField = <
+  T extends string,
+  K extends CustomFieldKind = CustomFieldKind,
+  R extends boolean = false
+>(store: CustomContextStore<T>, code: string, options: {
+  kind?: K | K[],
+  readonly?: R,
+  onReject?: RejectionHandler,
+} = { readonly: false as R }): ComputedCustom<K, R> => {
+  const kind = options.kind
+    ? Array.isArray(options.kind) ? options.kind : [options.kind]
+    : []
+
+  const suitable = (f: CustomField) => f.code === code && (kind.includes(f.kind as K) || kind.length === 0)
+
+  const _onReject: RejectionHandler = (rejection) => console.error(rejection)
+
+  const get = () => store.schema?.fields.find(suitable)
+    ? (store.values[code] as TypeOfCustom<K>) ?? null
+    : null
+
+  if (options.readonly) {
+    return computed(get) as ComputedCustom<K, R>
+  }
+
   return computed({
-    get: () => code in store.values ? store.values[code] : undefined,
-    set: (value: CustomFieldType) => store.set(code, value),
+    get,
+    set: (value: TypeOfCustom<K>) => store.set(code, value, options.onReject ?? _onReject),
   })
 }
 

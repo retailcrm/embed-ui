@@ -9,12 +9,14 @@ import type {
   RemoteCallable,
 } from '@remote-ui/rpc'
 
-import type {
+import {
   ContextAccessor,
   ContextSchema,
+  CustomFieldKind,
   IsReadonly,
   RejectionHandler,
   TypeOf,
+  TypeOfCustom,
 } from '@retailcrm/embed-ui-v1-types/context'
 
 import type {
@@ -49,10 +51,21 @@ export declare const useField: <S extends ContextSchema, F extends keyof S>(
   ? ComputedRef<TypeOf<S[F]>>
   : WritableComputedRef<TypeOf<S[F]>>
 
-export declare const useCustomField: <T extends string>(
+export declare const useCustomField: <
+  T extends string,
+  K extends CustomFieldKind = CustomFieldKind,
+  R extends boolean = false
+>(
   store: CustomContextStore<T>,
-  code: string
-) => WritableComputedRef<CustomFieldType>
+  code: string,
+  options?: {
+    kind?: K | K[],
+    readonly?: R,
+    onReject?: RejectionHandler,
+  }
+) => R extends false
+  ? WritableComputedRef<TypeOfCustom<K> | null, TypeOfCustom<K>>
+  : ComputedRef<TypeOfCustom<K> | null>
 
 export declare const useHost = () => RemoteCallable<Callable>
 
