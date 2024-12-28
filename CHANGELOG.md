@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.5](https://github.com/retailcrm/embed-ui/compare/v0.5.4...v0.5.5) (2024-12-28)
+
+### Features
+
+* Added options to useCustomField so it is possible to narrow it's type & handle errors of interactions with host ([43a08fa](https://github.com/retailcrm/embed-ui/commit/43a08fa3c651775342d59d6eec56b97c3cc56a66))
 ## [0.5.4](https://github.com/retailcrm/embed-ui/compare/v0.5.3...v0.5.4) (2024-12-25)
 
 ### Bug Fixes
