@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.6](https://github.com/retailcrm/embed-ui/compare/v0.5.5...v0.5.6) (2025-01-03)
+
+### Bug Fixes
+
+* Updated vue-remote to v0.2.5 with fixes to host tree update mechanism ([72427e5](https://github.com/retailcrm/embed-ui/commit/72427e5883d51090a684b91d5e18ec508fa04389))
 ## [0.5.5](https://github.com/retailcrm/embed-ui/compare/v0.5.4...v0.5.5) (2024-12-28)
 
 ### Features
