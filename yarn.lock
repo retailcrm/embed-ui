@@ -903,14 +903,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@omnicajs/vue-remote@npm:^0.2.3":
-  version: 0.2.3
-  resolution: "@omnicajs/vue-remote@npm:0.2.3"
+"@omnicajs/vue-remote@npm:^0.2.5":
+  version: 0.2.5
+  resolution: "@omnicajs/vue-remote@npm:0.2.5"
   dependencies:
     "@remote-ui/rpc": "npm:^1.4.5"
   peerDependencies:
-    vue: ^3.4.15
-  checksum: 10/499c3dbfa63288065d53b1c6d7360ea686f7a660b8d5f0a94fc97467ef0b75d717afb3458d8638f97a8287566da18c0cc1066c5ea530028884b30177957f5326
+    vue: ^3.4
+  checksum: 10/aa22b3bcbaf7890b883e07ebd3006a458c006723ee5c979e5278009ee2adb73d1938bf76a9833efda9094a190df6c104db73661df6839af7b64814f297b400ee
   languageName: node
   linkType: hard
 
@@ -939,7 +939,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-components@workspace:packages/v1-components"
   dependencies:
-    "@omnicajs/vue-remote": "npm:^0.2.3"
+    "@omnicajs/vue-remote": "npm:^0.2.5"
     "@remote-ui/rpc": "npm:^1.4.5"
     "@storybook/addon-a11y": "npm:^8.4.5"
     "@storybook/addon-essentials": "npm:^8.4.5"
@@ -997,7 +997,7 @@ __metadata:
   dependencies:
     "@retailcrm/embed-ui-v1-types": "npm:^0.5.5"
   peerDependencies:
-    "@omnicajs/vue-remote": ^0.2.3
+    "@omnicajs/vue-remote": ^0.2.5
     "@remote-ui/rpc": ^1.4.5
     vue: ^3.5
   languageName: unknown
@@ -1015,7 +1015,7 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": "npm:^3.0.2"
     "@eslint/js": "npm:^9.13.0"
-    "@omnicajs/vue-remote": "npm:^0.2.3"
+    "@omnicajs/vue-remote": "npm:^0.2.5"
     "@remote-ui/rpc": "npm:^1.4.5"
     "@retailcrm/embed-ui-v1-contexts": "npm:^0.5.5"
     "@retailcrm/embed-ui-v1-testing": "npm:^0.5.5"

@@ -30,15 +30,15 @@
     "eslint": "eslint .",
     "test": "vitest --run"
   },
-  "dependencies": {
-    "@omnicajs/vue-remote": "^0.2.3",
-    "@remote-ui/rpc": "^1.4.5",
-    "@retailcrm/embed-ui-v1-contexts": "^0.5.5",
-    "@retailcrm/embed-ui-v1-types": "^0.5.5"
-  },
   "peerDependencies": {
     "pinia": "^2.2",
     "vue": "^3.5"
+  },
+  "dependencies": {
+    "@omnicajs/vue-remote": "^0.2.5",
+    "@remote-ui/rpc": "^1.4.5",
+    "@retailcrm/embed-ui-v1-contexts": "^0.5.5",
+    "@retailcrm/embed-ui-v1-types": "^0.5.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
