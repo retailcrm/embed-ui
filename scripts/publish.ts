@@ -1,5 +1,3 @@
-import type { Workspace } from '@modulify/pkg/types/worktree'
-
 import Historian from './lib/Historian'
 import Logger from './lib/Logger'
 import Runner from './lib/Runner'
@@ -33,27 +31,21 @@ try {
     nextTag,
   ])
 
-  const publish = async (pkg: Workspace) => {
-    logger.info('%s: %s\n', [chalk.magenta(pkg.name), pkg.manifest.version])
-
-    await runner.runCommand('npm', [
-      'publish',
-      pkg.path,
-      '--access', 'public',
-      ...(options.dry ? ['--dry-run'] : []),
-    ])
-  }
-
-  await publish(root)
-
-  await walk(root.children, async (pkg) => {
+  await walk([root], async (pkg) => {
     const currVersion = pkg.manifest.version ?? null
     const prevVersion = prevTag
       ? await historian.versionOnTag(pkg.path, prevTag)
       : null
 
     if (pkg.manifest.exports && currVersion !== prevVersion) {
-      await publish(pkg)
+      logger.info('%s: %s\n', [chalk.magenta(pkg.name), pkg.manifest.version])
+
+      await runner.runCommand('npm', [
+        'publish',
+        pkg.path,
+        '--access', 'public',
+        ...(options.dry ? ['--dry-run'] : []),
+      ])
     }
   })
 } catch (error) {
