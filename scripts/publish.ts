@@ -1,12 +1,15 @@
-import type { PackageNode } from './types/worktree'
+import type { Workspace } from '@modulify/pkg/types/worktree'
 
 import Historian from './lib/Historian'
 import Logger from './lib/Logger'
-import Reader from './lib/Reader'
 import Runner from './lib/Runner'
 
 import chalk from 'chalk'
-import walk from './lib/walk'
+
+import {
+  read,
+  walk,
+} from '@modulify/pkg'
 
 import args from './args/publish'
 
@@ -17,12 +20,11 @@ try {
   const options = { ...DEFAULTS, ...args.argv }
 
   const logger = new Logger(options)
-  const reader = new Reader(logger)
   const runner = new Runner(logger, options)
 
   const historian = new Historian(runner)
 
-  const root = reader.read(cwd)
+  const root = read(cwd)
 
   const [nextTag, prevTag] = await historian.tags()
 
@@ -31,8 +33,8 @@ try {
     nextTag,
   ])
 
-  const publish = async (pkg: PackageNode) => {
-    logger.info('%s: %s\n', [chalk.magenta(pkg.name), pkg.version])
+  const publish = async (pkg: Workspace) => {
+    logger.info('%s: %s\n', [chalk.magenta(pkg.name), pkg.manifest.version])
 
     await runner.runCommand('npm', [
       'publish',
@@ -44,12 +46,13 @@ try {
 
   await publish(root)
 
-  await walk(root.worktree, async (pkg) => {
+  await walk(root.children, async (pkg) => {
+    const currVersion = pkg.manifest.version ?? null
     const prevVersion = prevTag
       ? await historian.versionOnTag(pkg.path, prevTag)
       : null
 
-    if (pkg.exports && pkg.version !== prevVersion) {
+    if (pkg.manifest.exports && currVersion !== prevVersion) {
       await publish(pkg)
     }
   })

@@ -57,14 +57,3 @@ declare module 'conventional-changelog-conventionalcommits' {
   // noinspection JSUnusedGlobalSymbols
   export default createPreset
 }
-
-declare module 'stringify-package' {
-  function stringify (
-    data: Record<string, unknown>,
-    indent: number | string,
-    newline: string | undefined
-  ): string;
-
-  // noinspection JSUnusedGlobalSymbols
-  export default stringify
-}
