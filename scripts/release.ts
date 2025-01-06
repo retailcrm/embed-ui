@@ -1,18 +1,21 @@
 import type {
-  PackageDependencies,
-  PackageManifest,
-} from './types/worktree'
+  Dependencies,
+  Manifest,
+} from '@modulify/pkg/types/manifest'
 
 import ChangelogWriter from './lib/ChangelogWriter'
 import Logger from './lib/Logger'
-import Reader from './lib/Reader'
 import Runner from './lib/Runner'
 import VersionGenerator from './lib/VersionGenerator'
 
 import chalk from 'chalk'
 import { relative } from 'node:path'
-import update from './lib/update'
-import walk from './lib/walk'
+
+import {
+  read,
+  update,
+  walk,
+} from '@modulify/pkg'
 
 import args from './args/release'
 import figures from 'figures'
@@ -24,7 +27,6 @@ try {
   const options = { ...DEFAULTS, ...args.argv } as typeof DEFAULTS
 
   const logger = new Logger(options)
-  const reader = new Reader(logger)
   const runner = new Runner(logger, options)
 
   const generator = new VersionGenerator({
@@ -32,9 +34,9 @@ try {
     prerelease: options.prerelease,
   })
 
-  const root = reader.read(cwd)
+  const root = read(cwd)
 
-  const nextRelease = await generator.next(root.version)
+  const nextRelease = await generator.next(root.manifest.version ?? '0.0.0')
   const nextVersion = nextRelease.version
 
   if (nextVersion === null) {
@@ -42,7 +44,7 @@ try {
     process.exit(1)
   }
 
-  if (nextVersion === root.version) {
+  if (nextVersion === root.manifest.version) {
     logger.info('No changes since last release')
     process.exit(0)
   }
@@ -56,33 +58,24 @@ try {
   })
 
   const keysOf = <T extends object>(o: T) => Object.keys(o) as (keyof T)[]
-  const empty = (o: object) => keysOf(o).length === 0
-  const actualize = (dependencies: PackageDependencies) => keysOf(dependencies).reduce((all, name) => ({
+  const empty = <T extends object>(o: T | undefined): o is T => !o || keysOf(o).length === 0
+  const actualize = (dependencies: Dependencies) => keysOf(dependencies).reduce((all, name) => ({
     ...all,
-    [name]: name.startsWith('@retailcrm/embed-ui-') ? '^' + nextVersion : dependencies[name],
-  }), {} as PackageDependencies)
+    [name]: String(name).startsWith('@retailcrm/embed-ui-') ? '^' + nextVersion : dependencies[name],
+  }), {} as Dependencies)
 
-  const diff = { version: nextVersion } as Partial<PackageManifest>
+  const paths = [relative(cwd, await changelog.write(nextVersion))]
 
-  if (!empty(root.peerDependencies)) diff.peerDependencies = actualize(root.peerDependencies)
-  if (!empty(root.dependencies)) diff.dependencies = actualize(root.dependencies)
-  if (!empty(root.optionalDependencies)) diff.optionalDependencies = actualize(root.optionalDependencies)
-  if (!empty(root.devDependencies)) diff.devDependencies = actualize(root.devDependencies)
+  await walk([root], async (pkg) => {
+    const diff = { version: nextVersion } as Partial<Manifest>
+    const manifest = pkg.manifest
 
-  const paths = [
-    relative(cwd, await changelog.write(nextVersion)),
-    relative(cwd, update(cwd, diff, options.dry)),
-  ]
+    if (!empty(manifest.peerDependencies)) diff.peerDependencies = actualize(manifest.peerDependencies!)
+    if (!empty(manifest.dependencies)) diff.dependencies = actualize(manifest.dependencies!)
+    if (!empty(manifest.optionalDependencies)) diff.optionalDependencies = actualize(manifest.optionalDependencies!)
+    if (!empty(manifest.devDependencies)) diff.devDependencies = actualize(manifest.devDependencies!)
 
-  await walk(root.worktree, async (pkg) => {
-    const diff = { version: nextVersion } as Partial<PackageManifest>
-
-    if (!empty(pkg.peerDependencies)) diff.peerDependencies = actualize(pkg.peerDependencies)
-    if (!empty(pkg.dependencies)) diff.dependencies = actualize(pkg.dependencies)
-    if (!empty(pkg.optionalDependencies)) diff.optionalDependencies = actualize(pkg.optionalDependencies)
-    if (!empty(pkg.devDependencies)) diff.devDependencies = actualize(pkg.devDependencies)
-
-    paths.push(relative(cwd, update(pkg.path, diff)))
+    paths.push(relative(cwd, update(pkg.path, diff, options.dry)))
   })
 
   await runner.runCommand('yarn', ['install', '--no-immutable'])
