@@ -29,7 +29,7 @@ const definition = yargs(process.argv)
   })
   .check((argv) => {
     if (!['alpha', 'beta', 'rc', undefined].includes(argv.prerelease)) {
-      throw Error('scripts must be an object')
+      throw Error('prerelease should be one of alpha, beta, rc or undefined')
     } else {
       return true
     }
