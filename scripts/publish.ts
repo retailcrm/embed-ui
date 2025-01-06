@@ -1,8 +1,15 @@
-import Historian from './lib/Historian'
+import type { Manifest } from '@modulify/pkg/types/manifest'
+
 import Logger from './lib/Logger'
 import Runner from './lib/Runner'
 
 import chalk from 'chalk'
+import gitSemverTags from 'git-semver-tags'
+
+import {
+  join,
+  relative,
+} from 'node:path'
 
 import {
   read,
@@ -17,30 +24,43 @@ try {
   const cwd = process.cwd()
   const options = { ...DEFAULTS, ...args.argv }
 
-  const logger = new Logger(options)
-  const runner = new Runner(logger, options)
+  const log = new Logger(options)
+  const sh = new Runner(log, options.dry)
 
-  const historian = new Historian(runner)
+  const contentOnTag = async (path: string, tag: string): Promise<string | undefined> => {
+    try {
+      return await sh.run('git', ['show', `${tag}:${path}`])
+    } catch (e) {
+      if (String(e).includes(`exists on disk, but not in '${tag}'`)) {
+        return undefined
+      }
 
-  const root = read(cwd)
+      throw e
+    }
+  }
 
-  const [nextTag, prevTag] = await historian.tags()
+  const versionOnTag = async (path: string, tag: string): Promise<string | undefined> => {
+    const content = await contentOnTag(tag, relative(cwd, join(path, 'package.json')))
+    const manifest = JSON.parse(content ?? '{}') as Manifest
 
-  logger.info('\nPublishing packages, that have changes from tag %s to tag %s\n', [
+    return manifest.version
+  }
+
+  const [nextTag, prevTag] = await gitSemverTags({ tagPrefix: 'v' })
+
+  log.info('\nPublishing packages, that have changes from tag %s to tag %s\n', [
     prevTag,
     nextTag,
   ])
 
-  await walk([root], async (pkg) => {
-    const currVersion = pkg.manifest.version ?? null
-    const prevVersion = prevTag
-      ? await historian.versionOnTag(pkg.path, prevTag)
-      : null
+  await walk([read(cwd)], async (pkg) => {
+    const currVersion = pkg.manifest.version
+    const prevVersion = prevTag ? await versionOnTag(pkg.path, prevTag) : undefined
 
     if (pkg.manifest.exports && currVersion !== prevVersion) {
-      logger.info('%s: %s\n', [chalk.magenta(pkg.name), pkg.manifest.version])
+      log.info('%s: %s\n', [chalk.magenta(pkg.name), currVersion])
 
-      await runner.runCommand('npm', [
+      await sh.run('npm', [
         'publish',
         pkg.path,
         '--access', 'public',

@@ -26,8 +26,8 @@ try {
   const cwd = process.cwd()
   const options = { ...DEFAULTS, ...args.argv } as typeof DEFAULTS
 
-  const logger = new Logger(options)
-  const runner = new Runner(logger, options)
+  const log = new Logger(options)
+  const sh = new Runner(log, options.dry)
 
   const generator = new VersionGenerator({
     releaseAs: options.releaseAs,
@@ -40,19 +40,19 @@ try {
   const nextVersion = nextRelease.version
 
   if (nextVersion === null) {
-    logger.error('Unable to calculate next version')
+    log.error('Unable to calculate next version')
     process.exit(1)
   }
 
   if (nextVersion === root.manifest.version) {
-    logger.info('No changes since last release')
+    log.info('No changes since last release')
     process.exit(0)
   }
 
-  logger.info('Root package: ' + chalk.magenta(root.name))
-  logger.info('Next version: ' + chalk.cyan(nextVersion))
+  log.info('Root package: ' + chalk.magenta(root.name))
+  log.info('Next version: ' + chalk.cyan(nextVersion))
 
-  const changelog = new ChangelogWriter(logger, {
+  const changelog = new ChangelogWriter(log, {
     path: cwd,
     dry: options.dry,
   })
@@ -78,27 +78,27 @@ try {
     paths.push(relative(cwd, update(pkg.path, diff, options.dry)))
   })
 
-  await runner.runCommand('yarn', ['install', '--no-immutable'])
+  await sh.run('yarn', ['install', '--no-immutable'])
 
   paths.push(relative(cwd, 'yarn.lock'))
 
   if (options.dry) {
-    logger.info('No commiting & tagging since it was a dry run')
+    log.info('No commiting & tagging since it was a dry run')
   } else {
-    logger.info(`Committing ${paths.length} staged files`)
+    log.info(`Committing ${paths.length} staged files`)
 
     const tag = `v${nextVersion}`
 
-    await runner.runCommand('git', ['add', ...paths])
-    await runner.runCommand('git', ['commit', ...paths, '-m', `chore(release): ${tag}`])
+    await sh.run('git', ['add', ...paths])
+    await sh.run('git', ['commit', ...paths, '-m', `chore(release): ${tag}`])
 
-    logger.info('Tagging release %s', [tag])
+    log.info('Tagging release %s', [tag])
 
-    await runner.runCommand('git', ['tag', '-a', tag, '-m', `chore(release): ${tag}`])
+    await sh.run('git', ['tag', '-a', tag, '-m', `chore(release): ${tag}`])
 
-    const brunch = await runner.runCommand('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
+    const brunch = await sh.run('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
 
-    logger.info('Run `%s` to publish', [
+    log.info('Run `%s` to publish', [
       'git push --follow-tags origin ' + String(brunch ?? '%branch%').trim(),
     ], chalk.blue(figures.info))
   }

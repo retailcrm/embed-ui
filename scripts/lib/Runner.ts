@@ -7,58 +7,31 @@ import type { ObjectEncodingOptions } from 'node:fs'
 
 import type Logger from './Logger'
 
-import {
-  exec,
-  execFile,
-} from 'node:child_process'
-
+import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-
-import chalk from 'chalk'
-import figures from 'figures'
 
 export default class Runner {
   private readonly dry: boolean
   private readonly logger: Logger
-  private readonly scripts: Record<string, string>
 
-  constructor (logger: Logger, { dry, scripts }: {
-    dry: boolean;
-    scripts?: Record<string, string>;
-  }) {
+  constructor (logger: Logger, dry = false) {
     this.logger = logger
     this.dry = dry
-    this.scripts = scripts ?? {}
   }
 
-  async runCommand (
+  async run (
     command: string,
     args: string[],
     options: ObjectEncodingOptions & ExecOptions = {}
   ) {
-    return await this.run(() => promisify(execFile)(command, args, options))
+    return await this.call(() => promisify(execFile)(command, args, options))
   }
 
-  async runHook (hookName: string) {
-    if (!this.scripts[hookName]) {
-      return Promise.resolve()
-    }
-
-    const command = this.scripts[hookName]
-
-    this.logger.info('Running lifecycle script "%s"', [hookName])
-    this.logger.info('- execute command: "%s"', [command], chalk.blue(figures.info))
-
-    return await this.run(() => promisify(exec)(command))
-  }
-
-  async run (thread: () => PromiseWithChild<{
+  async call (thread: () => PromiseWithChild<{
     stdout: string;
     stderr: string;
   }>) {
-    if (this.dry) {
-      return
-    }
+    if (this.dry) return
 
     try {
       const { stderr, stdout } = await thread()
