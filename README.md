@@ -1,5 +1,7 @@
 # @retailcrm/embed-ui
 
+[![npm version](https://img.shields.io/npm/v/@retailcrm/embed-ui.svg)](https://www.npmjs.com/package/@retailcrm/embed-ui)
+
 API и компоненты для создания расширений интерфейса RetailCRM
 
 ## Цели встраивания
