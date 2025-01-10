@@ -1,5 +1,7 @@
 # `@retailcrm/embed-ui-v1-components`
 
+[![npm version](https://img.shields.io/npm/v/@retailcrm/embed-ui-v1-components.svg)](https://www.npmjs.com/package/@retailcrm/embed-ui-v1-components)
+
 Компоненты UI для использования в JS-расширениях RetailCRM
 
 ## Установка
@@ -34,9 +36,8 @@ import { UiButton } from '@retailcrm/embed-ui-v1-components/remote'
 </script>
 ```
 
-**⚠ Важно**
-
-Расширения используют определения из remote части для передачи системе инструкций, из чего собирать
+> [!IMPORTANT]
+> Расширения используют определения из remote части для передачи системе инструкций, из чего собирать
 интерфейс. Библиотека также содержит `@retailcrm/embed-ui-v1-components/host` &ndash; набор компонентов,
 который будет использовать CRM при интерпретации инструкций от расширений. **_Не используйте_** host компоненты
 как часть кода расширения.
