@@ -1,5 +1,7 @@
 # `@retailcrm/embed-ui-v1-contexts`
 
+[![npm version](https://img.shields.io/npm/v/@retailcrm/embed-ui-v1-contexts.svg)](https://www.npmjs.com/package/@retailcrm/embed-ui-v1-contexts)
+
 Логика реактивного контекста, используемого в JS-расширениях RetailCRM
 
 ## Установка
