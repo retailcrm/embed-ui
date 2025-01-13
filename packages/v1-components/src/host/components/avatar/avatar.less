@@ -1,0 +1,174 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+@avatar-label-radius: 33px;
+
+@avatar-size-xs: 24px;
+@avatar-size-sm: 36px;
+@avatar-size-lg: 52px;
+
+.ui-v1-avatar {
+  background-color: @grey-400;
+  border-radius: 50%;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    border-radius: 50%;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &_xs { .square(@avatar-size-xs); }
+  &_xs &__unresolved svg { .square(16px); }
+  &_xs &__initials { .text-tiny-accent(); }
+  &_xs &__label { .rectangle(13.33px, 6.67px); }
+  &_xs &__vip   { .rectangle(9.33px, 4px); }
+  &_xs &__bad   { .rectangle(7.62px, 3.81px); }
+  &_xs &__status {
+    right: 0;
+    bottom: 1px;
+  }
+
+  &_sm { .square(@avatar-size-sm); }
+  &_sm &__unresolved svg { .square(20px); }
+  &_sm &__initials { .text-tiny-accent(); }
+  &_sm &__label { .rectangle(20px, 10px); }
+  &_sm &__vip   { .rectangle(12px, 6px); }
+  &_sm &__bad   { .rectangle(14px, 6px); }
+  &_sm &__status { bottom: 2px; }
+
+  &_lg { .square(@avatar-size-lg); }
+  &_lg &__unresolved svg { .square(24px); }
+  &_lg &__initials { .h4-accent(); }
+  &_lg &__label { .rectangle(28px, 14px); }
+  &_lg &__vip   { .rectangle(16px, 8px); }
+  &_lg &__bad   { .rectangle(18px, 8px); }
+  &_lg &__status {
+    right: @spacing-xxs;
+    bottom: @spacing-xxs;
+  }
+
+  &_vip&::before { border: 2px solid @yellow-500; }
+  &_bad&::after  { border: 2px solid @red-500; }
+
+  &&_bad&_vip {
+    &::before {
+      left: 0;
+      right: 50%;
+      border-radius: 52px 0 0 52px;
+      border-right: none;
+    }
+
+    &::after {
+      left: 50%;
+      right: 0;
+      border-radius: 0 52px 52px 0;
+      border-left: none;
+    }
+  }
+
+  &_bad&_vip &__label_vip { border-radius: @avatar-label-radius 0 0 @avatar-label-radius; }
+  &_bad&_vip &__label_bad { border-radius: 0 @avatar-label-radius @avatar-label-radius 0; }
+
+  &__image {
+    display: block;
+    .square(100%);
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 1;
+    position: relative;
+  }
+
+  &__unresolved {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .square(100%);
+    color: @grey-900;
+  }
+
+  &__status {
+    .square(8px);
+    border-radius: 50%;
+    z-index: 1;
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+  }
+
+  &__status_busy   { background-color: @red-500; }
+  &__status_break  { background-color: @yellow-200; }
+  &__status_dinner { background-color: @yellow-600; }
+  &__status_free   { background-color: @green-500; }
+
+  &__status_xs { .square(6px); }
+
+  &__initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .square(100%);
+    white-space: nowrap;
+    color: @grey-900;
+    overflow: hidden;
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+  }
+
+  &__labels {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    z-index: 5;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    border-radius: @avatar-label-radius;
+    margin-left: auto;
+
+    &_bad { background-color: @red-500; }
+    &_vip { background-color: @yellow-500; }
+  }
+}
+
+.ui-v1-avatar-list {
+  --ui-v1-avatar-list-gap-color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+
+  &__item {
+    position: relative;
+    padding: 2px;
+
+    .ui-v1-avatar {
+      border: 2px solid var(--ui-v1-avatar-list-gap-color);
+      border-radius: 50%;
+    }
+
+    &:not(:first-child) { z-index: 2; }
+  }
+
+  &_xs &__item:not(:first-child) { margin-left: -12px; }
+  &_sm &__item:not(:first-child) { margin-left: -14px; }
+  &_lg &__item:not(:first-child) { margin-left: -16px; }
+}

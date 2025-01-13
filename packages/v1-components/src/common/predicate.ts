@@ -1,9 +1,13 @@
 export const isURL = (href: string): boolean => {
   try {
-    new URL(href)
-    
-    return true
+    const normalizedHref = href.includes('://') ? href : `http://${href}`
+
+    const url = new URL(normalizedHref)
+
+    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\S*)$/
+
+    return urlPattern.test(url.href)
   } catch {
-    return false
+    return false 
   }
 }

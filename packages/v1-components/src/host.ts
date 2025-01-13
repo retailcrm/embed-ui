@@ -1,3 +1,4 @@
+export { default as UiAvatar } from '@/host/components/avatar/UiAvatar.vue'
 export { default as UiButton } from '@/host/components/button/UiButton.vue'
 export { default as UiCheckbox } from '@/host/components/checkbox/UiCheckbox.vue'
 export { default as UiError } from '@/host/components/error/UiError.vue'

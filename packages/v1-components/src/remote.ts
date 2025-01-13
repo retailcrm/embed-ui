@@ -1,3 +1,4 @@
+export * from '@/remote/components/avatar'
 export * from '@/remote/components/button'
 export * from '@/remote/components/checkbox'
 export * from '@/remote/components/error'
