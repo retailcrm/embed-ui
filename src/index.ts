@@ -66,6 +66,8 @@ export * from '@/composables'
 const createRoot = async (channel: Channel) => {
   const root = createRemoteRoot(channel, {
     components: [
+      'UiAvatar',
+      'UiAvatarList',
       'UiButton',
       'UiCheckbox',
       'UiError',

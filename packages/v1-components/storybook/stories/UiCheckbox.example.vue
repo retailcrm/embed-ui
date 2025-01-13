@@ -94,8 +94,8 @@ const toggleSocials = (force: boolean) => {
 </script>
 
 <style lang="less" module>
-@import (reference) '../../assets/stylesheets/geometry.less';
-@import (reference) '../../assets/stylesheets/variables.less';
+@import (reference) '~assets/stylesheets/geometry.less';
+@import (reference) '~assets/stylesheets/variables.less';
 
 .container {
   padding: 16px;
