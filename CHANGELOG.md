@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.5.7](https://github.com/retailcrm/embed-ui/compare/v0.5.6...v0.5.7) (2025-01-14)
+
+### Features
+
+* **v1-components:** Added chevron-left icon sprite ([687a69c](https://github.com/retailcrm/embed-ui/commit/687a69c13c858c4ae258f2bad1185bfb116a926e))
+* **v1-components:** Added UiAvatar component ([ea6ae32](https://github.com/retailcrm/embed-ui/commit/ea6ae32e6e0a6db7764788fc51774eb5455ba2eb))
 ## [0.5.6](https://github.com/retailcrm/embed-ui/compare/v0.5.5...v0.5.6) (2025-01-03)
 
 ### Bug Fixes
