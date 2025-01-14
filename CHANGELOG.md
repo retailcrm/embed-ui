@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.8](https://github.com/retailcrm/embed-ui/compare/v0.5.7...v0.5.8) (2025-01-14)
+
+### Bug Fixes
+
+* **v1-components:** Missing UiAvatarList in host environment ([a1f1d55](https://github.com/retailcrm/embed-ui/commit/a1f1d55c70a687815eb2169720468e5c65a874bf))
 ## [0.5.7](https://github.com/retailcrm/embed-ui/compare/v0.5.6...v0.5.7) (2025-01-14)
 
 ### Features
