@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.9](https://github.com/retailcrm/embed-ui/compare/v0.5.8...v0.5.9) (2025-01-15)
+
+### Features
+
+* Added customContexts field to targets's metadata used by docs generators ([1bcc318](https://github.com/retailcrm/embed-ui/commit/1bcc318a75e31f9858f29011506be5e62040c6a4))
 ## [0.5.8](https://github.com/retailcrm/embed-ui/compare/v0.5.7...v0.5.8) (2025-01-14)
 
 ### Bug Fixes
