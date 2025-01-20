@@ -941,6 +941,7 @@ __metadata:
   dependencies:
     "@omnicajs/vue-remote": "npm:^0.2.5"
     "@remote-ui/rpc": "npm:^1.4.5"
+    "@retailcrm/image-preview": "npm:^1.0.2"
     "@storybook/addon-a11y": "npm:^8.4.7"
     "@storybook/addon-docs": "npm:^8.4.7"
     "@storybook/addon-essentials": "npm:^8.4.7"
@@ -1061,6 +1062,13 @@ __metadata:
     vue: ^3.5
   languageName: unknown
   linkType: soft
+
+"@retailcrm/image-preview@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@retailcrm/image-preview@npm:1.0.2"
+  checksum: 10/869a64923e62ed133de0bd4eb45d34bb8601d5966b41d73f348da8d5625bb613a668616627f0feefd071ab2cf3f7ba0f212507b17345b23ac4f23f0b982bbab2
+  languageName: node
+  linkType: hard
 
 "@rollup/pluginutils@npm:^5.1.0":
   version: 5.1.3
