@@ -9,6 +9,8 @@ import type {
 } from '~types/settings'
 
 import {
+  arrayOf,
+  isString,
   isExactly,
   oneOf,
 } from '@/predicates'
@@ -18,6 +20,11 @@ export const id = 'settings'
 export const locales = ['en-GB', 'es-ES', 'ru-RU'] as Locale[]
 
 export const schema: Schema = {
+  'image.workers': {
+    accepts: arrayOf(isString),
+    defaults: () => [],
+    readonly: true,
+  },
   'system.locale': {
     accepts: oneOf(...locales.map(isExactly)),
     defaults: () => 'en-GB',
@@ -26,6 +33,13 @@ export const schema: Schema = {
 }
 
 export const description: ContextSchemaDescription<Schema> = {
+  'image.workers': {
+    description: {
+      'en-GB': 'A list of servers that process images.',
+      'es-ES': 'Una lista de servidores que procesan imágenes.',
+      'ru-RU': 'Список серверов, обрабатывающих изображения.',
+    },
+  },
   'system.locale': {
     description: {
       'en-GB': 'Current system\'s locale',
