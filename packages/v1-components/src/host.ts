@@ -3,6 +3,7 @@ export { default as UiAvatarList } from '@/host/components/avatar/UiAvatarList.v
 export { default as UiButton } from '@/host/components/button/UiButton.vue'
 export { default as UiCheckbox } from '@/host/components/checkbox/UiCheckbox.vue'
 export { default as UiError } from '@/host/components/error/UiError.vue'
+export { default as UiImage } from '@/host/components/image/UiImage.vue'
 export { default as UiLink } from '@/host/components/link/UiLink.vue'
 export { default as UiLoader } from '@/host/components/loader/UiLoader.vue'
 export { default as UiModalSidebar } from '@/host/components/modal-sidebar/UiModalSidebar.vue'
@@ -19,5 +20,7 @@ export { default as UiYandexMap } from '@/host/components/yandex-map/UiYandexMap
 
 export { default as I18nPlugin } from '@/host/i18n/plugin'
 export { default as ModalPlugin } from '@/host/components/modal/plugin'
+
+export { ImageWorkersKey } from '@/common/preview'
 
 export { VueI18n } from '@/host/i18n/plugin'

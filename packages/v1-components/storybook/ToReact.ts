@@ -1,11 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import { createApp, h } from 'vue'
+import { createApp, h, ref } from 'vue'
 import { v4 } from 'uuid'
+import { ImageWorkersKey } from '../src/common/preview'
 
 export default ({ is, children, tag, ...props }) => {
-  const ref = React.useRef(null)
+  const el = React.useRef(null)
 
   React.useEffect(() => {
     const id = v4()
@@ -22,13 +23,14 @@ export default ({ is, children, tag, ...props }) => {
       render: () => h(is, props),
     })
 
-    app.mount(ref.current)
+    app.provide(ImageWorkersKey, ref(['worker1.retailcrm.tech']))
+    app.mount(el.current)
 
     return () => app.unmount()
   })
 
   return React.createElement(tag ?? 'div', {
     className: 'sb-unstyled',
-    ref,
+    ref: el,
   })
 }

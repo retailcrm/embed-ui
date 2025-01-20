@@ -14,3 +14,7 @@ export * from '@/remote/components/toolbar-button'
 export * from '@/remote/components/toolbar-link'
 export * from '@/remote/components/transition'
 export * from '@/remote/components/yandex-map'
+
+export { usePreview } from '@/common/preview'
+
+export { ImageWorkersKey } from '@/common/preview'

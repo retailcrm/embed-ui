@@ -1,3 +1,5 @@
+import type { Dimensions } from '@/common/preview'
+
 export enum SIZE {
   XS = 'xs',
   SM = 'sm',
@@ -20,6 +22,10 @@ export type UiAvatarProperties = {
   vip?: boolean;
   bad?: boolean;
   size?: SIZE;
+  optimize?: boolean | {
+    resize?: Dimensions;
+    crop?: Dimensions;
+  };
 }
 
 export type UiAvatarListProperties = {
