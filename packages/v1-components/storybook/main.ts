@@ -5,7 +5,6 @@ import { dirname, join } from 'path'
 
 import remarkGfm from 'remark-gfm'
 
-
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-ignore Because of PHPStorm tsconfig recognition issues for import.meta specifically
 const require = createRequire(import.meta.url)
@@ -51,7 +50,6 @@ const config: StorybookConfig = {
   stories: [
     './Intro.mdx',
     './docs/**/*.mdx',
-    '../src/**/*.mdx',
     './**/*.stories.@(js|jsx|mjs|ts|tsx)',
   ],
   viteFinal: async (config) => {
