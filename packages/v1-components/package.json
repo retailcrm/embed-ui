@@ -56,6 +56,7 @@
   "dependencies": {
     "@omnicajs/vue-remote": "^0.2.5",
     "@remote-ui/rpc": "^1.4.5",
+    "@retailcrm/image-preview": "^1.0.2",
     "remark-gfm": "^4.0.0"
   },
   "devDependencies": {

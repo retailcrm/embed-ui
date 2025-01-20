@@ -11,10 +11,11 @@
         }"
         v-bind="$attrs"
     >
-        <img
+        <UiImage
             v-if="src"
             :src="src"
-            alt=""
+            :resize="optimization.resize"
+            :crop="optimization.crop"
             class="ui-v1-avatar__image"
             draggable="false"
             @load="loaded = true"
@@ -52,11 +53,13 @@
 </template>
 
 <script lang="ts" setup>
+import type { Dimensions } from '@/common/preview'
 import type { PropType } from 'vue'
 
 import IconHelpOutlined from '../../../../assets/sprites/actions/help-outlined.svg'
 import SpriteBAD from '../../../../assets/sprites/user/bad.svg'
 import SpriteVIP from '../../../../assets/sprites/user/vip.svg'
+import UiImage from '@/host/components/image/UiImage.vue'
 
 import { computed, inject, ref, useSlots } from 'vue'
 
@@ -117,6 +120,14 @@ const props = defineProps({
     validator: (size) => Object.values(SIZE).includes(size as SIZE),
     default: SIZE.SM,
   },
+
+  optimize: {
+    type: [Boolean, Object] as PropType<boolean | {
+      resize?: Dimensions;
+      crop?: Dimensions;
+    }>,
+    default: true,
+  },
 })
 
 const slots = useSlots()
@@ -138,6 +149,23 @@ const initials = computed((): string => {
 })
 
 const size = inject(AvatarSizeKey, computed(() => props.size))
+
+const optimization = computed(() => {
+  if (!props.optimize) {
+    return { resize: undefined, crop: undefined }
+  }
+
+  const processing = typeof props.optimize === 'object' ? props.optimize : {}
+
+  return {
+    resize: processing.resize ?? {
+      [SIZE.XS]: '48x-',
+      [SIZE.SM]: '72x-',
+      [SIZE.LG]: '104x-',
+    }[size.value] as Dimensions | undefined,
+    crop: processing.crop as Dimensions | undefined,
+  }
+})
 </script>
 
 <style>
