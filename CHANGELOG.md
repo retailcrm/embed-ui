@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.5.10](https://github.com/retailcrm/embed-ui/compare/v0.5.9...v0.5.10) (2025-01-21)
+
+### Features
+
+* Added UiImage to known components list ([316e39c](https://github.com/retailcrm/embed-ui/commit/316e39cd784aa43cab2d6a3919aeacd0073ba73a))
+* **v1-components:** Added logic for image optimizing: resize/crop, UiImage component that implements optimization logic, UiAvatar images optimized by default, if workers array is provided ([6d7dcfa](https://github.com/retailcrm/embed-ui/commit/6d7dcfa34a30fe48684be85082ed8a968c4965a8))
+* **v1-contexts:** Added field 'image.workers' to settings context ([38355b2](https://github.com/retailcrm/embed-ui/commit/38355b28dd037c54cebe8dcfd77e9264f3a3560c))
 ## [0.5.9](https://github.com/retailcrm/embed-ui/compare/v0.5.8...v0.5.9) (2025-01-15)
 
 ### Features
