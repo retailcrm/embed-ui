@@ -5,6 +5,9 @@ import { reactive } from 'vue'
 
 export const createHostContext = (id: string) => {
   const data = reactive({
+    image: {
+      workers: [] as string[],
+    },
     system: {
       locale: 'en-GB' as Locale,
     },
@@ -13,6 +16,7 @@ export const createHostContext = (id: string) => {
   return {
     data,
     accessor: createAccessor<Schema>(id, {
+      'image.workers': () => data.image.workers,
       'system.locale': () => data.system.locale,
     }, {}),
   }
