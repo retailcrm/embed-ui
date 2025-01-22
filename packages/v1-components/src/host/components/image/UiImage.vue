@@ -51,7 +51,7 @@ const url = computed(() => {
   if (props.resize || props.crop) {
     return workers.value.length
       ? preview(workers.value, props.src, props.resize, props.crop)
-      : undefined
+      : props.src
   }
 
   return props.src
