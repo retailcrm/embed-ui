@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.11](https://github.com/retailcrm/embed-ui/compare/v0.5.10...v0.5.11) (2025-01-22)
+
+### Bug Fixes
+
+* **v1-components:** If workers array is empty, original image source will be used ([27fa33c](https://github.com/retailcrm/embed-ui/commit/27fa33c1ee5f10dbbf007ad0ddce5c77d7dca48f))
 ## [0.5.10](https://github.com/retailcrm/embed-ui/compare/v0.5.9...v0.5.10) (2025-01-21)
 
 ### Features
