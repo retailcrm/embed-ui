@@ -1,4 +1,4 @@
-import{_ as c}from"./UiImage-CbgX4kze.js";import{j as e}from"./jsx-runtime-DQFc-wkB.js";import{useMDXComponents as l}from"./index-BjypYOp6.js";import"./vue.esm-bundler-CynvcUwn.js";import"./preview-j2QA7UBs.js";import"./_commonjsHelpers-Cpj98o6Y.js";function i(s){const n={code:"code",h1:"h1",h2:"h2",h3:"h3",li:"li",p:"p",pre:"pre",ul:"ul",...l(),...s.components};return e.jsxs(e.Fragment,{children:[e.jsx(n.h1,{id:"uiimage",children:"UiImage"}),`
+import{_ as c}from"./UiImage-BFrw7mud.js";import{j as e}from"./jsx-runtime-DQFc-wkB.js";import{useMDXComponents as l}from"./index-BjypYOp6.js";import"./vue.esm-bundler-CynvcUwn.js";import"./preview-j2QA7UBs.js";import"./_commonjsHelpers-Cpj98o6Y.js";function i(s){const n={code:"code",h1:"h1",h2:"h2",h3:"h3",li:"li",p:"p",pre:"pre",ul:"ul",...l(),...s.components};return e.jsxs(e.Fragment,{children:[e.jsx(n.h1,{id:"uiimage",children:"UiImage"}),`
 `,e.jsx(n.p,{children:"Компонент для изображений с возможностью оптимизации"}),`
 `,e.jsx(n.h2,{id:"api",children:"API"}),`
 `,e.jsx(n.h3,{id:"свойства",children:"Свойства"}),`
@@ -7,7 +7,7 @@ import{_ as c}from"./UiImage-CbgX4kze.js";import{j as e}from"./jsx-runtime-DQFc-
 по-умолчанию равен пустой строке;`]}),`
 `,e.jsxs(n.li,{children:[e.jsx(n.code,{children:"src"}),` — URL изображения, может использоваться как напрямую, так и будучи
 обработанным с помощью утилиты `,e.jsx(n.code,{children:"@retailcrm/image-preview"}),";"]}),`
-`,e.jsxs(n.li,{children:[e.jsx(n.code,{children:"resize"})," — размер, до которого надо уменьшить изображение;"]}),`
+`,e.jsxs(n.li,{children:[e.jsx(n.code,{children:"resize"})," — размер, до которого надо уменьшить изображение, по-умолчанию ",e.jsx(n.code,{children:"90x90"}),";"]}),`
 `,e.jsxs(n.li,{children:[e.jsx(n.code,{children:"crop"})," — параметр обрезки."]}),`
 `]}),`
 `,e.jsxs(n.p,{children:["Свойства ",e.jsx(n.code,{children:"resize"})," и ",e.jsx(n.code,{children:"crop"})," могут не иметь значения, тогда они должны быть равны ",e.jsx(n.code,{children:"undefined"}),`. Если значение указано,
@@ -29,4 +29,4 @@ M — некоторое число (y-ось) или прочерк (дефис
         resize="104x-"
     />
 </template>
-`})})]})}function h(s={}){const{wrapper:n}={...l(),...s.components};return n?e.jsx(n,{...s,children:e.jsx(i,{...s})}):i(s)}const u={title:"Components/UiImage",component:c,args:{src:"https://on-desktop.com/wps/Animals___Cats_Red_Cat_with_open_mouth_044663_.jpg",resize:"200x-"},render:s=>({components:{UiImage:c},setup:()=>({args:s}),template:'<UiImage v-bind="args" />'}),parameters:{docs:{page:h},layout:"centered"}},r={};var t,o,d;r.parameters={...r.parameters,docs:{...(t=r.parameters)==null?void 0:t.docs,source:{originalSource:"{}",...(d=(o=r.parameters)==null?void 0:o.docs)==null?void 0:d.source}}};const g=["Sandbox"];export{r as Sandbox,g as __namedExportsOrder,u as default};
+`})})]})}function h(s={}){const{wrapper:n}={...l(),...s.components};return n?e.jsx(n,{...s,children:e.jsx(i,{...s})}):i(s)}const u={title:"Components/UiImage",component:c,args:{src:"https://on-desktop.com/wps/Animals___Cats_Red_Cat_with_open_mouth_044663_.jpg",resize:"200x-"},render:s=>({components:{UiImage:c},setup:()=>({args:s}),template:'<UiImage v-bind="args" />'}),parameters:{docs:{page:h},layout:"centered"}},r={};var o,t,d;r.parameters={...r.parameters,docs:{...(o=r.parameters)==null?void 0:o.docs,source:{originalSource:"{}",...(d=(t=r.parameters)==null?void 0:t.docs)==null?void 0:d.source}}};const g=["Sandbox"];export{r as Sandbox,g as __namedExportsOrder,u as default};
