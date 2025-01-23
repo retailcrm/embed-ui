@@ -18,6 +18,15 @@ export const createHostContext = (id: string) => {
     accessor: createAccessor<Schema>(id, {
       'image.workers': () => data.image.workers,
       'system.locale': () => data.system.locale,
+      'system.routing': () => ({
+        base_url: '',
+        routes: {},
+        prefix: '',
+        host: '',
+        port: '',
+        scheme: 'http',
+        locale: '',
+      }),
     }, {}),
   }
 }

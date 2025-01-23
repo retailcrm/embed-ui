@@ -903,6 +903,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@omnicajs/symfony-router@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@omnicajs/symfony-router@npm:1.0.0"
+  checksum: 10/10a6a4e9bb5aadfe29548a6a4782a4befff7df492a1177dad111190f6ac4e628b49416e4e4d8dfcb56777e4b28873df7643c6dd1f839cc3684c73f8fb0b1cd64
+  languageName: node
+  linkType: hard
+
 "@omnicajs/vue-remote@npm:^0.2.5":
   version: 0.2.5
   resolution: "@omnicajs/vue-remote@npm:0.2.5"
@@ -981,6 +988,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts"
   dependencies:
+    "@omnicajs/symfony-router": "npm:^1.0.0"
     "@retailcrm/embed-ui-v1-testing": "npm:^0.5.11"
     "@retailcrm/embed-ui-v1-types": "npm:^0.5.11"
     tsx: "npm:^4.19.2"
