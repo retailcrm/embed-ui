@@ -1,7 +1,7 @@
 import type { If, IsTilda, Maybe } from './scaffolding'
 
 export type Field<Type, Readonly extends boolean = false> = {
-  accepts (value: Type): boolean;
+  accepts (value: unknown): value is Type;
   defaults (): Type;
   readonly: Readonly;
 }
