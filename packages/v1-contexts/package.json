@@ -102,6 +102,7 @@
     "pinia": "^2.2"
   },
   "dependencies": {
+    "@omnicajs/symfony-router": "^1.0.0",
     "@retailcrm/embed-ui-v1-types": "^0.5.11"
   },
   "devDependencies": {
