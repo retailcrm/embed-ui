@@ -31,7 +31,6 @@ test('accepts valid routing data', () => {
         'hosttokens': [],
         'methods': [],
         'schemes': [],
-        // @ts-expect-error Extra fields are acceptable
         'embed': true,
       },
     },

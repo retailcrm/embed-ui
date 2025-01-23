@@ -3,6 +3,8 @@ import type {
   ContextSchemaUsage,
 } from '@retailcrm/embed-ui-v1-types/context-doc'
 
+import type { Predicate } from '@/predicates'
+
 import type {
   Locale,
   Schema,
@@ -65,7 +67,7 @@ const routingDataSchema = {
 } satisfies {
   [p in keyof RoutingData]: [
     required: boolean,
-    predicate: (value: unknown) => boolean
+    predicate: Predicate<RoutingData[p]>
   ];
 }
 
@@ -92,16 +94,14 @@ export const schema: Schema = {
   },
   'system.routing': {
     accepts: withMeta((value): value is RoutingData => {
-      return typeof value === 'object'
-        && value !== null
-        && keysOf(routingDataSchema).every(key => {
-          const [required, predicate] = routingDataSchema[key]
-          if (!(key in value)) {
-            return !required
-          }
+      return isObject(value) && keysOf(routingDataSchema).every(key => {
+        const [required, predicate] = routingDataSchema[key]
+        if (!(key in value)) {
+          return !required
+        }
 
-          return predicate(value[key as keyof typeof value])
-        })
+        return predicate(value[key as keyof typeof value])
+      })
     }, 'RoutingData'),
     defaults: () => ({ ...routingDataDefaults, routes: {} }),
     readonly: true,
