@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [0.5.12](https://github.com/retailcrm/embed-ui/compare/v0.5.11...v0.5.12) (2025-01-23)
+
+### Features
+
+* **v1-contexts:** Added field for system routing data ([5638050](https://github.com/retailcrm/embed-ui/commit/563805062d3ae2c90f30bb65fc8bda3a18fdc374))
+* **v1-contexts:** Added isAdmin/isManager flags to user/current context ([a0c491a](https://github.com/retailcrm/embed-ui/commit/a0c491a030f333c606431b9ea33b4e4b95624024))
+
+### Bug Fixes
+
+* **v1-components:** Adjusting types in package according to the fix from v1-types ([a3e8f1f](https://github.com/retailcrm/embed-ui/commit/a3e8f1fd79e3730df806f372712e59fa0b9853eb))
+* **v1-types:** Accepts method of fields in schemas ([deffa6f](https://github.com/retailcrm/embed-ui/commit/deffa6ff04ee3a50c4282d7264e9841f08194411))
 ## [0.5.11](https://github.com/retailcrm/embed-ui/compare/v0.5.10...v0.5.11) (2025-01-22)
 
 ### Bug Fixes
