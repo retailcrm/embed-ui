@@ -26,9 +26,11 @@ export const arrayOf = <T>(predicate: PredicateWithMeta<T>) => withMeta(
   `Array<${predicate.type}>`
 )
 
-export const oneOf = (...predicates: PredicateWithMeta[]) => withMeta(
-  ((value: unknown) => {
+export const oneOf = <T extends unknown[]>(
+  ...predicates: [...{ [K in keyof T]: PredicateWithMeta<T[K]> }]
+): PredicateWithMeta<T[number]> => withMeta(
+  (value: unknown): value is T[number] => {
     return predicates.some(predicate => predicate(value))
-  }) as Predicate,
+  },
   predicates.map(p => p.type).join(' | ')
-)
+) as PredicateWithMeta<T[number]>
