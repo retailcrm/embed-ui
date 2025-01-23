@@ -7,6 +7,7 @@ import type { Schema } from '~types/user/current'
 
 import {
   arrayOf,
+  isBoolean,
   isNull,
   isNumber,
   isString,
@@ -54,6 +55,16 @@ export const schema: Schema = {
   'permissions': {
     accepts: arrayOf(isString),
     defaults: (): string[] => [],
+    readonly: true,
+  },
+  'isAdmin': {
+    accepts: isBoolean,
+    defaults: () => false,
+    readonly: true,
+  },
+  'isManager': {
+    accepts: isBoolean,
+    defaults: () => false,
     readonly: true,
   },
 }
@@ -113,6 +124,20 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Character codes of available user permissions',
       'es-ES': 'Códigos de caracteres de los permisos disponibles para el usuario',
       'ru-RU': 'Символьные коды доступных пользователю разрешений',
+    },
+  },
+  'isAdmin': {
+    description: {
+      'en-GB': 'Indicates whether the user has administrator privileges',
+      'es-ES': 'Indica si el usuario tiene privilegios de administrador',
+      'ru-RU': 'Указывает, имеет ли пользователь права администратора',
+    },
+  },
+  'isManager': {
+    description: {
+      'en-GB': 'Indicates whether the user has manager privileges',
+      'es-ES': 'Indica si el usuario tiene privilegios de gerente',
+      'ru-RU': 'Указывает, имеет ли пользователь права менеджера',
     },
   },
 }

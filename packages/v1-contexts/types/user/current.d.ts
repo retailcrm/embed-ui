@@ -9,4 +9,6 @@ export type Schema = {
   'photo': ReadonlyField<string | null>;
   'groups': ReadonlyField<string[]>;
   'permissions': ReadonlyField<string[]>;
+  'isAdmin': ReadonlyField<boolean>;
+  'isManager': ReadonlyField<boolean>;
 }
