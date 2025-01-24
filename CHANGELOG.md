@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.5.15](https://github.com/retailcrm/embed-ui/compare/v0.5.14...v0.5.15) (2025-01-24)
+
+### Features
+
+* Composable utility for using @omnicajs/symfony-fouter ([cc9df5a](https://github.com/retailcrm/embed-ui/commit/cc9df5a274fdfefd0ca2ec56bcf87eec8130fe8e))
+
+### Bug Fixes
+
+* **v1-components:** Avatar display style ([b29c9a8](https://github.com/retailcrm/embed-ui/commit/b29c9a864c5a5e4bbd53836a1313d7090917d058))
 ## [0.5.14](https://github.com/retailcrm/embed-ui/compare/v0.5.13...v0.5.14) (2025-01-24)
 
 ### Bug Fixes
