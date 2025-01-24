@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.5.13](https://github.com/retailcrm/embed-ui/compare/v0.5.12...v0.5.13) (2025-01-24)
+
+### Features
+
+* **v1-components:** Expanded TS type 'Dimensions' with a set of values like `-xM` ([90e270f](https://github.com/retailcrm/embed-ui/commit/90e270f62a1c4af2c05257784910220d2ba3ee5c))
+
+### Bug Fixes
+
+* **v1-components:** Validator for UiLink & UiToolbarLink allows javascript:void(0) ([693e7d4](https://github.com/retailcrm/embed-ui/commit/693e7d4645332d11b91d8041e0dfa918f07f86a7))
 ## [0.5.12](https://github.com/retailcrm/embed-ui/compare/v0.5.11...v0.5.12) (2025-01-23)
 
 ### Features
