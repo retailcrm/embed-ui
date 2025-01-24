@@ -35,6 +35,7 @@
     "vue": "^3.5"
   },
   "dependencies": {
+    "@omnicajs/symfony-router": "^1.0.0",
     "@omnicajs/vue-remote": "^0.2.5",
     "@remote-ui/rpc": "^1.4.5",
     "@retailcrm/embed-ui-v1-contexts": "^0.5.14",

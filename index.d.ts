@@ -24,6 +24,8 @@ import type {
   ContextStoreDefinition,
 } from '@retailcrm/embed-ui-v1-contexts/remote'
 
+import type { Router } from '@omnicajs/symfony-router'
+
 import type { Schema as CustomerCardSchema } from '@retailcrm/embed-ui-v1-contexts/types/customer/card'
 import type { Schema as CustomerCardPhoneSchema } from '@retailcrm/embed-ui-v1-contexts/types/customer/card-phone'
 import type { Schema as OrderCardSchema } from '@retailcrm/embed-ui-v1-contexts/types/order/card'
@@ -86,3 +88,5 @@ export declare const useCustomerCardPhoneContext: ContextStoreDefinition<'custom
 export declare const useOrderCardContext: ContextStoreDefinition<'order/card', OrderCardSchema>
 export declare const useCurrentUserContext: ContextStoreDefinition<'user/current', CurrentUserSchema>
 export declare const useSettingsContext: ContextStoreDefinition<'settings', SettingsSchema>
+
+export declare const useRouter: () => ComputedRef<Pick<Router, 'generate'>>

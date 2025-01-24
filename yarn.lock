@@ -1026,6 +1026,7 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": "npm:^3.0.2"
     "@eslint/js": "npm:^9.13.0"
+    "@omnicajs/symfony-router": "npm:^1.0.0"
     "@omnicajs/vue-remote": "npm:^0.2.5"
     "@remote-ui/rpc": "npm:^1.4.5"
     "@retailcrm/embed-ui-v1-contexts": "npm:^0.5.14"
