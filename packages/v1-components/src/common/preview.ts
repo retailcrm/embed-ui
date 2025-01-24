@@ -7,7 +7,7 @@ import {
 
 import { preview } from '@retailcrm/image-preview'
 
-export type Dimensions = `${number}x${number}` | `${number}x-`
+export type Dimensions = `${number}x${number}` | `${number}x-` | `-x${number}`
 
 export const ImageWorkersKey = Symbol('$image.workers') as InjectionKey<Ref<string[]>>
 
