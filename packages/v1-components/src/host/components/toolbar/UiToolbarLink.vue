@@ -32,7 +32,7 @@ defineProps({
   /** Атрибут ссылки */
   href: {
     type: String,
-    validator: (href: unknown) => typeof href === 'string' && isURL(href as string),
+    validator: (href: unknown) => typeof href === 'string' && (isURL(href as string) || href === 'javascript:void(0);'),
     default: 'javascript:void(0);',
   },
 
