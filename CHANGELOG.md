@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.14](https://github.com/retailcrm/embed-ui/compare/v0.5.13...v0.5.14) (2025-01-24)
+
+### Bug Fixes
+
+* **v1-components:** isURL predicate now returns true for relative URLs without protocol ([7de880e](https://github.com/retailcrm/embed-ui/commit/7de880e5a02995b28d31ef8589a3bcc88f5e48c5))
 ## [0.5.13](https://github.com/retailcrm/embed-ui/compare/v0.5.12...v0.5.13) (2025-01-24)
 
 ### Features
