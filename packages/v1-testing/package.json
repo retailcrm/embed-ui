@@ -1,7 +1,7 @@
 {
   "name": "@retailcrm/embed-ui-v1-testing",
   "type": "module",
-  "version": "0.5.15",
+  "version": "0.5.16",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
   "repository": "git@github.com:retailcrm/embed-ui.git",
@@ -15,6 +15,6 @@
     "vue": "^3.5"
   },
   "dependencies": {
-    "@retailcrm/embed-ui-v1-types": "^0.5.15"
+    "@retailcrm/embed-ui-v1-types": "^0.5.16"
   }
 }

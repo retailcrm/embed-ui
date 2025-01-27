@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.16](https://github.com/retailcrm/embed-ui/compare/v0.5.15...v0.5.16) (2025-01-27)
+
+### Features
+
+* **v1-components:** UiDate & utilities for date/time formatting with automatic vue-i18n locale detection ([41ad8b0](https://github.com/retailcrm/embed-ui/commit/41ad8b07bba29981a3c8132953d90cb5560a00a3))
 ## [0.5.15](https://github.com/retailcrm/embed-ui/compare/v0.5.14...v0.5.15) (2025-01-24)
 
 ### Features
