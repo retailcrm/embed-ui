@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.17](https://github.com/retailcrm/embed-ui/compare/v0.5.16...v0.5.17) (2025-01-28)
+
+### Bug Fixes
+
+* Missing UiDate component in createRoot utility ([1754b87](https://github.com/retailcrm/embed-ui/commit/1754b8714ca5f11466ddfe0d806d7e84beb8c4b1))
 ## [0.5.16](https://github.com/retailcrm/embed-ui/compare/v0.5.15...v0.5.16) (2025-01-27)
 
 ### Features
