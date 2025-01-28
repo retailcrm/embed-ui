@@ -70,6 +70,7 @@ const createRoot = async (channel: Channel) => {
       'UiAvatarList',
       'UiButton',
       'UiCheckbox',
+      'UiDate',
       'UiError',
       'UiImage',
       'UiLink',
