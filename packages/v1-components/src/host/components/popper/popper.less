@@ -1,0 +1,58 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+
+@background: var(--ui-v1-popper-background, #FFFFFF);
+
+@arrow-size: var(--ui-v1-popper-arrow-size, 24px);
+
+.ui-v1-popper {
+  .reset-box-sizing();
+
+  width: max-content;
+  border-radius: var(--ui-v1-popper-roundings, @border-radius-sm);
+  box-shadow: 0 4px 12px rgba(30, 34, 72, 0.2);
+  color: @black-500;
+  font-family: @font-family;
+  .text-small();
+  z-index: var(--ui-v1-popper-z-index, 10000);
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  &&_hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .15s, visibility .15s;
+  }
+
+  &&_shown {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity .15s;
+  }
+
+  &__arrow {
+    position: absolute;
+    background: @background;
+    width: @arrow-size;
+    height: @arrow-size;
+    border-radius: var(--ui-v1-popper-arrow-roundings, @border-radius-sm);
+    box-shadow: 0 16px 32px rgba(30, 34, 72, 0.16);
+    transform: rotate(45deg);
+    z-index: -1;
+  }
+
+  &__content {
+    width: var(--ui-v1-popper-width, auto);
+    max-width: var(--ui-v1-popper-width-max, max-content);
+    min-width: var(--ui-v1-popper-width-min, @arrow-size);
+    height: var(--ui-v1-popper-height, auto);
+    max-height: var(--ui-v1-popper-height-max, max-content);
+    min-height: var(--ui-v1-popper-height-min, @arrow-size);
+    padding: var(--ui-v1-popper-padding, 0);
+    background: @background;
+    border-radius: inherit;
+    position: relative;
+  }
+}

@@ -5,11 +5,11 @@ import type { UiButtonMethods } from '@/common/components/button'
 import {
   defineComponent,
   h,
-  ref,
 } from 'vue'
 
 import { isURL } from '@/common/predicate'
 import { normalize } from '@/host/render'
+import { useElementRef } from '@/host/composables'
 
 import {
   APPEARANCE,
@@ -70,7 +70,7 @@ export default defineComponent({
   },
 
   setup (props, { attrs, expose, slots }) {
-    const root = ref<HTMLAnchorElement | HTMLButtonElement | null>(null)
+    const root = useElementRef<HTMLAnchorElement | HTMLButtonElement>()
 
     expose({
       click: () => root.value?.click(),

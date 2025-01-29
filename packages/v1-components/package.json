@@ -58,6 +58,7 @@
     "@remote-ui/rpc": "^1.4.5",
     "@retailcrm/image-preview": "^1.0.2",
     "date-fns": "^4.1.0",
+    "lodash.isequal": "^4.5.0",
     "vue3-perfect-scrollbar": "^1.6.0"
   },
   "devDependencies": {
@@ -75,6 +76,7 @@
     "@storybook/types": "^8.4.7",
     "@storybook/vue3": "^8.4.7",
     "@storybook/vue3-vite": "^8.4.7",
+    "@types/lodash.isequal": "^4.5.6",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/compiler-sfc": "^3.5.12",
     "@vue/test-utils": "^2.4.6",

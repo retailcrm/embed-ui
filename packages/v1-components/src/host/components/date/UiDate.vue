@@ -1,5 +1,5 @@
 <template>
-    <time v-bind="{ datetime: formatISO(date), ...$attrs }">
+    <time ref="root" v-bind="{ datetime: formatISO(date), ...$attrs }">
         {{ withTime ? formatDateTime(date, locale) : formatDate(date, locale) }}
     </time>
 </template>
@@ -9,6 +9,7 @@ import type { Locale } from '@/common/components/date'
 import type { PropType } from 'vue'
 
 import { formatISO } from 'date-fns'
+import { useElementRef } from '@/host/composables'
 
 import {
   formatDate,
@@ -32,4 +33,6 @@ defineProps({
     default: false,
   },
 })
+
+const root = useElementRef<HTMLTimeElement>()
 </script>
