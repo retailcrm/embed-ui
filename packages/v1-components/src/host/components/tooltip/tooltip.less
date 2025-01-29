@@ -1,0 +1,17 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/layout.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+
+.ui-v1-tooltip {
+  --ui-v1-popper-width: var(--ui-v1-tooltip-width, fit-content);
+  --ui-v1-popper-width-max: var(--ui-v1-tooltip-width-max, 160px);
+  --ui-v1-popper-padding: 2px @spacing-xs;
+  --ui-v1-popper-roundings: @border-radius-sm;
+  --ui-v1-popper-arrow-size: 12px;
+  --ui-v1-popper-background: @black-500;
+
+  color: #FFFFFF;
+  outline: none;
+  word-break: break-word;
+}

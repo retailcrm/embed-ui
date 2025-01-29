@@ -1,0 +1,89 @@
+import { ArgTypes } from '@storybook/blocks'
+
+# UiPopper
+
+Базовый компонент для создания плавающих элементов
+
+## Назначение
+
+Компонент используется как базовый для плавающих элементов любых типов, будь то всплывающие подсказки, отображаемые
+по наведению на элемент или выпадающие меню.
+
+## Применение
+
+Базовый пример:
+
+```html
+<template>
+    <UiPopperConnector>
+        <UiButton variant="danger">
+            Удалить
+        </UiButton>
+
+        <UiPopper role="dialog" class="popconfirm">
+            <div class="popconfirm__content">
+                Действие не может быть отменено, продолжить?
+            </div>
+
+            <div class="popconfirm__footer">
+                <UiButton variant="danger">
+                    Да
+                </UiButton>
+
+                <UiButton appearance="secondary">
+                    Нет
+                </UiButton>
+            </div>
+        </UiPopper>
+    </UiPopperConnector>
+</template>
+```
+
+В этом примере мы использовали компонент `UiPopperConnector`, он нужен для передачи информации о цели (кнопке)
+плавающему элементу. Работает это так: кнопка передает коннектору ссылку на свой элемент, коннектор передает её
+`UiPopper`. Внутри `UiPopperConnector` может быть только один целевой элемент, в то время как число плавающих
+не ограничено. Это позволит вам добавить к элементу, например, одновременно и подсказку, и, например, немодальное
+диалоговое окно подтверждения.
+
+Коннектор не имеет корневого элемента и создает VNode фрагменты.
+
+### Пользовательские компоненты-цели
+
+Коннектор может связать любой компонент, который мы снабдили логикой регистрации ссылок с плавающими элементами,
+в то же самое время, обычные элементы не могут сами по себе быть целью для плавающего элемента.
+Мы добавили специальный компонент `UiPopperTarget`, который позволит вам создавать собственные компоненты-цели для
+плавающих элементов:
+
+```html
+<template>
+    <UiPopperConnector>
+        <UiPopperTarget tag="span" role="button" class="icon-button">
+            <IconTrash aria-label="Удалить" />
+        </UiPopperTarget>
+
+        <UiPopper role="tooltip" class="tooltip">
+            Удалить
+        </UiPopper>
+
+        <UiPopper role="dialog" class="popconfirm">
+            <div class="popconfirm__content">
+                Действие не может быть отменено, продолжить?
+            </div>
+
+            <div class="popconfirm__footer">
+                <UiButton variant="danger">
+                    Да
+                </UiButton>
+
+                <UiButton appearance="secondary">
+                    Нет
+                </UiButton>
+            </div>
+        </UiPopper>
+    </UiPopperConnector>
+</template>
+```
+
+## API
+
+<ArgTypes />

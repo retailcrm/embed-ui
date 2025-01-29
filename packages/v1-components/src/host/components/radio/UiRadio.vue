@@ -35,8 +35,9 @@ import type { PropType } from 'vue'
 import type { Primitive } from '@/common/types'
 import type { UiRadioMethods } from '@/common/components/radio'
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { pick } from '@/common/utils'
+import { useElementRef } from '@/host/composables'
 
 const props = defineProps({
   id: {
@@ -77,7 +78,7 @@ const emit = defineEmits([
   'update:model',
 ])
 
-const radio = ref<HTMLInputElement | null>(null)
+const radio = useElementRef<HTMLInputElement>()
 
 const click = () => radio.value?.click()
 const focus = () => radio.value?.focus()

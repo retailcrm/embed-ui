@@ -1,5 +1,6 @@
 <template>
     <a
+        ref="root"
         :href="href"
         :class="{
             ['ui-v1-link']: true,
@@ -41,6 +42,7 @@ import type { PropType } from 'vue'
 import IconOpenInNew from '~assets/sprites/actions/open-in-new.svg'
 
 import { isURL } from '@/common/predicate'
+import { useElementRef } from '@/host/composables'
 
 import {
   APPEARANCE,
@@ -102,6 +104,8 @@ defineProps({
     default: false,
   },
 })
+
+const root = useElementRef<HTMLAnchorElement>()
 </script>
 
 <style lang="less" src="./link.less" />

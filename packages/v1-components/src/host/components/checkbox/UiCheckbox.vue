@@ -44,8 +44,9 @@ import type { UiCheckboxMethods } from '@/common/components/checkbox'
 
 import IconDone from '~assets/sprites/actions/done.svg'
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { pick } from '@/common/utils'
+import { useElementRef } from '@/host/composables'
 
 const isArray = Array.isArray
 
@@ -112,7 +113,7 @@ const emit = defineEmits([
   'update:model',
 ])
 
-const checkbox = ref<HTMLInputElement | null>(null)
+const checkbox = useElementRef<HTMLInputElement>()
 
 const click = () => checkbox.value?.click()
 const focus = () => checkbox.value?.focus()

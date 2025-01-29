@@ -17,10 +17,12 @@ const preview: Preview = {
   parameters: {
     backgrounds: { disable: true },
     controls: {
+      expanded: true,
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
+      sort: 'none',
     },
     docs: {
       theme,
