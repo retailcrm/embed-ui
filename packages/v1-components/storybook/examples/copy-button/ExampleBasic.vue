@@ -1,5 +1,5 @@
 <template>
-    <UiCopyButton text="test" size="sm">
+    <UiCopyButton text="Текст для копирования" size="sm">
         <template #hint>
             Скопировать
         </template>
