@@ -40,7 +40,7 @@ try {
   }
 
   const versionOnTag = async (path: string, tag: string): Promise<string | undefined> => {
-    const content = await contentOnTag(tag, relative(cwd, join(path, 'package.json')))
+    const content = await contentOnTag(relative(cwd, join(path, 'package.json')), tag)
     const manifest = JSON.parse(content ?? '{}') as Manifest
 
     return manifest.version
