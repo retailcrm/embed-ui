@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.5.18](https://github.com/retailcrm/embed-ui/compare/v0.5.17...v0.5.18) (2025-01-30)
+
+### Features
+
+* Added popper/tooltip components to known components list ([911df10](https://github.com/retailcrm/embed-ui/commit/911df1068c1bf5dcd4944bab4fb2d35833b30f13))
+* Added UiCopyButton to known ui components list ([d3d4cab](https://github.com/retailcrm/embed-ui/commit/d3d4cab6185bfd36fa8a9d40d804063d8d930b63))
+* **v1-components:** ref [#99154](https://github.com/retailcrm/embed-ui/issues/99154) UiPopper/UiPopperTarget/UiPopperConnector/UiTooltip components ([2cb529d](https://github.com/retailcrm/embed-ui/commit/2cb529d65226d27add1eed22e1a21316dce839a2))
+* **v1-components:** UiCopyButton component ([35e78b3](https://github.com/retailcrm/embed-ui/commit/35e78b33143f3376ca5efae62224dd6a41ddad1a))
 ## [0.5.17](https://github.com/retailcrm/embed-ui/compare/v0.5.16...v0.5.17) (2025-01-28)
 
 ### Bug Fixes
