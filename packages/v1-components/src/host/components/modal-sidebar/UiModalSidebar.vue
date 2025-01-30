@@ -1,18 +1,111 @@
+<template>
+    <Teleport v-if="state.attached" :to="globals?.container || 'body'">
+        <UiTransition
+            name="fade-2"
+            @before-enter="visibilityOfOverlay = 'showing'"
+            @after-enter="visibilityOfOverlay = 'shown'"
+            @before-leave="visibilityOfOverlay = 'hiding'"
+            @after-leave="visibilityOfOverlay = 'hidden'"
+        >
+            <div
+                v-show="state.shown"
+                :id="id"
+                :aria-hidden="visibility !== 'shown' ? 'true' : 'false'"
+                :class="[$attrs.class, {
+                    ['ui-v1-modal']: true,
+                    ['ui-v1-modal_overlapped']: state.overlapped,
+                    ['ui-v1-modal-sidebar-overlay']: true,
+                    ['ui-v1-modal-sidebar-overlay_fixed']: fixed,
+                    [`ui-v1-modal-sidebar-overlay_${direction}`]: fixed,
+                }]"
+                aria-modal="true"
+                v-bind="$attrs"
+                @click="onBackdropClick"
+            >
+                <UiTransition
+                    :name="`slide-${direction}`"
+                    @before-enter="visibilityOfSidebar = 'showing'"
+                    @after-enter="visibilityOfSidebar = 'shown'"
+                    @before-leave="visibilityOfSidebar = 'hiding'"
+                    @after-leave="visibilityOfSidebar = 'hidden'"
+                >
+                    <aside
+                        v-if="state.shown"
+                        :id="id + '-sidebar'"
+                        :class="{
+                            'ui-v1-modal-sidebar': true,
+                            'ui-v1-modal-sidebar_left': direction === DIRECTION.LEFT,
+                            'ui-v1-modal-sidebar_size_sm': size === SIZE.SM,
+                            'ui-v1-modal-sidebar_size_lg': size === SIZE.LG,
+                        }"
+                    >
+                        <header class="ui-v1-modal-sidebar__header">
+                            <div class="ui-v1-modal-sidebar__header-inner">
+                                <div
+                                    aria-level="1"
+                                    class="ui-v1-modal-sidebar__title"
+                                    role="heading"
+                                >
+                                    <slot name="title" :overlapped="state.overlapped" />
+                                </div>
+                            </div>
+
+                            <div
+                                ref="closer"
+                                aria-label="Esc"
+                                class="ui-v1-modal-sidebar__close"
+                                role="button"
+                                @click="onCloserClick"
+                            >
+                                <IconClear aria-hidden="true" width="32" />
+
+                                <UiTooltip :target="closerTarget" :offset-main-axis="0">
+                                    Esc
+                                </UiTooltip>
+                            </div>
+                        </header>
+
+                        <div v-if="scrolling === SCROLLING.NONE" class="ui-v1-modal-sidebar__body-fixed">
+                            <slot :overlapped="state.overlapped" />
+                        </div>
+
+                        <UiScrollBox
+                            v-else
+                            :native="scrolling === SCROLLING.NATIVE"
+                            class="ui-v1-modal-sidebar__body"
+                            show-on-mac
+                            @ps-y-reach-end="$emit('scroll:y:end')"
+                        >
+                            <slot :overlapped="state.overlapped" />
+                        </UiScrollBox>
+
+                        <footer
+                            v-if="'footer' in $slots"
+                            class="ui-v1-modal-sidebar__footer"
+                        >
+                            <slot name="footer" :overlapped="state.overlapped" />
+                        </footer>
+                    </aside>
+                </UiTransition>
+            </div>
+        </UiTransition>
+    </Teleport>
+</template>
+
 <script lang="ts" setup>
-import type { PropType, VNode } from 'vue'
+import type { PropType } from 'vue'
 
 import type { Layer } from '@/host/components/modal/layer'
 import type { EmbedModal } from '@/host/components/modal/plugin'
 
 import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
 import UiTransition from '@/host/components/transition/UiTransition.vue'
+import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
 
 import IconClear from '~assets/sprites/actions/clear.svg'
 
 import {
-  Teleport,
   computed,
-  h,
   inject,
   onActivated,
   onBeforeUnmount,
@@ -20,11 +113,7 @@ import {
   onMounted,
   reactive,
   ref,
-  useAttrs,
-  useSlots,
-  vShow,
   watch,
-  withDirectives,
 } from 'vue'
 
 import { ModalInjectKey } from '@/host/components/modal/plugin'
@@ -119,7 +208,7 @@ const emit = defineEmits([
   'scroll:y:end',
 ])
 
-const globals = inject<EmbedModal|null>(ModalInjectKey, null)
+const globals = inject<EmbedModal | null>(ModalInjectKey, null)
 
 const state = reactive({
   attached: false,
@@ -128,6 +217,9 @@ const state = reactive({
   detachTimer: null as number | null,
   overlapped: false,
 })
+
+const closer = ref<HTMLElement | null>(null)
+const closerTarget = computed(() => closer)
 
 const layer = computed<Layer>(() => ({
   id: props.id,
@@ -270,121 +362,17 @@ onBeforeUnmount(() => {
   detach()
 })
 
-const attrs = useAttrs()
-const slots = useSlots()
-
-const hasSlot = (slotName: string): boolean => slotName in slots
-const renderSlot = (slotName: string) => {
-  const fn = slots[slotName]
-  return fn ? fn({ overlapped: state.overlapped }) : []
-}
-const normalizeSlot = (slotName: string) => () => renderSlot(slotName)
-
-const renderHeader = (): VNode => {
-  return h('header', { class: 'ui-v1-modal-sidebar__header' }, [
-    h('div', { class: 'ui-v1-modal-sidebar__header-inner' }, h('div', {
-      role: 'heading',
-      'aria-level': '1',
-      class: 'ui-v1-modal-sidebar__title',
-    }, renderSlot('title'))),
-    h('div', {
-      role: 'button',
-      'aria-label': 'Esc',
-      class: 'ui-v1-modal-sidebar__close',
-      onClick: () => {
-        if (!state.overlapped) {
-          close(CLOSE_METHOD.CLICK_CROSS)
-        }
-      },
-    }, h(IconClear, {
-      width: 32,
-      title: 'Esc',
-    })),
-  ])
+const onBackdropClick = (event: Event) => {
+  if (event.target === event.currentTarget && !state.overlapped) {
+    close(CLOSE_METHOD.CLICK_OUTSIDE)
+  }
 }
 
-const renderBody = (): VNode => props.scrolling === SCROLLING.NONE
-  ? h('div', { class: 'ui-v1-modal-sidebar__body-fixed' }, renderSlot('default'))
-  : h(UiScrollBox, {
-    class: 'ui-v1-modal-sidebar__body',
-    native: props.scrolling === SCROLLING.NATIVE,
-    showOnMac: true,
-    onPsYReachEnd: () => emit('scroll:y:end'),
-  }, {
-    default: normalizeSlot('default'),
-  })
-
-const renderFooter = (): VNode[] => hasSlot('footer')
-  ? [h('footer', { class: 'ui-v1-modal-sidebar__footer' }, renderSlot('footer'))]
-  : []
-
-const renderSidebar = (): VNode => {
-  const direction = props.direction
-  const size = props.size
-
-  const setVisibility = (visibility: Visibility) => () => visibilityOfSidebar.value = visibility
-
-  return h(UiTransition, {
-    name: `slide-${direction}`,
-    onBeforeEnter: setVisibility('showing'),
-    onAfterEnter: setVisibility('shown'),
-    onBeforeLeave: setVisibility('hiding'),
-    onAfterLeave: setVisibility('hidden'),
-  }, {
-    default: () => state.shown ? [
-      h('aside', {
-        id: props.id + '-sidebar',
-        class: {
-          'ui-v1-modal-sidebar': true,
-          'ui-v1-modal-sidebar_left': direction === DIRECTION.LEFT,
-          'ui-v1-modal-sidebar_size_sm': size === SIZE.SM,
-          'ui-v1-modal-sidebar_size_lg': size === SIZE.LG,
-        },
-      }, [
-        renderHeader(),
-        renderBody(),
-        ...renderFooter(),
-      ]),
-    ] : [],
-  })
-}
-
-const EmbedModalSidebar = () => {
-  const setVisibility = (visibility: Visibility) => () => visibilityOfOverlay.value = visibility
-
-  return !state.attached ? undefined : h(Teleport, {
-    to: globals?.container ?? document.body,
-  }, h(UiTransition, {
-    name: 'fade-2',
-    onBeforeEnter: setVisibility('showing'),
-    onAfterEnter: setVisibility('shown'),
-    onBeforeLeave: setVisibility('hiding'),
-    onAfterLeave: setVisibility('hidden'),
-  }, {
-    default: () => withDirectives(h('div', {
-      id: props.id,
-      'aria-hidden': visibility.value !== 'shown' ? 'true' : 'false',
-      'aria-modal': 'true',
-      ...attrs,
-      class: [attrs.class, {
-        'ui-v1-modal': true,
-        'ui-v1-modal_overlapped': state.overlapped,
-        'ui-v1-modal-sidebar-overlay': true,
-        'ui-v1-modal-sidebar-overlay_fixed': props.fixed,
-        [`ui-v1-modal-sidebar-overlay_${props.direction}`]: props.fixed,
-      }],
-      onClick: (event: Event) => {
-        if (event.target === event.currentTarget && !state.overlapped) {
-          close(CLOSE_METHOD.CLICK_OUTSIDE)
-        }
-      },
-    }, renderSidebar()), [[vShow, state.shown]]),
-  }))
+const onCloserClick = () => {
+  if (!state.overlapped) {
+    close(CLOSE_METHOD.CLICK_CROSS)
+  }
 }
 </script>
-
-<template>
-    <EmbedModalSidebar />
-</template>
 
 <style lang="less" src="./modal-sidebar.less" />
