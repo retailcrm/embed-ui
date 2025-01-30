@@ -1,0 +1,36 @@
+@import (reference) '../../../../assets/stylesheets/palette.less';
+
+.ui-v1-copy-button {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+
+  &__tooltip {
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: @green-500;
+    margin-left: -2px;
+    margin-right: 4px;
+  }
+
+  &__text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  &__area {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    width: 10px;
+    height: 10px;
+  }
+}

@@ -1,0 +1,39 @@
+import ToReact from '../ToReact.ts'
+
+import ExampleBasic from './UiCopyButtonExamples/ExampleBasic.vue'
+
+# UiCopyButton
+
+Кнопки для копирования текста
+
+## Механика
+
+При клике на кнопку (по-умолчанию третичная) копируется заранее заготовленный текст. Кнопка при этом имеет всплывающую
+подсказку, контент которой на некоторое время меняется после копирования текста в буфер обмена (индикация, что текст
+скопирован).
+
+## Применение
+
+Код:
+
+```html
+<template>
+    <UiCopyButton text="test" size="sm">
+        <template #hint>
+            Скопировать
+        </template>
+
+        <template #hint-copied>
+            Скопировано
+        </template>
+    </UiCopyButton>
+</template>
+
+<script lang="ts" setup>
+import { UiCopyButton } from '@retailcrm/embed-ui-v1-components/remote'
+</script>
+```
+
+Результат:
+
+<ToReact is={ExampleBasic} />
