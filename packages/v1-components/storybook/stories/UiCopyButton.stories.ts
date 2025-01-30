@@ -7,8 +7,6 @@ import { SIZE } from '@/common/components/button'
 import page from './UiCopyButton.mdx'
 
 const meta = {
-  id: 'UiCopyButton',
-
   title: 'Components/UiCopyButton',
 
   component: UiCopyButton,
