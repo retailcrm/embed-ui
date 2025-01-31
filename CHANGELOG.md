@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.20](https://github.com/retailcrm/embed-ui/compare/v0.5.19...v0.5.20) (2025-01-31)
+
+### Bug Fixes
+
+* **v1-components:** Missing UiCopyButton slots definition ([7ac224a](https://github.com/retailcrm/embed-ui/commit/7ac224ad812f19b948473051aa0170217cec97ce))
 ## [0.5.19](https://github.com/retailcrm/embed-ui/compare/v0.5.18...v0.5.19) (2025-01-31)
 
 ### Bug Fixes
