@@ -21,5 +21,10 @@ export const UiCopyButton = defineRemoteComponent(
     'click': (event: SerializedEvent) => boolean,
     'focus': (event: SerializedFocusEvent) => boolean,
     'blur': (event: SerializedEvent) => boolean,
-  }
+  },
+  [
+    'trigger',
+    'hint',
+    'hint-copied',
+  ]
 )
