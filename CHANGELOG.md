@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.19](https://github.com/retailcrm/embed-ui/compare/v0.5.18...v0.5.19) (2025-01-31)
+
+### Bug Fixes
+
+* **v1-components:** Missing UiDate in exported remote members ([7a91ba4](https://github.com/retailcrm/embed-ui/commit/7a91ba4251a6a056e2cf927c094c84804832b1ee))
 ## [0.5.18](https://github.com/retailcrm/embed-ui/compare/v0.5.17...v0.5.18) (2025-01-30)
 
 ### Features
