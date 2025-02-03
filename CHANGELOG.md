@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.21](https://github.com/retailcrm/embed-ui/compare/v0.5.20...v0.5.21) (2025-02-03)
+
+### Bug Fixes
+
+* **v1-components:** Fixed date format for spanish locales ([9be1716](https://github.com/retailcrm/embed-ui/commit/9be17164856fd5435c5326acb76aaca2c202b3d5))
 ## [0.5.20](https://github.com/retailcrm/embed-ui/compare/v0.5.19...v0.5.20) (2025-01-31)
 
 ### Bug Fixes
