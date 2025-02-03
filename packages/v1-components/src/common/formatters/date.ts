@@ -6,14 +6,21 @@ import { format } from 'date-fns'
 import { enGB, es, ru } from 'date-fns/locale'
 
 export const formatDateLat = (date: Date | string) => format(date, 'dd/MM/yyyy', { locale: enGB })
+export const formatDateEn = formatDateLat
+export const formatDateEs = (date: Date | string) => format(date, 'dd.MM.yyyy', { locale: es })
 export const formatDateRu = (date: Date | string) => format(date, 'dd.MM.yyyy', { locale: ru })
 
 export const formatTime = (date: Date | string) => format(date, 'HH:mm', { locale: enGB })
 
 export const formatDate = (date: Date | string, locale: Locale | undefined = undefined) => {
-  return (locale ?? detectLocale()) === 'ru-RU'
-    ? formatDateRu(date)
-    : formatDateLat(date)
+  switch (locale ?? detectLocale()) {
+    case 'es-ES':
+      return formatDateEs(date)
+    case 'ru-RU':
+      return formatDateRu(date)
+    default:
+      return formatDateLat(date)
+  }
 }
 
 export const formatDateTime = (date: Date | string, locale: Locale | undefined = undefined) => format(date, 'Pp', {
