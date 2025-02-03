@@ -35,6 +35,10 @@ import UiDate from '@/host/components/date/UiDate.vue'
 <template>
     <UiDate :date="new Date()" locale="ru-RU" />
 </template>
+
+<script setup>
+import { UiDate } from '@retailcrm/embed-ui-v1-components/remote'
+</script>
 ```
 
 Результат:
@@ -47,6 +51,10 @@ import UiDate from '@/host/components/date/UiDate.vue'
 <template>
     <UiDate :date="new Date()" locale="ru-RU" with-time />
 </template>
+
+<script setup>
+import { UiDate } from '@retailcrm/embed-ui-v1-components/remote'
+</script>
 ```
 
 Результат:
