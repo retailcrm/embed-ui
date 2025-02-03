@@ -13,6 +13,8 @@
 ### Примеры
 
 ```javascript
+import { formatDate } from '@retailcrm/embed-ui-v1-components/remote'
+
 formatDate(new Date('2024-01-22'), 'en-GB') // "22/01/24"
 formatDate(new Date('2024-01-22'), 'es-ES') // "22/01/24"
 formatDate(new Date('2024-01-22'), 'ru-RU') // "22.01.24"
@@ -34,6 +36,8 @@ formatDate(new Date('2024-01-22'), 'ru-RU') // "22.01.24"
 ### Примеры
 
 ```javascript
+import { formatDateTime } from '@retailcrm/embed-ui-v1-components/remote'
+
 formatDateTime(new Date('2024-01-22'), 'en-GB') // Вернёт "22/01/24 15:30"
 formatDateTime(new Date('2024-01-22'), 'es-ES') // Вернёт "22/01/24 15:30"
 formatDateTime(new Date('2024-01-22'), 'ru-RU') // "22.01.24 15:30"
@@ -50,6 +54,8 @@ formatDateTime(new Date('2024-01-22'), 'ru-RU') // "22.01.24 15:30"
 ### Примеры
 
 ```javascript
+import { formatTime } from '@retailcrm/embed-ui-v1-components/remote'
+
 formatTime(new Date('2024-01-22 15:30:00')) // "15:30"
 formatTime('2024-01-22 15:30:00') // "15:30"
 
