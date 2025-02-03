@@ -42,7 +42,7 @@ describe('common/formatters/date', () => {
 
       expect(wrapper.text()).toMatch('01.01.2024')
 
-      i18n.global.locale.value = 'es-ES'
+      i18n.global.locale.value = 'en-GB'
 
       await nextTick()
 
@@ -89,7 +89,7 @@ describe('common/formatters/date', () => {
 
       expect(wrapper.text()).toMatch('01.01.2024, 12:30')
 
-      i18n.global.locale.value = 'es-ES'
+      i18n.global.locale.value = 'en-GB'
 
       await nextTick()
 
