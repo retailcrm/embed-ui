@@ -29,7 +29,25 @@ export const targetListDocumentation: {
       'user/current',
       'settings',
     ],
-    customContexts: [],
+    customContexts: ['customer'],
+  },
+  'customer/card:communications.after': {
+    description: {
+      'en-GB': 'Widget for enhancing the communication section in the left column of the customer page.',
+      'es-ES': 'Widget para ampliar la sección de comunicación en la columna izquierda de la página del cliente.',
+      'ru-RU': 'Виджет для дополнения секции коммуникаций в левой колонке страницы клиента.',
+    },
+    location: {
+      'en-GB': 'Right below the short summary, in the communication section',
+      'es-ES': 'Justo debajo del resumen breve, en la sección de comunicación',
+      'ru-RU': 'Сразу под краткой сводкой, в секции коммуникаций',
+    },
+    contexts: [
+      'customer/card',
+      'user/current',
+      'settings',
+    ],
+    customContexts: ['customer'],
   },
   'order/card:common.before': {
     description: {
