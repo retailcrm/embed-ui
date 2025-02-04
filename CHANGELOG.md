@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.5.22](https://github.com/retailcrm/embed-ui/compare/v0.5.21...v0.5.22) (2025-02-04)
+
+### Features
+
+* Added new target customer/card:communications.after ([30fda6d](https://github.com/retailcrm/embed-ui/commit/30fda6d7f3b7261a6946af692aa58bd00f5540d8))
+
+### Bug Fixes
+
+* **v1-components:** Missing floating-ui dependencies ([45836bd](https://github.com/retailcrm/embed-ui/commit/45836bd455d931d21bf4acdae1704a18cee19d13))
 ## [0.5.21](https://github.com/retailcrm/embed-ui/compare/v0.5.20...v0.5.21) (2025-02-03)
 
 ### Bug Fixes
