@@ -46,6 +46,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
     "@eslint/js": "^9.13.0",
+    "@modulify/git-toolkit": "^0.0.2",
     "@modulify/pkg": "^1.0.1",
     "@retailcrm/embed-ui-v1-testing": "^0.5.21",
     "@types/git-semver-tags": "^7.0.0",

@@ -1,5 +1,7 @@
 import type { Manifest } from '@modulify/pkg/types/manifest'
 
+import { GitCommander } from '@modulify/git-toolkit'
+
 import Logger from './lib/Logger'
 import Runner from './lib/Runner'
 
@@ -24,23 +26,13 @@ try {
   const cwd = process.cwd()
   const options = { ...DEFAULTS, ...args.argv }
 
+  const git = new GitCommander({ cwd })
+
   const log = new Logger(options)
   const sh = new Runner(log, options.dry)
 
-  const contentOnTag = async (path: string, tag: string): Promise<string | undefined> => {
-    try {
-      return await sh.run('git', ['show', `${tag}:${path}`])
-    } catch (e) {
-      if (String(e).includes(`exists on disk, but not in '${tag}'`)) {
-        return undefined
-      }
-
-      throw e
-    }
-  }
-
   const versionOnTag = async (path: string, tag: string): Promise<string | undefined> => {
-    const content = await contentOnTag(relative(cwd, join(path, 'package.json')), tag)
+    const content = await git.show(tag, relative(cwd, join(path, 'package.json')))
     const manifest = JSON.parse(content ?? '{}') as Manifest
 
     return manifest.version

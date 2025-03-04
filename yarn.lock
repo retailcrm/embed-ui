@@ -1162,6 +1162,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@modulify/git-toolkit@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "@modulify/git-toolkit@npm:0.0.2"
+  peerDependencies:
+    "@types/node": ">=20"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10/0bbdf48479e81191a53712fc9436a4ecf911b2c252b01cccb9c61e5f951165398faa474c1c2c38888b9aeeedd62b0c017fb55f8f3894c8a9f68dbb8681a46814
+  languageName: node
+  linkType: hard
+
 "@modulify/pkg@npm:^1.0.1":
   version: 1.0.1
   resolution: "@modulify/pkg@npm:1.0.1"
@@ -1355,6 +1367,7 @@ __metadata:
     "@eslint/js": "npm:^9.13.0"
     "@floating-ui/core": "npm:^1.6.9"
     "@floating-ui/dom": "npm:^1.6.13"
+    "@modulify/git-toolkit": "npm:^0.0.2"
     "@modulify/pkg": "npm:^1.0.1"
     "@omnicajs/symfony-router": "npm:^1.0.0"
     "@omnicajs/vue-remote": "npm:^0.2.5"

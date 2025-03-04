@@ -3,6 +3,8 @@ import type {
   Manifest,
 } from '@modulify/pkg/types/manifest'
 
+import { GitCommander } from '@modulify/git-toolkit'
+
 import ChangelogWriter from './lib/ChangelogWriter'
 import Logger from './lib/Logger'
 import Runner from './lib/Runner'
@@ -25,6 +27,8 @@ import { DEFAULTS } from './args/release'
 try {
   const cwd = process.cwd()
   const options = { ...DEFAULTS, ...args.argv } as typeof DEFAULTS
+
+  const git = new GitCommander({ cwd })
 
   const log = new Logger(options)
   const sh = new Runner(log, options.dry)
@@ -64,7 +68,7 @@ try {
     [name]: String(name).startsWith('@retailcrm/embed-ui-') ? '^' + nextVersion : dependencies[name],
   }), {} as Dependencies)
 
-  const paths = [relative(cwd, await changelog.write(nextVersion))]
+  const files = [relative(cwd, await changelog.write(nextVersion))]
 
   await walk([root], async (pkg) => {
     const diff = { version: nextVersion } as Partial<Manifest>
@@ -75,28 +79,28 @@ try {
     if (!empty(manifest.optionalDependencies)) diff.optionalDependencies = actualize(manifest.optionalDependencies!)
     if (!empty(manifest.devDependencies)) diff.devDependencies = actualize(manifest.devDependencies!)
 
-    paths.push(relative(cwd, update(pkg.path, diff, options.dry)))
+    files.push(relative(cwd, update(pkg.path, diff, options.dry)))
   })
 
   await sh.run('yarn', ['install', '--no-immutable'])
 
-  paths.push(relative(cwd, 'yarn.lock'))
+  files.push(relative(cwd, 'yarn.lock'))
 
   if (options.dry) {
     log.info('No commiting & tagging since it was a dry run')
   } else {
-    log.info(`Committing ${paths.length} staged files`)
+    log.info(`Committing ${files.length} staged files`)
 
     const tag = `v${nextVersion}`
 
-    await sh.run('git', ['add', ...paths])
-    await sh.run('git', ['commit', ...paths, '-m', `chore(release): ${tag}`])
+    await git.add(files)
+    await git.commit({ files, message: `chore(release): ${tag}` })
 
     log.info('Tagging release %s', [tag])
 
-    await sh.run('git', ['tag', '-a', tag, '-m', `chore(release): ${tag}`])
+    await git.tag({ name: tag, message: `chore(release): ${tag}` })
 
-    const brunch = await sh.run('git', ['rev-parse', '--abbrev-ref', 'HEAD'])
+    const brunch = await git.revParse('HEAD', { abbrevRef: true })
 
     log.info('Run `%s` to publish', [
       'git push --follow-tags origin ' + String(brunch ?? '%branch%').trim(),
