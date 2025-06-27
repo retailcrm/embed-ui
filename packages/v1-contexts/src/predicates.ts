@@ -18,6 +18,7 @@ export const isNull = withMeta((value: unknown): value is null => value === null
 export const isNumber = withMeta((value: unknown): value is number => typeof value === 'number', 'number')
 export const isObject = withMeta((value: unknown): value is object => typeof value === 'object' && value !== null, 'object')
 export const isString = withMeta((value: unknown): value is string => typeof value === 'string', 'string')
+export const isSymbol = withMeta((value: unknown): value is string => typeof value === 'symbol', 'symbol')
 
 export const arrayOf = <T>(predicate: PredicateWithMeta<T>) => withMeta(
   (value: unknown): value is T[] => {
@@ -34,3 +35,35 @@ export const oneOf = <T extends unknown[]>(
   },
   predicates.map(p => p.type).join(' | ')
 ) as PredicateWithMeta<T[number]>
+
+export type Shape<T extends object> = {
+  [K in keyof T]: [Predicate<T[K]>, boolean]
+}
+
+// Without `any` inheritance does not work properly
+// eslint-disable-next-line
+type ExtractType<T extends Shape<any>> = {
+  [K in keyof T]: T[K] extends [Predicate<infer U>, true]
+    ? U
+    : T[K] extends [Predicate<infer U>, false]
+      ? U | undefined
+      : never;
+} extends infer O
+  ? O
+  : never
+
+// Without `any` inheritance does not work properly
+// eslint-disable-next-line
+export const isShape = <S extends Shape<any>>(shape: S) => {
+  const properties = Object.keys(shape)
+
+  return (value: unknown): value is ExtractType<S> => typeof value === 'object' && value !== null && properties.every(p => {
+    const config = shape[p as keyof S] as [Predicate, boolean] | Predicate
+    const [predicate, required] = isArray(config) ? config : [config, true]
+    if (!(p in value)) {
+      return !required
+    }
+
+    return predicate(value[p as keyof object])
+  })
+}
