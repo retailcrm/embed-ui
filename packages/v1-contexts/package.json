@@ -32,11 +32,11 @@
       "require": "./dist/remote/customer/card-phone.cjs",
       "default": "./dist/remote/customer/card-phone.js"
     },
-    "./remote/order/card": {
-      "types": "./dist/remote/order/card.d.ts",
-      "import": "./dist/remote/order/card.js",
-      "require": "./dist/remote/order/card.cjs",
-      "default": "./dist/remote/order/card.js"
+    "./remote/order/*": {
+      "types": "./dist/remote/order/*.d.ts",
+      "import": "./dist/remote/order/*.js",
+      "require": "./dist/remote/order/*.cjs",
+      "default": "./dist/remote/order/*.js"
     },
     "./remote/user/current": {
       "types": "./dist/remote/user/current.d.ts",
