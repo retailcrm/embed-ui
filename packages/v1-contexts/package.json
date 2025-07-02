@@ -20,17 +20,11 @@
       "require": "./dist/remote.cjs",
       "default": "./dist/remote.js"
     },
-    "./remote/customer/card": {
-      "types": "./dist/remote/customer/card.d.ts",
-      "import": "./dist/remote/customer/card.js",
-      "require": "./dist/remote/customer/card.cjs",
-      "default": "./dist/remote/customer/card.js"
-    },
-    "./remote/customer/card-phone": {
-      "types": "./dist/remote/customer/card-phone.d.ts",
-      "import": "./dist/remote/customer/card-phone.js",
-      "require": "./dist/remote/customer/card-phone.cjs",
-      "default": "./dist/remote/customer/card-phone.js"
+    "./remote/customer/*": {
+      "types": "./dist/remote/customer/*.d.ts",
+      "import": "./dist/remote/customer/*.js",
+      "require": "./dist/remote/customer/*.cjs",
+      "default": "./dist/remote/customer/*.js"
     },
     "./remote/order/*": {
       "types": "./dist/remote/order/*.d.ts",
@@ -74,6 +68,12 @@
       ],
       "remote/order/card": [
         "./dist/remote/order/card.d.ts"
+      ],
+      "remote/order/card-items": [
+        "./dist/remote/order/card-items.d.ts"
+      ],
+      "remote/order/card-settings": [
+        "./dist/remote/order/card-settings.d.ts"
       ],
       "remote/user/current": [
         "./dist/remote/user/current.d.ts"

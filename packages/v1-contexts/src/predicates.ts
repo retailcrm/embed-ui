@@ -16,6 +16,10 @@ export const isExactly = <T extends string | number>(expected: T) => {
 
 export const isNull = withMeta((value: unknown): value is null => value === null, 'null')
 export const isNumber = withMeta((value: unknown): value is number => typeof value === 'number', 'number')
+export const isNumeric = withMeta((value: unknown): value is number | `${number}` => {
+  return isNumber(value) || typeof value === 'string' && !isNaN(Number(value))
+}, 'number | `${number}`')
+
 export const isObject = withMeta((value: unknown): value is object => typeof value === 'object' && value !== null, 'object')
 export const isString = withMeta((value: unknown): value is string => typeof value === 'string', 'string')
 export const isSymbol = withMeta((value: unknown): value is string => typeof value === 'symbol', 'symbol')
@@ -54,16 +58,18 @@ type ExtractType<T extends Shape<any>> = {
 
 // Without `any` inheritance does not work properly
 // eslint-disable-next-line
-export const isShape = <S extends Shape<any>>(shape: S) => {
+export const isShape = <S extends Shape<any>>(shape: S, type = 'object') => {
   const properties = Object.keys(shape)
 
-  return (value: unknown): value is ExtractType<S> => typeof value === 'object' && value !== null && properties.every(p => {
-    const config = shape[p as keyof S] as [Predicate, boolean] | Predicate
-    const [predicate, required] = isArray(config) ? config : [config, true]
-    if (!(p in value)) {
-      return !required
-    }
+  return withMeta((value: unknown): value is ExtractType<S> => {
+    return typeof value === 'object' && value !== null && properties.every(p => {
+      const config = shape[p as keyof S] as [Predicate, boolean] | Predicate
+      const [predicate, required] = isArray(config) ? config : [config, true]
+      if (!(p in value)) {
+        return !required
+      }
 
-    return predicate(value[p as keyof object])
-  })
+      return predicate(value[p as keyof object])
+    })
+  }, type)
 }
