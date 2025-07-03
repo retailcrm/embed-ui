@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.5.23-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.22...v0.5.23-alpha.1) (2025-07-03)
+
+### Features
+
+* Re-export of order items & settings contexts in the root package ([7b586dc](https://github.com/retailcrm/embed-ui/commit/7b586dcf8d3d6abaa6cee9f215c590a921598185))
+* **v1-contexts:** Added context for order items ([030e47e](https://github.com/retailcrm/embed-ui/commit/030e47e25e60be89a2f7dc6b72e25746a7e91b02))
+* **v1-contexts:** Added context for OrderItems ([6a93fa1](https://github.com/retailcrm/embed-ui/commit/6a93fa157eca56504b73f8ef526740e31f637acf))
+* **v1-contexts:** Added contexts for order card settings ([a0fc9d7](https://github.com/retailcrm/embed-ui/commit/a0fc9d77edabc9dfec3ae5840ea6b684c99d8a06))
+* **v1-types:** Added types for basic entities ([608acd7](https://github.com/retailcrm/embed-ui/commit/608acd7db36972b15d82b58607fbdcef53ec517e))
 ## [0.5.22](https://github.com/retailcrm/embed-ui/compare/v0.5.21...v0.5.22) (2025-02-04)
 
 ### Features
