@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.23-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.1...v0.5.23-alpha.2) (2025-07-03)
+
+### Bug Fixes
+
+* **v1-contexts:** Missing order/card:items context in schema list ([2b3d489](https://github.com/retailcrm/embed-ui/commit/2b3d489e45e2a14111bb184814f33a2f7b0d090a))
 ## [0.5.23-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.5.22...v0.5.23-alpha.1) (2025-07-03)
 
 ### Features
