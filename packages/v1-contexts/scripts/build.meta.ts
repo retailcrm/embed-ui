@@ -22,6 +22,7 @@ import { keysOf } from '@/utilities'
 import * as customer from '@/common/customer/card'
 import * as customerPhone from '@/common/customer/card-phone'
 import * as order from '@/common/order/card'
+import * as orderItems from '@/common/order/card-items'
 import * as orderSettings from '@/common/order/card-settings'
 import * as user from '@/common/user/current'
 import * as settings from '@/common/settings'
@@ -30,6 +31,7 @@ const schema: SchemaList = {
   [customer.id]: customer.schema,
   [customerPhone.id]: customerPhone.schema,
   [order.id]: order.schema,
+  [orderItems.id]: orderItems.schema,
   [orderSettings.id]: orderSettings.schema,
   [user.id]: user.schema,
   [settings.id]: settings.schema,
@@ -41,6 +43,7 @@ const description: {
   [customer.id]: customer.description,
   [customerPhone.id]: customerPhone.description,
   [order.id]: order.description,
+  [orderItems.id]: orderItems.description,
   [orderSettings.id]: orderSettings.description,
   [user.id]: user.description,
   [settings.id]: settings.description,
@@ -52,6 +55,7 @@ const usage: {
   [customer.id]: customer.usage,
   [customerPhone.id]: customerPhone.usage,
   [order.id]: order.usage,
+  [orderItems.id]: orderItems.usage,
   [orderSettings.id]: orderSettings.usage,
   [user.id]: user.usage,
   [settings.id]: settings.usage,
