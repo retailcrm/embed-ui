@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.23-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.2...v0.5.23-alpha.3) (2025-07-11)
+
+### Features
+
+* **v1-contexts:** Added discount.amount, discount.percent, discount.total to order/card context ([c0a23a5](https://github.com/retailcrm/embed-ui/commit/c0a23a5bbaa6e73840d79a6d27d06e3d25eb3cde))
 ## [0.5.23-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.1...v0.5.23-alpha.2) (2025-07-03)
 
 ### Bug Fixes
