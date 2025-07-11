@@ -28,6 +28,7 @@ export type ContextSchemaList = {
   [key: string]: ContextSchema;
 }
 
+/** @deprecated Use ContextSchemaList instead */
 export type ContextSchemaMap = ContextSchemaList
 
 export type Context<S extends ContextSchema> = {
