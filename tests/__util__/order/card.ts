@@ -38,6 +38,11 @@ export const createHostContext = (id: string) => {
     delivery: {
       address: 'Улица Краља Милутина 2 11000 Београд Србија' as string | null,
     },
+    discount: {
+      amount: 0,
+      percent: 0,
+      total: 0,
+    },
   })
 
   return {
@@ -74,6 +79,9 @@ export const createHostContext = (id: string) => {
       'company.corrAccount': () => data.customer.companyCorrAccount,
       'company.bankAccount': () => data.customer.companyBankAccount,
       'delivery.address': () => data.delivery.address,
+      'discount.amount': () => data.discount.amount,
+      'discount.percent': () => data.discount.percent,
+      'discount.total': () => data.discount.total,
     }, {
       'customer.lastName': (value) => { data.customer.lastName = value },
       'customer.firstName': (value) => { data.customer.firstName = value },
@@ -96,6 +104,8 @@ export const createHostContext = (id: string) => {
       'company.OKPO': (value) => { data.customer.companyOKPO = value },
       'company.BIK': (value) => { data.customer.companyBIK = value },
       'delivery.address': (value) => { data.delivery.address = value },
+      'discount.amount': (value) => { data.discount.amount = value },
+      'discount.percent': (value) => { data.discount.percent = value },
     }),
   }
 }
