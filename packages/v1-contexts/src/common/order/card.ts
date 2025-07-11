@@ -178,6 +178,21 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: false,
   },
+  'discount.amount': {
+    accepts: isNumber,
+    defaults: () => 0,
+    readonly: false,
+  },
+  'discount.percent': {
+    accepts: isNumber,
+    defaults: () => 0,
+    readonly: false,
+  },
+  'discount.total': {
+    accepts: isNumber,
+    defaults: () => 0,
+    readonly: true,
+  },
 }
 
 export const description: ContextSchemaDescription<Schema> = {
@@ -396,6 +411,27 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Delivery address',
       'es-ES': 'Dirección de entrega',
       'ru-RU': 'Адрес доставки',
+    },
+  },
+  'discount.amount': {
+    description: {
+      'en-GB': 'One-time discount amount in order currency',
+      'es-ES': 'Importe del descuento único en la moneda del pedido',
+      'ru-RU': 'Размер одноразовой скидки в валюте заказа',
+    },
+  },
+  'discount.percent': {
+    description: {
+      'en-GB': 'One-time discount percentage',
+      'es-ES': 'Porcentaje de descuento único',
+      'ru-RU': 'Процент одноразовой скидки',
+    },
+  },
+  'discount.total': {
+    description: {
+      'en-GB': 'Total order discount',
+      'es-ES': 'Descuento total del pedido',
+      'ru-RU': 'Общая скидка по заказу',
     },
   },
 }

@@ -32,4 +32,7 @@ export type Schema = {
   'company.corrAccount': Field<string | null>;
   'company.bankAccount': Field<string | null>;
   'delivery.address': Field<string | null>;
+  'discount.amount': Field<number>;
+  'discount.percent': Field<number>;
+  'discount.total': ReadonlyField<number>;
 }
