@@ -1,7 +1,4 @@
-type Scalar = string | number | boolean | null
-type Pojo = {
-  [key: string]: Scalar | Pojo | Array<Scalar | Pojo>
-}
+import type { Pojo } from '@retailcrm/embed-ui-v1-types/scaffolding'
 
 export type Callable = {
   httpCall (
