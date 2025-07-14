@@ -1,4 +1,14 @@
-import type { If, IsTilda, Maybe } from './scaffolding'
+import type {
+  AnyFunction,
+  AnyFunctionList,
+  If,
+  IsTilda,
+  Maybe,
+  MaybePromise,
+  Pojo,
+  Predicate,
+  Scalar,
+} from './scaffolding'
 
 export type Field<Type, Readonly extends boolean = false> = {
   accepts (value: unknown): value is Type;
@@ -211,4 +221,31 @@ export type CustomFieldAccessor = {
     code: string,
     handler: (value: CustomFieldType) => void
   ): void | (() => void);
+}
+
+export type Action<F> = F extends (...args: infer A) => infer R
+  ? A extends Array<Scalar | Pojo>
+    ? R extends MaybePromise<infer RR> ? (...args: A) => Promise<RR> : never
+    : never
+  : never;
+
+export type ActionList<S extends ActionSchema> = {
+  [M in keyof S]: Action<ExtractFunction<S[M]>>;
+} extends infer O ? O : never;
+
+export type ActionArgs<T> = T extends (...args: infer A) => unknown ? A : never;
+export type ActionDescriptor<T extends AnyFunction> = {
+  accepts: Predicate<ActionArgs<T>>;
+  expects: Predicate<ReturnType<T>>;
+}
+
+export type ExtractFunction<T> = T extends {
+    accepts: Predicate<infer A>;
+    expects: Predicate<infer R>;
+  }
+  ? (...args: A) => R
+  : never;
+
+export type ActionSchema<L extends AnyFunctionList = AnyFunctionList> = {
+  [M in keyof L]: ActionDescriptor<L[M]>;
 }
