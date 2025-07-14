@@ -24,11 +24,27 @@ export const isObject = withMeta((value: unknown): value is object => typeof val
 export const isString = withMeta((value: unknown): value is string => typeof value === 'string', 'string')
 export const isSymbol = withMeta((value: unknown): value is string => typeof value === 'symbol', 'symbol')
 
+export const isVoid = withMeta(
+  (value: unknown): value is void => value === undefined,
+  'void'
+)
+
 export const arrayOf = <T>(predicate: PredicateWithMeta<T>) => withMeta(
   (value: unknown): value is T[] => {
     return isArray(value) && value.every(predicate)
   },
   `Array<${predicate.type}>`
+)
+
+export const cortegeOf = <T extends PredicateWithMeta[]>(predicates: [...T]) => withMeta(
+  (value: unknown): value is {
+    [K in keyof T]: T[K] extends PredicateWithMeta<infer U> ? U : never
+  } => {
+    return isArray(value) &&
+      value.length === predicates.length &&
+      predicates.every((predicate, index) => predicate(value[index]))
+  },
+  `[${predicates.map(p => p.type).join(', ')}]`
 )
 
 export const oneOf = <T extends unknown[]>(

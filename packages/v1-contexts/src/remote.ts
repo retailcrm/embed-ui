@@ -5,14 +5,14 @@ import type {
   ContextSchemaList,
   EventMap,
   RejectionHandler,
+  ActionList,
+  ActionSchema,
   TypeOf,
   Writable,
 } from '@retailcrm/embed-ui-v1-types/context'
 
 import type { Endpoint } from '@remote-ui/rpc'
-
 import type { Maybe } from '@retailcrm/embed-ui-v1-types/scaffolding'
-
 import type { PiniaPluginContext } from 'pinia'
 
 import { defineStore } from 'pinia'
@@ -21,7 +21,9 @@ import { keysOf } from '@/utilities'
 declare module 'pinia' {
   // noinspection JSUnusedGlobalSymbols
   export interface PiniaCustomProperties {
-    endpoint: Endpoint<ContextAccessor>
+    endpoint: Endpoint<ContextAccessor & {
+      invoke (name: string, ...args: unknown[]): Promise<unknown>
+    }>
   }
 }
 
@@ -30,7 +32,9 @@ export const injectEndpoint = <
   A extends ContextAccessor<M> = ContextAccessor<M>
 >(endpoint: Endpoint<A>) => {
   return (context: PiniaPluginContext) => {
-    context.store.endpoint = endpoint as Endpoint<ContextAccessor>
+    context.store.endpoint = endpoint as Endpoint<ContextAccessor & {
+      invoke (name: string, ...args: unknown[]): Promise<unknown>
+    }>
   }
 }
 
@@ -88,6 +92,43 @@ export const defineContext = <Id extends string, S extends ContextSchema>(
       },
     },
   })
+}
+
+export const defineActions = <ID extends string, S extends ActionSchema>(
+  id: ID,
+  schema: S
+): () => ActionList<S> => {
+  const useInvoker = defineStore('@retailcrm/embed-ui/_invoker', {})
+
+  return () => {
+    const invoker = useInvoker()
+    const endpoint = invoker.endpoint as Endpoint<{
+      invoke (name: string, ...args: unknown[]): Promise<unknown>
+    }>
+
+    return (new Proxy({}, {
+      get(_, name) {
+        if (!(name in schema)) {
+          throw new Error(`[crm:embed:remote] Invokable ${String(name)} is not present in schema ${id}`)
+        }
+
+        const { accepts, expects } = schema[name as keyof S]
+
+        return async (...args: unknown[]) => {
+          if (!accepts(args)) {
+            throw new Error(`[crm:embed:remote] Invalid arguments for invokable ${String(name)}`)
+          }
+
+          const result = await endpoint.call.invoke(String(name), ...args)
+          if (!expects(result)) {
+            throw new Error(`[crm:embed:remote] Invalid result for invokable ${String(name)}`)
+          }
+
+          return result
+        }
+      },
+    }) as ActionList<S>)
+  }
 }
 
 export type ContextStore<S extends ContextSchema> = ReturnType<ContextStoreDefinition<string, S>>
