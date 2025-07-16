@@ -25,7 +25,6 @@ export default mergeConfig(basic, defineConfig({
         'remote/customer/card': path.resolve(__dirname, './src/remote/customer/card.ts'),
         'remote/customer/card-phone': path.resolve(__dirname, './src/remote/customer/card-phone.ts'),
         'remote/order/card': path.resolve(__dirname, './src/remote/order/card.ts'),
-        'remote/order/card-items': path.resolve(__dirname, './src/remote/order/card-items.ts'),
         'remote/order/card-settings': path.resolve(__dirname, './src/remote/order/card-settings.ts'),
         'remote/user/current': path.resolve(__dirname, './src/remote/user/current.ts'),
         'remote/settings': path.resolve(__dirname, './src/remote/settings.ts'),

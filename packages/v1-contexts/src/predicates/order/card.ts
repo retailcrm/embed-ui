@@ -1,15 +1,9 @@
-import type {
-  ContextSchemaDescription,
-  ContextSchemaUsage,
-} from '@retailcrm/embed-ui-v1-types/context-doc'
-
-import type { Offer } from '~types/order/card-items'
-import type { OrderItem } from '~types/order/card-items'
-import type { OrderItemStatus } from '~types/order/card-items'
-import type { PriceType } from '~types/order/card-items'
-import type { Product } from '~types/order/card-items'
+import type { Offer } from '~types/order/card'
+import type { OrderItem } from '~types/order/card'
+import type { OrderItemStatus } from '~types/order/card'
+import type { PriceType } from '~types/order/card'
+import type { Product } from '~types/order/card'
 import type { Shape } from '@/predicates'
-import type { Schema } from '~types/order/card-items'
 
 import {
   arrayOf,
@@ -142,28 +136,3 @@ export const isItem = isShape({
   comment: [isString, true],
   status: [oneOf(isStatus, isNull), true],
 } satisfies Shape<OrderItem>, 'OrderItem')
-
-export const id = 'order/card:items'
-
-export const schema: Schema = {
-  'items': {
-    accepts: arrayOf(isItem),
-    defaults: () => [],
-    readonly: true,
-  },
-}
-
-export const description: ContextSchemaDescription<Schema> = {
-  'items': {
-    description: {
-      'en-GB': 'List of items in the order',
-      'es-ES': 'Lista de artículos en el pedido',
-      'ru-RU': 'Список товарных позиций заказа',
-    },
-  },
-}
-
-export const usage: ContextSchemaUsage = {
-  import: 'import { useContext } from \'@retailcrm/embed-ui-v1-contexts/remote/order/card-items\'',
-  call: 'const orderItems = useContext()',
-}

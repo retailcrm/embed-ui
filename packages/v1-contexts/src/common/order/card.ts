@@ -6,12 +6,15 @@ import type {
 import type { Schema } from '~types/order/card'
 
 import {
+  arrayOf,
   isExactly,
   isNull,
   isNumber,
   isString,
   oneOf,
 } from '@/predicates'
+
+import { isItem } from '@/predicates/order/card'
 
 export const id = 'order/card'
 
@@ -39,6 +42,16 @@ export const schema: Schema = {
   'number': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
+    readonly: true,
+  },
+  'country': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
+  'currency': {
+    accepts: isString,
+    defaults: () => '',
     readonly: true,
   },
   'customer.type': {
@@ -73,21 +86,6 @@ export const schema: Schema = {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
     readonly: false,
-  },
-  'country': {
-    accepts: oneOf(isString, isNull),
-    defaults: () => null,
-    readonly: true,
-  },
-  'currency': {
-    accepts: isString,
-    defaults: () => '',
-    readonly: true,
-  },
-  'status': {
-    accepts: isString,
-    defaults: () => '',
-    readonly: true,
   },
   'company.contragentType': {
     accepts: oneOf(
@@ -173,6 +171,11 @@ export const schema: Schema = {
     defaults: () => null,
     readonly: false,
   },
+  'items': {
+    accepts: arrayOf(isItem),
+    defaults: () => [],
+    readonly: true,
+  },
   'delivery.address': {
     accepts: oneOf(isString, isNull),
     defaults: () => null,
@@ -191,6 +194,11 @@ export const schema: Schema = {
   'discount.total': {
     accepts: isNumber,
     defaults: () => 0,
+    readonly: true,
+  },
+  'status': {
+    accepts: isString,
+    defaults: () => '',
     readonly: true,
   },
 }
@@ -229,6 +237,20 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Displayed order number',
       'es-ES': 'Número de pedido mostrado',
       'ru-RU': 'Отображаемый номер заказа',
+    },
+  },
+  'country': {
+    description: {
+      'en-GB': 'Character code of the country',
+      'es-ES': 'Código de caracteres del país',
+      'ru-RU': 'Символьный код страны',
+    },
+  },
+  'currency': {
+    description: {
+      'en-GB': 'Currency code',
+      'es-ES': 'Código de moneda',
+      'ru-RU': 'Символьный код валюты',
     },
   },
   'customer.type': {
@@ -271,27 +293,6 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Customer phone',
       'es-ES': 'Teléfono del cliente',
       'ru-RU': 'Телефон клиента',
-    },
-  },
-  'country': {
-    description: {
-      'en-GB': 'Character code of the country',
-      'es-ES': 'Código de caracteres del país',
-      'ru-RU': 'Символьный код страны',
-    },
-  },
-  'currency': {
-    description: {
-      'en-GB': 'Currency code',
-      'es-ES': 'Código de moneda',
-      'ru-RU': 'Символьный код валюты',
-    },
-  },
-  'status': {
-    description: {
-      'en-GB': 'Order status',
-      'es-ES': 'Estado del pedido',
-      'ru-RU': 'Статус заказа',
     },
   },
   'company.contragentType': {
@@ -406,6 +407,13 @@ export const description: ContextSchemaDescription<Schema> = {
       'ru-RU': 'Расчетный счет контрагента',
     },
   },
+  'items': {
+    description: {
+      'en-GB': 'List of items in the order',
+      'es-ES': 'Lista de artículos en el pedido',
+      'ru-RU': 'Список товарных позиций заказа',
+    },
+  },
   'delivery.address': {
     description: {
       'en-GB': 'Delivery address',
@@ -432,6 +440,13 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Total order discount',
       'es-ES': 'Descuento total del pedido',
       'ru-RU': 'Общая скидка по заказу',
+    },
+  },
+  'status': {
+    description: {
+      'en-GB': 'Order status',
+      'es-ES': 'Estado del pedido',
+      'ru-RU': 'Статус заказа',
     },
   },
 }

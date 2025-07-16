@@ -69,9 +69,6 @@
       "remote/order/card": [
         "./dist/remote/order/card.d.ts"
       ],
-      "remote/order/card-items": [
-        "./dist/remote/order/card-items.d.ts"
-      ],
       "remote/order/card-settings": [
         "./dist/remote/order/card-settings.d.ts"
       ],
