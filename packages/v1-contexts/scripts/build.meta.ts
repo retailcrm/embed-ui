@@ -65,23 +65,25 @@ if (!fs.existsSync(dist)) {
   fs.mkdirSync(dist)
 }
 
-fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify(keysOf(schema).reduce((meta, name) => {
-  const _schema = schema[name] as ContextSchema
+fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
+  contexts: keysOf(schema).reduce((meta, name) => {
+    const _schema = schema[name] as ContextSchema
 
-  meta[name] = {
-    fields: keysOf(_schema).map(field => {
-      const accepts = _schema[field].accepts
-      const documentation = description[name] as ContextSchemaDescription<ContextSchema>
+    meta[name] = {
+      fields: keysOf(_schema).map(field => {
+        const accepts = _schema[field].accepts
+        const documentation = description[name] as ContextSchemaDescription<ContextSchema>
 
-      return {
-        name: field,
-        type: 'type' in accepts ? accepts.type : 'unknown',
-        description: documentation[field].description,
-        readonly: _schema[field].readonly,
-      }
-    }),
-    usage: usage[name],
-  }
+        return {
+          name: field,
+          type: 'type' in accepts ? accepts.type : 'unknown',
+          description: documentation[field].description,
+          readonly: _schema[field].readonly,
+        }
+      }),
+      usage: usage[name],
+    }
 
-  return meta
-}, {} as Record<string, unknown>), null, 2))
+    return meta
+  }, {} as Record<string, unknown>),
+}, null, 2))
