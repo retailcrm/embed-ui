@@ -52,11 +52,6 @@ export {
 } from '@retailcrm/embed-ui-v1-contexts/remote/order/card'
 
 export {
-  schema as orderCardItemsSchema,
-  useContext as useOrderCardItemsContext,
-} from '@retailcrm/embed-ui-v1-contexts/remote/order/card-items'
-
-export {
   schema as orderCardSettingsSchema,
   useContext as useOrderCardSettingsContext,
 } from '@retailcrm/embed-ui-v1-contexts/remote/order/card-settings'

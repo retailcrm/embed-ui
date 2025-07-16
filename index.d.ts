@@ -29,7 +29,6 @@ import type { Router } from '@omnicajs/symfony-router'
 import type { Schema as CustomerCardSchema } from '@retailcrm/embed-ui-v1-contexts/types/customer/card'
 import type { Schema as CustomerCardPhoneSchema } from '@retailcrm/embed-ui-v1-contexts/types/customer/card-phone'
 import type { Schema as OrderCardSchema } from '@retailcrm/embed-ui-v1-contexts/types/order/card'
-import type { Schema as OrderCardItemsSchema } from '@retailcrm/embed-ui-v1-contexts/types/order/card-items'
 import type { Schema as OrderCardSettingsSchema } from '@retailcrm/embed-ui-v1-contexts/types/order/card-settings'
 import type { Schema as CurrentUserSchema } from '@retailcrm/embed-ui-v1-contexts/types/user/current'
 import type { Schema as SettingsSchema } from '@retailcrm/embed-ui-v1-contexts/types/settings'
@@ -82,7 +81,6 @@ declare module 'pinia' {
 export declare const customerCardSchema: CustomerCardSchema
 export declare const customerCardPhoneSchema: CustomerCardPhoneSchema
 export declare const orderCardSchema: OrderCardSchema
-export declare const orderCardItemsSchema: OrderCardItemsSchema
 export declare const orderCardSettingsSchema: OrderCardSettingsSchema
 export declare const currentUserSchema: CurrentUserSchema
 export declare const settingsSchema: SettingsSchema
@@ -90,7 +88,6 @@ export declare const settingsSchema: SettingsSchema
 export declare const useCustomerCardContext: ContextStoreDefinition<'customer/card', CustomerCardSchema>
 export declare const useCustomerCardPhoneContext: ContextStoreDefinition<'customer/card:phone', CustomerCardPhoneSchema>
 export declare const useOrderCardContext: ContextStoreDefinition<'order/card', OrderCardSchema>
-export declare const useOrderCardItemsContext: ContextStoreDefinition<'order/card:items', OrderCardItemsSchema>
 export declare const useOrderCardSettingsContext: ContextStoreDefinition<'order/card:settings', OrderCardSettingsSchema>
 export declare const useCurrentUserContext: ContextStoreDefinition<'user/current', CurrentUserSchema>
 export declare const useSettingsContext: ContextStoreDefinition<'settings', SettingsSchema>
