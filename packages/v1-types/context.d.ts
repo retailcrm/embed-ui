@@ -10,13 +10,13 @@ import type {
   Scalar,
 } from './scaffolding'
 
-export type Field<Type, Readonly extends boolean = false> = {
-  accepts (value: unknown): value is Type;
-  defaults (): Type;
+export type Field<T, Readonly extends boolean = false> = {
+  accepts (value: unknown): value is T;
+  defaults (): T;
   readonly: Readonly;
 }
 
-export type ReadonlyField<Type = unknown> = Field<Type, true>
+export type ReadonlyField<T = unknown> = Field<T, true>
 
 export type TypeOf<F> = F extends Field<infer T>
   ? T
@@ -37,9 +37,6 @@ export type ContextSchema = {
 export type ContextSchemaList = {
   [key: string]: ContextSchema;
 }
-
-/** @deprecated Use ContextSchemaList instead */
-export type ContextSchemaMap = ContextSchemaList
 
 export type Context<S extends ContextSchema> = {
   [F in keyof S]: TypeOf<S[F]>;
@@ -233,10 +230,12 @@ export type ActionList<S extends ActionSchema> = {
   [M in keyof S]: Action<ExtractFunction<S[M]>>;
 } extends infer O ? O : never;
 
-export type ActionArgs<T> = T extends (...args: infer A) => unknown ? A : never;
-export type ActionDescriptor<T extends AnyFunction> = {
-  accepts: Predicate<ActionArgs<T>>;
-  expects: Predicate<ReturnType<T>>;
+export type ActionAccepts<Fn> = Fn extends (...args: infer A) => unknown ? A : never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ActionExpects<Fn> = Fn extends (...args: any) => infer R ? R extends Promise<infer RR> ? RR : R : never;
+export type ActionDescriptor<Fn extends AnyFunction> = {
+  accepts: Predicate<ActionAccepts<Fn>>;
+  expects: Predicate<ActionExpects<Fn>>;
 }
 
 export type ExtractFunction<T> = T extends {
