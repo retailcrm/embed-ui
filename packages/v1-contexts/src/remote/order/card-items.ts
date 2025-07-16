@@ -4,8 +4,8 @@ import { defineActions } from '@/remote'
 import { cortegeOf } from '@/predicates'
 import { isNull } from '@/predicates'
 import { isNumber } from '@/predicates'
-import { isPriceType } from '@/common/order/card-items'
 import { isShape } from '@/predicates'
+import { isString } from '@/predicates'
 import { isVoid } from '@/predicates'
 import { oneOf } from '@/predicates'
 
@@ -23,10 +23,8 @@ export const useActions = defineActions(id, {
     accepts: cortegeOf([isShape({
       productId: [isNumber, true],
       offerId: [isNumber, true],
-      price: [isShape({
-        type: [oneOf(isPriceType, isNull), true],
-        amount: [isNumber, true],
-      }), false],
+      priceAmount: [isNumber, false],
+      priceCode: [isString, false],
       quantity: [isNumber, false],
     })]),
     expects: isNumber,
@@ -36,7 +34,7 @@ export const useActions = defineActions(id, {
     expects: isVoid,
   },
   'changeItemPriceType': {
-    accepts: cortegeOf([oneOf(isPriceType, isNull)]),
+    accepts: cortegeOf([oneOf(isString, isNull)]),
     expects: isVoid,
   },
   'changeItemQuantity': {
