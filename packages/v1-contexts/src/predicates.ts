@@ -36,15 +36,21 @@ export const arrayOf = <T>(predicate: PredicateWithMeta<T>) => withMeta(
   `Array<${predicate.type}>`
 )
 
-export const cortegeOf = <T extends PredicateWithMeta[]>(predicates: [...T]) => withMeta(
-  (value: unknown): value is {
-    [K in keyof T]: T[K] extends PredicateWithMeta<infer U> ? U : never
-  } => {
-    return isArray(value) &&
-      value.length === predicates.length &&
-      predicates.every((predicate, index) => predicate(value[index]))
-  },
-  `[${predicates.map(p => p.type).join(', ')}]`
+export const cortegeOf = <T extends PredicateWithMeta[]>(predicates: [...T], names: string[] = []) => Object.assign(
+  withMeta(
+    (value: unknown): value is {
+      [K in keyof T]: T[K] extends PredicateWithMeta<infer U> ? U : never
+    } => {
+      return isArray(value) &&
+        value.length === predicates.length &&
+        predicates.every((predicate, index) => predicate(value[index]))
+    },
+    `[${predicates.map((p, i) => names[i] ? names[i] + ': ' + p.type : p.type).join(', ')}]`
+  ),
+  { members: predicates.map<{ name: string, type: string}>((p, i) => ({
+    name: names[i] ?? `arg_${i}`,
+    type: p.type,
+  })) }
 )
 
 export const oneOf = <T extends unknown[]>(
@@ -53,7 +59,7 @@ export const oneOf = <T extends unknown[]>(
   (value: unknown): value is T[number] => {
     return predicates.some(predicate => predicate(value))
   },
-  predicates.map(p => p.type).join(' | ')
+  predicates.map(p => p.type).join('|')
 ) as PredicateWithMeta<T[number]>
 
 export type Shape<T extends object> = {
@@ -75,9 +81,9 @@ type ExtractType<T extends Shape<any>> = {
 // Without `any` inheritance does not work properly
 // eslint-disable-next-line
 export const isShape = <S extends Shape<any>>(shape: S, type = 'object') => {
-  const properties = Object.keys(shape)
+  const properties = Object.keys(shape) as Array<keyof S>
 
-  return withMeta((value: unknown): value is ExtractType<S> => {
+  return Object.assign(withMeta((value: unknown): value is ExtractType<S> => {
     return typeof value === 'object' && value !== null && properties.every(p => {
       const config = shape[p as keyof S] as [Predicate, boolean] | Predicate
       const [predicate, required] = isArray(config) ? config : [config, true]
@@ -87,5 +93,18 @@ export const isShape = <S extends Shape<any>>(shape: S, type = 'object') => {
 
       return predicate(value[p as keyof object])
     })
-  }, type)
+  }, type), {
+    get fields () {
+      return properties.reduce((fields, name) => {
+        const [predicate] = shape[name]
+
+        fields[name] = 'type' in predicate ? String(predicate.type) : 'unknown'
+
+        return fields
+      }, {} as { [K in keyof S]: string })
+    },
+    get shape () {
+      return shape
+    },
+  })
 }

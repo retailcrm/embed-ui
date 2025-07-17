@@ -55,7 +55,7 @@ describe('isShape', () => {
 
   test('validates nested structures', () => {
     const isPrice = isShape({
-      ...isMoney,
+      ...isMoney.shape,
       type: [isShape({
         id: [isNumber, true],
         code: [isString, true],
@@ -63,7 +63,7 @@ describe('isShape', () => {
     })
 
     const isPriceWhereCodeIsOptional = isShape({
-      ...isMoney,
+      ...isMoney.shape,
       type: [isShape({
         id: [isNumber, true],
         code: [isString, false],

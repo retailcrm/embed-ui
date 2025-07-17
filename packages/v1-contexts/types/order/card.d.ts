@@ -42,6 +42,22 @@ export type Schema = {
   'status': ReadonlyField<string>;
 }
 
+export type MethodList = {
+  createItem: (input: CreateOrderItemInput) => Promise<number>;
+  changeItemPrice: (index: number, amount: number) => void;
+  changeItemPriceType: (index: number, code: string | null) => Promise<void>;
+  changeItemQuantity: (index: number, amount: number) => void;
+  removeItem: (index: number) => void;
+}
+
+export type CreateOrderItemInput = {
+  productId: number;
+  offerId: number;
+  priceAmount: number | undefined;
+  priceCode: string | undefined;
+  quantity: number | undefined;
+}
+
 export type DiscountType =
   | 'bonus_charge'
   | 'loyalty_event'
@@ -95,7 +111,6 @@ export type Product = {
   groups: ProductGroup[];
   unit: string | null;
   url: string | null;
-  recommendationProviderType: 'NONE' | 'SERVICE' | 'SYSTEM';
 }
 
 export type ProductGroup = {

@@ -89,9 +89,11 @@
     "README.md"
   ],
   "scripts": {
-    "build": "yarn build:code && yarn build:meta",
+    "build": "yarn prepare && yarn build:code && yarn build:meta",
     "build:code": "vite build",
     "build:meta": "npx tsx scripts/build.meta.ts",
+    "generate:known-types": "npx tsx scripts/generate.known-types.ts",
+    "prepare": "yarn generate:known-types",
     "test": "vitest --run"
   },
   "peerDependencies": {

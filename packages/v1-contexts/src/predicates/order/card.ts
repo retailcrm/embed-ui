@@ -21,12 +21,12 @@ export const isDimensions = isShape({
   L: [oneOf(isNumber, isNull), true],
   W: [oneOf(isNumber, isNull), true],
   H: [oneOf(isNumber, isNull), true],
-})
+}, 'Dimensions')
 
 export const isMoney = isShape({
   amount: [isNumber, true],
   currency: [isString, true],
-})
+}, 'Money')
 
 export const isWeightUnit = oneOf(
   isExactly('grams'),
@@ -37,13 +37,13 @@ export const isWeightUnit = oneOf(
 export const isWeight = isShape({
   value: [isNumber, true],
   unit: [isWeightUnit, true],
-})
+}, 'Weight')
 
 export const isProperty = isShape({
   code: [isString, true],
   name: [isString, true],
   value: [isString, true],
-})
+}, 'Property')
 
 export const isDiscountType = oneOf(
   isExactly('bonus_charge'),
@@ -58,7 +58,7 @@ export const isDiscountType = oneOf(
 export const isDiscount = isShape({
   type: [isDiscountType, true],
   amount: [isNumber, true],
-})
+}, 'Discount')
 
 export const isOffer = isShape({
   id: [isNumber, true],
@@ -71,7 +71,7 @@ export const isOffer = isShape({
   properties: [arrayOf(isProperty), true],
   unit: [oneOf(isString, isNull), true],
   purchasePrice: [oneOf(isMoney, isNull), true],
-} satisfies Shape<Offer>)
+} satisfies Shape<Offer>, 'Offer')
 
 export const isPriceType = isShape({
   id: [isNumber, true],
@@ -80,7 +80,7 @@ export const isPriceType = isShape({
   title: [isString, true],
   default: [isBoolean, true],
   currency: [isString, true],
-} satisfies Shape<PriceType>)
+} satisfies Shape<PriceType>, 'PriceType')
 
 export const isProductType = oneOf(
   isExactly('PRODUCT'),
@@ -90,7 +90,7 @@ export const isProductType = oneOf(
 export const isProductGroup = isShape({
   id: [isNumber, true],
   name: [isString, true],
-})
+}, 'ProductGroup')
 
 export const isProduct = isShape({
   id: [isNumber, true],
@@ -103,18 +103,13 @@ export const isProduct = isShape({
   groups: [arrayOf(isProductGroup), true],
   unit: [oneOf(isString, isNull), true],
   url: [oneOf(isString, isNull), true],
-  recommendationProviderType: [oneOf(
-    isExactly('NONE'),
-    isExactly('SERVICE'),
-    isExactly('SYSTEM')
-  ), true],
-} satisfies Shape<Product>)
+} satisfies Shape<Product>, 'Product')
 
 export const isStatus = isShape({
   id: [isNumber, true],
   name: [isString, true],
   isCancel: [isBoolean, false],
-} satisfies Shape<OrderItemStatus>)
+} satisfies Shape<OrderItemStatus>, 'OrderItemStatus')
 
 export const isItem = isShape({
   id: [oneOf(isNumber, isNull), true],
@@ -136,3 +131,11 @@ export const isItem = isShape({
   comment: [isString, true],
   status: [oneOf(isStatus, isNull), true],
 } satisfies Shape<OrderItem>, 'OrderItem')
+
+export const isCreateOrderItemInput = isShape({
+  productId: [isNumber, true],
+  offerId: [isNumber, true],
+  priceAmount: [isNumber, false],
+  priceCode: [isString, false],
+  quantity: [isNumber, false],
+}, 'CreateOrderItemInput')

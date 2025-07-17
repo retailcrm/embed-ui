@@ -3,6 +3,7 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
+      "~generated/*": ["./generated/*"],
       "~tests/*": ["./tests/*"],
       "~types/*": ["./types/*"]
     },
@@ -11,6 +12,7 @@
     ]
   },
   "include": [
+    "generated/**/*.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
     "tests/**/*.ts",

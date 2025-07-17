@@ -1,11 +1,10 @@
+import type { ActionSchemaList } from '~types/index'
 import type { ContextSchema } from '@retailcrm/embed-ui-v1-types/context'
-
-import type {
-  ContextSchemaDescription,
-  ContextSchemaUsage,
-} from '@retailcrm/embed-ui-v1-types/context-doc'
-
+import type { ContextSchemaDescription } from '@retailcrm/embed-ui-v1-types/context-doc'
+import type { ContextSchemaUsage } from '@retailcrm/embed-ui-v1-types/context-doc'
+import type { ObjectDescription } from '@retailcrm/embed-ui-v1-types/context-doc'
 import type { SchemaList } from '~types/index'
+import type { TranslationList } from '@retailcrm/embed-ui-v1-types/doc'
 
 import * as fs from 'node:fs'
 
@@ -57,6 +56,16 @@ const usage: {
   [settings.id]: settings.usage,
 }
 
+const actions: ActionSchemaList = {
+  [order.id]: order.actions,
+}
+
+const actionsDescription: {
+  [K in keyof ActionSchemaList]: ObjectDescription<ActionSchemaList[K]>;
+} = {
+  [order.id]: order.actionsDescription,
+}
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const dist = resolve(__dirname, '../dist/')
@@ -66,6 +75,38 @@ if (!fs.existsSync(dist)) {
 }
 
 fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
+  types: keysOf(order.typesDescription).reduce((meta, name) => {
+    const types = order.types[name]
+    const descriptions = order.typesDescription[name]
+
+    meta.push({
+      name,
+      fields: keysOf(descriptions).map(field => ({
+        name: field,
+        type: types[field],
+        description: descriptions[field],
+      })),
+    })
+
+    return meta
+  }, [] as Array<{ name: string; fields: Array<{ name: string; type: string; }> }>),
+  actions: keysOf(actions).reduce((meta, scope) => {
+    meta[scope] = keysOf(actions[scope]).map(name => ({
+      name,
+      arguments: actions[scope][name].accepts.members,
+      returns: `Promise<${actions[scope][name].expects.type}>`,
+      description: actionsDescription[scope][name],
+    }))
+
+    return meta
+  }, {} as {
+    [K in keyof ActionSchemaList]: Array<{
+      name: string;
+      arguments: Array<{ name: string, type: string }>;
+      returns: string;
+      description: TranslationList;
+    }>;
+  }),
   contexts: keysOf(schema).reduce((meta, name) => {
     const _schema = schema[name] as ContextSchema
 
