@@ -234,8 +234,8 @@ export type ActionAccepts<Fn> = Fn extends (...args: infer A) => unknown ? A : n
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ActionExpects<Fn> = Fn extends (...args: any) => infer R ? R extends Promise<infer RR> ? RR : R : never;
 export type ActionDescriptor<Fn extends AnyFunction> = {
-  accepts: Predicate<ActionAccepts<Fn>>;
-  expects: Predicate<ActionExpects<Fn>>;
+  accepts: Predicate<ActionAccepts<Fn>> & { members: {name: string, type: string}[] };
+  expects: Predicate<ActionExpects<Fn>> & { type: string };
 }
 
 export type ExtractFunction<T> = T extends {
