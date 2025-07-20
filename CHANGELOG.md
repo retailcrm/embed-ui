@@ -1,6 +1,25 @@
 # Changelog
 
 
+## [0.5.23-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.3...v0.5.23-alpha.4) (2025-07-20)
+
+### ⚠ BREAKING CHANGES
+
+* **v1-types:** Removed deprecated type ContextSchemaMap, renamed ActionArgs => ActionAccepts, ReturnType replaced with ActionExpects that extracts return type from async functions
+* **v1-contexts:** Metadata format, previous data is now accessible by key 'contexts'
+* contextsUsage was removed from metadata in flavor to changes of contexts format, actualizing signatures in the root package according to recent features
+
+### Features
+
+* contextsUsage was removed from metadata in flavor to changes of contexts format, actualizing signatures in the root package according to recent features ([94d4486](https://github.com/retailcrm/embed-ui/commit/94d4486d18d4a6408e11abf92c0d676258b7fb22))
+* **v1-contexts:** Actions signatures, JSON metadata for actions & types for automatic docs generation ([899cf2b](https://github.com/retailcrm/embed-ui/commit/899cf2b258d6b21c2a3fce0f0d043ff8076c6d8c))
+* **v1-contexts:** Added scaffolding logic for order/card:items actions ([0a042d1](https://github.com/retailcrm/embed-ui/commit/0a042d1b3cdaf36d78f7939b1537c206877da774))
+* **v1-contexts:** Merged order/card:items context into order/card ([02920bf](https://github.com/retailcrm/embed-ui/commit/02920bf2c104453b0c39d1bf9fd344d67969395e))
+* **v1-contexts:** Metadata format, previous data is now accessible by key 'contexts' ([c09bfee](https://github.com/retailcrm/embed-ui/commit/c09bfee5159ddae683a4b1c52a36eabc6df18bd2))
+* **v1-contexts:** Signature of createItem action in order/card:items ([3f15da3](https://github.com/retailcrm/embed-ui/commit/3f15da38be9a61168fd83fa96f114d8fa4097015))
+* **v1-types:** Added type for i18n translations for objects keys ([5ff68fe](https://github.com/retailcrm/embed-ui/commit/5ff68fe6b163ce81f4af63e90c354def8f051ea7))
+* **v1-types:** Added types for actions ([0e23060](https://github.com/retailcrm/embed-ui/commit/0e2306060165b877d572580e08dae8232a75091e))
+* **v1-types:** Removed deprecated type ContextSchemaMap, renamed ActionArgs => ActionAccepts, ReturnType replaced with ActionExpects that extracts return type from async functions ([637d3c2](https://github.com/retailcrm/embed-ui/commit/637d3c272bd156764692c86a8a445fa0f4836763))
 ## [0.5.23-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.2...v0.5.23-alpha.3) (2025-07-11)
 
 ### Features
