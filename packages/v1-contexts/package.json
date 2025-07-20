@@ -94,7 +94,7 @@
     "build:meta": "npx tsx scripts/build.meta.ts",
     "generate:known-types": "npx tsx scripts/generate.known-types.ts",
     "prepare": "yarn generate:known-types",
-    "test": "vitest --run"
+    "test": "yarn prepare && vitest --run"
   },
   "peerDependencies": {
     "@remote-ui/rpc": "^1.4.5",
