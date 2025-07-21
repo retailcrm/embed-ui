@@ -109,19 +109,19 @@ export const defineActions = <ID extends string, S extends ActionSchema>(
     return (new Proxy({}, {
       get(_, name) {
         if (!(name in schema)) {
-          throw new Error(`[crm:embed:remote] Invokable ${String(name)} is not present in schema ${id}`)
+          return undefined
         }
 
         const { accepts, expects } = schema[name as keyof S]
 
         return async (...args: unknown[]) => {
           if (!accepts(args)) {
-            throw new Error(`[crm:embed:remote] Invalid arguments for invokable ${String(name)}`)
+            throw new Error(`[crm:embed:remote] Invalid arguments for invokable ${String(name)} in schema ${id}`)
           }
 
           const result = await endpoint.call.invoke(String(name), ...args)
           if (!expects(result)) {
-            throw new Error(`[crm:embed:remote] Invalid result for invokable ${String(name)}`)
+            throw new Error(`[crm:embed:remote] Invalid result for invokable ${String(name)} in schema ${id}`)
           }
 
           return result
