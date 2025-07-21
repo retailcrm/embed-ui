@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.23-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.4...v0.5.23-alpha.5) (2025-07-21)
+
+### Bug Fixes
+
+* **v1-contexts:** Returning undefined instead of throwing error if unknown method was requested ([9f0296e](https://github.com/retailcrm/embed-ui/commit/9f0296e5e2cdb9c1b46ae0555c81823c8372a6ef))
 ## [0.5.23-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.3...v0.5.23-alpha.4) (2025-07-20)
 
 ### ⚠ BREAKING CHANGES
