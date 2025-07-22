@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.23-alpha.7](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.6...v0.5.23-alpha.7) (2025-07-22)
+
+### Bug Fixes
+
+* Fixed shape analysis if a key exists and its value is undefined ([c337650](https://github.com/retailcrm/embed-ui/commit/c337650fc1ab6a330563542954a4ef176f4b70b9))
 ## [0.5.23-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.5...v0.5.23-alpha.6) (2025-07-22)
 
 ### Features
