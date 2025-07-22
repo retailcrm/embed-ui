@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.5.23-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.5...v0.5.23-alpha.6) (2025-07-22)
+
+### Features
+
+* **v1-contexts:** Added method for changing order items' manual discounts ([ff23336](https://github.com/retailcrm/embed-ui/commit/ff23336c314607c075ee1ea03c1902df92bfac34))
+
+### Bug Fixes
+
+* Arguments names of changeItemQuantity action ([520a575](https://github.com/retailcrm/embed-ui/commit/520a575ef091689b5489cce1546a22a934bdfcdd))
 ## [0.5.23-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.4...v0.5.23-alpha.5) (2025-07-21)
 
 ### Bug Fixes
