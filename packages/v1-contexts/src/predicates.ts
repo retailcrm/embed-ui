@@ -87,7 +87,7 @@ export const isShape = <S extends Shape<any>>(shape: S, type = 'object') => {
     return typeof value === 'object' && value !== null && properties.every(p => {
       const config = shape[p as keyof S] as [Predicate, boolean] | Predicate
       const [predicate, required] = isArray(config) ? config : [config, true]
-      if (!(p in value)) {
+      if (!(p in value) || value[p as keyof object] === undefined) {
         return !required
       }
 
