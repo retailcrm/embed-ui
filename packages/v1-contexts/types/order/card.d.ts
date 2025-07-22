@@ -46,6 +46,10 @@ export type MethodList = {
   createItem: (input: CreateOrderItemInput) => Promise<number>;
   changeItemPrice: (index: number, amount: number) => void;
   changeItemPriceType: (index: number, code: string | null) => Promise<void>;
+  changeItemDiscount: (index: number, discount: {
+    amount: number | undefined;
+    percent: number | undefined;
+  }) => void;
   changeItemQuantity: (index: number, quantity: number) => void;
   removeItem: (index: number) => void;
 }

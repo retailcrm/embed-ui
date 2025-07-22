@@ -15,7 +15,7 @@ import {
   cortegeOf,
   isExactly,
   isNull,
-  isNumber,
+  isNumber, isShape,
   isString,
   isVoid,
   oneOf,
@@ -487,6 +487,13 @@ export const actions: ActionSchema<MethodList> = {
     ),
     expects: isVoid,
   },
+  'changeItemDiscount': {
+    accepts: cortegeOf([isNumber, isShape({
+      amount: [isNumber, false],
+      percent: [isNumber, false],
+    }, '{ amount: number|undefined, percent: number|undefined }')], ['index', 'discount']),
+    expects: isVoid,
+  },
   'changeItemQuantity': {
     accepts: cortegeOf(
       [isNumber, isNumber],
@@ -515,6 +522,11 @@ export const actionsDescription: ObjectDescription<ActionSchema<MethodList>> = {
     'en-GB': 'Changes the price type value of an item, changes the price if the new price type is not empty',
     'es-ES': 'Cambia el valor del tipo de precio de un artículo, cambia el precio si el nuevo tipo de precio no está vacío',
     'ru-RU': 'Изменяет значение типа цены товарной позиции, изменяет цену, если новый тип цены не пуст',
+  },
+  'changeItemDiscount': {
+    'en-GB': 'Changes the discount value of an item',
+    'es-ES': 'Cambia el valor del descuento de un artículo',
+    'ru-RU': 'Изменяет значение скидки товарной позиции',
   },
   'changeItemQuantity': {
     'en-GB': 'Changes the quantity of an item',
