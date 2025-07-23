@@ -4,6 +4,7 @@ import type {
   ContextSchema,
   ContextSchemaList,
   EventMap,
+  Rejection,
   RejectionHandler,
   ActionList,
   ActionSchema,
@@ -103,7 +104,7 @@ export const defineActions = <ID extends string, S extends ActionSchema>(
   return () => {
     const invoker = useInvoker()
     const endpoint = invoker.endpoint as Endpoint<{
-      invoke (name: string, ...args: unknown[]): Promise<unknown>
+      invoke (name: string, ...args: unknown[]): Promise<{ payload: unknown, rejection: Rejection | null }>
     }>
 
     return (new Proxy({}, {
@@ -120,11 +121,15 @@ export const defineActions = <ID extends string, S extends ActionSchema>(
           }
 
           const result = await endpoint.call.invoke(String(name), ...args)
-          if (!expects(result)) {
+          if (result.rejection) {
+            throw new Error(`[crm:embed:remote] Invokable ${String(name)} in schema ${id} failed with: ${result.rejection.message}`)
+          }
+
+          if (!expects(result.payload)) {
             throw new Error(`[crm:embed:remote] Invalid result for invokable ${String(name)} in schema ${id}`)
           }
 
-          return result
+          return result.payload
         }
       },
     }) as ActionList<S>)
