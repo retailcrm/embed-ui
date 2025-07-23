@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.5.23-alpha.8](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.7...v0.5.23-alpha.8) (2025-07-23)
+
+### Features
+
+* **v1-contexts:** Host rejections in actions ([894e635](https://github.com/retailcrm/embed-ui/commit/894e635febf104440d673abfaea13ad8514b883f))
 ## [0.5.23-alpha.7](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.6...v0.5.23-alpha.7) (2025-07-22)
 
 ### Bug Fixes
