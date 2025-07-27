@@ -74,8 +74,86 @@ if (!fs.existsSync(dist)) {
   fs.mkdirSync(dist)
 }
 
+type ObjectMeta = {
+  name: string;
+  fields: ObjectFieldMeta[];
+}
+
+type ObjectFieldMeta = {
+  name: string;
+  type: string;
+  description: TranslationList
+}
+
+const types: ObjectMeta[] = [{
+  name: 'Dimensions',
+  fields: [{
+    name: 'L',
+    type: 'number|null',
+    description: {
+      'en-GB': 'Length',
+      'es-ES': 'Longitud',
+      'ru-RU': 'Длина',
+    },
+  }, {
+    name: 'W',
+    type: 'number|null',
+    description: {
+      'en-GB': 'Width',
+      'es-ES': 'Anchura',
+      'ru-RU': 'Ширина',
+    },
+  }, {
+    name: 'H',
+    type: 'number|null',
+    description: {
+      'en-GB': 'Height',
+      'es-ES': 'Altura',
+      'ru-RU': 'Высота',
+    },
+  }],
+}, {
+  name: 'Money',
+  fields: [{
+    name: 'amount',
+    type: 'number',
+    description: {
+      'en-GB': 'Amount',
+      'es-ES': 'Cantidad',
+      'ru-RU': 'Количество',
+    },
+  }, {
+    name: 'currency',
+    type: 'string',
+    description: {
+      'en-GB': 'Currency code',
+      'es-ES': 'Código de moneda',
+      'ru-RU': 'Символьный код валюты',
+    },
+  }],
+}, {
+  name: 'Weight',
+  fields: [{
+    name: 'value',
+    type: 'number',
+    description: {
+      'en-GB': 'Weight value',
+      'es-ES': 'Valor del peso',
+      'ru-RU': 'Значение веса',
+    },
+  }, {
+    name: 'unit',
+    type: '\'grams\'|\'kilograms\'|\'tons\'',
+    description: {
+      'en-GB': 'Weight unit',
+      'es-ES': 'Unidad de peso',
+      'ru-RU': 'Единица измерения',
+    },
+  }],
+}]
+
 fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
-  types: keysOf(order.typesDescription).reduce((meta, name) => {
+  types: [...keysOf(order.typesDescription).reduce((meta, name) => {
     const types = order.types[name]
     const descriptions = order.typesDescription[name]
 
@@ -89,7 +167,7 @@ fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
     })
 
     return meta
-  }, [] as Array<{ name: string; fields: Array<{ name: string; type: string; }> }>),
+  }, [] as Array<{ name: string; fields: ObjectFieldMeta[]; }>), ...types],
   actions: keysOf(actions).reduce((meta, scope) => {
     meta[scope] = keysOf(actions[scope]).map(name => ({
       name,

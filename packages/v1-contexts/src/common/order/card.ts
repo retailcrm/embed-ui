@@ -501,6 +501,13 @@ export const actions: ActionSchema<MethodList> = {
     ),
     expects: isVoid,
   },
+  'changeItemStatus': {
+    accepts: cortegeOf(
+      [isNumber, oneOf(isNumber, isNull)],
+      ['index', 'statusId']
+    ),
+    expects: isVoid,
+  },
   'removeItem': {
     accepts: cortegeOf([isNumber], ['index']),
     expects: isVoid,
@@ -532,6 +539,11 @@ export const actionsDescription: ObjectDescription<ActionSchema<MethodList>> = {
     'en-GB': 'Changes the quantity of an item',
     'es-ES': 'Cambia la cantidad de un artículo',
     'ru-RU': 'Изменяет количество товарной позиции',
+  },
+  'changeItemStatus': {
+    'en-GB': 'Changes the status of an item by specified identifier',
+    'es-ES': 'Cambia el estado de un artículo por identificador especificado',
+    'ru-RU': 'Изменяет статус товарной позиции по указанному идентификатору',
   },
   'removeItem': {
     'en-GB': 'Removes an item from the order',

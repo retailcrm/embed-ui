@@ -51,6 +51,7 @@ export type MethodList = {
     percent: number | undefined;
   }) => void;
   changeItemQuantity: (index: number, quantity: number) => void;
+  changeItemStatus: (index: number, statusId: number | null) => void;
   removeItem: (index: number) => void;
 }
 
