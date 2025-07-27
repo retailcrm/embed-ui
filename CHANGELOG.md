@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.6.1](https://github.com/retailcrm/embed-ui/compare/v0.6.0...v0.6.1) (2025-07-27)
+
+### Features
+
+* **v1-contexts:** Added changeItemStatus method to order/card actions ([4e8b471](https://github.com/retailcrm/embed-ui/commit/4e8b4719a090824ef379e786a199d1ed06f566e4))
 ## [0.6.0](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.8...v0.6.0) (2025-07-24)
 ## [0.5.23-alpha.8](https://github.com/retailcrm/embed-ui/compare/v0.5.23-alpha.7...v0.5.23-alpha.8) (2025-07-23)
 
