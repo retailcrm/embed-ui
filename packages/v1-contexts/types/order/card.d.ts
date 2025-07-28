@@ -51,7 +51,7 @@ export type MethodList = {
     percent: number | undefined;
   }) => void;
   changeItemQuantity: (index: number, quantity: number) => void;
-  changeItemStatus: (index: number, statusId: number | null) => void;
+  changeItemStatus: (index: number, statusId: number) => void;
   removeItem: (index: number) => void;
 }
 
@@ -59,7 +59,7 @@ export type CreateOrderItemInput = {
   productId: number;
   offerId: number;
   priceAmount: number | undefined;
-  priceCode: string | undefined;
+  priceTypeCode: string | undefined;
   quantity: number | undefined;
 }
 

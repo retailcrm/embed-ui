@@ -136,6 +136,6 @@ export const isCreateOrderItemInput = isShape({
   productId: [isNumber, true],
   offerId: [isNumber, true],
   priceAmount: [isNumber, false],
-  priceCode: [isString, false],
+  priceTypeCode: [isString, false],
   quantity: [isNumber, false],
 }, 'CreateOrderItemInput')

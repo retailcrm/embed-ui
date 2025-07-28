@@ -503,7 +503,7 @@ export const actions: ActionSchema<MethodList> = {
   },
   'changeItemStatus': {
     accepts: cortegeOf(
-      [isNumber, oneOf(isNumber, isNull)],
+      [isNumber, isNumber],
       ['index', 'statusId']
     ),
     expects: isVoid,
@@ -590,7 +590,7 @@ export const typesDescription: {
       'es-ES': 'Valor del precio en la moneda del pedido',
       'ru-RU': 'Значение цены в валюте заказа',
     },
-    'priceCode': {
+    'priceTypeCode': {
       'en-GB': 'Character price type code',
       'es-ES': 'Código de tipo de precio de caracteres',
       'ru-RU': 'Символьный код типа цены',
