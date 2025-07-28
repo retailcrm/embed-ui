@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.7.0](https://github.com/retailcrm/embed-ui/compare/v0.6.1...v0.7.0) (2025-07-28)
+
+### ⚠ BREAKING CHANGES
+
+* **v1-contexts:** Убрана возможность передать null в качестве statusId в действии changeItemStatus, переименовано поле в действии createItem priceCode => priceTypeCode
+
+### Bug Fixes
+
+* **v1-contexts:** Убрана возможность передать null в качестве statusId в действии changeItemStatus, переименовано поле в действии createItem priceCode => priceTypeCode ([548be18](https://github.com/retailcrm/embed-ui/commit/548be184af62f61e36b0780b5ecb80204999df42))
 ## [0.6.1](https://github.com/retailcrm/embed-ui/compare/v0.6.0...v0.6.1) (2025-07-27)
 
 ### Features
