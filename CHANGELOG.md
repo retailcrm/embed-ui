@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.8.0](https://github.com/retailcrm/embed-ui/compare/v0.7.0...v0.8.0) (2025-07-29)
+
+### ⚠ BREAKING CHANGES
+
+* **v1-contexts:** Changing status by code instead of id, because id is not available in CRM's REST API
+
+### Bug Fixes
+
+* **v1-contexts:** Changing status by code instead of id, because id is not available in CRM's REST API ([a36df1c](https://github.com/retailcrm/embed-ui/commit/a36df1ce9f8eb0ee9fe34c3f9f726b02cc784893))
 ## [0.7.0](https://github.com/retailcrm/embed-ui/compare/v0.6.1...v0.7.0) (2025-07-28)
 
 ### ⚠ BREAKING CHANGES
