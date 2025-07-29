@@ -503,8 +503,8 @@ export const actions: ActionSchema<MethodList> = {
   },
   'changeItemStatus': {
     accepts: cortegeOf(
-      [isNumber, isNumber],
-      ['index', 'statusId']
+      [isNumber, isString],
+      ['index', 'statusCode']
     ),
     expects: isVoid,
   },
