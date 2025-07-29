@@ -107,6 +107,7 @@ export const isProduct = isShape({
 
 export const isStatus = isShape({
   id: [isNumber, true],
+  code: [isString, true],
   name: [isString, true],
   isCancel: [isBoolean, false],
 } satisfies Shape<OrderItemStatus>, 'OrderItemStatus')

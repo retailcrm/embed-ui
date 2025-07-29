@@ -876,6 +876,11 @@ export const typesDescription: {
       'es-ES': 'ID',
       'ru-RU': 'Идентификатор',
     },
+    'code': {
+      'en-GB': 'Character code',
+      'es-ES': 'Código de caracteres',
+      'ru-RU': 'Символьный код',
+    },
     'name': {
       'en-GB': 'Name',
       'es-ES': 'Nombre',

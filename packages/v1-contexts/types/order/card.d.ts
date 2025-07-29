@@ -149,6 +149,7 @@ export type OrderItem = {
 
 export type OrderItemStatus = {
   id: number;
+  code: string;
   name: string;
   isCancel?: boolean;
 }
