@@ -71,7 +71,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:common.after': {
     description: {
@@ -92,7 +94,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:customer.before': {
     description: {
@@ -113,7 +117,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:customer.after': {
     description: {
@@ -134,7 +140,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:customer.email': {
     description: {
@@ -155,7 +163,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:customer.phone': {
     description: {
@@ -176,7 +186,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:list.before': {
     description: {
@@ -243,7 +255,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:dimensions.before': {
     description: {
@@ -264,7 +278,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:delivery.before': {
     description: {
@@ -285,7 +301,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:delivery.after': {
     description: {
@@ -306,7 +324,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:delivery.address': {
     description: {
@@ -327,7 +347,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:payment.before': {
     description: {
@@ -348,7 +370,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
   'order/card:comment.manager.before': {
     description: {
@@ -369,7 +393,9 @@ export const targetListDocumentation: {
     customContexts: [
       'order',
     ],
-    actions: [],
+    actions: [
+      'order/card',
+    ],
   },
 }
 
