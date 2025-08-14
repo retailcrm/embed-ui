@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.8.2](https://github.com/retailcrm/embed-ui/compare/v0.8.1...v0.8.2) (2025-08-14)
+
+### Features
+
+* Updated metadata for order/card targets ([ca9dee2](https://github.com/retailcrm/embed-ui/commit/ca9dee2eaf6ed71385fcb8409999c9ea4e5774ef))
 ## [0.8.1](https://github.com/retailcrm/embed-ui/compare/v0.8.0...v0.8.1) (2025-07-29)
 
 ### Features
