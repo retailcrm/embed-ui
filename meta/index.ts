@@ -52,6 +52,25 @@ export const targetListDocumentation: {
     customContexts: ['customer'],
     actions: [],
   },
+  'customer/card:appeals': {
+    description: {
+      'en-GB': 'Widget for the contact request item',
+      'es-ES': 'Widget para el elemento de solicitud de contacto',
+      'ru-RU': 'Виджет для элемента обращений',
+    },
+    location: {
+      'en-GB': 'Before the "In Progress" header in the client card',
+      'es-ES': 'Antes del encabezado "En progreso" en la tarjeta del cliente',
+      'ru-RU': 'Перед заголовком "В работе" в карточке клиента',
+    },
+    contexts: [
+      'customer/card',
+      'user/current',
+      'settings',
+    ],
+    customContexts: ['customer'],
+    actions: [],
+  },
   'order/card:common.before': {
     description: {
       'en-GB': 'Widget for the section with common data',
