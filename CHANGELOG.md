@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.8.3](https://github.com/retailcrm/embed-ui/compare/v0.8.2...v0.8.3) (2025-09-09)
+
+### Features
+
+* Добавлен новая цель customer/card:appeals ([e65ae36](https://github.com/retailcrm/embed-ui/commit/e65ae36b0b0f1c82aa4409745db56344e208f047))
 ## [0.8.2](https://github.com/retailcrm/embed-ui/compare/v0.8.1...v0.8.2) (2025-08-14)
 
 ### Features
