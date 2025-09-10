@@ -59,9 +59,9 @@ export const targetListDocumentation: {
       'ru-RU': 'Виджет для элемента обращений',
     },
     location: {
-      'en-GB': 'Before the "In Progress" header in the client card',
-      'es-ES': 'Antes del encabezado "En progreso" en la tarjeta del cliente',
-      'ru-RU': 'Перед заголовком "В работе" в карточке клиента',
+      'en-GB': 'At the beginning of the "In Progress" block in the client card',
+      'es-ES': 'Al principio del bloque "En progreso" en la tarjeta del cliente',
+      'ru-RU': 'В начале блока "В работе" в карточке клиента',
     },
     contexts: [
       'customer/card',
