@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.9.0](https://github.com/retailcrm/embed-ui/compare/v0.8.4...v0.9.0) (2025-09-12)
+
+### ⚠ BREAKING CHANGES
+
+* Заменена цель customer/card:appeals на цели customer/card:inWork.before и customer/card:inWork.after
+
+### Features
+
+* Заменена цель customer/card:appeals на цели customer/card:inWork.before и customer/card:inWork.after ([5763fd8](https://github.com/retailcrm/embed-ui/commit/5763fd8d3aa9d4e823c5f142d0e18d930d51c946))
 ## [0.8.4](https://github.com/retailcrm/embed-ui/compare/v0.8.3...v0.8.4) (2025-09-10)
 
 ### Bug Fixes
