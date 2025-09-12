@@ -43,7 +43,12 @@ export type SchemaListByTarget = {
     | 'user/current'
     | 'settings'
   >,
-  'customer/card:appeals': Pick<SchemaList,
+  'customer/card:inWork.before': Pick<SchemaList,
+    | 'customer/card'
+    | 'user/current'
+    | 'settings'
+  >;
+  'customer/card:inWork.after': Pick<SchemaList,
     | 'customer/card'
     | 'user/current'
     | 'settings'
