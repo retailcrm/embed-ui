@@ -52,7 +52,7 @@ export const targetListDocumentation: {
     customContexts: ['customer'],
     actions: [],
   },
-  'customer/card:appeals': {
+  'customer/card:inWork.before': {
     description: {
       'en-GB': 'Widget for the contact request item',
       'es-ES': 'Widget para el elemento de solicitud de contacto',
@@ -62,6 +62,25 @@ export const targetListDocumentation: {
       'en-GB': 'At the beginning of the "In Progress" block in the client card',
       'es-ES': 'Al principio del bloque "En progreso" en la tarjeta del cliente',
       'ru-RU': 'В начале блока "В работе" в карточке клиента',
+    },
+    contexts: [
+      'customer/card',
+      'user/current',
+      'settings',
+    ],
+    customContexts: ['customer'],
+    actions: [],
+  },
+  'customer/card:inWork.after': {
+    description: {
+      'en-GB': 'Widget for the contact request item',
+      'es-ES': 'Widget para el elemento de solicitud de contacto',
+      'ru-RU': 'Виджет для элемента обращений',
+    },
+    location: {
+      'en-GB': 'At the end of the "In progress" block in the client card',
+      'es-ES': 'Al final del bloque "En progreso" en la tarjeta del cliente',
+      'ru-RU': 'В конце блока "В работе" в карточке клиента',
     },
     contexts: [
       'customer/card',
