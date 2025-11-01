@@ -101,7 +101,7 @@ export const useHost = (): RemoteCallable<Callable> => {
 
   return {
     httpCall (action, payload = undefined) {
-      const endpoint = store.endpoint as Endpoint<ContextAccessor & Callable>
+      const endpoint = store.endpoint as unknown as Endpoint<ContextAccessor & Callable>
 
       return payload
         ? endpoint.call.httpCall(action, payload)

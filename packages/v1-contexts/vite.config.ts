@@ -51,6 +51,7 @@ export default mergeConfig(basic, defineConfig({
 
   plugins: [dts({
     exclude: [
+      'generated/**/*.*',
       'scripts/**/*.*',
       'tests/**/*.*',
     ],
