@@ -6,7 +6,7 @@ import type {
   ContextSchemaUsage,
 } from '@retailcrm/embed-ui-v1-types/context-doc'
 
-import type { KnownTypes } from '~generated/known-types'
+import type { KnownTypes } from '~generated/order/card'
 import type { MethodList } from '~types/order/card'
 import type { Schema } from '~types/order/card'
 
