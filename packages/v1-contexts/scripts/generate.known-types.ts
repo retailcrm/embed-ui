@@ -17,41 +17,83 @@ const excluded = new Set([
   'Schema',
 ])
 
-const inputFilePath = path.resolve(__root, 'types/order/card.d.ts')
-const outputFilePath = path.resolve(__generated, 'known-types.d.ts')
+type Literal = string
+type Path = string
+type SchemaName = string
 
-const source = ts.createSourceFile(
-  inputFilePath,
-  fs.readFileSync(inputFilePath, 'utf8'),
-  ts.ScriptTarget.Latest,
-  true
-)
+const schemas: Record<SchemaName, Path[]> = {
+  'order/card': [
+    path.resolve(__root, 'types/order/card.d.ts'),
+  ],
+}
 
-const result: Record<string, string> = {}
+const code = {} as Record<SchemaName, string>
 
-function traverse(node: ts.Node) {
-  if (ts.isTypeAliasDeclaration(node)) {
-    const name = node.name.text
-    const exported = (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) !== 0
+const extract = (srcPath: string) => {
+  const source = ts.createSourceFile(
+    srcPath,
+    fs.readFileSync(srcPath, 'utf8'),
+    ts.ScriptTarget.Latest,
+    true
+  )
 
-    if (!excluded.has(name) && exported && ts.isTypeLiteralNode(node.type)) {
-      result[name] = node.type.getFullText(source).trim()
+  const known: Record<Literal, string> = {}
+
+  function traverse (node: ts.Node) {
+    if (ts.isTypeAliasDeclaration(node)) {
+      const name = node.name.text
+      const exported = (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) !== 0
+
+      if (!excluded.has(name) && exported && ts.isTypeLiteralNode(node.type)) {
+        known[name] = node.type.getFullText(source).trim()
+      }
     }
+
+    ts.forEachChild(node, traverse)
   }
 
-  ts.forEachChild(node, traverse)
+  traverse(source)
+
+  return known
 }
 
-traverse(source)
+const pathForSchema = (name: SchemaName): Path => path.join(__generated, name + '.d.ts')
 
-fs.writeFileSync(outputFilePath, `${
-  Object.keys(result).map(key => `import type { ${key} } from '../types/order/card.d.ts'`).join('\n')
-}
+Object.keys(schemas).forEach(name => {
+  const _imports_ = {} as Record<Path, Record<Literal, string>>
 
-export type KnownTypes = {
-${Object.entries(result)
-    .map(([key]) => `  '${key}': ${key};`)
-    .join('\n')}
-};\n`, 'utf8')
+  schemas[name].forEach(srcPath => {
+    _imports_[path.relative(path.dirname(pathForSchema(name)), srcPath)] = extract(srcPath)
+  })
 
-console.log(`Generated "${outputFilePath}"`)
+  code[name] = Object.keys(_imports_).reduce((code, path) => {
+    const literals = Object.keys(_imports_[path])
+
+    // Считаем, что каждый литерал уникален, даже если источников типов больше одного
+    return literals.length === 0
+      ? code
+      : code + literals.map(literal => `import type { ${literal} } from '${path}'`).join('\n') + '\n'
+  }, '')
+
+  code[name] += `\nexport type KnownTypes = {${Object.keys(_imports_).reduce((code, path) => {
+    const literals = Object.keys(_imports_[path])
+
+    return literals.length === 0
+      ? code
+      : code + '\n' + literals.map(literal => `  '${literal}': ${literal};`).join('\n')
+  }, '')}
+};\n`
+})
+
+Object.keys(code).forEach(name => {
+  const dstPath = pathForSchema(name)
+  const dstDir = path.dirname(dstPath)
+
+  if (!fs.existsSync(dstDir)) {
+    fs.mkdirSync(dstDir)
+  }
+
+  fs.writeFileSync(dstPath, code[name], 'utf8')
+
+  console.log(`Generated "${dstPath}"`)
+})
