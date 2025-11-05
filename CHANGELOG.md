@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.9.1-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.0...v0.9.1-alpha.1) (2025-11-05)
+
+### Features
+
+* ref [#102071](https://github.com/retailcrm/embed-ui/issues/102071) Embed targets of the order form in chats ([e3fe25e](https://github.com/retailcrm/embed-ui/commit/e3fe25e90cde30a347d025ad0736da7c131fd3ed))
+* **v-contexts:** ref [#102071](https://github.com/retailcrm/embed-ui/issues/102071) Context for embed targets of the order form in chats ([7c3aae2](https://github.com/retailcrm/embed-ui/commit/7c3aae267c04e8709548214106bc2d02ee2f8fbb))
 ## [0.9.0](https://github.com/retailcrm/embed-ui/compare/v0.8.4...v0.9.0) (2025-09-12)
 
 ### ⚠ BREAKING CHANGES
