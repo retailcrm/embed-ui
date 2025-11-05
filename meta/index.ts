@@ -435,6 +435,150 @@ export const targetListDocumentation: {
       'order/card',
     ],
   },
+  'order/mg:list.before': {
+    description: {
+      'en-GB': 'Widget for the block "Order items"',
+      'es-ES': 'Widget para el bloque "Artículos del pedido"',
+      'ru-RU': 'Виджет для блока "Состав заказа"',
+    },
+    location: {
+      'en-GB': 'Section start, right above the list of order items',
+      'es-ES': 'Inicio de la sección, justo encima de la lista de artículos del pedido',
+      'ru-RU': 'Начало секции, над списком товарных позиций',
+    },
+    contexts: [
+      'order/mg',
+      'order/mg:settings',
+      'user/current',
+      'settings',
+    ],
+    customContexts: [
+      'order',
+    ],
+    actions: [
+      'order/mg',
+    ],
+  },
+  'order/mg:list.after': {
+    description: {
+      'en-GB': 'Widget for the block "Order items"',
+      'es-ES': 'Widget para el bloque "Artículos del pedido"',
+      'ru-RU': 'Виджет для блока "Состав заказа"',
+    },
+    location: {
+      'en-GB': 'Section end, right after the list of order items and before the discount, privilege selection, etc. input fields',
+      'es-ES': 'Fin de la sección, justo después de la lista de artículos del pedido y antes de los campos de entrada de descuento, selección de privilegios, etc.',
+      'ru-RU': 'Конец секции, сразу после списка товарных позиций и до полей ввода скидки, выбора привилегии и т.п.',
+    },
+    contexts: [
+      'order/mg',
+      'order/mg:settings',
+      'user/current',
+      'settings',
+    ],
+    customContexts: [
+      'order',
+    ],
+    actions: [
+      'order/mg',
+    ],
+  },
+  'order/mg:delivery.before': {
+    description: {
+      'en-GB': 'Widget for the block "Delivery"',
+      'es-ES': 'Widget para el bloque "Entrega"',
+      'ru-RU': 'Виджет для блока "Доставка"',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input field',
+      'es-ES': 'Inicio de la sección, justo encima del campo de entrada',
+      'ru-RU': 'Начало секции, над полем ввода',
+    },
+    contexts: [
+      'order/mg',
+      'order/mg:settings',
+      'user/current',
+      'settings',
+    ],
+    customContexts: [
+      'order',
+    ],
+    actions: [
+      'order/mg',
+    ],
+  },
+  'order/mg:delivery.after': {
+    description: {
+      'en-GB': 'Widget for the block "Delivery"',
+      'es-ES': 'Widget para el bloque "Entrega"',
+      'ru-RU': 'Виджет для блока "Доставка"',
+    },
+    location: {
+      'en-GB': 'Section end, right under the input fields',
+      'es-ES': 'Fin de la sección, justo debajo de los campos de entrada',
+      'ru-RU': 'Конец секции, под полями ввода',
+    },
+    contexts: [
+      'order/mg',
+      'order/mg:settings',
+      'user/current',
+      'settings',
+    ],
+    customContexts: [
+      'order',
+    ],
+    actions: [
+      'order/mg',
+    ],
+  },
+  'order/mg:payment.before': {
+    description: {
+      'en-GB': 'Widget for the block "Payment"',
+      'es-ES': 'Widget para el bloque "Pago"',
+      'ru-RU': 'Виджет для блока "Оплата"',
+    },
+    location: {
+      'en-GB': 'Section start, right above the input field',
+      'es-ES': 'Inicio de la sección, justo encima del campo de entrada',
+      'ru-RU': 'Начало секции, над полем ввода',
+    },
+    contexts: [
+      'order/mg',
+      'order/mg:settings',
+      'user/current',
+      'settings',
+    ],
+    customContexts: [
+      'order',
+    ],
+    actions: [
+      'order/mg',
+    ],
+  },
+  'order/mg:payment.after': {
+    description: {
+      'en-GB': 'Widget for the block "Payment"',
+      'es-ES': 'Widget para el bloque "Pago"',
+      'ru-RU': 'Виджет для блока "Оплата"',
+    },
+    location: {
+      'en-GB': 'Section end, after the list of payments, controls, and custom fields',
+      'es-ES': 'Fin de la sección, después de la lista de pagos, controles y campos personalizados',
+      'ru-RU': 'Конец секции, после списка оплат, контролов и пользовательских полей',
+    },
+    contexts: [
+      'order/mg',
+      'order/mg:settings',
+      'user/current',
+      'settings',
+    ],
+    customContexts: [
+      'order',
+    ],
+    actions: [
+      'order/mg',
+    ],
+  },
 }
 
 export const pageListDocumentation = [{
@@ -453,4 +597,12 @@ export const pageListDocumentation = [{
     'ru-RU': 'Страница с формой создания/редактирования заказа',
   } as TranslationList,
   targets: keysOf(targetListDocumentation).filter(target => target.startsWith('order/card:')),
+}, {
+  id: 'order/mg',
+  description: {
+    'en-GB': 'Page with the order creation/editing form in chats',
+    'es-ES': 'Página con el formulario de creación/edición de pedidos en los chats',
+    'ru-RU': 'Страница с формой создания/редактирования заказа в чатах',
+  } as TranslationList,
+  targets: keysOf(targetListDocumentation).filter(target => target.startsWith('order/mg:')),
 }]
