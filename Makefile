@@ -16,6 +16,11 @@ build: ## Builds the package
 	$(TARGET_HEADER)
 	$(YARN) workspaces foreach -A --topological-dev run build
 
+.PHONY: build
+prepare: ## Builds the package
+	$(TARGET_HEADER)
+	$(YARN) workspaces foreach -A --topological-dev run prepare
+
 .PHONY: release
 release: ## Bumps version and creates tag
 	$(TARGET_HEADER)
