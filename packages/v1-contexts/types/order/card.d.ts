@@ -1,6 +1,9 @@
-import type { Dimensions } from '@retailcrm/embed-ui-v1-types/domain'
 import type { Money } from '@retailcrm/embed-ui-v1-types/domain'
-import type { Weight } from '@retailcrm/embed-ui-v1-types/domain'
+import type { Offer } from '~types/order/common'
+import type { OrderItemStatus } from '~types/order/common'
+import type { PriceType } from '~types/order/common'
+import type { Product } from '~types/order/common'
+import type { Property } from '~types/order/common'
 
 import type { Field, ReadonlyField } from '@retailcrm/embed-ui-v1-types/context'
 
@@ -77,52 +80,6 @@ export type Discount = {
   amount: number;
 }
 
-export type PriceType = {
-  id: number;
-  code: string;
-  name: string;
-  title: string;
-  default: boolean;
-  currency: string;
-}
-
-export type Property = {
-  code: string;
-  name: string;
-  value: string;
-}
-
-export type Offer = {
-  id: number;
-  name: string;
-  image: string | null;
-  dimensions: Dimensions;
-  weight: Weight | null,
-  article: string | null;
-  barcode: string | null;
-  properties: Property[];
-  unit: string | null;
-  purchasePrice: Money | null;
-}
-
-export type Product = {
-  id: number;
-  type: 'PRODUCT' | 'SERVICE';
-  name: string;
-  image: string | null;
-  article: string | null;
-  manufacturer: string | null;
-  markable: boolean;
-  groups: ProductGroup[];
-  unit: string | null;
-  url: string | null;
-}
-
-export type ProductGroup = {
-  id: number;
-  name: string;
-}
-
 export type OrderItem = {
   id: number | null;
   /** Temporal ID to identify items while editing */
@@ -145,11 +102,4 @@ export type OrderItem = {
   vatSum: number;
   comment: string;
   status: OrderItemStatus | null;
-}
-
-export type OrderItemStatus = {
-  id: number;
-  code: string;
-  name: string;
-  isCancel?: boolean;
 }
