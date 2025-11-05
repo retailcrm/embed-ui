@@ -24,6 +24,11 @@ type SchemaName = string
 const schemas: Record<SchemaName, Path[]> = {
   'order/card': [
     path.resolve(__root, 'types/order/card.d.ts'),
+    path.resolve(__root, 'types/order/common.d.ts'),
+  ],
+  'order/mg': [
+    path.resolve(__root, 'types/order/mg.d.ts'),
+    path.resolve(__root, 'types/order/common.d.ts'),
   ],
 }
 

@@ -6,7 +6,7 @@ import type {
   ContextSchemaUsage,
 } from '@retailcrm/embed-ui-v1-types/context-doc'
 
-import type { KnownTypes } from '~generated/order/card'
+import type { KnownTypes } from '~generated/order/card.d.ts'
 import type { MethodList } from '~types/order/card'
 import type { Schema } from '~types/order/card'
 
@@ -15,22 +15,26 @@ import {
   cortegeOf,
   isExactly,
   isNull,
-  isNumber, isShape,
+  isNumber,
+  isShape,
   isString,
   isVoid,
   oneOf,
 } from '@/predicates'
 
 import {
-  isCreateOrderItemInput,
-  isDiscount,
-  isItem,
   isOffer,
   isPriceType,
   isProduct,
   isProductGroup,
   isProperty,
   isStatus,
+} from '@/predicates/order/common'
+
+import {
+  isCreateOrderItemInput,
+  isDiscount,
+  isItem,
 } from '@/predicates/order/card'
 
 export const id = 'order/card'
@@ -613,6 +617,58 @@ export const typesDescription: {
       'ru-RU': 'Размер скидки',
     },
   },
+  'Offer': {
+    'id': {
+      'en-GB': 'ID',
+      'es-ES': 'ID',
+      'ru-RU': 'Идентификатор',
+    },
+    'name': {
+      'en-GB': 'Name',
+      'es-ES': 'Nombre',
+      'ru-RU': 'Наименование',
+    },
+    'image': {
+      'en-GB': 'Image URL',
+      'es-ES': 'URL de la imagen',
+      'ru-RU': 'URL изображения',
+    },
+    'dimensions': {
+      'en-GB': 'Product dimensions L - length, W - width, H - height',
+      'es-ES': 'Dimensiones del producto L - longitud, W - ancho, H - altura',
+      'ru-RU': 'Размеры товара L - длина, W - ширина, H - высота',
+    },
+    'weight': {
+      'en-GB': 'Weight',
+      'es-ES': 'Peso',
+      'ru-RU': 'Вес',
+    },
+    'article': {
+      'en-GB': 'Article',
+      'es-ES': 'Artículo',
+      'ru-RU': 'Артикул',
+    },
+    'barcode': {
+      'en-GB': 'Barcode',
+      'es-ES': 'Código de barras',
+      'ru-RU': 'Штрих-код',
+    },
+    'properties': {
+      'en-GB': 'Array of custom properties',
+      'es-ES': 'Matriz de propiedades personalizadas',
+      'ru-RU': 'Массив пользовательских свойств',
+    },
+    'unit': {
+      'en-GB': 'Unit of quantity measurement, if not specified (null), will be set to "pcs."',
+      'es-ES': 'Unidad de medida de cantidad, si no se especifica (null), se establecerá en "pcs."',
+      'ru-RU': 'Единица измерения количества, если не указана (null), будет указано "шт."',
+    },
+    'purchasePrice': {
+      'en-GB': 'Purchase price, value + currency',
+      'es-ES': 'Precio de compra, valor + moneda',
+      'ru-RU': 'Закупочная цена, значение + валюта',
+    },
+  },
   'PriceType': {
     'id': {
       'en-GB': 'ID',
@@ -724,58 +780,6 @@ export const typesDescription: {
       'en-GB': 'Name',
       'es-ES': 'Nombre',
       'ru-RU': 'Наименование',
-    },
-  },
-  'Offer': {
-    'id': {
-      'en-GB': 'ID',
-      'es-ES': 'ID',
-      'ru-RU': 'Идентификатор',
-    },
-    'name': {
-      'en-GB': 'Name',
-      'es-ES': 'Nombre',
-      'ru-RU': 'Наименование',
-    },
-    'image': {
-      'en-GB': 'Image URL',
-      'es-ES': 'URL de la imagen',
-      'ru-RU': 'URL изображения',
-    },
-    'dimensions': {
-      'en-GB': 'Product dimensions L - length, W - width, H - height',
-      'es-ES': 'Dimensiones del producto L - longitud, W - ancho, H - altura',
-      'ru-RU': 'Размеры товара L - длина, W - ширина, H - высота',
-    },
-    'weight': {
-      'en-GB': 'Weight',
-      'es-ES': 'Peso',
-      'ru-RU': 'Вес',
-    },
-    'article': {
-      'en-GB': 'Article',
-      'es-ES': 'Artículo',
-      'ru-RU': 'Артикул',
-    },
-    'barcode': {
-      'en-GB': 'Barcode',
-      'es-ES': 'Código de barras',
-      'ru-RU': 'Штрих-код',
-    },
-    'properties': {
-      'en-GB': 'Array of custom properties',
-      'es-ES': 'Matriz de propiedades personalizadas',
-      'ru-RU': 'Массив пользовательских свойств',
-    },
-    'unit': {
-      'en-GB': 'Unit of quantity measurement, if not specified (null), will be set to "pcs."',
-      'es-ES': 'Unidad de medida de cantidad, si no se especifica (null), se establecerá en "pcs."',
-      'ru-RU': 'Единица измерения количества, если не указана (null), будет указано "шт."',
-    },
-    'purchasePrice': {
-      'en-GB': 'Purchase price, value + currency',
-      'es-ES': 'Precio de compra, valor + moneda',
-      'ru-RU': 'Закупочная цена, значение + валюта',
     },
   },
   'OrderItem': {
