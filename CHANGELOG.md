@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.1-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.9.1-alpha.1...v0.9.1-alpha.2) (2025-11-12)
+
+### Features
+
+* ref [#102071](https://github.com/retailcrm/embed-ui/issues/102071) Implementation of a general scheme for a card in the orders section and in chats ([ade5857](https://github.com/retailcrm/embed-ui/commit/ade58571a689a073c9b97b36e424ee5c13ab7162))
 ## [0.9.1-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.0...v0.9.1-alpha.1) (2025-11-05)
 
 ### Features
