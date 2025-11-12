@@ -447,8 +447,8 @@ export const targetListDocumentation: {
       'ru-RU': 'Начало секции, над списком товарных позиций',
     },
     contexts: [
-      'order/mg',
-      'order/mg:settings',
+      'order/card',
+      'order/card:settings',
       'user/current',
       'settings',
     ],
@@ -456,7 +456,7 @@ export const targetListDocumentation: {
       'order',
     ],
     actions: [
-      'order/mg',
+      'order/card',
     ],
   },
   'order/mg:list.after': {
@@ -471,8 +471,8 @@ export const targetListDocumentation: {
       'ru-RU': 'Конец секции, сразу после списка товарных позиций и до полей ввода скидки, выбора привилегии и т.п.',
     },
     contexts: [
-      'order/mg',
-      'order/mg:settings',
+      'order/card',
+      'order/card:settings',
       'user/current',
       'settings',
     ],
@@ -480,7 +480,7 @@ export const targetListDocumentation: {
       'order',
     ],
     actions: [
-      'order/mg',
+      'order/card',
     ],
   },
   'order/mg:delivery.before': {
@@ -495,8 +495,8 @@ export const targetListDocumentation: {
       'ru-RU': 'Начало секции, над полем ввода',
     },
     contexts: [
-      'order/mg',
-      'order/mg:settings',
+      'order/card',
+      'order/card:settings',
       'user/current',
       'settings',
     ],
@@ -504,7 +504,7 @@ export const targetListDocumentation: {
       'order',
     ],
     actions: [
-      'order/mg',
+      'order/card',
     ],
   },
   'order/mg:delivery.after': {
@@ -519,8 +519,8 @@ export const targetListDocumentation: {
       'ru-RU': 'Конец секции, под полями ввода',
     },
     contexts: [
-      'order/mg',
-      'order/mg:settings',
+      'order/card',
+      'order/card:settings',
       'user/current',
       'settings',
     ],
@@ -528,7 +528,7 @@ export const targetListDocumentation: {
       'order',
     ],
     actions: [
-      'order/mg',
+      'order/card',
     ],
   },
   'order/mg:payment.before': {
@@ -543,8 +543,8 @@ export const targetListDocumentation: {
       'ru-RU': 'Начало секции, над полем ввода',
     },
     contexts: [
-      'order/mg',
-      'order/mg:settings',
+      'order/card',
+      'order/card:settings',
       'user/current',
       'settings',
     ],
@@ -552,7 +552,7 @@ export const targetListDocumentation: {
       'order',
     ],
     actions: [
-      'order/mg',
+      'order/card',
     ],
   },
   'order/mg:payment.after': {
@@ -567,8 +567,8 @@ export const targetListDocumentation: {
       'ru-RU': 'Конец секции, после списка оплат, контролов и пользовательских полей',
     },
     contexts: [
-      'order/mg',
-      'order/mg:settings',
+      'order/card',
+      'order/card:settings',
       'user/current',
       'settings',
     ],
@@ -576,7 +576,7 @@ export const targetListDocumentation: {
       'order',
     ],
     actions: [
-      'order/mg',
+      'order/card',
     ],
   },
 }

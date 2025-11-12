@@ -20,20 +20,16 @@ import { keysOf } from '@/utilities'
 
 import * as customer from '@/common/customer/card'
 import * as customerPhone from '@/common/customer/card-phone'
-import * as orderCard from '@/common/order/card'
-import * as orderCardSettings from '@/common/order/card-settings'
-import * as orderMg from '@/common/order/mg'
-import * as orderMgSettings from '@/common/order/mg-settings'
+import * as order from '@/common/order/card'
+import * as orderSettings from '@/common/order/card-settings'
 import * as user from '@/common/user/current'
 import * as settings from '@/common/settings'
 
 const schema: SchemaList = {
   [customer.id]: customer.schema,
   [customerPhone.id]: customerPhone.schema,
-  [orderCard.id]: orderCard.schema,
-  [orderCardSettings.id]: orderCardSettings.schema,
-  [orderMg.id]: orderMg.schema,
-  [orderMgSettings.id]: orderMgSettings.schema,
+  [order.id]: order.schema,
+  [orderSettings.id]: orderSettings.schema,
   [user.id]: user.schema,
   [settings.id]: settings.schema,
 }
@@ -43,10 +39,8 @@ const description: {
 } = {
   [customer.id]: customer.description,
   [customerPhone.id]: customerPhone.description,
-  [orderCard.id]: orderCard.description,
-  [orderCardSettings.id]: orderCardSettings.description,
-  [orderMg.id]: orderMg.description,
-  [orderMgSettings.id]: orderMgSettings.description,
+  [order.id]: order.description,
+  [orderSettings.id]: orderSettings.description,
   [user.id]: user.description,
   [settings.id]: settings.description,
 }
@@ -56,24 +50,20 @@ const usage: {
 } = {
   [customer.id]: customer.usage,
   [customerPhone.id]: customerPhone.usage,
-  [orderCard.id]: orderCard.usage,
-  [orderCardSettings.id]: orderCardSettings.usage,
-  [orderMg.id]: orderMg.usage,
-  [orderMgSettings.id]: orderMgSettings.usage,
+  [order.id]: order.usage,
+  [orderSettings.id]: orderSettings.usage,
   [user.id]: user.usage,
   [settings.id]: settings.usage,
 }
 
 const actions: ActionSchemaList = {
-  [orderCard.id]: orderCard.actions,
-  [orderMg.id]: orderMg.actions,
+  [order.id]: order.actions,
 }
 
 const actionsDescription: {
   [K in keyof ActionSchemaList]: ObjectDescription<ActionSchemaList[K]>;
 } = {
-  [orderCard.id]: orderCard.actionsDescription,
-  [orderMg.id]: orderMg.actionsDescription,
+  [order.id]: order.actionsDescription,
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -164,18 +154,12 @@ const types: ObjectMeta[] = [{
 
 fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
   types: [
-    ...keysOf({
-      ...orderCard.typesDescription,
-      ...orderMg.typesDescription,
-    }).reduce((meta, name) => {
-      const types = { ...orderCard.types, ...orderMg.types }[name] as Record<string, string>
-      const descriptions = {
-        ...orderCard.typesDescription,
-        ...orderMg.typesDescription,
-      }[name]
+    ...keysOf(order.typesDescription).reduce((meta, name) => {
+      const types = order.types[name] as Record<string, string>
+      const descriptions = order.typesDescription[name]
 
       meta.push({
-        name: name,
+        name,
         fields: keysOf(descriptions).map(field => ({
           name: field as string,
           type: types[field as string],
