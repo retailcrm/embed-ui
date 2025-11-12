@@ -72,12 +72,6 @@
       "remote/order/card-settings": [
         "./dist/remote/order/card-settings.d.ts"
       ],
-      "remote/order/mg": [
-        "./dist/remote/order/mg.d.ts"
-      ],
-      "remote/order/mg-settings": [
-        "./dist/remote/order/mg-settings.d.ts"
-      ],
       "remote/user/current": [
         "./dist/remote/user/current.d.ts"
       ],

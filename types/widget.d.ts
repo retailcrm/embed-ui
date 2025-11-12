@@ -129,38 +129,38 @@ export type SchemaListByTarget = {
     | 'settings'
   >;
   'order/mg:list.before': Pick<SchemaList,
-    | 'order/mg'
-    | 'order/mg:settings'
+    | 'order/card'
+    | 'order/card:settings'
     | 'user/current'
     | 'settings'
   >;
   'order/mg:list.after': Pick<SchemaList,
-    | 'order/mg'
-    | 'order/mg:settings'
+    | 'order/card'
+    | 'order/card:settings'
     | 'user/current'
     | 'settings'
   >;
   'order/mg:delivery.before': Pick<SchemaList,
-    | 'order/mg'
-    | 'order/mg:settings'
+    | 'order/card'
+    | 'order/card:settings'
     | 'user/current'
     | 'settings'
   >;
   'order/mg:delivery.after': Pick<SchemaList,
-    | 'order/mg'
-    | 'order/mg:settings'
+    | 'order/card'
+    | 'order/card:settings'
     | 'user/current'
     | 'settings'
   >;
   'order/mg:payment.before': Pick<SchemaList,
-    | 'order/mg'
-    | 'order/mg:settings'
+    | 'order/card'
+    | 'order/card:settings'
     | 'user/current'
     | 'settings'
   >;
   'order/mg:payment.after': Pick<SchemaList,
-    | 'order/mg'
-    | 'order/mg:settings'
+    | 'order/card'
+    | 'order/card:settings'
     | 'user/current'
     | 'settings'
   >;

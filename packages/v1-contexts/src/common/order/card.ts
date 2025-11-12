@@ -23,18 +23,15 @@ import {
 } from '@/predicates'
 
 import {
+  isCreateOrderItemInput,
+  isDiscount,
+  isItem,
   isOffer,
   isPriceType,
   isProduct,
   isProductGroup,
   isProperty,
   isStatus,
-} from '@/predicates/order/common'
-
-import {
-  isCreateOrderItemInput,
-  isDiscount,
-  isItem,
 } from '@/predicates/order/card'
 
 export const id = 'order/card'
