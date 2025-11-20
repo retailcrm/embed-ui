@@ -1,0 +1,43 @@
+import ToReact from '../ToReact.ts'
+import UiTextbox from './UiTextbox.example.vue'
+
+# UiTextbox
+
+Стандартное поле ввода
+
+<ToReact is={UiTextbox} placeholder="Введите текст" />
+
+## API
+
+### Свойства
+
+### Слоты
+
+* `prefix` – задает текст в начале поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" prefix="https://" /></span>
+* `suffix` – задает текст в конце поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" suffix="₽" /></span>
+* `leading-icon` – для иконки в начале поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" withLeadingIcon={true} /></span>
+* `trailing-icon` – для иконки в конце поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" withTrailingIcon={true} /></span>
+
+Пример задействования всех слотов:<br />
+<span className="d-inline-block mb-3"><ToReact
+    is={UiTextbox}
+    tag="span"
+    prefix="https://"
+    suffix="₽"
+    withLeadingIcon={true}
+    withTrailingIcon={true}
+/></span><br />
+
+<span className="d-inline-block my-3"><ToReact
+    is={UiTextbox}
+    tag="span"
+    prefix="https://"
+    suffix="₽"
+    withLeadingIcon={true}
+    withTrailingIcon={true}
+    outlined={false}
+/></span>
