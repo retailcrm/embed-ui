@@ -3,12 +3,14 @@ import type {
   Plugin,
 } from 'vue'
 
+import type { Locale } from '@/host/i18n/index'
+
 import { reactive } from 'vue'
 
 export class VueI18n {
-  private _state: { locale?: string }
+  private _state: { locale?: Locale }
 
-  constructor (locale: string|undefined = undefined) {
+  constructor (locale: Locale | undefined = undefined) {
     this._state = reactive({ locale })
   }
 
@@ -16,7 +18,7 @@ export class VueI18n {
     return this._state.locale
   }
 
-  set locale (locale: string|undefined) {
+  set locale (locale: Locale | undefined) {
     this._state.locale = locale
   }
 }
@@ -24,7 +26,7 @@ export class VueI18n {
 export const I18nInjectKey = Symbol('$embedI18n') as InjectionKey<VueI18n>
 
 export default {
-  install (app, options: VueI18n | { locale?: string; }) {
+  install (app, options: VueI18n | { locale?: Locale; }) {
     app.provide(I18nInjectKey, options instanceof VueI18n ? options : new VueI18n(options?.locale))
   },
 } as Plugin

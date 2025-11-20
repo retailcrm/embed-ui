@@ -220,4 +220,32 @@ export const localize = <
     },
   })
 
+export const fallback = 'en-GB' as const
+
+export const define = (
+  options: Options | undefined = undefined,
+  parent: Maybe<I18n> = undefined
+) => {
+  const i18n = new I18n({
+    ...options,
+    fallback,
+  }, parent)
+
+  const extend = (i18n: I18n, options: Options | undefined = undefined) => options
+    ? i18n.extend(options)
+    : i18n
+
+  return {
+    i18n,
+    init: (
+      locale: Locale,
+      options: Options | undefined = undefined
+    ) => localize(
+      extend(i18n, options),
+      locale
+    ),
+    fallback,
+  }
+}
+
 export default I18n

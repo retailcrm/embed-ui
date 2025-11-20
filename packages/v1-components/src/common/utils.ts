@@ -4,6 +4,17 @@ export const expect = <V>(value: V) => ({
   },
 })
 
+export const omit = <
+  T extends object,
+  K extends keyof T
+>(value: T, keys: K[]): Omit<T, K> => {
+  const result = { ...value }
+  for (const key of keys) {
+    delete result[key]
+  }
+  return result
+}
+
 export const pick = (attrs: Record<string, unknown>, criteria: (key: string) => boolean) => {
   return Object.keys(attrs).filter(criteria).reduce((picked, key) => ({
     ...picked,

@@ -1,0 +1,231 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+:root {
+  --ui-v1-textbox-primary-color: @blue-500;
+  --ui-v1-textbox-primary-shadow-color: @blue-transparent;
+  --ui-v1-textbox-danger-color: @red-500;
+  --ui-v1-textbox-danger-shadow-color: @red-transparent;
+  --ui-v1-textbox-autofill-color: #E5FCAE;
+  --ui-v1-textbox-icon-color: @grey-700;
+}
+
+.ui-v1-textbox {
+  --height: @line-height-regular;
+  --padding: 16px;
+  --gap: 6px;
+  --active-color: var(--ui-v1-textbox-primary-color);
+  --border-color: @grey-500;
+  --shadow-color: var(--ui-v1-textbox-primary-shadow-color);
+  --icon-size: @line-height-regular;
+
+  .reset-box-sizing();
+
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  height: var(--height);
+  padding-block-end: 1px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border-color);
+  font-family: @font-family;
+  .text-regular();
+  transition:
+    background-color 50000s ease-in-out 0s,
+    border-color @transition,
+    box-shadow @transition
+  ;
+  position: relative;
+
+  &:has(:-webkit-autofill),
+  &:has(:autofill) {
+    background-color: var(--ui-v1-textbox-autofill-color);
+  }
+
+  &:has(textarea) {
+    height: auto;
+    min-height: var(--height);
+  }
+
+  &_invalid {
+    --active-color: var(--ui-v1-textbox-danger-color);
+    --shadow-color: var(--ui-v1-textbox-danger-shadow-color);
+  }
+
+  &_xs { --height: @line-height-small; --icon-size: @line-height-small; .text-small(); }
+  &_md { --height: @line-height-h4; --icon-size: @line-height-h4; .h4(); }
+  &_lg { --height: @line-height-h3; --icon-size: @line-height-h3; .h3(); }
+  &_xl { --height: @line-height-h3; --icon-size: @line-height-h2; .h2(); }
+
+  &_outlined {
+    --height: 36px;
+    padding-block-end: 0;
+    border: 1px solid var(--border-color);
+    border-radius: @border-radius-md;
+    line-height: var(--height);
+  }
+
+  &_outlined&_xs {
+    --height: 24px;
+    --padding: 8px;
+    --gap: 2px;
+    border-radius: @border-radius-sm;
+  }
+
+  &_outlined&_md {
+    --height: 48px;
+    --gap: 8px;
+    border-radius: @border-radius-lg;
+  }
+
+  &_outlined&_lg,
+  &_outlined&_xl {
+    --height: 56px;
+    --padding: 20px;
+    --gap: 16px;
+    border-radius: @border-radius-lg;
+  }
+
+  input,
+  textarea {
+    flex-grow: 1;
+    height: calc(var(--height) - 2px);
+    background: transparent;
+    border: none;
+    border-radius: inherit;
+    box-shadow: none;
+    color: @black-500;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    z-index: 2;
+
+    &,
+    &:hover,
+    &:focus {
+      outline: none;
+    }
+  }
+
+  textarea {
+    min-height: calc(var(--height) - 2px);
+  }
+
+  &_outlined input,
+  &_outlined textarea {
+    padding-inline: var(--padding);
+  }
+
+  &:has(&__prefix) input,
+  &:has(&__prefix) textarea,
+  &:has(&__icon_leading) input,
+  &:has(&__icon_leading) textarea {
+    padding-inline-start: var(--gap);
+    .border-radius-start(0);
+  }
+
+  &:has(&__icon_trailing) input,
+  &:has(&__icon_trailing) textarea,
+  &:has(&__suffix) input,
+  &:has(&__suffix) textarea {
+    padding-inline-end: var(--gap);
+    .border-radius-end(0);
+  }
+
+  &:has(input:hover),
+  &:has(textarea:hover) {
+    --border-color: @grey-700;
+  }
+
+  &:has(input:focus),
+  &:has(textarea:focus) {
+    --border-color: var(--active-color);
+  }
+
+  &_outlined:has(input:focus),
+  &_outlined:has(textarea:focus) {
+    box-shadow: 0 0 0 4px var(--shadow-color);
+  }
+
+  &_active {
+    border-color: var(--active-color);
+  }
+
+  &__eraser {
+    display: inline-flex;
+    padding-block: calc((var(--height) - var(--icon-size)) / 2);
+    padding-inline-end: var(--gap);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+
+    svg {
+      .square(var(--icon-size));
+      color: @grey-700;
+      fill: @grey-700;
+    }
+
+    svg:hover {
+      color: var(--ui-v1-textbox-primary-color);
+      fill: var(--ui-v1-textbox-primary-color);
+    }
+  }
+
+  &:has(&__icon_trailing) &__eraser {
+    padding-inline-end: 0;
+  }
+
+  &__icon {
+    display: inline-flex;
+    padding-block-start: calc((var(--height) - var(--icon-size)) / 2);
+    justify-content: center;
+    z-index: 2;
+
+    svg {
+      .square(var(--icon-size));
+      color: var(--ui-v1-textbox-icon-color);
+      fill: var(--ui-v1-textbox-icon-color);
+    }
+
+    &_leading { .border-radius-start(inherit); }
+    &_trailing { .border-radius-end(inherit); }
+  }
+
+  &_outlined &__icon {
+    padding-block-start: calc((var(--height) - var(--icon-size)) / 2 - 2px);
+    border-block: 1px solid transparent;
+  }
+
+  &_outlined &__icon_leading  { padding-inline-start: var(--gap); }
+  &_outlined &__icon_trailing { padding-inline-end: var(--gap); }
+
+  &:has(&__prefix) &__icon_leading  { .border-radius-start(0); }
+  &:has(&__suffix) &__icon_trailing { .border-radius-end(0); }
+
+  &__prefix,
+  &__suffix {
+    line-height: calc(var(--height) - 2px);
+    z-index: 2;
+  }
+
+  &__prefix {
+    padding-inline-end: var(--gap);
+    .border-radius-start(inherit);
+  }
+
+  &__suffix {
+    padding-inline-start: var(--gap);
+    .border-radius-end(inherit);
+  }
+
+  &_outlined &__prefix,
+  &_outlined &__suffix {
+    padding-inline: var(--padding);
+    background: @grey-200;
+  }
+}

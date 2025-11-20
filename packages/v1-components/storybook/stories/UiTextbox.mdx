@@ -1,0 +1,150 @@
+import ToReact from '../ToReact.ts'
+import UiTextbox from './UiTextbox.example.vue'
+
+# UiTextbox
+
+Стандартное поле ввода для текстовых и числовых значений в формах.
+Подходит для полей поиска, логина, телефона/email, URL, а также для сумм и количественных значений.
+
+Пример:
+
+<span className="d-inline-block mb-3"><ToReact is={UiTextbox} placeholder="Введите текст" /></span>
+
+### Числовой ввод (inputmode: numeric/decimal)
+
+`inputmode` подсказывает браузеру и ОС, какую раскладку клавиатуры показать, и включает в компоненте ряд ограничений для числового ввода.
+
+- Что показывает клавиатура:
+  - `numeric` — цифровая клавиатура без десятичного разделителя (на мобильных). Подходит для целых чисел, количеств, кодов.
+  - `decimal` — цифровая клавиатура с десятичным разделителем (на мобильных). Подходит для сумм и дробных значений.
+- Это только подсказка для браузера: сама по себе не валидирует значение. За ограничения отвечают компонент и свойства `min`, `max`, `step`, `decimals`.
+- Поведение компонента:
+  - `numeric` — это режим ограничения символов:
+    - Разрешены только цифры 0–9, клавиши редактирования (Backspace/Delete/стрелки), сочетания с Ctrl/Cmd.
+    - Запрещены минус `-`, десятичный разделитель и экспонента `e/E`.
+    - Вставка: все нецифровые символы отбрасываются (оставляются только 0–9).
+    - Стрелки `ArrowUp/Down` не изменяют значение программно; компонент не применяет числовую семантику.
+    - Свойства `min/max/step/decimals` игнорируются и НЕ навешиваются на `<input>`.
+  - `decimal` — полноценный числовой ввод с дробями:
+    - Разрешены цифры 0–9, один десятичный разделитель `.`; экспонента `e/E` блокируется.
+    - Минус `-` допустим только в начале и только если `min < 0`.
+    - Вставка: запятая `,` конвертируется в точку `.`; лишние точки/символы отбрасываются.
+    - Ведущие нули в целой части нормализуются: `0000` → `0`, `001` → `1`, `034.132` → `34.132`, `-01` → `-1`. Ноль перед точкой сохраняется только для дробей: `0.1`, `-0.32`.
+    - `decimals` ограничивает число знаков после запятой; лишние знаки обрезаются. Значение `'*'` означает «без ограничений».
+    - Стрелки `ArrowUp/Down` изменяют значение на `step` с учётом `min/max`; число знаков после запятой сохраняется разумно.
+    - Нативные атрибуты `max/min/step` навешиваются на `<input>` только в этом режиме.
+- Особенности и оговорки:
+  - Десятичный разделитель — точка (`.`). Вставленная запятая `,` автоматически преобразуется в точку в режиме `decimal`.
+  - Отрицательные числа: явный ввод `-` доступен только в `decimal` и только в начале, если `min < 0`. В `numeric` минус запрещён.
+  - На desktop визуальная раскладка клавиатуры обычно не меняется: работает именно ограничение ввода внутри компонента.
+
+#### Автоподбор и согласование inputmode с type
+
+- Если `inputmode` не указан, он автоматически подбирается из `type`:
+  - `type="email"` → `inputmode="email"`
+  - `type="tel"` (phone) → `inputmode="tel"`
+  - `type="search"` → `inputmode="search"`
+  - `type="url"` → `inputmode="url"`
+  - `type="text"` и `type="password"` — без автоподстановки; `inputmode` остаётся как есть (можно использовать любые значения, включая `numeric`/`decimal`).
+
+- Разрешённые сочетания и устранение противоречий:
+  - Для `type="email" | "tel" | "search" | "url"` допустимы только `inputmode` из набора: `undefined`, `"text"`, профильное значение (`"email"/"tel"/"search"/"url"` соответственно).
+  - Если указано противоречивое значение (например, `type="email"` и `inputmode="numeric"`), компонент сбрасывает `inputmode` в `undefined` (атрибут не навешивается).
+  - Для `type="text"` и `type="password"` ограничения не применяются — можно явно указывать `numeric` или `decimal` для активации соответствующей логики ввода.
+
+### Сочетание с UiPopper
+
+Данный компонент может служить в качестве цели для `UiPopper` без использования `UiPopperTarget`.
+
+## API
+
+### Свойства
+
+* `id` – Уникальный идентификатор поля. Тип: `string | undefined`. По умолчанию: `undefined`. Примечание: должен начинаться с латинской буквы (валидатор).
+* `type` – Тип поля. Тип: `'email' | 'password' | 'tel' | 'search' | 'text' | 'url'`. По умолчанию: `'text'`.
+* `value` – Значение поля. Тип: `string | number | null`. По умолчанию: `null`.
+* `max` – Нативный атрибут input (максимум для числового ввода). Тип: `number | ${'number'}`. По умолчанию: `Infinity`. Примечание: должен преобразовываться к числу (валидатор).
+* `min` – Нативный атрибут input (минимум для числового ввода). Тип: `number | ${number}`. По умолчанию: `-Infinity`. Примечание: должен преобразовываться к числу (валидатор).
+* `step` – Нативный атрибут input (шаг для числового ввода). Тип: `number | ${number} | 'any'`. По умолчанию: `1`. Примечание: либо `'any'`, либо число (валидатор).
+* `autocomplete` – Нативный атрибут input|textarea. Тип: `'on' | 'off'`. По умолчанию: `'off'`.
+* `inputmode` – Нативный атрибут input|textarea. Тип: `'decimal' | 'email' | 'none' | 'numeric' | 'search' | 'tel' | 'text' | 'url' | undefined`. По умолчанию: `undefined`. См. раздел «Числовой ввод (inputmode: numeric/decimal)» выше.
+* Примечание к числовым режимам: при `inputmode="numeric"` свойства `min`, `max`, `step`, `decimals` игнорируются и НЕ применяются к `<input>`; при `inputmode="decimal"` — применяются и участвуют в логике ввода.
+* `maxlength` – Нативный атрибут input|textarea (макс. длина). Тип: `number | string | undefined`. По умолчанию: `undefined`.
+* `decimals` – Максимальное количество знаков после запятой (для числового ввода). Тип: `number | `${'number'}` | '*'`. По умолчанию: `'*'`. Примечание: `'*'` — без ограничений, `0` — только целые.
+* `size` – Размер поля ввода. Тип: `'xs' | 'sm' | 'md' | 'lg' | 'xl'`. По умолчанию: `'sm'`.
+* `placeholder` – Нативный атрибут input|textarea (плейсхолдер). Тип: `string`. По умолчанию: `''`.
+* `prefix` – Текст в начале поля ввода. Тип: `string`. По умолчанию: `''`.
+* `suffix` – Текст в конце поля ввода. Тип: `string`. По умолчанию: `''`.
+* `active` – Флаг активности, для индикации, что поле задействовано. Тип: `boolean`. По умолчанию: `false`.
+* `autofocus` – Автоматический focus на поле ввода сразу после монтирования. Тип: `boolean`. По умолчанию: `false`.
+* `autoselect` – Автоматический выбор значения в поле ввода при попадании в фокус. Тип: `boolean`. По умолчанию: `false`.
+* `clearable` – Включает кнопку очистки значения (видна, если значение непустое). Тип: `boolean`. По умолчанию: `false`.
+* `readonly` – Является ли поле полем только для чтения. Тип: `boolean`. По умолчанию: `false`.
+* `required` – Является ли поле обязательным. Тип: `boolean`. По умолчанию: `false`.
+* `disabled` – Отключено ли поле. Тип: `boolean`. По умолчанию: `false`.
+* `invalid` – Содержит ли поле некорректное значение. Тип: `boolean`. По умолчанию: `false`.
+* `multiline` – Превращает поле в многострочное. Тип: `boolean`. По умолчанию: `false`.
+* `outlined` – Стиль поля – с рамкой или без. Тип: `boolean`. По умолчанию: `true`.
+
+### События
+
+* `input` – стандартное для input/textarea элементов
+* `change` – стандартное для input/textarea элементов
+* `keydown` – стандартное для input/textarea элементов
+* `focus` – стандартное для input/textarea элементов
+* `blur` – стандартное для input/textarea элементов
+* `update:focused` – изменения флага – в фокусе/не в фокусе, можно использовать с v-model
+* `update:value` – изменение значения поля, можно использовать с v-model
+* `clear` - появляется после нажатия на кнопку очистки
+
+### Слоты
+
+* `prefix` – задает текст в начале поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" prefix="https://" /></span>
+* `suffix` – задает текст в конце поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" suffix="₽" /></span>
+* `leading-icon` – для иконки в начале поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" withLeadingIcon={true} /></span>
+* `trailing-icon` – для иконки в конце поля ввода:<br />
+  <span className="d-inline-block my-3"><ToReact is={UiTextbox} tag="span" withTrailingIcon={true} /></span>
+
+Пример задействования всех слотов:<br />
+<span className="d-inline-block mb-3"><ToReact
+    is={UiTextbox}
+    tag="span"
+    prefix="https://"
+    suffix="₽"
+    withLeadingIcon={true}
+    withTrailingIcon={true}
+/></span><br />
+
+<span className="d-inline-block my-3"><ToReact
+    is={UiTextbox}
+    tag="span"
+    prefix="https://"
+    suffix="₽"
+    withLeadingIcon={true}
+    withTrailingIcon={true}
+    outlined={false}
+/></span>
+
+## Пример
+
+```html
+<template>
+    <UiTextbox v-model:value="term">
+        <template #leading-icon>
+            <IconSearch aria-hidden="true" />
+        </template>
+    </UiTextbox>
+</template>
+
+<script lang="ts" setup>
+import IconSearch from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/search.svg'
+import { UiTextbox } from '@retailcrm/embed-ui-v1-components/remote'
+
+import { ref } from 'vue'
+
+const term = ref('')
+</script>
+```
