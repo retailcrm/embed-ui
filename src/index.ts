@@ -90,6 +90,7 @@ const createRoot = async (channel: Channel) => {
       'UiRadio',
       'UiScrollBox',
       'UiTag',
+      'UiTextbox',
       'UiToolbarButton',
       'UiToolbarLink',
       'UiTooltip',
