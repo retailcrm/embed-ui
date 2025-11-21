@@ -98,11 +98,16 @@ const useInternal = defineStore('@retailcrm/embed-ui/_internal', {})
 
 export const useHost = (): RemoteCallable<Callable> => {
   const store = useInternal()
+  const endpoint = store.endpoint as unknown as Endpoint<ContextAccessor & Callable>
 
   return {
-    httpCall (action, payload = undefined) {
-      const endpoint = store.endpoint as unknown as Endpoint<ContextAccessor & Callable>
+    goTo (route: string, params = undefined) {
+      return params
+        ? endpoint.call.goTo(route, params)
+        : endpoint.call.goTo(route)
+    },
 
+    httpCall (action, payload = undefined) {
       return payload
         ? endpoint.call.httpCall(action, payload)
         : endpoint.call.httpCall(action)
