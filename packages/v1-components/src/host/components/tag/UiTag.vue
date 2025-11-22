@@ -73,7 +73,7 @@ import { deltaTransition, SIZE } from '@/common/components/tag'
 import _i18n from './i18n'
 
 const props = defineProps({
-  /** Рамер */
+  /** Размер */
   size: {
     type: String as unknown as PropType<SIZE>,
     default: SIZE.LG,
