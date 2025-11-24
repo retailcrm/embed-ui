@@ -119,9 +119,9 @@ import { nextTick } from 'vue'
 import { onMounted } from 'vue'
 import { sanitizeDecimal } from '@/common/components/textbox'
 import { sanitizeNumeric } from '@/common/components/textbox'
+import { shallowRef } from 'vue'
 import { useElementRef } from '@/host/composables'
 import { useId } from 'vue'
-import { useTemplateRef } from 'vue'
 import { watch } from 'vue'
 
 import _i18n from './i18n'
@@ -484,7 +484,7 @@ const onKeyDown = (event: KeyboardEvent) => {
 }
 
 const root = useElementRef<HTMLAnchorElement>()
-const textbox = useTemplateRef('textbox')
+const textbox = shallowRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
 
 const getSelectionStart = () => textbox.value?.selectionStart ?? 0
 const getSelectionEnd = () => textbox.value?.selectionEnd ?? 0
