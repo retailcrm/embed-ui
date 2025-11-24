@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.9.3](https://github.com/retailcrm/embed-ui/compare/v0.9.2...v0.9.3) (2025-11-24)
+
+### Bug Fixes
+
+* Replaced useTemplateRef with shallowRef ([8382815](https://github.com/retailcrm/embed-ui/commit/8382815a28f1f7e0c1b298d7058f6e64136efbb7))
+* Style for disabled textbox ([45bb4a4](https://github.com/retailcrm/embed-ui/commit/45bb4a40e23664c1d7e742ab6735c0d856539caa))
 ## [0.9.2](https://github.com/retailcrm/embed-ui/compare/v0.9.1...v0.9.2) (2025-11-24)
 
 ### Bug Fixes
