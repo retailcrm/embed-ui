@@ -50,6 +50,11 @@
     min-height: var(--height);
   }
 
+  &:has(input:disabled),
+  &:has(textarea:disabled) {
+    background-color: @grey-300;
+  }
+
   &_invalid {
     --active-color: var(--ui-v1-textbox-danger-color);
     --shadow-color: var(--ui-v1-textbox-danger-shadow-color);
@@ -140,13 +145,13 @@
     .border-radius-end(0);
   }
 
-  &:has(input:hover),
-  &:has(textarea:hover) {
+  &:has(input:hover:not(:disabled)),
+  &:has(textarea:hover:not(:disabled)) {
     --border-color: @grey-700;
   }
 
-  &:has(input:focus),
-  &:has(textarea:focus) {
+  &:has(input:focus:not(:disabled)),
+  &:has(textarea:focus:not(:disabled)) {
     --border-color: var(--active-color);
   }
 
