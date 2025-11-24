@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [0.9.1](https://github.com/retailcrm/embed-ui/compare/v0.9.1-alpha.2...v0.9.1) (2025-11-24)
+
+### Features
+
+* Added goTo method to host callables for navigation inside CRM ([25d72dc](https://github.com/retailcrm/embed-ui/commit/25d72dc84fb4476abe1f9275763fd8a7d6a9a7cd))
+* UiTextbox component - basic text input ([28eda2a](https://github.com/retailcrm/embed-ui/commit/28eda2a659eefdd7a1dbaad8d1c5a40b8e613345))
+
+### Bug Fixes
+
+* Fixed en-GB locale for UiTag ([debe5a5](https://github.com/retailcrm/embed-ui/commit/debe5a5e72579d399f42bbe23a58ddf0f3f501c0))
 ## [0.9.1-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.9.1-alpha.1...v0.9.1-alpha.2) (2025-11-12)
 
 ### Features
