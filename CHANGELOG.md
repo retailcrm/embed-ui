@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.2](https://github.com/retailcrm/embed-ui/compare/v0.9.1...v0.9.2) (2025-11-24)
+
+### Bug Fixes
+
+* Height of UiTextbox in multiline mode ([bdcf4a4](https://github.com/retailcrm/embed-ui/commit/bdcf4a4c7152b8a096e3d3de9d8ce8fb293310fb))
 ## [0.9.1](https://github.com/retailcrm/embed-ui/compare/v0.9.1-alpha.2...v0.9.1) (2025-11-24)
 
 ### Features
