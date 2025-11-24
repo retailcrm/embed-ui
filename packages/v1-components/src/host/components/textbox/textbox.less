@@ -92,7 +92,6 @@
   input,
   textarea {
     flex-grow: 1;
-    height: calc(var(--height) - 2px);
     background: transparent;
     border: none;
     border-radius: inherit;
@@ -111,8 +110,13 @@
     }
   }
 
+  input {
+    height: calc(var(--height) - 2px);
+  }
+
   textarea {
     min-height: calc(var(--height) - 2px);
+    padding-block: 0;
   }
 
   &_outlined input,
