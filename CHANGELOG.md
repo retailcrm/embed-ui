@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.4](https://github.com/retailcrm/embed-ui/compare/v0.9.3...v0.9.4) (2025-12-08)
+
+### Bug Fixes
+
+* **v1-components:** Attributes inheritance for UiModalSidebar ([3c775c9](https://github.com/retailcrm/embed-ui/commit/3c775c9aee5211e0cf0efb8dcf351807089a437c))
 ## [0.9.3](https://github.com/retailcrm/embed-ui/compare/v0.9.2...v0.9.3) (2025-11-24)
 
 ### Bug Fixes
