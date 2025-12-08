@@ -128,6 +128,10 @@ import {
   SIZE,
 } from '@/common/components/modal-sidebar'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = defineProps({
   /** Атрибут id корневого элемента. Должен быть уникальным на странице */
   id: {
