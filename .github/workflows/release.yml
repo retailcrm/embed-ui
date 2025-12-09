@@ -39,10 +39,11 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Fix PATH for hoisting
+        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
+
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
-        env:
-          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
       - name: Run eslint
         run: yarn eslint
@@ -101,10 +102,11 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Fix PATH for hoisting
+        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
+
       - name: Build Storybook
         run: yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
-        env:
-          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
       - name: Upload Storybook artifact
         uses: actions/upload-artifact@v4

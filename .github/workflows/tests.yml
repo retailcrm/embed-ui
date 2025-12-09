@@ -38,15 +38,14 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Fix PATH for hoisting
+        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
+
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
-        env:
-          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
       - name: Run eslint
         run: yarn eslint
-        env:
-          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
   tests:
     needs: eslint
@@ -83,12 +82,11 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Fix PATH for hoisting
+        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
+
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
-        env:
-          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
       - name: Run tests
         run: yarn test
-        env:
-          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
