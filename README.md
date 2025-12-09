@@ -4,6 +4,8 @@
 
 API и компоненты для создания расширений интерфейса RetailCRM
 
+Витрина storybook для последней выпущенной версии: [embed-ui/v1-components/latest](https://retailcrm.github.io/embed-ui/v1-components/latest/index.html).
+
 ## Цели встраивания
 
 Цели встраивания определяют места, где будет размещена разметка виджета, генерируемая расширением.
