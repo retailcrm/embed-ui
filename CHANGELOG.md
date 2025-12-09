@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.5](https://github.com/retailcrm/embed-ui/compare/v0.9.4...v0.9.5) (2025-12-09)
+
+### Features
+
+* **v1-components:** Added rows/cols native textarea attributes to UiTextbox (works only for multiline=true) ([c1784bb](https://github.com/retailcrm/embed-ui/commit/c1784bb340dec27ca39decf49ba8dc2cb88f1b9b))
 ## [0.9.4](https://github.com/retailcrm/embed-ui/compare/v0.9.3...v0.9.4) (2025-12-08)
 
 ### Bug Fixes
