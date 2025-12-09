@@ -1,6 +1,6 @@
 name: Tests
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,9 +40,13 @@ jobs:
 
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
+        env:
+          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
       - name: Run eslint
         run: yarn eslint
+        env:
+          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
   tests:
     needs: eslint
@@ -81,6 +85,10 @@ jobs:
 
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
+        env:
+          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
 
       - name: Run tests
         run: yarn test
+        env:
+          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }}
