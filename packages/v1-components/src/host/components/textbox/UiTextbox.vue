@@ -64,6 +64,8 @@
             :inputmode="resolvedInputmode"
             :maxlength="maxlength"
             :placeholder="placeholder"
+            :rows="rows"
+            :cols="cols"
             :readonly="readonly"
             :required="required"
             :disabled="disabled"
@@ -279,6 +281,20 @@ const props = defineProps({
   multiline: {
     type: Boolean,
     default: false,
+  },
+
+  /** Нативный атрибут HTMLTextAreaElement */
+  rows: {
+    type: [Number, String],
+    validator: (value: unknown) => !isNaN(Number(value)),
+    default: 2,
+  },
+
+  /** Нативный атрибут HTMLTextAreaElement */
+  cols: {
+    type: [Number, String],
+    validator: (value: unknown) => !isNaN(Number(value)),
+    default: 20,
   },
 
   /** Стиль поля – с рамкой или без */

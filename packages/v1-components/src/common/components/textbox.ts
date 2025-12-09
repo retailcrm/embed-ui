@@ -51,6 +51,8 @@ export type UiTextboxProperties = {
   disabled?: boolean;
   invalid?: boolean;
   multiline?: boolean;
+  rows?: number | `${number}`;
+  cols?: number | `${number}`;
   outlined?: boolean;
 }
 
