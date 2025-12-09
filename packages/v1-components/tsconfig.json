@@ -40,8 +40,6 @@
   "include": [
     "shims-*.d.ts",
     "src/**/*.ts",
-    "src/**/*.vue",
-    "storybook/**/*.stories.ts",
-    "storybook/**/*.vue"
+    "src/**/*.vue"
   ]
 }

@@ -25,5 +25,10 @@ export default defineConfig({
       provider: 'istanbul',
       include: ['src/**'],
     },
+    projects: [
+      '.',
+      'packages/v1-contexts',
+      'packages/v1-components',
+    ],
   },
 })

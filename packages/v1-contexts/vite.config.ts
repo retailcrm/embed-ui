@@ -5,7 +5,7 @@ import {
 
 import dts from 'vite-plugin-dts'
 
-import path from 'node:path'
+import * as path from 'node:path'
 
 import {
   name,
