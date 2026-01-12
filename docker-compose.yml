@@ -19,3 +19,4 @@ services:
       traefik.http.routers.embed-ui-v1-components.priority: 1
       traefik.http.routers.embed-ui-v1-components.service: embed-ui-v1-components
       traefik.http.services.embed-ui-v1-components.loadbalancer.server.port: '6006'
+      dev.orbstack.domains: 'v1.embed-ui.local'
