@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.7](https://github.com/retailcrm/embed-ui/compare/v0.9.6...v0.9.7) (2026-01-13)
+
+### Bug Fixes
+
+* **v1-components:** Missing host.d.ts ([2082c4d](https://github.com/retailcrm/embed-ui/commit/2082c4da7708e957ff333882b6ebaddf70593a5f))
 ## [0.9.6](https://github.com/retailcrm/embed-ui/compare/v0.9.5...v0.9.6) (2026-01-13)
 
 ### Bug Fixes
