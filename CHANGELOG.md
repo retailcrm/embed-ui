@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.6](https://github.com/retailcrm/embed-ui/compare/v0.9.5...v0.9.6) (2026-01-13)
+
+### Bug Fixes
+
+* Was added height property and orbstack domain ([03485b0](https://github.com/retailcrm/embed-ui/commit/03485b0172bcbf1ee517b5f9d392831b928ec08f))
 ## [0.9.5](https://github.com/retailcrm/embed-ui/compare/v0.9.4...v0.9.5) (2025-12-09)
 
 ### Features
