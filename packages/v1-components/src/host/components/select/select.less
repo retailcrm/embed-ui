@@ -1,0 +1,27 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-select {
+
+  &__trigger {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    text-align: left;
+  }
+
+  &__touchstone {
+    .text-regular();
+    opacity: 0;
+    white-space: nowrap;
+    transform: translateZ(0);
+    visibility: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &__input { text-overflow: ellipsis; }
+}
