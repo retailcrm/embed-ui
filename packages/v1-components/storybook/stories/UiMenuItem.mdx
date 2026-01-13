@@ -1,0 +1,44 @@
+import ToReact from '../ToReact.ts'
+
+import UiMenuItem from './UiMenuItem.example.vue'
+
+# UiMenuItem
+
+Используется для отображения элемента выпадающего списка (меню)
+
+## Механика работы
+Содержит основной текст, может содержать иконку слева, справа или дополнительный текст
+
+## Только основной текст (Дефолтный слот)
+
+<ToReact is={UiMenuItem} />
+
+## Жирный текст со счетчиком справа
+
+<ToReact is={UiMenuItem} counter="15" accent />
+
+## Основной текст и описание
+
+<ToReact is={UiMenuItem} description="Менеджер" />
+
+## Слот для аватара
+
+<ToReact is={UiMenuItem} avatar />
+
+## Слот для аватара и слот для description
+
+<ToReact is={UiMenuItem} avatar description="Менеджер" />
+
+## Иконка слева
+
+<ToReact is={UiMenuItem} leading-icon />
+
+## Иконка справа
+<ToReact is={UiMenuItem} trailing-icon />
+
+## Иконки слева и справа
+<ToReact is={UiMenuItem} leading-icon trailing-icon />
+
+## Уменьшенный размер (size="sm")
+
+<ToReact is={UiMenuItem} size="sm" />

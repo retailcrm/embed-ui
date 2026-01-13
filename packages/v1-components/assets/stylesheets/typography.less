@@ -8,6 +8,9 @@
 @font-size-small: 14px;
 @font-size-tiny: 12px;
 
+@font-weight-accent: 500;
+@font-weight-normal: 400;
+
 @line-height-h1: 44px;
 @line-height-h2: 32px;
 @line-height-h3: 32px;
@@ -42,3 +45,9 @@
 
 .text-tiny        (@lh: (14/12)) { .text(400, @font-size-tiny, @lh); }
 .text-tiny-accent (@lh: (14/12)) { .text(500, @font-size-tiny, @lh); }
+
+.ellipsis () {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

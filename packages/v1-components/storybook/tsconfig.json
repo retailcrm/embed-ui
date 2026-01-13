@@ -2,6 +2,10 @@
   "extends": "../tsconfig.json",
   "include": [
     "storybook/**/*.stories.ts",
-    "storybook/**/*.vue"
+    "storybook/**/*.vue",
+    "stories/**/*.ts",
+    "stories/**/*.vue",
+    "stories/**/*.mdx",
+    "./../shims-*.d.ts",
   ]
 }
