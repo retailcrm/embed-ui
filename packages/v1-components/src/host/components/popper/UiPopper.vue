@@ -171,6 +171,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
+  /** Элемент добавлен на страницу */
+  'attached',
   /** Смена значения флага видимости плавающего элемента */
   'update:visible',
   /** Появление плавающего элемента */
@@ -291,6 +293,8 @@ const show = (immediately = false) => {
 
   state.hiding = false
   state.attached = true
+
+  emit('attached')
 
   showingScheduler.schedule(doShow, immediately ? 0 : delay.value.show)
 
@@ -424,6 +428,7 @@ watch(() => state.attached, (isAttached, wasAttached) => {
   if (isAttached && !wasAttached) {
     nextTick(async () => {
       if (state.visible) {
+        emit('attached')
         autoAdjustOff()
         await adjust()
         autoAdjustOn()

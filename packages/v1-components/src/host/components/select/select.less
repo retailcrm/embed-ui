@@ -1,0 +1,124 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-select {
+  .reset-box-sizing();
+
+  &__trigger {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    text-align: left;
+  }
+
+  &__touchstone {
+    .text-regular();
+    opacity: 0;
+    white-space: nowrap;
+    transform: translateZ(0);
+    visibility: hidden;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &__input { text-overflow: ellipsis; }
+
+  &__popper {
+    --ui-v1-popper-padding: 2px 0;
+    --ui-v1-popper-roundings: @border-radius-lg;
+    font-family: @font-family;
+
+    &:focus {
+      outline: none !important;
+    }
+  }
+
+  &__content {
+    max-height: 210px;
+    max-width: 500px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: @grey-500 transparent;
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 6px;
+    }
+
+
+    &:hover .ui-v1-scroll-rail:not(.ui-v1-scroll-rail:hover):not(.ui-v1-scroll-rail_active) .ui-v1-scroll-rail__slider {
+      width: 6px;
+    }
+
+    &_locked {
+      pointer-events: none;
+    }
+  }
+
+  &__content_long { max-width: 656px; }
+
+  &__no-results-text {
+    padding: @spacing-xs @spacing-s;
+    background: @grey-100;
+    border-radius: @border-radius-sm;
+    color: @grey-900;
+    word-break: break-all;
+    margin: @spacing-xxs;
+  }
+
+  &_active {
+    --border-color: var(--ui-v1-textbox-primary-color);
+    --active-color: var(--ui-v1-textbox-primary-color);
+  }
+
+  &_active &__caret {
+    color: var(--active-color);
+  }
+
+  &:not(&_active) .ui-v1-textbox {
+    --border-color: @grey-500;
+    --active-color: @grey-500;
+  }
+
+  &:not(&_active) .ui-v1-textbox.ui-v1-textbox_outlined {
+    box-shadow: none;
+  }
+
+  &_filterable {
+    cursor: text;
+  }
+}
+
+.ui-v1-select-option {
+  &_hidden {
+    display: none;
+  }
+
+  &__add-icon { opacity: 0; }
+
+  &:not(&_disabled):hover &__add-icon {
+    opacity: 1;
+  }
+
+  &__checkmark-icon,
+  &__add-icon {
+    color: @blue-500;
+  }
+}
+
+.ui-v1-select-option-group {
+  & + & {
+    padding-top: 3px;
+    border-top: 1px solid @grey-500;
+    margin-top: @spacing-xxs;
+  }
+
+  &:nth-last-child(1) { padding-bottom: 0; }
+
+  &_hidden {
+    display: none;
+  }
+}

@@ -19,6 +19,8 @@ export * from '@/remote/components/toolbar-link'
 export * from '@/remote/components/tooltip'
 export * from '@/remote/components/transition'
 export * from '@/remote/components/yandex-map'
+export * from '@/remote/components/menu'
+export * from '@/remote/components/select'
 
 export { usePreview } from '@/common/preview'
 

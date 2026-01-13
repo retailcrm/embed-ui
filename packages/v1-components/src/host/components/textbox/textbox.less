@@ -73,6 +73,13 @@
     line-height: var(--height);
   }
 
+  &_outlined:has(input[readonly]:not(:disabled)),
+  &_outlined:has(input[readonly]:not(:disabled):hover),
+  &_outlined input[readonly]:not(:disabled),
+  &_outlined input[readonly]:not(:disabled):hover {
+    cursor: pointer;
+  }
+
   &_outlined&_xs {
     --height: 24px;
     --padding: 8px;
@@ -161,8 +168,14 @@
     box-shadow: 0 0 0 4px var(--shadow-color);
   }
 
-  &_active {
-    border-color: var(--active-color);
+  &:not(&_active):has(input[readonly]:focus:not(:disabled)),
+  &:not(&_active):has(textarea[readonly]:focus:not(:disabled)) {
+    --border-color: @grey-500;
+  }
+
+  &_outlined:not(&_active):has(input[readonly]:focus),
+  &_outlined:not(&_active):has(textarea[readonly]:focus) {
+    box-shadow: none;
   }
 
   &__eraser {
@@ -195,6 +208,7 @@
     padding-block-start: calc((var(--height) - var(--icon-size)) / 2);
     justify-content: center;
     z-index: 2;
+    color: var(--ui-v1-textbox-icon-color);
 
     svg {
       .square(var(--icon-size));
