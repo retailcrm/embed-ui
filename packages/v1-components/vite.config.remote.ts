@@ -38,6 +38,7 @@ export default mergeConfig(basic, defineConfig({
       },
     },
     emptyOutDir: false,
+    outDir: resolve(__dirname, './dist/remote'),
   },
 
   plugins: [

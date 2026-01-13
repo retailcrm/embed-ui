@@ -46,7 +46,7 @@
   "scripts": {
     "build": "yarn build:host && yarn build:remote",
     "build:host": "vite build -c ./vite.config.host.ts",
-    "build:remote": "vite build -c ./vite.config.remote.ts",
+    "build:remote": "vite build -c ./vite.config.remote.ts && sh -c 'cp dist/remote/* dist/ && rm -rf dist/remote'",
     "storybook:build": "storybook build -c storybook -o ./storybook/dist",
     "storybook:serve": "storybook dev -c storybook -p 6006 --no-open"
   },

@@ -43,6 +43,7 @@ export default mergeConfig(basic, defineConfig({
     dts({
       insertTypesEntry: true,
       rollupTypes: true,
+      cleanVueFileName: true,
     }),
   ],
 }))
