@@ -4,8 +4,8 @@ import type {
   UiSelectTriggerProperties,
 } from '@/common/components/select'
 
-declare const UiSelect: DefineComponent<
+declare const UiSelectTrigger: DefineComponent<
     UiSelectTriggerProperties
 >
 
-export default UiSelect
+export default UiSelectTrigger

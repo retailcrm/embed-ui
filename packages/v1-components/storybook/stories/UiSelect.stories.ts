@@ -4,12 +4,12 @@ import UiSelect from '@/host/components/select/UiSelect.vue'
 
 import page from './UiSelect.mdx'
 
-import { STATUS, SIZE } from '@/common/components/avatar'
+import { STATUS, SIZE } from '@/common/components/select'
 
 import UiSelectTrigger from '../../src/host/components/select/UiSelectTrigger.vue'
 
 const meta = {
-  title: 'Components/UiSelectTrigger',
+  title: 'Components/UiSelect',
 
   component: UiSelectTrigger,
 
@@ -23,7 +23,7 @@ const meta = {
     disabled: false,
     leadingIcon: '',
     trailingIcon: '',
-    inputSize: 'sm',
+    inputSize: SIZE.SM,
   },
 
   argTypes: {
@@ -67,4 +67,8 @@ export default meta
 
 type Story = StoryObj<typeof meta>;
 
-export const Sandbox: Story = {}
+export const Sandbox: Story = {
+  args: {
+    expandable: true
+  },
+}

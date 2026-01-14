@@ -16,7 +16,7 @@
     >
       {{ selectionLabels }}
     </div>
-
+    {{ state.expanded }}
     <!-- @slot Разметка переключателя выпадающего списка -->
     <slot
         name="trigger"
@@ -64,7 +64,6 @@ import {
   reactive,
   ref,
   watch,
-  useId,
 } from 'vue'
 
 import IconCaret from '../../../../assets/sprites/arrows/caret-down.svg'
@@ -79,7 +78,7 @@ const props = defineProps({
   /** Атрибут id корневого элемента выпадающего списка. Должен быть уникальным на странице */
   id: {
     type: String,
-    default: () => useId(),
+    default: undefined,
   },
 
   /** Атрибут value, содержащий выбранный элемент из выпадающего списка */
@@ -182,23 +181,6 @@ const props = defineProps({
 
   /** Включает автоматическое изменение ширины по мере ввода текста */
   inputFitContent: {
-    type: Boolean,
-    default: false,
-  },
-
-  closeOnClick: {
-    type: Boolean,
-    default: false,
-  },
-
-  /** Флаг добавления тегов выбранных пунктов под выпадающим списком */
-  tags: {
-    type: Boolean,
-    default: false,
-  },
-
-  /** Добавляет анимацию показала полной строки при переполнении */
-  ticker: {
     type: Boolean,
     default: false,
   },

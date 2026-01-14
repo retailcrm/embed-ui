@@ -1,0 +1,1 @@
+export { default as UiMenuItem } from './UiMenuItem.vue'
