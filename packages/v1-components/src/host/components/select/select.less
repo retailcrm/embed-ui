@@ -25,4 +25,46 @@
   }
 
   &__input { text-overflow: ellipsis; }
+
+  &__popper {
+    --ui-v1-popper-padding: 2px 0;
+    --ui-v1-popper-roundings: @border-radius-lg;
+    font-family: @font-family;
+
+    &:focus {
+      outline: none !important;
+    }
+  }
+
+  &__content {
+    max-height: 210px;
+    max-width: 500px;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    .ui-v1-scroll-rail {
+      padding-right: 2px;
+      z-index: 1;
+    }
+
+    &:hover .ui-v1-scroll-rail:not(.ui-v1-scroll-rail:hover):not(.ui-v1-scroll-rail_active) .ui-v1-scroll-rail__slider {
+      width: 6px;
+    }
+
+    &_locked {
+      pointer-events: none;
+    }
+  }
+
+  &__content_long { max-width: 656px; }
+
+  &__no-results-text {
+    padding: @spacing-xs @spacing-s;
+    background: @grey-100;
+    border-radius: @border-radius-sm;
+    color: @grey-900;
+    word-break: break-all;
+    margin: @spacing-xxs;
+  }
 }

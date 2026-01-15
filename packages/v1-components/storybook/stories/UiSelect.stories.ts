@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import UiSelect from '@/host/components/select/UiSelect.vue'
-
 import page from './UiSelect.mdx'
 
-import { STATUS, SIZE } from '@/common/components/select'
+import { SIZE } from '@/common/components/select'
 
-import UiSelectTrigger from '../../src/host/components/select/UiSelectTrigger.vue'
+import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
+import UiPopperConnector from '@/host/components/popper/UiPopperConnector.vue'
+import UiSelectPopper from '@/host/components/select/UiSelectPopper.vue'
+import UiSelectTrigger from '@/host/components/select/UiSelectTrigger.vue'
 
 const meta = {
   title: 'Components/UiSelect',
@@ -21,8 +22,6 @@ const meta = {
     placeholder: 'test',
     readonly: false,
     disabled: false,
-    leadingIcon: '',
-    trailingIcon: '',
     inputSize: SIZE.SM,
   },
 
@@ -34,25 +33,38 @@ const meta = {
     placeholder: { control: 'text' },
     readonly: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    leadingIcon: { control: 'text' },
-    trailingIcon: { control: 'text' },
     inputSize: {
       control: 'select',
       options: ['sm', 'md', 'lg'],
     },
   },
 
-  render: (args: unknown) => ({
+  render: (args) => ({
     components: {
       UiSelectTrigger,
+      UiPopperConnector,
+      UiSelectPopper,
+      UiMenuItem,
     },
 
-    setup() {
-      return { props:args }
+    setup () {
+      return { args }
     },
 
     template: `
-      <UiSelectTrigger v-bind="props" />
+      <UiPopperConnector>
+        <UiSelectTrigger v-bind="args" />
+        
+        <UiSelectPopper v-bind="args" >
+            <UiMenuItem :value="'option1'">Option 1</UiMenuItem>
+            <UiMenuItem :value="'option1'">Option 2</UiMenuItem>
+            <UiMenuItem :value="'option1'">Option 3</UiMenuItem>
+            <UiMenuItem :value="'option1'">Option 4</UiMenuItem>
+            <UiMenuItem :value="'option1'">Option 5</UiMenuItem>
+            <UiMenuItem :value="'option1'">Option 6</UiMenuItem>
+            <UiMenuItem :value="'option1'">Option 7</UiMenuItem>
+        </UiSelectPopper>
+      </UiPopperConnector>
     `,
   }),
 

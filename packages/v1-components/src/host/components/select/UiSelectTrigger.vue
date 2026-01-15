@@ -2,11 +2,11 @@
   <div
       ref="trigger"
       :aria-controls="id + '-popper'"
-      :aria-expanded="state.expanded ? 'true' : 'false'"
+      :aria-expanded="expanded ? 'true' : 'false'"
       :aria-invalid="invalid ? 'true' : 'false'"
       role="combobox"
       aria-haspopup="listbox"
-      class="ui-v1-select__trigger"
+      class="ui-v1-select"
       @click="open"
   >
     <div
@@ -16,37 +16,32 @@
     >
       {{ selectionLabels }}
     </div>
-    {{ state.expanded }}
     <!-- @slot Разметка переключателя выпадающего списка -->
-    <slot
-        name="trigger"
-        :active="state.expanded"
-        :value="selectionText || placeholder"
-    >
+    <slot name="trigger">
       <UiTextbox
           :id="id"
           :value="inputValue"
           :placeholder="placeholder"
-          :active="state.expanded"
+          :active="expanded"
           :clearable="clearable"
           :invalid="invalid"
           :readonly="inputReadonly"
           :size="inputSize"
           :disabled="disabled"
-          class="ui-v1-select__input"
+          class="ui-v1-select__trigger"
           @input="onInput"
           @focus="onFocus"
           @blur="onBlur"
           @clear="onClear"
       >
-        <template v-if="$slots['leading-icon'] && leadingIcon.length === 0" #leading-icon>
+        <template v-if="$slots['leading-icon']" #leading-icon>
           <!-- @slot Иконка слева от поля ввода -->
-          <slot name="leading-icon" :active="state.expanded" />
+          <slot name="leading-icon" />
         </template>
 
-        <template v-if="trailingIcon.length === 0" #trailing-icon>
+        <template #trailing-icon>
           <!-- @slot Иконка справа от поля ввода (по-умолчанию каретка) -->
-          <slot name="trailing-icon" :active="state.expanded">
+          <slot name="trailing-icon">
             <IconCaret />
           </slot>
         </template>
@@ -61,7 +56,6 @@ import type { PropType } from 'vue'
 import {
   computed,
   onMounted,
-  reactive,
   ref,
   watch,
 } from 'vue'
@@ -71,7 +65,6 @@ import { UiTextbox } from '@/host'
 
 import { isArray } from '@retailcrm/embed-ui-v1-contexts/src/predicates'
 
-import { APPEARANCE } from '@/common/components/select'
 import { SIZE } from '@/common/components/textbox'
 
 const props = defineProps({
@@ -153,25 +146,6 @@ const props = defineProps({
     default: false,
   },
 
-  /** Наименование иконки, выводимой перед текстом внутри поля ввода */
-  leadingIcon: {
-    type: String,
-    default: '',
-  },
-
-  /** Наименование иконки, выводимой после текста внутри поля ввода */
-  trailingIcon: {
-    type: String,
-    default: '',
-  },
-
-  /** Внешний вид поля ввода из @omnica/input */
-  inputAppearance: {
-    type: String as PropType<APPEARANCE | `${APPEARANCE}`>,
-    validator: (appearance: string) => Object.values(APPEARANCE).includes(appearance as APPEARANCE),
-    default: APPEARANCE.OUTLINED,
-  },
-
   /** Размер поля ввода */
   inputSize: {
     type: String as unknown as PropType<SIZE | `${SIZE}`>,
@@ -179,8 +153,8 @@ const props = defineProps({
     default: SIZE.SM,
   },
 
-  /** Включает автоматическое изменение ширины по мере ввода текста */
-  inputFitContent: {
+  /** Состояние открытия выпадающего списка */
+  expanded: {
     type: Boolean,
     default: false,
   },
@@ -195,27 +169,15 @@ const emit = defineEmits([
   'blur',
   /** Сброс значения фильтра */
   'clear',
-  /** Открытие выпадающего списка */
-  'open',
-  /** Закрытие выпадающего списка */
-  'close',
-  /** Появляется при прокрутке до верхнего края */
-  'popper:scroll:start',
-  /** Появляется при прокрутке до нижнего края */
-  'popper:scroll:end',
-  /** Изменение флага открыт/закрыт */
-  'update:opened',
   /** Изменение значения */
   'update:value',
+  /** Открытие выпадающего списка */
+  'update:expanded',
 ])
 
 const trigger = ref<HTMLElement | null>(null)
 const touchstone = ref<HTMLElement | null>(null)
 const input = ref<HTMLInputElement | null>(null)
-
-const state = reactive({
-  expanded: props.opened,
-})
 
 const inputReadonly = computed(
   () => props.readonly || !props.filterable
@@ -237,25 +199,21 @@ const selectionText = computed(() =>
 )
 
 const inputValue = computed(() =>
-  inputReadonly.value && !state.expanded
+  inputReadonly.value && !props.expanded
     ? selectionText.value
     : ''
 )
 
 const open = () => {
-  if (state.expanded || props.disabled || props.readonly) return
+  if (props.expanded || props.disabled || props.readonly) return
 
-  state.expanded = true
-  emit('update:opened', true)
-  emit('open')
+  emit('update:expanded', true)
 }
 
 const close = () => {
-  if (!state.expanded) return
+  if (!props.expanded) return
 
-  state.expanded = false
-  emit('update:opened', false)
-  emit('close')
+  emit('update:expanded', false)
 }
 
 const onInput = (event: Event) => emit('input', event)

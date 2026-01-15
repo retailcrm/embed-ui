@@ -21,7 +21,7 @@ type StyleDeclaration = CSSStyleDeclaration & {
     '--delta-width': string
 }
 
-export function deltaTransition(el: HTMLElement): Partial<StyleDeclaration> {
+export const deltaTransition = (el: HTMLElement): Partial<StyleDeclaration> => {
   const delta = el.scrollWidth - el.clientWidth
   return delta !== 0 ? {
     '--delta-width': `-${delta}px`,
