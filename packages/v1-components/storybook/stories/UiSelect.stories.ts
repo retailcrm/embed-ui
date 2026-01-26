@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 
 import page from './UiSelect.mdx'
 
+import { ref } from 'vue'
+
 import { SIZE } from '@/common/components/select'
 
 import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
@@ -48,21 +50,65 @@ const meta = {
     },
 
     setup () {
-      return { args }
+      const expanded = ref(false)
+      const value = ref<unknown>('')
+
+      const onSelect = (val: unknown) => {
+        value.value = val
+        expanded.value = false
+      }
+
+      const isSelected = (val: unknown) => {
+        return value.value === val
+      }
+
+      const options = ref<string[]>(
+        [
+          'option1',
+          'option2',
+          'option3',
+          'option4',
+          'option5',
+          'option6',
+          'option7',
+          'option8',
+          'option9',
+        ])
+
+      return {
+        args,
+        expanded,
+        value,
+        options,
+        isSelected,
+        onSelect,
+      }
     },
 
     template: `
       <UiPopperConnector>
-        <UiSelectTrigger v-bind="args" />
+        <UiSelectTrigger
+            v-bind="args"
+            :value="value"
+            :expanded
+            @update:expanded="expanded = $event"
+        />
         
-        <UiSelectPopper v-bind="args" >
-            <UiMenuItem :value="'option1'">Option 1</UiMenuItem>
-            <UiMenuItem :value="'option1'">Option 2</UiMenuItem>
-            <UiMenuItem :value="'option1'">Option 3</UiMenuItem>
-            <UiMenuItem :value="'option1'">Option 4</UiMenuItem>
-            <UiMenuItem :value="'option1'">Option 5</UiMenuItem>
-            <UiMenuItem :value="'option1'">Option 6</UiMenuItem>
-            <UiMenuItem :value="'option1'">Option 7</UiMenuItem>
+        <UiSelectPopper 
+            v-bind="args"
+            :value="value"
+            :opened="expanded"
+            @hide="expanded = false"
+        >
+            <UiMenuItem 
+                v-for="option in options"
+                :key="option"
+                :value="option"
+                :selected="isSelected(option)"
+                @click="onSelect(option)"
+            >
+              {{ option }}
+            </UiMenuItem>  
         </UiSelectPopper>
       </UiPopperConnector>
     `,
@@ -81,6 +127,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Sandbox: Story = {
   args: {
-    expandable: true
+    expandable: true,
   },
 }

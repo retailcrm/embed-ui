@@ -73,6 +73,13 @@
     line-height: var(--height);
   }
 
+  &_outlined:has(input[readonly]:not(:disabled)),
+  &_outlined:has(input[readonly]:not(:disabled):hover),
+  &_outlined input[readonly]:not(:disabled),
+  &_outlined input[readonly]:not(:disabled):hover {
+    cursor: pointer;
+  }
+
   &_outlined&_xs {
     --height: 24px;
     --padding: 8px;

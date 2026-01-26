@@ -8,7 +8,9 @@
             'ui-v1-menu-item_danger': danger,
             'ui-v1-menu-item_simple': simple,
             'ui-v1-menu-item_disabled': disabled,
-        }"
+            'ui-v1-menu-item_selected': selected,
+      }"
+      :aria-selected="selected ? 'true' : 'false'"
       v-bind="$attrs"
   >
     <div
@@ -71,11 +73,22 @@
       </div>
 
       <div
-          v-if="$slots['trailing-icon']"
+          v-if="$slots['trailing-icon'] || selected || multiple"
           class="ui-v1-menu-item__icon ui-v1-menu-item__icon_trailing"
       >
         <!-- @slot Иконка справа -->
-        <slot name="trailing-icon" />
+          <IconCheckmarkCircle
+              v-if="selected"
+              class="ui-v1-menu-item__checkmark-icon"
+              aria-hidden="true"
+          />
+          <IconAddCircleOutlined
+              v-else-if="multiple"
+              class="ui-v1-menu-item__add-icon"
+              aria-hidden="true"
+          />
+
+        <slot v-else name="trailing-icon" />
       </div>
     </div>
   </div>
@@ -83,6 +96,10 @@
 
 <script lang="ts" setup>
 import type { PropType } from 'vue'
+
+import IconCheckmarkCircle from '~assets/sprites/actions/checkmark-circle.svg'
+import IconAddCircleOutlined from '~assets/sprites/actions/add-circle-outlined.svg'
+
 import { ref } from 'vue'
 
 import {
@@ -142,6 +159,18 @@ const props = defineProps({
 
   /** Заблокированный */
   disabled: {
+    type: Boolean,
+    default: false,
+  },
+
+  /** Опция выбрана/не выбрана в списке */
+  selected: {
+    type: Boolean,
+    default: false,
+  },
+
+  /** Множественный выбор */
+  multiple: {
     type: Boolean,
     default: false,
   },

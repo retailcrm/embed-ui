@@ -40,6 +40,11 @@
     }
   }
 
+  &__checkmark-icon,
+  &__add-icon {
+    color: @blue-500;
+  }
+
   &:active &__inner,
   &_active &__inner {
     background: var(--ui-v1-menu-item-background-color);
@@ -129,6 +134,10 @@
     cursor: default;
     opacity: 0.6;
     user-select: none;
+  }
+
+  &_selected {
+
   }
 
   &_sm { padding: 2px 4px; }

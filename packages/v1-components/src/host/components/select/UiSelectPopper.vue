@@ -5,6 +5,7 @@
       :target="target"
       :target-triggers="targetTriggers"
       :popper-triggers="popperTriggers"
+      :global-triggers="['miss-click']"
       :placement="placement"
       :aria-hidden="!visible ? 'true' : 'false'"
       :aria-multiselectable="multiple ? 'true' : 'false'"
@@ -13,6 +14,7 @@
       v-bind="$attrs"
       role="listbox"
       @update:visible="$emit('update:visible', $event)"
+      @attached="autoScroll"
       @show="$emit('show', $event)"
       @shown="$emit('shown', $event)"
       @hide="$emit('hide', $event)"
@@ -24,8 +26,10 @@
         style="min-width: 271px;"
         class="ui-v1-select__content"
     >
-      <!-- @slot Дефолтный слот, содержащий пункты выпадающего списка -->
-      <slot />
+      <div>
+        <!-- @slot Дефолтный слот, содержащий пункты выпадающего списка -->
+        <slot />
+      </div>
     </div>
   </UiPopper>
 </template>
@@ -49,16 +53,23 @@ import {
 
 import {
   ref,
+  nextTick,
+  computed,
 } from 'vue'
 
 import { PLACEMENT } from '@/common/components/select'
 
-
 import UiPopper from '@/host/components/popper/UiPopper.vue'
 
-defineProps({
-  /** Флаг для ручного переключения видимости */
-  visible: {
+const props = defineProps({
+  /** Атрибут value, содержащий выбранный элемент из выпадающего списка */
+  value: {
+    type: null as unknown as PropType<unknown|unknown[]>,
+    default: undefined,
+  },
+
+  /** Начальное состояние выпадающего списка - открыт/закрыт */
+  opened: {
     type: Boolean,
     default: false,
   },
@@ -74,7 +85,6 @@ defineProps({
     type: [Array, Object] as PropType<Trigger[] | TriggerSchema>,
     default: () => ({
       show: ['click'],
-      hide: ['click'],
     }),
   },
 
@@ -133,6 +143,7 @@ defineProps({
     default: false,
   },
 })
+
 defineEmits([
   /** Смена значения флага видимости плавающего элемента */
   'update:visible',
@@ -148,11 +159,17 @@ defineEmits([
   'dispose',
 ])
 
-const target = inject()
-
 const popper = ref<InstanceType<typeof UiPopper> | null>(null)
-
 const scrollable = ref<HTMLElement | null>(null)
+
+const visible = computed(() => props.opened)
+
+const autoScroll = async () => {
+  const option = scrollable.value?.querySelector<HTMLElement>('.ui-v1-menu-item_selected')
+  if (scrollable.value && option) {
+    scrollable.value.scrollTop = option.offsetTop
+  }
+}
 
 defineExpose({
   adjust: () => popper.value?.adjust(),

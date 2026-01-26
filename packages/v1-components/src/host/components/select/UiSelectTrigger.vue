@@ -7,7 +7,7 @@
       role="combobox"
       aria-haspopup="listbox"
       class="ui-v1-select"
-      @click="open"
+      @click="onClick"
   >
     <div
         v-if="multiple && !$slots.trigger"
@@ -178,6 +178,7 @@ const emit = defineEmits([
 const trigger = ref<HTMLElement | null>(null)
 const touchstone = ref<HTMLElement | null>(null)
 const input = ref<HTMLInputElement | null>(null)
+const filter = ref('')
 
 const inputReadonly = computed(
   () => props.readonly || !props.filterable
@@ -199,21 +200,29 @@ const selectionText = computed(() =>
 )
 
 const inputValue = computed(() =>
-  inputReadonly.value && !props.expanded
-    ? selectionText.value
-    : ''
+  props.filterable && props.expanded
+    ? filter.value
+    : selectionText.value
 )
 
 const open = () => {
-  if (props.expanded || props.disabled || props.readonly) return
+  if (props.expanded) return
 
+  console.log('open select')
   emit('update:expanded', true)
 }
 
 const close = () => {
   if (!props.expanded) return
 
+  console.log('close select')
   emit('update:expanded', false)
+}
+
+const onClick = () => {
+  if (props.disabled || props.readonly) return
+
+  return props.expanded ? close() : open()
 }
 
 const onInput = (event: Event) => emit('input', event)

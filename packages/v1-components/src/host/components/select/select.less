@@ -40,13 +40,14 @@
     max-height: 210px;
     max-width: 500px;
     overflow-y: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: @grey-500 transparent;
 
-    .ui-v1-scroll-rail {
-      padding-right: 2px;
-      z-index: 1;
+    &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 6px;
     }
+
 
     &:hover .ui-v1-scroll-rail:not(.ui-v1-scroll-rail:hover):not(.ui-v1-scroll-rail_active) .ui-v1-scroll-rail__slider {
       width: 6px;
