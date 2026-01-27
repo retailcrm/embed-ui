@@ -60,7 +60,7 @@ import {
   watch,
 } from 'vue'
 
-import IconCaret from '../../../../assets/sprites/arrows/caret-down.svg'
+import IconCaret from '~assets/sprites/arrows/caret-down.svg'
 import { UiTextbox } from '@/host'
 
 import { isArray } from '@retailcrm/embed-ui-v1-contexts/src/predicates'
@@ -78,12 +78,6 @@ const props = defineProps({
   value: {
     type: null as unknown as PropType<unknown|unknown[]>,
     default: undefined,
-  },
-
-  /** Можно ли раскрыть список */
-  expandable: {
-    type: Boolean,
-    default: true,
   },
 
   /** Отображает иконку сброса введённого или выбранного значения в виде крестика */
@@ -112,12 +106,6 @@ const props = defineProps({
 
   /** Начальное состояние выпадающего списка - открыт/закрыт */
   opened: {
-    type: Boolean,
-    default: false,
-  },
-
-  /** Переключение состояния открыто/закрыто окна при активном фокусе на элементе */
-  openWithActiveFocus: {
     type: Boolean,
     default: false,
   },
@@ -239,6 +227,7 @@ watch(() => props.opened, opened => opened ? open() : close())
 
 onMounted(async () => {
   input.value = trigger.value?.querySelector('input') ?? null
+  console.log('mounted select trigger', trigger.value?.offsetWidth)
 })
 </script>
 <style lang="less" src="./select.less" />

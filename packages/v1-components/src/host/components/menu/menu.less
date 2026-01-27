@@ -40,6 +40,11 @@
     }
   }
 
+  &__add-icon { opacity: 0; }
+  &:not(&_disabled):hover &__add-icon {
+    opacity: 1;
+  }
+
   &__checkmark-icon,
   &__add-icon {
     color: @blue-500;

@@ -11,5 +11,4 @@ import { UiSelectTrigger } from './parts'
 import { UiSelectPopper } from './parts'
 
 import { UiPopperConnector } from '@/remote/components/popper'
-
 </script>

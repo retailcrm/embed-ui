@@ -18,26 +18,26 @@ const meta = {
 
   args: {
     value: '',
-    multiple: false,
     opened: false,
     clearable: false,
     placeholder: 'test',
     readonly: false,
     disabled: false,
     inputSize: SIZE.SM,
+    multiple: false,
   },
 
   argTypes: {
     value: { control: 'text' },
-    multiple: { control: 'boolean' },
     opened: { control: 'boolean' },
     clearable: { control: 'boolean' },
     placeholder: { control: 'text' },
     readonly: { control: 'boolean' },
     disabled: { control: 'boolean' },
+    multiple: { control: 'boolean' },
     inputSize: {
       control: 'select',
-      options: ['sm', 'md', 'lg'],
+      options: ['xs', 'sm', 'md', 'lg', 'xl'],
     },
   },
 
@@ -96,12 +96,12 @@ const meta = {
         
         <UiSelectPopper 
             v-bind="args"
-            :value="value"
             :opened="expanded"
             @hide="expanded = false"
         >
             <UiMenuItem 
                 v-for="option in options"
+                v-bind="args"
                 :key="option"
                 :value="option"
                 :selected="isSelected(option)"
@@ -125,8 +125,4 @@ export default meta
 
 type Story = StoryObj<typeof meta>;
 
-export const Sandbox: Story = {
-  args: {
-    expandable: true,
-  },
-}
+export const Sandbox: Story = {}

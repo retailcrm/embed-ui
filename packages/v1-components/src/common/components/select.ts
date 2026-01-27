@@ -1,14 +1,16 @@
+import type { Alignment } from '@floating-ui/dom'
+import type { PlacementOptions } from '@/common/components/popper'
+import type { Side } from '@floating-ui/dom'
+import type { Trigger } from '@/common/components/popper'
+import type { TriggerSchema } from '@/common/components/popper'
+import type { UiPopperProperties } from '@/common/components/popper'
+
 export enum SIZE {
     XS = 'xs',
     SM = 'sm',
     MD = 'md',
     LG = 'lg',
     XL = 'xl',
-}
-
-export enum APPEARANCE {
-    INLINE = 'inline',
-    OUTLINED = 'outlined',
 }
 
 export enum PLACEMENT {
@@ -23,21 +25,29 @@ export enum PLACEMENT {
 }
 
 export type UiSelectTriggerProperties = {
-    id?: string
     value?: unknown|unknown[];
     expandable?: boolean;
     clearable?: boolean;
-    filterable?: boolean;
     invalid?: boolean;
     multiple?: boolean;
-    openWithActiveFocus?: boolean;
+    opened?: boolean;
+    expanded?: boolean;
     placeholder?: string;
     readonly?: boolean;
     disabled?: boolean;
     onlyPlaceholder?: boolean;
-    leadingIcon?: string;
-    trailingIcon?: string;
-    inputAppearance?: APPEARANCE | `${APPEARANCE}`;
     inputSize?: SIZE | `${SIZE}`;
-    inputFitContent?: boolean;
+}
+
+export type UiSelectPopperProperties = {
+    opened?: boolean;
+    targetTriggers?: Trigger[] | TriggerSchema;
+    popperTriggers?: Trigger[] | TriggerSchema;
+    popperFitTrigger?: boolean;
+    placement?: Side | `${Side}-${Alignment}` | PlacementOptions;
+    popperClass?: string;
+    popperOptions?: Omit<UiPopperProperties, 'placement' | 'shown' | 'target' | 'triggers'>;
+    disabled?: boolean;
+    readonly?: boolean;
+    multiple?: boolean;
 }

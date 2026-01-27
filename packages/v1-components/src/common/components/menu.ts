@@ -6,7 +6,7 @@ export enum SIZE {
 }
 
 export type UiMenuItemProperties = {
-    description?: string | number;
+    description?: string;
     counter?: string | number | null;
     accent?: boolean;
     active?: boolean;
@@ -15,6 +15,8 @@ export type UiMenuItemProperties = {
     simple?: boolean;
     size?: `${SIZE}`;
     disabled?: boolean;
+    selected?: boolean;
+    multiple?: boolean;
 }
 
 type StyleDeclaration = CSSStyleDeclaration & {

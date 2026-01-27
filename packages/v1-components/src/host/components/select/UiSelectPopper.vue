@@ -2,7 +2,6 @@
   <UiPopper
       ref="popper"
       :visible="visible"
-      :target="target"
       :target-triggers="targetTriggers"
       :popper-triggers="popperTriggers"
       :global-triggers="['miss-click']"
@@ -23,7 +22,7 @@
   >
     <div
         ref="scrollable"
-        style="min-width: 271px;"
+        :style="scrollableStyle"
         class="ui-v1-select__content"
     >
       <div>
@@ -35,13 +34,11 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  Alignment,
-  Side,
-} from '@floating-ui/dom'
-
+import type { Alignment } from '@floating-ui/dom'
+import type { CSSProperties } from 'vue'
+import type { PropType } from 'vue'
+import type { Side } from '@floating-ui/dom'
 import type { UiPopperProperties } from '@/common/components/popper'
-import type { PropType, Ref } from 'vue'
 
 import {
   PlacementOptions,
@@ -52,19 +49,21 @@ import {
 } from '@/common/components/popper'
 
 import {
-  ref,
-  nextTick,
   computed,
+  ref,
+  watch,
+  onMounted,
 } from 'vue'
 
 import { PLACEMENT } from '@/common/components/select'
+import { useElementRef } from '@/host/composables'
 
 import UiPopper from '@/host/components/popper/UiPopper.vue'
 
 const props = defineProps({
-  /** Атрибут value, содержащий выбранный элемент из выпадающего списка */
-  value: {
-    type: null as unknown as PropType<unknown|unknown[]>,
+  /** Атрибут id корневого элемента выпадающего списка. Должен быть уникальным на странице */
+  id: {
+    type: String,
     default: undefined,
   },
 
@@ -72,12 +71,6 @@ const props = defineProps({
   opened: {
     type: Boolean,
     default: false,
-  },
-
-  /** Ссылка на элемент цели, к которой будет привязан плавающий элемент */
-  target: {
-    type: Object as PropType<Ref<Element | null>>,
-    default: () => ref(null),
   },
 
   /** События целевого элемента, по которым производится переключение видимости */
@@ -159,8 +152,10 @@ defineEmits([
   'dispose',
 ])
 
+const target = useElementRef<HTMLElement>()
 const popper = ref<InstanceType<typeof UiPopper> | null>(null)
 const scrollable = ref<HTMLElement | null>(null)
+const width = ref<string>('auto')
 
 const visible = computed(() => props.opened)
 
@@ -171,11 +166,33 @@ const autoScroll = async () => {
   }
 }
 
+const updateWidth = () => width.value = `${target.value?.clientWidth}px`
+
+const scrollableStyle = computed((): CSSProperties => {
+  if (props.popperFitTrigger) {
+    return { minWidth: width.value }
+  }
+
+  const style: CSSProperties = { width: width.value }
+
+  if (parseInt(width.value) > 500) {
+    style.maxWidth = width.value
+  }
+
+  return style
+})
+
 defineExpose({
   adjust: () => popper.value?.adjust(),
   dispose: () => popper.value?.dispose(),
   show: () => popper.value?.show(),
   hide: () => popper.value?.hide(),
+})
+
+watch(() => props.opened, () => updateWidth())
+
+onMounted(() => {
+  console.log('onMounted', target.value)
 })
 </script>
 
