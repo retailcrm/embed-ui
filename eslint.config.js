@@ -5,7 +5,7 @@ import pluginTs from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
 
 export default [
-  { files: ['**/*.{js,mjs,cjs,ts,vue}'] },
+  { files: ['**/*.{js,mjs,cjs,ts}'] },
   {
     languageOptions: {
       globals: {
@@ -14,17 +14,6 @@ export default [
         ...globals.node,
       },
     },
-  },
-  pluginJs.configs.recommended,
-  ...pluginTs.configs.recommended,
-  ...pluginVue.configs['flat/essential'],
-  {
-    files: ['**/*.vue'],
-    languageOptions: {
-      parserOptions: { parser: pluginTs.parser },
-    },
-  },
-  {
     rules: {
       'comma-dangle': ['error', {
         arrays: 'always-multiline',
@@ -41,6 +30,19 @@ export default [
       'semi': ['error', 'never'],
 
       '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+  pluginJs.configs.recommended,
+  ...pluginTs.configs.recommended,
+  ...pluginVue.configs['flat/essential'],
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parserOptions: { parser: pluginTs.parser },
+    },
+    rules: {
+      'vue/html-indent': ['error', 4],
+      'indent': ['error', 2, { ignoreComments: true, SwitchCase: 1 }],
     },
   },
   { ignores: ['dist/*'] },

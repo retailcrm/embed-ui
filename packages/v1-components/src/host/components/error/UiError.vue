@@ -1,15 +1,15 @@
 <template>
-  <div
-    :class="{
-      'ui-v1-error': true,
-      'ui-v1-error_ellipsis': ellipsis,
-      'ui-v1-error_right': align === ALIGN.RIGHT,
-    }"
-  >
-    <slot>
-      {{ message }}
-    </slot>
-  </div>
+    <div
+        :class="{
+            'ui-v1-error': true,
+            'ui-v1-error_ellipsis': ellipsis,
+            'ui-v1-error_right': align === ALIGN.RIGHT,
+        }"
+    >
+        <slot>
+            {{ message }}
+        </slot>
+    </div>
 </template>
 
 <script lang="ts" setup>

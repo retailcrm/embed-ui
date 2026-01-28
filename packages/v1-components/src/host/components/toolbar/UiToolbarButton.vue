@@ -9,10 +9,10 @@
         :locked="locked"
         appearance="secondary"
         v-bind="without($attrs, [
-          'appearance',
-          'class',
-          'style',
-          'type'
+            'appearance',
+            'class',
+            'style',
+            'type'
         ])"
     >
         <slot />
