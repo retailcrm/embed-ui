@@ -73,6 +73,13 @@
     line-height: var(--height);
   }
 
+  &_outlined:has(input[readonly]:not(:disabled)),
+  &_outlined:has(input[readonly]:not(:disabled):hover),
+  &_outlined input[readonly]:not(:disabled),
+  &_outlined input[readonly]:not(:disabled):hover {
+    cursor: pointer;
+  }
+
   &_outlined&_xs {
     --height: 24px;
     --padding: 8px;
@@ -195,6 +202,7 @@
     padding-block-start: calc((var(--height) - var(--icon-size)) / 2);
     justify-content: center;
     z-index: 2;
+    color: var(--ui-v1-textbox-icon-color);
 
     svg {
       .square(var(--icon-size));
