@@ -37,11 +37,11 @@
         </UiTooltip>
 
         <input
-           v-if="!clipboardAvailable"
-           ref="input"
-           :value="text"
-           class="ui-v1-copy-button__area"
-           type="text"
+            v-if="!clipboardAvailable"
+            ref="input"
+            :value="text"
+            class="ui-v1-copy-button__area"
+            type="text"
         >
     </div>
 </template>

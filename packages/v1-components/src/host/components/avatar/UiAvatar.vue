@@ -36,8 +36,8 @@
         />
 
         <div v-if="!(unresolved || loaded)" class="ui-v1-avatar__initials">
-          <!-- @slot Инициалы пользователя -->
-          <slot>{{ initials }}</slot>
+            <!-- @slot Инициалы пользователя -->
+            <slot>{{ initials }}</slot>
         </div>
 
         <div v-if="vip || bad" class="ui-v1-avatar__labels">
