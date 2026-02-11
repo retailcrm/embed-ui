@@ -1,3 +1,119 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
 # UiSelect
 
-test
+`UiSelect` - выпадающий список для выбора одного или нескольких значений.
+Компонент собирается из `UiSelect` + `UiSelectOption` (и при необходимости `UiSelectOptionGroup`).
+
+## Когда использовать
+
+* Нужно выбрать одно значение из набора (статус, исполнитель, категория).
+* Нужен множественный выбор (`multiple`) с отображением количества выбранных элементов.
+* Нужен поиск по опциям (`filterable`), включая подсветку совпадений в `UiSelectOption`.
+
+## Базовое применение
+
+```html
+<template>
+    <UiSelect placeholder="Исполнитель">
+        <UiSelectOption value="kyle" label="Kyle Simmons" />
+        <UiSelectOption value="eduardo" label="Eduardo Henry" />
+        <UiSelectOption value="philip" label="Philip Williamson" />
+    </UiSelect>
+</template>
+
+<script lang="ts" setup>
+import {
+  UiSelect,
+  UiSelectOption,
+} from '@retailcrm/embed-ui-v1-components/remote'
+</script>
+```
+
+## Множественный выбор
+
+Для множественного режима включите `multiple`.
+
+```html
+<template>
+    <UiSelect multiple clearable placeholder="Исполнители">
+        <UiSelectOption value="kyle" label="Kyle Simmons" />
+        <UiSelectOption value="eduardo" label="Eduardo Henry" />
+        <UiSelectOption value="philip" label="Philip Williamson" />
+    </UiSelect>
+</template>
+```
+
+## Поиск по опциям
+
+Чтобы включить поиск, передайте `filterable`.
+В этом режиме ввод в триггере используется как строка фильтра, а опции автоматически скрываются/подсвечиваются по совпадению.
+
+```html
+<template>
+    <UiSelect filterable placeholder="Найти пользователя">
+        <UiSelectOption value="kyle" label="Kyle Simmons" />
+        <UiSelectOption value="eduardo" label="Eduardo Henry" />
+        <UiSelectOption value="philip" label="Philip Williamson" />
+    </UiSelect>
+</template>
+```
+
+## Опции как объекты
+
+Если `value` у опций - объекты, задайте `equalsFn`, чтобы корректно сравнивать значения.
+
+```html
+<template>
+    <UiSelect
+        :value="{ id: 2, name: 'Eduardo Henry' }"
+        :equals-fn="(a, b) => a?.id === b?.id"
+        placeholder="Пользователь"
+    >
+        <UiSelectOption :value="{ id: 1, name: 'Kyle Simmons' }" label="Kyle Simmons" />
+        <UiSelectOption :value="{ id: 2, name: 'Eduardo Henry' }" label="Eduardo Henry" />
+    </UiSelect>
+</template>
+```
+
+## Группировка опций
+
+Для групп используйте `UiSelectOptionGroup`.
+
+```html
+<template>
+    <UiSelect placeholder="Сотрудник">
+        <UiSelectOptionGroup label="Отдел продаж">
+            <UiSelectOption value="kyle" label="Kyle Simmons" />
+            <UiSelectOption value="eduardo" label="Eduardo Henry" />
+        </UiSelectOptionGroup>
+
+        <UiSelectOptionGroup label="Поддержка">
+            <UiSelectOption value="philip" label="Philip Williamson" />
+        </UiSelectOptionGroup>
+    </UiSelect>
+</template>
+
+<script lang="ts" setup>
+import {
+  UiSelect,
+  UiSelectOption,
+  UiSelectOptionGroup,
+} from '@retailcrm/embed-ui-v1-components/remote'
+</script>
+```
+
+## Важные свойства
+
+* `placeholderOnly` - всегда отображает `placeholder` в поле, вместо текста выбранных опций.
+* `textboxSize` - размер текстового поля триггера (`xs`, `sm`, `xl`).
+* `expanded` - внешний флаг открытия/закрытия списка.
+* `placement`, `targetTriggers`, `popperTriggers`, `popperFitTrigger`, `popperOptions` - настройка поведения и позиционирования выпадающего списка.
+
+## Слоты
+
+* `default` - содержимое выпадающего списка (обычно `UiSelectOption` и `UiSelectOptionGroup`).
+
+## API
+
+<ArgTypes />

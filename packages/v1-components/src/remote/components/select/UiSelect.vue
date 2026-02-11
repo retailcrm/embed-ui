@@ -2,20 +2,19 @@
     <UiPopperConnector>
         <UiSelectTrigger
             :id="id"
-            :clearable="clearable"
-            :disabled="disabled"
-            :expanded="state.expanded"
+            :value="state.value"
+            :multiple="multiple"
+            :selection="selection"
             :filter="state.filter"
             :filterable="filterable"
-            :input-size="inputSize"
+            :clearable="clearable"
+            :expanded="state.expanded"
             :invalid="invalid"
-            :multiple="multiple"
-            :only-placeholder="onlyPlaceholder"
-            :opened="state.expanded"
-            :placeholder="placeholder"
+            :disabled="disabled"
             :readonly="readonly"
-            :value="state.value"
-            :selection="selection"
+            :placeholder-only="placeholderOnly"
+            :placeholder="placeholder"
+            :textbox-size="textboxSize"
             @input="onInput"
             @update:value="state.value = $event"
             @update:expanded="state.expanded = $event"
@@ -190,7 +189,7 @@ const props = defineProps({
   },
 
   /** Размер поля ввода */
-  inputSize: {
+  textboxSize: {
     type: String as unknown as PropType<SIZE | `${SIZE}`>,
     validator: (size: string) => Object.values(SIZE).includes(size as SIZE),
     default: SIZE.SM,
@@ -209,7 +208,7 @@ const props = defineProps({
   },
 
   /** Устанавливает в качестве выводимого в input значения только содержимое placeholder */
-  onlyPlaceholder: {
+  placeholderOnly: {
     type: Boolean,
     default: false,
   },
@@ -289,7 +288,6 @@ provide(ToggleKey, (value: unknown) => {
     const model = arraify<unknown>(state.value)
     const index = model.findIndex(item => equals(item, value))
 
-    console.log('toggle', value)
     if (index !== -1) {
       model.splice(index, 1)
     } else {
@@ -322,8 +320,6 @@ const close = () => {
     state.expanded = false
     state.filter = ''
   }
-
-  console.log('expanded', state.value)
 }
 
 watch(() => props.expanded, (newVal) => {
