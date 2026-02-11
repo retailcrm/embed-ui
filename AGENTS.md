@@ -120,6 +120,7 @@ Examples:
 - If a skill conflicts with this file, follow `AGENTS.md`.
 - Current local skills:
   - `skills/commit-workflow/SKILL.md`
+  - `skills/sync-remote-host-registry/SKILL.md`
   - `skills/yarn-lock-conflict-resolution/SKILL.md`
 
 ## Notes
