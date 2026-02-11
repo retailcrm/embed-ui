@@ -39,6 +39,21 @@ else
 	$(YARN) test
 endif
 
+.PHONY: tests-typecheck-contexts
+tests-typecheck-contexts: ## Runs typecheck tests (test-d.ts) for v1-contexts
+	$(TARGET_HEADER)
+ifdef cli
+	$(YARN) vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json $(cli)
+else
+	$(YARN) vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json
+endif
+
+.PHONY: tests-typecheck-v1-contexts
+tests-typecheck-v1-contexts: tests-typecheck-contexts ## Alias for tests-typecheck-contexts
+
+.PHONY: tests-typecheck
+tests-typecheck: tests-typecheck-contexts ## Runs typecheck tests (currently v1-contexts)
+
 .PHONY: help
 help: ## Calls recipes list
 	@cat $(MAKEFILE_LIST) | grep -e "^[a-zA-Z_\-]*: *.*## *" | awk '\

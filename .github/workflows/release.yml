@@ -51,6 +51,9 @@ jobs:
       - name: Run tests
         run: yarn test
 
+      - name: Run typecheck tests
+        run: yarn vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json
+
       - name: Run release [${{ inputs.prerelease }}]
         if: ${{ inputs.prerelease != 'none' }}
         run: yes | npx tsx scripts/release.ts -p ${{ inputs.prerelease }}
