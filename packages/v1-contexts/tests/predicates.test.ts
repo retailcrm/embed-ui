@@ -1,4 +1,5 @@
 import {
+  isNumeric,
   isNumber,
   isShape,
   isString,
@@ -123,5 +124,11 @@ describe('isShape', () => {
         currency: 'USD',
       },
     })).toBe(true)
+  })
+
+  test('validates numeric string predicate', () => {
+    expect(isNumeric(1)).toBe(true)
+    expect(isNumeric('1.25')).toBe(true)
+    expect(isNumeric('abc')).toBe(false)
   })
 })

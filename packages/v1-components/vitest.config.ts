@@ -16,7 +16,9 @@ export default mergeConfig(
       environment: 'jsdom',
       coverage: {
         provider: 'istanbul',
-        include: ['src/**'],
+        all: true,
+        include: ['src/**/*.{ts,tsx,vue}'],
+        exclude: ['src/**/*.d.ts'],
       },
     },
   })

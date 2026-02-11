@@ -39,6 +39,15 @@ else
 	$(YARN) test
 endif
 
+.PHONY: tests-coverage
+tests-coverage: ## Runs autotests with coverage report
+	$(TARGET_HEADER)
+ifdef cli
+	$(YARN) vitest --run --coverage $(cli) --passWithNoTests
+else
+	$(YARN) test:coverage
+endif
+
 .PHONY: tests-typecheck-contexts
 tests-typecheck-contexts: ## Runs typecheck tests (test-d.ts) for v1-contexts
 	$(TARGET_HEADER)

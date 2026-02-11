@@ -41,3 +41,12 @@ test('accepts valid routing data', () => {
     locale: '',
   })).toBe(true)
 })
+
+test('executes defaults in settings schema', () => {
+  expect(schema['image.workers'].defaults()).toEqual([])
+  expect(schema['system.locale'].defaults()).toBe('en-GB')
+  expect(schema['system.routing'].defaults()).toEqual({
+    ...routingDataDefaults,
+    routes: {},
+  })
+})
