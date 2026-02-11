@@ -1,7 +1,7 @@
 import type { RemoteProperties } from '@/remote/scaffolding'
 import type { SchemaType } from '@omnicajs/vue-remote/remote'
 
-import { UiYandexMapProperties } from '@/common/components/yandex-map'
+import type { UiYandexMapProperties } from '@/common/components/yandex-map'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

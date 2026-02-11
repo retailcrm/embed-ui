@@ -9,4 +9,3 @@ declare const UiDate: DefineComponent<
 >
 
 export default UiDate
-

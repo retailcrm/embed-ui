@@ -158,4 +158,4 @@ const onHover = (): void => {
 }
 </script>
 
-<style lang="less" src="./menu.less"/>
+<style lang="less" src="./menu.less" />

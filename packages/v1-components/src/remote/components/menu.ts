@@ -1,7 +1,7 @@
 import type { RemoteProperties } from '@/remote/scaffolding'
 import type { SchemaType } from '@omnicajs/vue-remote/remote'
 
-import { UiMenuItemProperties } from '@/common/components/menu'
+import type { UiMenuItemProperties } from '@/common/components/menu'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

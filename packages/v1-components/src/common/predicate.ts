@@ -13,6 +13,6 @@ export const isURL = (href: string, loose = true): boolean => {
       ].some(href => isURL(href, false))
     }
 
-    return false 
+    return false
   }
 }

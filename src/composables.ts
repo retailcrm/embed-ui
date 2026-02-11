@@ -2,7 +2,7 @@ import type { Callable } from '~types/host/callable'
 
 import type { RouteParams } from '@omnicajs/symfony-router'
 
-import {
+import type {
   Context,
   ContextAccessor,
   ContextSchema,

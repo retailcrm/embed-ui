@@ -34,7 +34,7 @@ const meta = {
       control: 'select',
       options: Object.values(APPEARANCE),
     },
-    
+
     scrolling: {
       control: 'select',
       options: Object.values(SCROLLING),
@@ -44,20 +44,20 @@ const meta = {
     default: { control: false },
     footer: { control: false },
   },
-  
+
   render: (args: unknown) => ({
     components: {
       UiButton,
       UiModalWindow,
     },
-    
+
     setup () {
       return {
         args,
         open: ref(false),
       }
     },
-    
+
     template: `
       <UiButton appearance="secondary" @click="open = true">
         Открыть

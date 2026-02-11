@@ -3,7 +3,7 @@
         :alt="alt"
         :src="url"
         v-bind="$attrs"
-    >
+    />
 </template>
 
 <script lang="ts" setup>

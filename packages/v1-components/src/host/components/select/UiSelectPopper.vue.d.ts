@@ -1,7 +1,7 @@
 import type { DefineComponent } from '@/common/vue'
 import type { Ref } from 'vue'
 
-import {
+import type {
   UiPopperProperties,
   UiPopperMethods,
 } from '@/common/components/popper'
