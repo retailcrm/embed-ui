@@ -42,12 +42,12 @@ import type { Alignment } from '@floating-ui/dom'
 import type { CSSProperties } from 'vue'
 import type { PropType } from 'vue'
 import type { Side } from '@floating-ui/dom'
-import type { UiPopperProperties } from '@/common/components/popper'
-
-import {
+import type { UiPopperProperties ,
   PlacementOptions,
   Trigger,
-  TriggerSchema,
+  TriggerSchema } from '@/common/components/popper'
+
+import {
   isPlacementLiteral,
   isPlacementOptions,
 } from '@/common/components/popper'

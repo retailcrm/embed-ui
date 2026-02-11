@@ -9,7 +9,7 @@ import type {
   RemoteCallable,
 } from '@remote-ui/rpc'
 
-import {
+import type {
   ContextAccessor,
   ContextSchema,
   CustomFieldKind,

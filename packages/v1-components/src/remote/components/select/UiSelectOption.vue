@@ -87,18 +87,18 @@ import {
 import { SIZE } from '@/common/components/menu'
 
 import {
-  IsSelectedKey,
-  RegisterKey,
-  SyncKey,
-  UnregisterKey,
-  ToggleKey,
+  FastenedKey,
   FilterKey,
   FilteredKey,
-  TickerKey,
+  IsSelectedKey,
   MultipleKey,
+  RegisterKey,
   RegisterOptionKey,
+  SyncKey,
+  TickerKey,
+  ToggleKey,
+  UnregisterKey,
   UnregisterOptionKey,
-  FastenedKey,
 } from '@/host/components/select/injection'
 
 const props = defineProps({
@@ -155,18 +155,16 @@ const props = defineProps({
 
 const id = uid('u1-v1-select-option')
 
-const syncInSelect = inject<(id: string, data: {
-  label: string;
-  value: unknown;
-}) => void>(SyncKey, () => {})
+const isSelected = inject(IsSelectedKey, ref(() => false))
 
-const registerInSelect = inject<(option: Option) => void>(RegisterKey, () => {})
-const unregisterInSelect = inject<(id: string) => void>(UnregisterKey, () => {})
+const syncInSelect = inject(SyncKey, () => {})
 
-const registerInGroup = inject<(option: Option) => void>(RegisterOptionKey, () => {})
-const unregisterInGroup = inject<(id: string) => void>(UnregisterOptionKey, () => {})
-const isSelected = inject<Ref<(value: unknown) => boolean>>(IsSelectedKey, ref(() => false))
-const toggle = inject<(value: unknown) => void>(ToggleKey, () => {})
+const registerInGroup = inject(RegisterOptionKey, () => {})
+const registerInSelect = inject(RegisterKey, () => {})
+const unregisterInGroup = inject(UnregisterOptionKey, () => {})
+const unregisterInSelect = inject(UnregisterKey, () => {})
+
+const toggle = inject(ToggleKey, () => {})
 
 const fastened = inject<boolean>(FastenedKey, false)
 const filter = inject<Ref<string>>(FilterKey, ref(''))

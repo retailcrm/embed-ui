@@ -3,6 +3,6 @@ import type {
   ComputedRef,
 } from 'vue'
 
-import { SIZE } from '@/common/components/avatar'
+import type { SIZE } from '@/common/components/avatar'
 
 export const AvatarSizeKey = Symbol('UiAvatarSize') as InjectionKey<ComputedRef<SIZE | `${SIZE}`>>

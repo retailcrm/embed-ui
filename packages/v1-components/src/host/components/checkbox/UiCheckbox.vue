@@ -20,7 +20,7 @@
             type="checkbox"
             class="ui-v1-checkbox__input"
             @change="onChange"
-        >
+        />
 
         <span class="ui-v1-checkbox__checkmark">
             <IconDone

@@ -42,7 +42,7 @@
             :value="text"
             class="ui-v1-copy-button__area"
             type="text"
-        >
+        />
     </div>
 </template>
 

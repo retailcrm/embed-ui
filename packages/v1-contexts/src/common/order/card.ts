@@ -233,7 +233,7 @@ export const description: ContextSchemaDescription<Schema> = {
     description: {
       'en-GB': 'The order ID in the external source system',
       'es-ES': 'El ID del pedido en el sistema de origen externo',
-      'ru-RU': 'Идентифкатор заказа во внешней системе источника',
+      'ru-RU': 'Идентификатор заказа во внешней системе источника',
     },
   },
   'type': {

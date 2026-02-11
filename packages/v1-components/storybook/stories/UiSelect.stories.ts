@@ -76,7 +76,7 @@ const meta = {
     },
 
     setup () {
-      const worker = new Worker(new URL('./UiSelect.remote.ts', import.meta.url), { type: 'module'})
+      const worker = new Worker(new URL('./UiSelect.remote.ts', import.meta.url), { type: 'module' })
 
       const endpoint = createEndpoint<Callable & Lifecycle>(worker)
 

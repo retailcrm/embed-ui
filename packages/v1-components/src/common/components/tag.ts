@@ -22,7 +22,7 @@ type StyleDeclaration = CSSStyleDeclaration & {
 export function deltaTransition(el: HTMLElement): Partial<StyleDeclaration> {
   const delta = el.scrollWidth - el.clientWidth
   const animationDuration = `${((el.scrollWidth / el.clientWidth) * 2).toFixed(2)}s`
-  
+
   return delta !== 0 ? {
     '--delta-width': `-${delta}px`,
     animationDuration,

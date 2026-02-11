@@ -289,7 +289,6 @@ provide(ToggleKey, (value: unknown) => {
     const model = arraify<unknown>(state.value)
     const index = model.findIndex(item => equals(item, value))
 
-
     console.log('toggle', value)
     if (index !== -1) {
       model.splice(index, 1)
@@ -302,7 +301,6 @@ provide(ToggleKey, (value: unknown) => {
     if (!props.multiple) {
       close()
     }
-
   } else {
     state.value = value
 

@@ -10,7 +10,7 @@ import type {
   Schema,
 } from '~types/settings'
 
-import {
+import type {
   Route,
   RoutesMap,
   RoutingData,

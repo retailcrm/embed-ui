@@ -18,7 +18,7 @@
             type="radio"
             class="ui-v1-radio__input"
             @change="onChange"
-        >
+        />
 
         <span class="ui-v1-radio__checkmark" />
     </span>

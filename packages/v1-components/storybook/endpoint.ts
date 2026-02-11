@@ -3,11 +3,11 @@ import type {
   RemoteRoot,
   SchemaOf,
 } from '@omnicajs/vue-remote/remote'
-import type { ShallowReactive } from 'vue'
+import type { ShallowReactive ,
+  Component,
+  CreateAppFunction } from 'vue'
 
 import {
-  Component,
-  CreateAppFunction,
   shallowReactive,
 } from 'vue'
 
@@ -21,7 +21,6 @@ import {
   release,
   retain,
 } from '@remote-ui/rpc'
-
 
 import {
   createRemoteRenderer,
