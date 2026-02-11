@@ -23,7 +23,15 @@ export default defineConfig({
     exclude: [...defaultExclude, './packages/**'],
     coverage: {
       provider: 'istanbul',
-      include: ['src/**'],
+      all: true,
+      include: [
+        'src/**/*.{ts,tsx,vue}',
+        'packages/*/src/**/*.{ts,tsx,vue}',
+      ],
+      exclude: [
+        'src/**/*.d.ts',
+        'packages/*/src/**/*.d.ts',
+      ],
     },
     projects: [
       '.',

@@ -28,7 +28,8 @@
     "build:code": "vite build",
     "build:meta": "npx tsx scripts/build.meta.ts",
     "eslint": "eslint .",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "test:coverage": "vitest --run --coverage"
   },
   "peerDependencies": {
     "pinia": "^2.2",
@@ -54,6 +55,7 @@
     "@types/semver": "^7.7.1",
     "@types/yargs": "^17.0.35",
     "@vitejs/plugin-vue": "^6.0.2",
+    "@vitest/coverage-istanbul": "4.0.15",
     "@vue/language-server": "^3.1.8",
     "@vue/test-utils": "^2.4.6",
     "chalk": "^5.3.0",
