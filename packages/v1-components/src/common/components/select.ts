@@ -30,18 +30,17 @@ export type Option = {
 }
 
 export type UiSelectTriggerProperties = {
-    value?: unknown|unknown[];
-    clearable?: boolean;
-    filter?: string;
-    invalid?: boolean;
-    multiple?: boolean;
-    opened?: boolean;
-    expanded?: boolean;
-    placeholder?: string;
-    readonly?: boolean;
-    disabled?: boolean;
-    onlyPlaceholder?: boolean;
-    inputSize?: SIZE | `${SIZE}`;
+  value?: unknown|unknown[];
+  clearable?: boolean;
+  filter?: string;
+  invalid?: boolean;
+  multiple?: boolean;
+  expanded?: boolean;
+  placeholder?: string;
+  placeholderOnly?: boolean;
+  readonly?: boolean;
+  disabled?: boolean;
+  textboxSize?: SIZE | `${SIZE}`;
 }
 
 export type UiSelectTriggerMethods = {

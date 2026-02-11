@@ -31,7 +31,7 @@
                 :clearable="clearable"
                 :invalid="invalid"
                 :readonly="inputReadonly"
-                :size="inputSize"
+                :size="textboxSize"
                 :disabled="disabled"
                 class="ui-v1-select__trigger"
                 @input="onInput"
@@ -121,12 +121,6 @@ const props = defineProps({
     default: false,
   },
 
-  /** Начальное состояние выпадающего списка - открыт/закрыт */
-  opened: {
-    type: Boolean,
-    default: false,
-  },
-
   /** Атрибут placeholder нативного поля ввода input */
   placeholder: {
     type: String,
@@ -146,13 +140,13 @@ const props = defineProps({
   },
 
   /** Устанавливает в качестве выводимого в input значения только содержимое placeholder */
-  onlyPlaceholder: {
+  placeholderOnly: {
     type: Boolean,
     default: false,
   },
 
   /** Размер поля ввода */
-  inputSize: {
+  textboxSize: {
     type: String as unknown as PropType<SIZE | `${SIZE}`>,
     validator: (size: string) => Object.values(SIZE).includes(size as SIZE),
     default: SIZE.SM,
@@ -186,18 +180,17 @@ const emit = defineEmits([
   'update:expanded',
 ])
 
-const trigger = ref<HTMLElement | null>(null)
-const touchstone = ref<HTMLElement | null>(null)
-const input = ref<HTMLInputElement | null>(null)
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
 
-const inputReadonly = computed(
-  () => props.readonly || !props.filterable
-)
+const input = ref<HTMLInputElement | null>(null)
+const inputReadonly = computed(() => props.readonly || !props.filterable)
 
-const selectionLabels = computed((): string => props.selection.map(o => o.label).join(', '))
-const selectionText = computed((): string => {
-  if (props.placeholder && (props.onlyPlaceholder)) return props.placeholder
+const trigger = ref<HTMLElement | null>(null)
+const touchstone = ref<HTMLElement | null>(null)
+
+const selectionLabels = computed(() => props.selection.map(o => o.label).join(', '))
+const selectionText = computed(() => {
+  if (props.placeholder && (props.placeholderOnly)) return props.placeholder
   if (props.multiple) {
     const width =  input.value?.clientWidth ?? 0
     if (width > 0 && selectionWidth.value > width) {
@@ -211,7 +204,7 @@ const selectionText = computed((): string => {
 const selectionWidth = ref(0)
 
 const updateSelectionWidth = () => {
-  if (touchstone.value && !props.onlyPlaceholder) {
+  if (touchstone.value && !props.placeholderOnly) {
     nextTick().then(() => {
       selectionWidth.value = touchstone.value?.clientWidth ?? 0
     })
@@ -268,12 +261,11 @@ watch(() => props.value, () => {
   }
 })
 
-watch(() => props.opened, opened => opened ? open() : close())
-
 onMounted(async () => {
   input.value = trigger.value?.querySelector('input') ?? null
 
   updateSelectionWidth()
 })
 </script>
+
 <style lang="less" src="./select.less" />

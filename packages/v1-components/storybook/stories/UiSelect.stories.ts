@@ -44,13 +44,13 @@ const meta = {
     placeholder: { control: 'text' },
     filterable: { control: 'boolean' },
     invalid: { control: 'boolean' },
-    onlyPlaceholder: { control: 'boolean' },
+    placeholderOnly: { control: 'boolean' },
     readonly: { control: 'boolean' },
     disabled: { control: 'boolean' },
     multiple: { control: 'boolean' },
     ticker: { control: 'boolean' },
 
-    inputSize: {
+    textboxSize: {
       options: Object.values(SIZE),
     },
 
