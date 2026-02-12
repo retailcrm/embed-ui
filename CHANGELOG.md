@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.9.8](https://github.com/retailcrm/embed-ui/compare/v0.9.7...v0.9.8) (2026-02-12)
+
+### Features
+
+* **v1-components:** UiSelect, UiMenuItem components added ([7980397](https://github.com/retailcrm/embed-ui/commit/7980397c83c20bf92453b5c9b2ba3eda4f6da93f))
+
+### Bug Fixes
+
+* CreateRoot host registry was synchronized with v1-components render graph ([eaa04a8](https://github.com/retailcrm/embed-ui/commit/eaa04a88712116ffeb7c4af047d419abff4e8847))
 ## [0.9.7](https://github.com/retailcrm/embed-ui/compare/v0.9.6...v0.9.7) (2026-01-13)
 
 ### Bug Fixes
