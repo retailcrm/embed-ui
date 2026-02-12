@@ -1,25 +1,30 @@
 TARGET_HEADER=@echo -e '===== \e[34m' $@ '\e[0m'
+TARGET_OK=@echo -e '\e[32mOK\e[0m'
 YARN=docker-compose run --rm node yarn
 
 .PHONY: .yarnrc.yml
 .yarnrc.yml:  ## Generates yarn configuration
 	$(TARGET_HEADER)
 	cp .yarnrc.dist.yml .yarnrc.yml
+	$(TARGET_OK)
 
 .PHONY: node_modules
 node_modules: package.json yarn.lock ## Installs dependencies
 	$(TARGET_HEADER)
 	@docker-compose run --rm node yarn install --silent
+	$(TARGET_OK)
 
 .PHONY: build
 build: ## Builds the package
 	$(TARGET_HEADER)
 	$(YARN) workspaces foreach -A --topological-dev run build
+	$(TARGET_OK)
 
 .PHONY: build
 prepare: ## Builds the package
 	$(TARGET_HEADER)
 	$(YARN) workspaces foreach -A --topological-dev run prepare
+	$(TARGET_OK)
 
 .PHONY: release
 release: ## Bumps version and creates tag
@@ -29,6 +34,7 @@ ifdef as
 else
 	$(YARN) release
 endif
+	$(TARGET_OK)
 
 .PHONY: tests
 tests: ## Runs autotests
@@ -38,6 +44,7 @@ ifdef cli
 else
 	$(YARN) test
 endif
+	$(TARGET_OK)
 
 .PHONY: tests-coverage
 tests-coverage: ## Runs autotests with coverage report
@@ -47,6 +54,7 @@ ifdef cli
 else
 	$(YARN) test:coverage
 endif
+	$(TARGET_OK)
 
 .PHONY: tests-typecheck-contexts
 tests-typecheck-contexts: ## Runs typecheck tests (test-d.ts) for v1-contexts
@@ -56,6 +64,7 @@ ifdef cli
 else
 	$(YARN) vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json
 endif
+	$(TARGET_OK)
 
 .PHONY: tests-typecheck-v1-contexts
 tests-typecheck-v1-contexts: tests-typecheck-contexts ## Alias for tests-typecheck-contexts
@@ -76,6 +85,7 @@ ci-actionlint: ## Lints GitHub Actions workflows locally (actionlint binary or d
 		echo "actionlint is not installed and docker/docker-compose is unavailable"; \
 		exit 1; \
 	fi
+	$(TARGET_OK)
 
 .PHONY: ci-act-plan
 ci-act-plan: ## Shows act execution plan for tests workflow without running jobs
@@ -88,6 +98,7 @@ ci-act-plan: ## Shows act execution plan for tests workflow without running jobs
 		echo "act is not installed and docker-compose is unavailable"; \
 		exit 1; \
 	fi
+	$(TARGET_OK)
 
 .PHONY: ci-act-tests
 ci-act-tests: ## Runs tests workflow locally via act (heavy)
@@ -100,6 +111,7 @@ ci-act-tests: ## Runs tests workflow locally via act (heavy)
 		echo "act is not installed and docker-compose is unavailable"; \
 		exit 1; \
 	fi
+	$(TARGET_OK)
 
 .PHONY: help
 help: ## Calls recipes list
