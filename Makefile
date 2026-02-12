@@ -63,6 +63,36 @@ tests-typecheck-v1-contexts: tests-typecheck-contexts ## Alias for tests-typeche
 .PHONY: tests-typecheck
 tests-typecheck: tests-typecheck-contexts ## Runs typecheck tests (currently v1-contexts)
 
+.PHONY: ci-actionlint
+ci-actionlint: ## Lints GitHub Actions workflows locally (actionlint binary or docker image)
+	$(TARGET_HEADER)
+	@if command -v actionlint >/dev/null 2>&1; then \
+		actionlint; \
+	elif command -v docker >/dev/null 2>&1; then \
+		docker run --rm -v "$$(pwd):/repo" -w /repo rhysd/actionlint:latest; \
+	else \
+		echo "actionlint is not installed and docker is unavailable"; \
+		exit 1; \
+	fi
+
+.PHONY: ci-act-plan
+ci-act-plan: ## Shows act execution plan for tests workflow without running jobs
+	$(TARGET_HEADER)
+	@if ! command -v act >/dev/null 2>&1; then \
+		echo "act is not installed"; \
+		exit 1; \
+	fi
+	act -n pull_request -W .github/workflows/tests.yml
+
+.PHONY: ci-act-tests
+ci-act-tests: ## Runs tests workflow locally via act (heavy)
+	$(TARGET_HEADER)
+	@if ! command -v act >/dev/null 2>&1; then \
+		echo "act is not installed"; \
+		exit 1; \
+	fi
+	act pull_request -W .github/workflows/tests.yml -j workflow-lint -j eslint -j tests
+
 .PHONY: help
 help: ## Calls recipes list
 	@cat $(MAKEFILE_LIST) | grep -e "^[a-zA-Z_\-]*: *.*## *" | awk '\

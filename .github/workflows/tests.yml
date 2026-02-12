@@ -11,7 +11,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  workflow-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Using branch ${{ github.ref }} for repository ${{ github.repository }}.
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        uses: devops-actions/actionlint@v0.1.10
+
   eslint:
+    needs: workflow-lint
     runs-on: ubuntu-latest
 
     strategy:
