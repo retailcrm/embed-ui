@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local CI Simulation"
+  short_description: "Simulate CI phases locally and isolate failing steps"
+  default_prompt: "Analyze CI workflows, propose focused vs full local simulation, and run heavy full simulation only after explicit user confirmation."
