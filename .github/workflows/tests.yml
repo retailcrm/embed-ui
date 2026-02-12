@@ -1,6 +1,10 @@
 name: Tests
 
-on: [ push, pull_request ]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,28 +22,10 @@ jobs:
       - name: Using branch ${{ github.ref }} for repository ${{ github.repository }}.
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Yarn configuration
-        run: make .yarnrc.yml
-
-      - name: Cache dependencies
-        id: cache-deps
-        uses: actions/cache@v4
-        with:
-          path: .yarn
-          key: ${{ runner.OS }}-node-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-${{ matrix.node-version }}-yarn-
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Fix PATH for hoisting
-        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
 
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
@@ -62,28 +48,10 @@ jobs:
       - name: Using branch ${{ github.ref }} for repository ${{ github.repository }}.
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Yarn configuration
-        run: make .yarnrc.yml
-
-      - name: Cache dependencies
-        id: cache-deps
-        uses: actions/cache@v4
-        with:
-          path: .yarn
-          key: ${{ runner.OS }}-node-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-${{ matrix.node-version }}-yarn-
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Fix PATH for hoisting
-        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
 
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
