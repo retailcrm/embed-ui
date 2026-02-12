@@ -1,4 +1,5 @@
 import type {
+  ActionSchema,
   ContextAccessor,
   ContextSchema,
   CustomContextAccessor,
@@ -46,7 +47,7 @@ import {
 const actionSchema = {
   save: {
     accepts: Object.assign(
-      (args: unknown[]): args is [number] => Array.isArray(args) && args.length === 1 && typeof args[0] === 'number',
+      (args: unknown): args is [number] => Array.isArray(args) && args.length === 1 && typeof args[0] === 'number',
       { members: [{ name: 'value', type: 'number' }] }
     ),
     expects: Object.assign(
@@ -54,7 +55,9 @@ const actionSchema = {
       { type: 'string' }
     ),
   },
-}
+} satisfies ActionSchema<{
+  save: (value: number) => string
+}>
 
 const customSchema: CustomContextSchema = {
   entity: 'order',
@@ -121,10 +124,18 @@ const customSchema: CustomContextSchema = {
 describe('context accessor edge cases', () => {
   describe('host accessors', () => {
     test('reject unsupported fields in createGetter and createSetter', () => {
-      const getter = createGetter('test/getter', {
+      type PrimitiveSchema = {
+        id: {
+          accepts: (value: unknown) => value is number;
+          defaults: () => number;
+          readonly: false;
+        };
+      }
+
+      const getter = createGetter<PrimitiveSchema>('test/getter', {
         id: () => 1,
       })
-      const setter = createSetter('test/setter', {
+      const setter = createSetter<PrimitiveSchema>('test/setter', {
         id: () => {},
       })
 
@@ -132,7 +143,7 @@ describe('context accessor edge cases', () => {
       expect(() => getter('missing' as never)).toThrow(LogicalError)
 
       setter('id', 2)
-      expect(() => setter('missing' as never, 2)).toThrow(LogicalError)
+      expect(() => setter('missing' as never, 2 as never)).toThrow(LogicalError)
     })
 
     test('forward host errors to rejection callback without onError handler', () => {
@@ -239,13 +250,13 @@ describe('context accessor edge cases', () => {
       const useCounter = defineContext<'counter', typeof schema>('counter', schema)
       const counter = useCounter()
 
-      endpoint.call.get = vi.fn(async () => null)
+      endpoint.call.get = vi.fn(async () => null) as unknown as typeof endpoint.call.get
       await counter.initialize()
 
       endpoint.call.get = vi.fn(async () => ({
         readonlyValue: 5,
         writableValue: 7,
-      }))
+      })) as unknown as typeof endpoint.call.get
       await counter.initialize()
 
       expect(endpoint.call.on).toHaveBeenCalled()
@@ -266,7 +277,7 @@ describe('context accessor edge cases', () => {
 
       expect((actions as Record<string, unknown>).missing).toBeUndefined()
 
-      await expect((actions as { save (value: string): Promise<string> }).save('x')).rejects.toThrow('Invalid arguments')
+      await expect((actions as unknown as { save (value: string): Promise<string> }).save('x')).rejects.toThrow('Invalid arguments')
 
       endpoint.call.invoke = vi.fn(async () => ({
         payload: null,
@@ -348,7 +359,7 @@ describe('context accessor edge cases', () => {
     test('resolve and reject useDictionary queries through host response', async () => {
       const dictionary = useDictionary()
 
-      endpoint.call.getCustomDictionary = vi.fn(async (_code, _params, onReject?: (r: Rejection) => void) => {
+      endpoint.call.getCustomDictionary = vi.fn(async (_code, _params, onReject?: ((r: Rejection) => void) | null) => {
         onReject?.({ message: 'failed' })
         return []
       })
