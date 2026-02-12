@@ -68,30 +68,38 @@ ci-actionlint: ## Lints GitHub Actions workflows locally (actionlint binary or d
 	$(TARGET_HEADER)
 	@if command -v actionlint >/dev/null 2>&1; then \
 		actionlint; \
+	elif command -v docker-compose >/dev/null 2>&1; then \
+		docker-compose run --rm actionlint; \
 	elif command -v docker >/dev/null 2>&1; then \
 		docker run --rm -v "$$(pwd):/repo" -w /repo rhysd/actionlint:latest; \
 	else \
-		echo "actionlint is not installed and docker is unavailable"; \
+		echo "actionlint is not installed and docker/docker-compose is unavailable"; \
 		exit 1; \
 	fi
 
 .PHONY: ci-act-plan
 ci-act-plan: ## Shows act execution plan for tests workflow without running jobs
 	$(TARGET_HEADER)
-	@if ! command -v act >/dev/null 2>&1; then \
-		echo "act is not installed"; \
+	@if command -v act >/dev/null 2>&1; then \
+		act -n pull_request -W .github/workflows/tests.yml; \
+	elif command -v docker-compose >/dev/null 2>&1; then \
+		docker-compose run --rm --build act -n pull_request -W .github/workflows/tests.yml; \
+	else \
+		echo "act is not installed and docker-compose is unavailable"; \
 		exit 1; \
 	fi
-	act -n pull_request -W .github/workflows/tests.yml
 
 .PHONY: ci-act-tests
 ci-act-tests: ## Runs tests workflow locally via act (heavy)
 	$(TARGET_HEADER)
-	@if ! command -v act >/dev/null 2>&1; then \
-		echo "act is not installed"; \
+	@if command -v act >/dev/null 2>&1; then \
+		act pull_request -W .github/workflows/tests.yml -j workflow-lint -j eslint -j tests; \
+	elif command -v docker-compose >/dev/null 2>&1; then \
+		docker-compose run --rm --build act pull_request -W .github/workflows/tests.yml -j workflow-lint -j eslint -j tests; \
+	else \
+		echo "act is not installed and docker-compose is unavailable"; \
 		exit 1; \
 	fi
-	act pull_request -W .github/workflows/tests.yml -j workflow-lint -j eslint -j tests
 
 .PHONY: help
 help: ## Calls recipes list
