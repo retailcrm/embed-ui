@@ -1,0 +1,35 @@
+name: Setup dependencies
+description: Setup Node, configure Yarn, restore Yarn cache, install dependencies, and expose node_modules/.bin
+
+inputs:
+  node-version:
+    description: Node.js version passed to actions/setup-node
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Yarn configuration
+      shell: bash
+      run: make .yarnrc.yml
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: .yarn
+        key: ${{ runner.OS }}-node-${{ inputs.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-${{ inputs.node-version }}-yarn-
+
+    - name: Install dependencies
+      shell: bash
+      run: yarn install
+
+    - name: Fix PATH for hoisting
+      shell: bash
+      run: echo "${{ github.workspace }}/node_modules/.bin" >> "$GITHUB_PATH"

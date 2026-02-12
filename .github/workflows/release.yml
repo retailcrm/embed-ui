@@ -23,24 +23,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
         with:
           node-version: '24.x'
-
-      - name: Yarn configuration
-        run: make .yarnrc.yml
 
       - name: Configure Git
         run: |
           git config --global user.email "integration@retailcrm.ru"
           git config --global user.name "RetailCRM.CI"
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Fix PATH for hoisting
-        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
 
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
@@ -97,19 +88,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
         with:
           node-version: '24.x'
-
-      - name: Yarn configuration
-        run: make .yarnrc.yml
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Fix PATH for hoisting
-        run: echo "${{ github.workspace }}/node_modules/.bin" >> $GITHUB_PATH
 
       - name: Build Storybook
         run: yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
