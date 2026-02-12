@@ -20,3 +20,22 @@ services:
       traefik.http.routers.embed-ui-v1-components.service: embed-ui-v1-components
       traefik.http.services.embed-ui-v1-components.loadbalancer.server.port: '6006'
       dev.orbstack.domains: 'v1.embed-ui.local'
+
+  actionlint:
+    image: rhysd/actionlint:latest
+    volumes:
+      - ./:/project
+    working_dir: /project
+    entrypoint: [ "actionlint" ]
+
+  act:
+    build:
+      context: ./
+      dockerfile: .docker/act/Dockerfile
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - ./:/project
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /project
+    entrypoint: [ "act" ]
