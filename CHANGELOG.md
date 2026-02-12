@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.9](https://github.com/retailcrm/embed-ui/compare/v0.9.8...v0.9.9) (2026-02-12)
+
+### Bug Fixes
+
+* **v1-components:** apply vue plugins to storybook worker build ([5054dd7](https://github.com/retailcrm/embed-ui/commit/5054dd700948770b1eecabd37f9ec67a32ab4e55))
 ## [0.9.8](https://github.com/retailcrm/embed-ui/compare/v0.9.7...v0.9.8) (2026-02-12)
 
 ### Features
