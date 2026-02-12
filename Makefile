@@ -2,7 +2,15 @@
 
 TARGET_HEADER=@echo -e '===== \e[34m' $@ '\e[0m'
 TARGET_OK=@echo -e '\e[32mOK\e[0m'
-YARN=docker-compose run --rm node yarn
+COMPOSE=$(shell if command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; elif command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then echo "docker compose"; fi)
+YARN=$(COMPOSE) run --rm node yarn
+
+.PHONY: .require-compose
+.require-compose:
+	@if [ -z "$(COMPOSE)" ]; then \
+		echo "docker compose is unavailable (need 'docker compose' or 'docker-compose')"; \
+		exit 1; \
+	fi
 
 .PHONY: .yarnrc.yml
 .yarnrc.yml:  ## [Setup][local] Generates yarn configuration
@@ -11,25 +19,25 @@ YARN=docker-compose run --rm node yarn
 	$(TARGET_OK)
 
 .PHONY: node_modules
-node_modules: package.json yarn.lock ## [Setup][docker][heavy] Installs dependencies
+node_modules: .require-compose package.json yarn.lock ## [Setup][docker][heavy] Installs dependencies
 	$(TARGET_HEADER)
-	@docker-compose run --rm node yarn install --silent
+	@$(COMPOSE) run --rm node yarn install --silent
 	$(TARGET_OK)
 
 .PHONY: build
-build: ## [Build][docker][heavy] Builds all workspaces
+build: .require-compose ## [Build][docker][heavy] Builds all workspaces
 	$(TARGET_HEADER)
 	$(YARN) workspaces foreach -A --topological-dev run build
 	$(TARGET_OK)
 
 .PHONY: prepare
-prepare: ## [Build][docker][heavy] Runs prepare in all workspaces
+prepare: .require-compose ## [Build][docker][heavy] Runs prepare in all workspaces
 	$(TARGET_HEADER)
 	$(YARN) workspaces foreach -A --topological-dev run prepare
 	$(TARGET_OK)
 
 .PHONY: release
-release: ## [Release][docker][heavy][network] Bumps version and creates tag
+release: .require-compose ## [Release][docker][heavy][network] Bumps version and creates tag
 	$(TARGET_HEADER)
 ifdef as
 	$(YARN) release:$(as)
@@ -39,7 +47,7 @@ endif
 	$(TARGET_OK)
 
 .PHONY: tests
-tests: ## [Tests][docker] Runs autotests
+tests: .require-compose ## [Tests][docker] Runs autotests
 	$(TARGET_HEADER)
 ifdef cli
 	$(YARN) test $(cli) --passWithNoTests
@@ -49,7 +57,7 @@ endif
 	$(TARGET_OK)
 
 .PHONY: tests-coverage
-tests-coverage: ## [Tests][docker][heavy] Runs autotests with coverage report
+tests-coverage: .require-compose ## [Tests][docker][heavy] Runs autotests with coverage report
 	$(TARGET_HEADER)
 ifdef cli
 	$(YARN) vitest --run --coverage $(cli) --passWithNoTests
@@ -59,7 +67,7 @@ endif
 	$(TARGET_OK)
 
 .PHONY: tests-typecheck-contexts
-tests-typecheck-contexts: ## [Tests][docker] Runs typecheck tests (test-d.ts) for v1-contexts
+tests-typecheck-contexts: .require-compose ## [Tests][docker] Runs typecheck tests (test-d.ts) for v1-contexts
 	$(TARGET_HEADER)
 ifdef cli
 	$(YARN) vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json $(cli)
@@ -79,8 +87,8 @@ ci-actionlint: ## [CI][docker] Lints GitHub Actions workflows locally (actionlin
 	$(TARGET_HEADER)
 	@if command -v actionlint >/dev/null 2>&1; then \
 		actionlint; \
-	elif command -v docker-compose >/dev/null 2>&1; then \
-		docker-compose run --rm actionlint; \
+	elif [ -n "$(COMPOSE)" ]; then \
+		$(COMPOSE) run --rm actionlint; \
 	elif command -v docker >/dev/null 2>&1; then \
 		docker run --rm -v "$$(pwd):/repo" -w /repo rhysd/actionlint:latest; \
 	else \
@@ -94,10 +102,10 @@ ci-act-plan: ## [CI][docker] Shows act execution plan for tests workflow without
 	$(TARGET_HEADER)
 	@if command -v act >/dev/null 2>&1; then \
 		act -n pull_request -W .github/workflows/tests.yml; \
-	elif command -v docker-compose >/dev/null 2>&1; then \
-		docker-compose run --rm --build act -n pull_request -W .github/workflows/tests.yml; \
+	elif [ -n "$(COMPOSE)" ]; then \
+		$(COMPOSE) run --rm --build act -n pull_request -W .github/workflows/tests.yml; \
 	else \
-		echo "act is not installed and docker-compose is unavailable"; \
+		echo "act is not installed and docker compose is unavailable"; \
 		exit 1; \
 	fi
 	$(TARGET_OK)
@@ -107,10 +115,10 @@ ci-act-tests: ## [CI][docker][heavy][network] Runs tests workflow locally via ac
 	$(TARGET_HEADER)
 	@if command -v act >/dev/null 2>&1; then \
 		act pull_request -W .github/workflows/tests.yml -j workflow-lint -j eslint -j tests; \
-	elif command -v docker-compose >/dev/null 2>&1; then \
-		docker-compose run --rm --build act pull_request -W .github/workflows/tests.yml -j workflow-lint -j eslint -j tests; \
+	elif [ -n "$(COMPOSE)" ]; then \
+		$(COMPOSE) run --rm --build act pull_request -W .github/workflows/tests.yml -j workflow-lint -j eslint -j tests; \
 	else \
-		echo "act is not installed and docker-compose is unavailable"; \
+		echo "act is not installed and docker compose is unavailable"; \
 		exit 1; \
 	fi
 	$(TARGET_OK)
