@@ -72,6 +72,16 @@ export const schema: Schema = {
     defaults: () => '',
     readonly: true,
   },
+  'customer.id': {
+    accepts: oneOf(isNumber, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
+  'customer.externalId': {
+    accepts: oneOf(isString, isNull),
+    defaults: () => null,
+    readonly: true,
+  },
   'customer.type': {
     accepts: oneOf(
       isExactly('customer'),
@@ -269,6 +279,20 @@ export const description: ContextSchemaDescription<Schema> = {
       'en-GB': 'Currency code',
       'es-ES': 'Código de moneda',
       'ru-RU': 'Символьный код валюты',
+    },
+  },
+  'customer.id': {
+    description: {
+      'en-GB': 'Customer ID',
+      'es-ES': 'ID del cliente',
+      'ru-RU': 'ID клиента',
+    },
+  },
+  'customer.externalId': {
+    description: {
+      'en-GB': 'Customer external ID',
+      'es-ES': 'ID externo del cliente',
+      'ru-RU': 'Внешний ID клиента',
     },
   },
   'customer.type': {
