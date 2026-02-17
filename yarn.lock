@@ -1219,7 +1219,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-contexts@npm:^0.9.9, @retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts":
+"@retailcrm/embed-ui-v1-contexts@npm:^0.9.10-alpha.1, @retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts"
   dependencies:
@@ -1227,8 +1227,8 @@ __metadata:
     "@floating-ui/dom": "npm:^1.7.4"
     "@omnicajs/symfony-router": "npm:^1.0.0"
     "@remote-ui/rpc": "npm:^1.4.7"
-    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.9"
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.9"
+    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.10-alpha.1"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.10-alpha.1"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
     vite: "npm:^7.2.7"
@@ -1241,11 +1241,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-testing@npm:^0.9.9, @retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing":
+"@retailcrm/embed-ui-v1-testing@npm:^0.9.10-alpha.1, @retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing"
   dependencies:
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.9"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.10-alpha.1"
   peerDependencies:
     "@omnicajs/vue-remote": ^0.2
     "@remote-ui/rpc": ^1.4
@@ -1253,7 +1253,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-types@npm:^0.9.9, @retailcrm/embed-ui-v1-types@workspace:packages/v1-types":
+"@retailcrm/embed-ui-v1-types@npm:^0.9.10-alpha.1, @retailcrm/embed-ui-v1-types@workspace:packages/v1-types":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-types@workspace:packages/v1-types"
   languageName: unknown
@@ -1272,9 +1272,9 @@ __metadata:
     "@omnicajs/symfony-router": "npm:^1.0.0"
     "@omnicajs/vue-remote": "npm:^0.2.8"
     "@remote-ui/rpc": "npm:^1.4.5"
-    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.9"
-    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.9"
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.9"
+    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.10-alpha.1"
+    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.10-alpha.1"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.10-alpha.1"
     "@types/git-semver-tags": "npm:^7.0.0"
     "@types/node": "npm:^22.19.2"
     "@types/semver": "npm:^7.7.1"
