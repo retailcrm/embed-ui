@@ -7,6 +7,7 @@ import Runner from './lib/Runner'
 
 import chalk from 'chalk'
 import gitSemverTags from 'git-semver-tags'
+import semver from 'semver'
 
 import {
   join,
@@ -52,10 +53,14 @@ try {
     if (pkg.manifest.exports && currVersion !== prevVersion) {
       log.info('%s: %s\n', [chalk.magenta(pkg.name), currVersion])
 
+      const prerelease = currVersion ? semver.prerelease(currVersion) : null
+      const publishTag = typeof prerelease?.[0] === 'string' ? prerelease[0] : undefined
+
       await sh.run('npm', [
         'publish',
         pkg.path,
         '--access', 'public',
+        ...(publishTag ? ['--tag', publishTag] : []),
         ...(options.dry ? ['--dry-run'] : []),
       ])
     }
