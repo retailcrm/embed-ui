@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.10](https://github.com/retailcrm/embed-ui/compare/v0.9.9...v0.9.10) (2026-02-18)
+
+### Features
+
+* **v1-contexts:** Added fields customer.id, customer.externalId to order/card context ([5c54adc](https://github.com/retailcrm/embed-ui/commit/5c54adc32def1c4df93cab6ee652119e36e6bb5e))
 ## [0.9.10-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.9...v0.9.10-alpha.1) (2026-02-17)
 
 ### Features
