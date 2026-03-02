@@ -19,6 +19,7 @@ export { default as UiPopperConnector } from '@/host/components/popper/UiPopperC
 export { default as UiPopperTarget } from '@/host/components/popper/UiPopperTarget.vue'
 export { default as UiRadio } from '@/host/components/radio/UiRadio.vue'
 export { default as UiScrollBox } from '@/host/components/scroll-box/UiScrollBox.vue'
+export { default as UiSlider } from '@/host/components/slider/UiSlider.vue'
 export { default as UiSelectPopper } from '@/host/components/select/UiSelectPopper.vue'
 export { default as UiSelectTrigger } from '@/host/components/select/UiSelectTrigger.vue'
 export { default as UiTag } from '@/host/components/tag/UiTag.vue'

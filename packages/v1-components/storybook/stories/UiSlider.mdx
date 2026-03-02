@@ -1,0 +1,148 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiSliderSingle from './UiSlider.single.example.vue'
+import UiSliderRange from './UiSlider.range.example.vue'
+import UiSliderLabelled from './UiSlider.labelled.example.vue'
+import UiSliderBounds from './UiSlider.bounds.example.vue'
+
+# UiSlider
+
+`UiSlider` - компонент для выбора числового значения в заданном диапазоне.
+
+## Для чего подходит
+
+* настройка одного значения (`single`);
+* выбор диапазона (`range`);
+* управление слайдером с подписями на границах и ручках (`labelled`).
+
+## Импорт
+
+### Remote
+
+```ts
+import { UiSlider } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+### Host
+
+```ts
+import { UiSlider } from '@retailcrm/embed-ui-v1-components/host'
+```
+
+## Базовое использование
+
+```vue
+<template>
+  <UiSlider v-model:value="value" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiSlider } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref(20)
+</script>
+```
+
+<ToReact is={UiSliderSingle} />
+
+## Режим диапазона
+
+```vue
+<template>
+  <UiSlider
+    v-model:value="value"
+    type="range"
+  />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiSlider } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref<number[]>([20, 80])
+</script>
+```
+
+<ToReact is={UiSliderRange} />
+
+## Ограничение диапазона (`min` / `max`)
+
+```vue
+<UiSlider
+  v-model:value="value"
+  type="range"
+  :min="10"
+  :max="60"
+/>
+```
+
+Если в `value` переданы числа вне границ, компонент ограничит их в пределах `min..max`.
+
+<ToReact is={UiSliderBounds} />
+
+## Вариант с метками (`labelled`)
+
+```vue
+<UiSlider
+  v-model:value="value"
+  type="range"
+  labelled
+>
+  <template #label="{ boundary }">
+    {{ boundary }}%
+  </template>
+
+  <template #handle="{ boundary }">
+    {{ boundary }}%
+  </template>
+</UiSlider>
+```
+
+<ToReact is={UiSliderLabelled} />
+<ToReact is={UiSliderLabelled} range />
+
+## Модель данных
+
+`value` зависит от `type`:
+
+* `type="single"` -> `number`
+* `type="range"` -> `number[]`
+
+Для `range` рекомендуется хранить `value` как массив из двух чисел.
+
+## События
+
+Компонент эмитит:
+
+* `update:value` - новое значение слайдера (`number` или `number[]`).
+
+Пример:
+
+```vue
+<UiSlider
+  :value="value"
+  @update:value="value = $event"
+/>
+```
+
+## Keyboard и A11y
+
+Поддержка клавиатуры:
+
+* `ArrowLeft` / `ArrowDown` - уменьшить значение;
+* `ArrowRight` / `ArrowUp` - увеличить значение;
+* `Home` - установить минимальное значение;
+* `End` - установить максимальное значение;
+* `PageUp` / `PageDown` - увеличить/уменьшить крупным шагом.
+
+Доступность:
+
+* в `single` корневой элемент имеет `role="slider"`;
+* в `range` ручки имеют `role="slider"`, а корень `role="group"`;
+* `aria-valuemin`, `aria-valuemax`, `aria-valuenow` выставляются автоматически.
+
+## Полный API
+
+<ArgTypes />
