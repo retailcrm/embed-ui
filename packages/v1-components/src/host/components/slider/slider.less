@@ -1,0 +1,114 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-slider {
+  .reset-box-sizing();
+
+  display: flex;
+  width: 100%;
+  min-width: 150px;
+  min-height: 32px;
+  align-items: center;
+  cursor: pointer;
+
+  &__track {
+    position: relative;
+    flex-grow: 1;
+
+    &:before {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      left: 0;
+      height: 2px;
+      transform: translateY(-50%);
+      background: @grey-500;
+      content: '';
+    }
+  }
+
+  &_labelled &__track {
+    margin: 0 34px;
+  }
+
+  &__filler {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: @blue-500;
+    transition: .0s linear;
+  }
+
+  &__handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border: 2px solid @blue-500;
+    background: #FFFFFF;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  &_dotted &__handle {
+    .circle(16px);
+
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      background .2s linear,
+      opacity .2s linear,
+      visibility .2s linear
+    ;
+  }
+
+  &_dotted &__handle:hover,
+  &_dotted &__handle_active {
+    background: @blue-500;
+  }
+
+  &_dotted:hover &__handle,
+  &_active&_dotted &__handle,
+  &_dotted &__handle:focus-visible,
+  &_dotted:focus-visible &__handle {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &_labelled &__handle {
+    display: flex;
+    width: 60px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: @border-radius-md;
+    color: @black-500;
+    transition: background-color .2s linear;
+    .text-regular-accent();
+  }
+
+  &_labelled &__handle:hover {
+    background: @blue-100;
+  }
+
+  &__label {
+    width: 36px;
+    flex-shrink: 0;
+    color: @grey-900;
+    text-align: center;
+    .text-small();
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible &__handle,
+  &__handle:focus-visible {
+    box-shadow: 0 0 0 2px @blue-300;
+    outline: none;
+  }
+}
