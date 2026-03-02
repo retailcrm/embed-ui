@@ -1,0 +1,330 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+@color-blue-active: var(--ui-switch-blue-active-color, @blue-600);
+@color-blue-checked: var(--ui-switch-blue-checked-color, @blue-500);
+@color-blue-disabled: var(--ui-switch-blue-disabled-color, @blue-200);
+@color-blue-hover: var(--ui-switch-blue-hover-color, @blue-400);
+
+@color-green-active: var(--ui-switch-green-active-color, @green-500);
+@color-green-checked: var(--ui-switch-green-checked-color, @green-500);
+@color-green-disabled: var(--ui-switch-green-disabled-color, @green-200);
+@color-green-hover: var(--ui-switch-green-hover-color, @green-600);
+
+.ui-v1-switch {
+  .reset-box-sizing();
+
+  display: inline-block;
+  max-width: 100%;
+  height: 24px;
+  font-style: normal;
+  cursor: pointer;
+  transition: @transition;
+  align-self: flex-start;
+  margin: 0;
+  vertical-align: top;
+  position: relative;
+
+  &_disabled {
+    cursor: default;
+  }
+
+  &__input {
+    .square(100%);
+
+    appearance: none;
+    z-index: 1;
+    cursor: inherit;
+    margin: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &_disabled &__input {
+    z-index: 0;
+  }
+
+  &__track {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 40px;
+    height: 24px;
+    background: @grey-100;
+    border-radius: 100px;
+    transition: @transition;
+    position: relative;
+  }
+
+  &:not(&_square) &__track {
+    border: 1px solid @grey-600;
+  }
+
+  &:not(&_square):not(&_disabled) &__input:hover ~ &__track {
+    background: @blue-transparent;
+    border-color: @color-blue-checked;
+  }
+
+  &:not(&_square):not(&_disabled) &__input:active ~ &__track {
+    background: @blue-100;
+    border-color: @color-blue-checked;
+  }
+
+  &_checked &__track {
+    background: @blue-transparent;
+  }
+
+  &_checked:not(&_square) &__track {
+    border-color: @color-blue-checked;
+  }
+
+  &_disabled&_checked &__track {
+    background: @blue-transparent;
+    border-color: @color-blue-disabled;
+    cursor: default;
+  }
+
+  &_disabled:not(&_checked) &__track {
+    background: @grey-300;
+    border-color: @grey-600;
+    cursor: default;
+  }
+
+  &_square {
+    height: 28px;
+  }
+
+  &_square &__track {
+    width: 50px;
+    height: 28px;
+    background: @grey-600;
+    border: 1px solid transparent;
+    border-radius: @border-radius-md;
+  }
+
+  &_square:not(&_checked):not(&_disabled) &__input:hover ~ &__track {
+    background: @green-200;
+    border-color: @color-green-checked;
+  }
+
+  &_square:not(:hover)&_checked:not(&_disabled) &__input:hover ~ &__track,
+  &_square:hover&_checked:not(&_disabled) &__input:hover ~ &__track {
+    background: @green-200;
+    border-color: @color-green-checked;
+  }
+
+  &_square:not(&_checked):not(&_disabled) &__input:active ~ &__track {
+    background: @color-green-active;
+  }
+
+  &_square:not(:hover)&_checked:not(&_disabled) &__input:active ~ &__track,
+  &_square:hover&_checked:not(&_disabled) &__input:active ~ &__track {
+    background: @color-green-active;
+  }
+
+  &_square&_checked:hover:not(&_disabled) &__track {
+    background: @color-green-hover;
+  }
+
+  &_square&_checked &__track,
+  &_square&_checked:not(:active):not(&_disabled) &__input:active ~ &__track,
+  &_square&_checked:active:not(&_disabled) &__track {
+    background: @color-green-checked;
+  }
+
+  &_square&_disabled:not(&_checked) &__track {
+    background: @grey-300;
+    border-color: @grey-600;
+  }
+
+  &_square&_disabled&_checked &__track {
+    background: @color-green-disabled;
+    border-color: @color-green-disabled;
+  }
+
+  &__handle {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: @grey-600;
+    border-radius: 50%;
+    transition: @transition;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+  }
+
+  &:not(&_square):not(&_disabled) &__input:hover ~ &__track &__handle {
+    background: @color-blue-hover;
+  }
+
+  &:not(&_square):not(&_disabled) &__input:active ~ &__track &__handle {
+    background: @color-blue-checked;
+  }
+
+  &_checked &__handle {
+    left: 17px;
+  }
+
+  &_checked:not(&_disabled) &__handle {
+    background: @color-blue-checked;
+  }
+
+  &_checked:not(&_square):not(&_disabled) &__input:active ~ &__track &__handle {
+    background: @color-blue-active;
+  }
+
+  &_disabled &__handle {
+    background: @color-blue-disabled;
+    cursor: default;
+  }
+
+  &_disabled:not(&_checked) &__handle {
+    background: @grey-600;
+  }
+
+  &_square:not(:hover):not(&_checked):not(&_disabled) &__input:active ~ &__track &__handle,
+  &_square:hover:not(&_checked):not(&_disabled) &__track:active &__handle {
+    border-color: @color-green-checked;
+  }
+
+  &_square:not(&_checked):not(&_disabled):hover &__handle,
+  &_square&_checked:not(&_disabled):hover &__handle {
+    background: #fff;
+  }
+
+  &_square &__handle {
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: @border-radius-sm;
+    top: 2px;
+    left: 3px;
+  }
+
+  &_square&_checked &__handle {
+    left: calc(100% - 25px);
+    background: #fff;
+  }
+
+  &_square&_disabled:not(&_checked) &__handle {
+    background-color: @grey-600;
+  }
+
+  &_square:not(&_checked) &__handle::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-image: none;
+    border: 2px solid @grey-600;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &_square &__handle::before {
+    content: '';
+    width: 8px;
+    height: 10px;
+    background-image: linear-gradient(
+      90deg,
+      @grey-600 25%,
+      #fff 25%,
+      #fff 50%,
+      @grey-600 50%,
+      @grey-600 75%,
+      #fff 75%,
+      #fff 100%
+    );
+    position: absolute;
+    top: calc(50% - 5px);
+    left: calc(50% - 3px);
+  }
+
+  &_square:not(&_checked):not(&_disabled) &__input:hover ~ &__track &__handle::before {
+    border-color: @color-green-checked;
+  }
+
+  &_square&_checked:not(&_disabled) &__input:hover ~ &__track {
+    background: @color-green-hover;
+    border-color: @color-green-hover;
+  }
+
+  &_square&_checked &__handle::before {
+    background-image: linear-gradient(
+      90deg,
+      @color-green-checked 25%,
+      #fff 25%,
+      #fff 50%,
+      @color-green-checked 50%,
+      @color-green-checked 75%,
+      #fff 75%,
+      #fff 100%
+    );
+  }
+
+  &_square&_checked:not(&_disabled) &__input:hover ~ &__track &__handle::before {
+    border-color: @color-green-hover;
+  }
+
+  &_square&_checked:not(&_disabled) &__input:hover ~ &__track &__handle::before {
+    background-image: linear-gradient(
+      90deg,
+      @color-green-hover 25%,
+      #fff 25%,
+      #fff 50%,
+      @color-green-hover 50%,
+      @color-green-hover 75%,
+      #fff 75%,
+      #fff 100%
+    );
+  }
+
+  &_square&_checked:not(&_disabled) &__input:active ~ &__track &__handle::before {
+    background-image: linear-gradient(
+      90deg,
+      @color-green-checked 25%,
+      #fff 25%,
+      #fff 50%,
+      @color-green-checked 50%,
+      @color-green-checked 75%,
+      #fff 75%,
+      #fff 100%
+    );
+  }
+
+  &_square&_disabled&_checked &__handle::before {
+    background-image: linear-gradient(
+      90deg,
+      @color-green-disabled 25%,
+      #fff 25%,
+      #fff 50%,
+      @color-green-disabled 50%,
+      @color-green-disabled 75%,
+      #fff 75%,
+      #fff 100%
+    );
+  }
+
+  &__icon {
+    .square(12px);
+
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transition: @transition;
+    margin: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  &_checked:not(&_square) &__icon {
+    opacity: 1;
+    visibility: visible;
+  }
+}

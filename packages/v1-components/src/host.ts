@@ -22,6 +22,7 @@ export { default as UiScrollBox } from '@/host/components/scroll-box/UiScrollBox
 export { default as UiSlider } from '@/host/components/slider/UiSlider.vue'
 export { default as UiSelectPopper } from '@/host/components/select/UiSelectPopper.vue'
 export { default as UiSelectTrigger } from '@/host/components/select/UiSelectTrigger.vue'
+export { default as UiSwitch } from '@/host/components/switch/UiSwitch.vue'
 export { default as UiTag } from '@/host/components/tag/UiTag.vue'
 export { default as UiTextbox } from '@/host/components/textbox/UiTextbox.vue'
 export { default as UiToolbar } from '@/host/components/toolbar/UiToolbar.vue'
