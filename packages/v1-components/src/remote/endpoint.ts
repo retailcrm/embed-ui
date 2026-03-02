@@ -27,6 +27,7 @@ export const createEndpointRoot = async (
     'UiRadio',
     'UiScrollBox',
     'UiSlider',
+    'UiSwitch',
     'UiSelectPopper',
     'UiSelectTrigger',
     'UiTag',

@@ -1,0 +1,114 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiSwitchBasic from './UiSwitch.basic.example.vue'
+import UiSwitchDisabled from './UiSwitch.disabled.example.vue'
+import UiSwitchSquare from './UiSwitch.square.example.vue'
+import UiSwitchControlled from './UiSwitch.controlled.example.vue'
+
+# UiSwitch
+
+`UiSwitch` - переключатель для булевых значений (`true/false`).
+
+## Когда использовать
+
+* мгновенное включение/выключение настройки;
+* управление двоичными параметрами (on/off);
+* сценарии, где важна компактная форма переключения.
+
+## Импорт
+
+### Remote
+
+```ts
+import { UiSwitch } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+### Host
+
+```ts
+import { UiSwitch } from '@retailcrm/embed-ui-v1-components/host'
+```
+
+## Базовое использование
+
+```vue
+<template>
+  <UiSwitch v-model:value="enabled" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiSwitch } from '@retailcrm/embed-ui-v1-components/remote'
+
+const enabled = ref(false)
+</script>
+```
+
+<ToReact is={UiSwitchBasic} />
+
+## Пример с внешним управлением
+
+Компонент можно использовать как controlled-элемент: передавать `value` и обновлять значение через `update:value`.
+
+```vue
+<UiSwitch
+  :value="enabled"
+  @update:value="enabled = $event"
+/>
+```
+
+<ToReact is={UiSwitchControlled} />
+
+## Состояния
+
+### Disabled
+
+```vue
+<UiSwitch :value="true" disabled />
+```
+
+<ToReact is={UiSwitchDisabled} />
+
+### Square
+
+```vue
+<UiSwitch v-model:value="enabled" square />
+```
+
+<ToReact is={UiSwitchSquare} />
+
+## API
+
+### Props
+
+* `id?: string` - id нативного `input` (нужен для связки с внешним `<label for="...">`).
+* `value?: boolean` - текущее состояние переключателя.
+* `disabled?: boolean` - блокировка взаимодействия.
+* `square?: boolean` - квадратный визуальный вариант.
+
+### Events
+
+* `update:value` - новое boolean-значение для `v-model:value`.
+* `change` - дополнительное событие изменения со значением `boolean`.
+
+### Methods
+
+Через `ref` доступны:
+
+* `click()`
+* `focus()`
+* `blur()`
+
+## A11y и клавиатура
+
+* Компонент использует `input[type="checkbox"]` с `role="switch"`.
+* `aria-checked` и `aria-disabled` выставляются автоматически.
+* Поддерживаются стандартные клавиши нативного переключателя:
+* `Space` - переключить состояние;
+* `Tab` / `Shift+Tab` - перемещение фокуса.
+* Любые внешние `aria-*` атрибуты можно передавать напрямую в компонент.
+
+## Полный API
+
+<ArgTypes />
