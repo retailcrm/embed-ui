@@ -2,8 +2,9 @@ import type { Locale } from '@/common/components/date'
 
 import { getCurrentInstance } from 'vue'
 
+import { enGB, es } from 'date-fns/locale'
 import { format } from 'date-fns'
-import { enGB, es, ru } from 'date-fns/locale'
+import { ru } from 'date-fns/locale'
 
 export const formatDateLat = (date: Date | string) => format(date, 'dd/MM/yyyy', { locale: enGB })
 export const formatDateEn = formatDateLat

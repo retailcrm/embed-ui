@@ -111,28 +111,36 @@ import type { I18nLocalized } from '@/host/i18n'
 import type { PropType } from 'vue'
 import type { UiTextboxMethods } from '@/common/components/textbox'
 
-import IconClearCircle from '../../../../assets/sprites/actions/clear-circle.svg'
-
 import { computed } from 'vue'
-import { decimalsOf } from '@/common/components/textbox'
+
 import { inject } from 'vue'
-import { isMaxDecimalsExceeded } from '@/common/components/textbox'
+
 import { nextTick } from 'vue'
 import { onMounted } from 'vue'
-import { sanitizeDecimal } from '@/common/components/textbox'
-import { sanitizeNumeric } from '@/common/components/textbox'
+
 import { shallowRef } from 'vue'
-import { useElementRef } from '@/host/composables'
+
 import { useId } from 'vue'
 import { watch } from 'vue'
 
-import _i18n from './i18n'
+import IconClearCircle from '../../../../assets/sprites/actions/clear-circle.svg'
+
+import { decimalsOf } from '@/common/components/textbox'
+
+import { isMaxDecimalsExceeded } from '@/common/components/textbox'
+
+import { sanitizeDecimal } from '@/common/components/textbox'
+import { sanitizeNumeric } from '@/common/components/textbox'
+
+import { useElementRef } from '@/host/composables'
 
 import { I18nInjectKey } from '@/host/i18n/plugin'
 
 import { INPUTMODE } from '@/common/components/textbox'
 import { SIZE } from '@/common/components/textbox'
 import { TYPE } from '@/common/components/textbox'
+
+import _i18n from './i18n'
 
 const KEYS_MANIPULATORS = ['Backspace', 'Delete', 'Enter', 'ArrowLeft', 'ArrowRight']
 const KEYS_MODIFIERS = ['Alt', 'CapsLock', 'Control', 'Shift', 'Meta']

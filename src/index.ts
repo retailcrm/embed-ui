@@ -1,9 +1,4 @@
-import type { Channel } from '@omnicajs/vue-remote/remote'
-
-import type {
-  Endpoint,
-  MessageEndpoint,
-} from '@remote-ui/rpc'
+import type { Endpoint, MessageEndpoint } from '@remote-ui/rpc'
 
 import type { Callable } from '~types/host/callable'
 
@@ -15,26 +10,19 @@ import type {
 
 import type { SchemaList } from '@retailcrm/embed-ui-v1-contexts/types'
 
-import type {
-  WidgetRunner,
-  WidgetTarget,
-} from '~types/widget'
+import type { WidgetRunner, WidgetTarget } from '~types/widget'
 
-import {
-  createEndpoint,
-  release,
-  retain,
-} from '@remote-ui/rpc'
+import { createEndpoint, release, retain } from '@remote-ui/rpc'
 
 import { createPinia } from 'pinia'
 
-import {
-  createRemoteRenderer,
-  createRemoteRoot,
-} from '@omnicajs/vue-remote/remote'
-
-import { injectEndpoint } from '@retailcrm/embed-ui-v1-contexts/remote'
+import { createRemoteRenderer } from '@omnicajs/vue-remote/remote'
 import { injectAccessor } from '@retailcrm/embed-ui-v1-contexts/remote/custom'
+import { injectEndpoint } from '@retailcrm/embed-ui-v1-contexts/remote'
+import { mountEndpointRoot } from '@retailcrm/embed-ui-v1-components/remote'
+
+type EndpointChannel = Parameters<typeof mountEndpointRoot>[0]
+type WidgetEndpointRoot = Parameters<typeof createRemoteRenderer>[0]
 
 export {
   schema as customerCardSchema,
@@ -68,46 +56,6 @@ export {
 
 export * from '@/composables'
 
-const createRoot = async (channel: Channel) => {
-  const root = createRemoteRoot(channel, {
-    components: [
-      'UiAvatar',
-      'UiAvatarList',
-      'UiButton',
-      'UiCheckbox',
-      'UiCopyButton',
-      'UiDate',
-      'UiError',
-      'UiImage',
-      'UiLink',
-      'UiLoader',
-      'UiMenuItem',
-      'UiMenuItemGroup',
-      'UiModalSidebar',
-      'UiModalWindow',
-      'UiModalWindowSurface',
-      'UiPopper',
-      'UiPopperConnector',
-      'UiPopperTarget',
-      'UiRadio',
-      'UiScrollBox',
-      'UiSelectPopper',
-      'UiSelectTrigger',
-      'UiTag',
-      'UiTextbox',
-      'UiToolbarButton',
-      'UiToolbarLink',
-      'UiTooltip',
-      'UiTransition',
-      'UiYandexMap',
-    ],
-  })
-
-  await root.mount()
-
-  return root
-}
-
 type HostCallable<M extends ContextSchemaList = ContextSchemaList> = ContextAccessor<M> & CustomContextAccessor & Callable
 
 export const createWidgetEndpoint = (
@@ -123,11 +71,10 @@ export const createWidgetEndpoint = (
   let onRelease = () => {}
 
   endpoint.expose({
-    async run (channel: Channel, target: WidgetTarget) {
+    async run (channel: EndpointChannel, target: WidgetTarget) {
       retain(channel)
 
-      const root = await createRoot(channel)
-      await root.mount()
+      const root = await mountEndpointRoot(channel) as WidgetEndpointRoot
 
       const { createApp } = createRemoteRenderer(root)
 

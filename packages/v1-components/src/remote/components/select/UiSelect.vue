@@ -50,43 +50,43 @@
 </template>
 
 <script lang="ts" setup>
+import type { I18nLocalized } from '@/host/i18n'
 import type { Option } from '@/host/components/select/injection'
 import type { PropType } from 'vue'
 import type { Trigger } from '@/common/components/popper'
 import type { TriggerSchema } from '@/common/components/popper'
 import type { UiSelectPopperProperties } from '@/common/components/select'
-import type { I18nLocalized } from '@/host/i18n'
 
 type A<T> = T extends unknown[] ? T : T[]
-
-import { UiPopperConnector } from '@/remote/components/popper'
-import { UiSelectPopper } from './parts'
-import { UiSelectTrigger } from './parts'
 
 import { computed } from 'vue'
 import { inject } from 'vue'
 import { provide } from 'vue'
-import { ref } from 'vue'
 import { reactive } from 'vue'
+import { ref } from 'vue'
 import { watch } from 'vue'
+
+import { UiPopperConnector } from '@/remote/components/popper'
 
 import _18n from '@/host/components/select/i18n'
 
 import { PLACEMENT } from '@/common/components/select'
 import { SIZE } from '@/common/components/textbox'
 
+import { FilteredKey, FilterKey } from '@/host/components/select/injection'
+import { I18nInjectKey } from '@/host/i18n/plugin'
 import {
   IsSelectedKey,
+  MultipleKey,
   RegisterKey,
   SyncKey,
-  UnregisterKey,
-  ToggleKey,
-  FilterKey,
-  FilteredKey,
   TickerKey,
-  MultipleKey,
+  ToggleKey,
+  UnregisterKey,
 } from '@/host/components/select/injection'
-import { I18nInjectKey } from '@/host/i18n/plugin'
+
+import { UiSelectPopper } from './parts'
+import { UiSelectTrigger } from './parts'
 
 const props = defineProps({
   /** Атрибут id корневого элемента выпадающего списка. Должен быть уникальным на странице */

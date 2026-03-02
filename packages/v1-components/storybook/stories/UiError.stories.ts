@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 
 import UiError from '@/host/components/error/UiError.vue'
 
-import page from './UiError.mdx'
-
 import { ALIGN } from '@/common/components/error'
+
+import page from './UiError.mdx'
 
 const meta = {
   title: 'Components/UiError',

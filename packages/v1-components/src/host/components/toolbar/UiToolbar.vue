@@ -5,15 +5,9 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
 
-import {
-  computed,
-  provide,
-} from 'vue'
+import { computed, provide } from 'vue'
 
-import {
-  ToolbarInjectKeys,
-  SIZE,
-} from './inject'
+import { SIZE, ToolbarInjectKeys } from './inject'
 
 const props = defineProps({
   size: {

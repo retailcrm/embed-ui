@@ -1,5 +1,7 @@
-import { defineConfig } from 'vite'
 import { join, resolve } from 'node:path'
+
+import { defineConfig } from 'vite'
+
 import svg from 'vite-svg-loader'
 import vue from '@vitejs/plugin-vue'
 

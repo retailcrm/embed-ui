@@ -9,10 +9,7 @@ import type {
   SerializedKeyboardEvent,
 } from '@omnicajs/vue-remote/types/events'
 
-import type {
-  UiTextboxMethods,
-  UiTextboxProperties,
-} from '@/common/components/textbox'
+import type { UiTextboxMethods, UiTextboxProperties } from '@/common/components/textbox'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

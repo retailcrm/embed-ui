@@ -1,9 +1,9 @@
-import * as ts from 'typescript'
-
 import * as fs from 'fs'
 import * as path from 'node:path'
 
 import { fileURLToPath } from 'node:url'
+
+import * as ts from 'typescript'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const __root = path.resolve(__dirname, '..')

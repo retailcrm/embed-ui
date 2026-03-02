@@ -10,15 +10,11 @@
 import type { Dimensions } from '@/common/preview'
 import type { PropType } from 'vue'
 
-import { ImageWorkersKey } from '@/common/preview'
-
-import {
-  computed,
-  inject,
-  ref,
-} from 'vue'
+import { computed, inject, ref } from 'vue'
 
 import { preview } from '@retailcrm/image-preview'
+
+import { ImageWorkersKey } from '@/common/preview'
 
 const props = defineProps({
   alt: {

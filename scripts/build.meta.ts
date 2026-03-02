@@ -2,20 +2,13 @@ import * as fs from 'node:fs'
 
 import { fileURLToPath } from 'node:url'
 
-import {
-  dirname,
-  join,
-  resolve,
-} from 'node:path'
-
-import { keysOf } from '@/utilities'
+import { dirname, join, resolve } from 'node:path'
 
 import basic from '@retailcrm/embed-ui-v1-contexts/dist/meta.json'
 
-import {
-  targetListDocumentation,
-  pageListDocumentation,
-} from '~meta'
+import { pageListDocumentation, targetListDocumentation } from '~meta'
+
+import { keysOf } from '@/utilities'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

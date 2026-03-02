@@ -1,11 +1,8 @@
-import type {
-  ExecOptions,
-  PromiseWithChild,
-} from 'node:child_process'
+import type Logger from './Logger'
+
+import type { ExecOptions, PromiseWithChild } from 'node:child_process'
 
 import type { ObjectEncodingOptions } from 'node:fs'
-
-import type Logger from './Logger'
 
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'

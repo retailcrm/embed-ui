@@ -25,11 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  Alignment,
-  Side,
-  Strategy,
-} from '@floating-ui/dom'
+import type { Alignment, Side, Strategy } from '@floating-ui/dom'
 
 import type { Numeric } from '@/common/types'
 
@@ -42,9 +38,6 @@ import type {
 } from '@/common/components/popper'
 
 import type { PropType, Ref } from 'vue'
-
-import Listener from './Listener'
-import Scheduler from './Scheduler'
 
 import {
   computed,
@@ -60,18 +53,20 @@ import {
 
 import isEqual from 'lodash.isequal'
 
-import {
-  isPlacementLiteral,
-  isPlacementOptions,
-} from '@/common/components/popper'
-
 import { autoUpdate } from '@floating-ui/dom'
-import { move } from './floating'
+
+import { isPlacementLiteral, isPlacementOptions } from '@/common/components/popper'
+
 import { useTarget } from '@/host/components/popper/composables'
 
-import * as globalEvents from './globalEvents'
-
 import { ProcessedByPopperKey } from '@/common/components/popper'
+
+import Listener from './Listener'
+import Scheduler from './Scheduler'
+
+import { move } from './floating'
+
+import * as globalEvents from './globalEvents'
 
 const props = defineProps({
   /** Флаг для ручного переключения видимости */

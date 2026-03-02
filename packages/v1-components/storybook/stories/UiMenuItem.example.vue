@@ -28,11 +28,11 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
 
-import IconUserOutlined from '~assets/sprites/user/user-outlined.svg'
 import IconCheckmarkCircle from '~assets/sprites/actions/checkmark-circle.svg'
+import IconUserOutlined from '~assets/sprites/user/user-outlined.svg'
 
-import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
 import UiAvatar from '@/host/components/avatar/UiAvatar.vue'
+import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
 
 import { SIZE } from '@/common/components/menu'
 

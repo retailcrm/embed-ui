@@ -1,7 +1,4 @@
-import type {
-  CreateAppFunction,
-  Component,
-} from 'vue'
+import type { Component, CreateAppFunction } from 'vue'
 
 import type { Channel } from '@omnicajs/vue-remote/dist/remote'
 

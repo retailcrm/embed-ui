@@ -104,10 +104,7 @@ import type { PropType } from 'vue'
 import type { SerializedDOMRect } from '@/common/types'
 import type { UiModalWindowMethods } from '@/common/components/modal-window'
 
-import {
-  reactive,
-  watch,
-} from 'vue'
+import { reactive, watch } from 'vue'
 
 import UiModalWindowSurface from './UiModalWindowSurface.vue'
 import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
@@ -118,10 +115,7 @@ import IconWarning from '~assets/sprites/alerts/warning.svg'
 import { expect } from '@/common/utils'
 import uid from '@/host/uid'
 
-import {
-  APPEARANCE,
-  SCROLLING,
-} from '@/common/components/modal-window'
+import { APPEARANCE, SCROLLING } from '@/common/components/modal-window'
 
 const props = defineProps({
   /** Атрибут id корневого элемента модального окна. Должен быть уникальным на странице */

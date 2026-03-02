@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 
 import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
 
-import page from './UiMenuItem.mdx'
-
 import { SIZE } from '@/common/components/menu'
+
+import page from './UiMenuItem.mdx'
 
 const meta = {
   id: 'UiMenuItem',

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import { createApp, h, ref } from 'vue'
 import { v4 } from 'uuid'
+
 import { ImageWorkersKey } from '../src/common/preview'
 
 export default ({ is, children, tag, ...props }) => {

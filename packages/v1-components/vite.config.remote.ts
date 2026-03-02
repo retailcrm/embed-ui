@@ -1,19 +1,12 @@
-import {
-  defineConfig,
-  mergeConfig,
-} from 'vite'
-
 import { resolve } from 'node:path'
+
+import { defineConfig, mergeConfig } from 'vite'
 
 import dts from 'vite-plugin-dts'
 
 import basic from './vite.config.basic'
 
-import {
-  name,
-  dependencies,
-  peerDependencies,
-} from './package.json'
+import { dependencies, name, peerDependencies } from './package.json'
 
 // noinspection JSUnusedGlobalSymbols
 export default mergeConfig(basic, defineConfig({

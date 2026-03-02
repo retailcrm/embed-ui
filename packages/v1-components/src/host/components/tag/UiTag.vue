@@ -57,11 +57,7 @@
 import type { I18nLocalized } from '@/host/i18n'
 import type { PropType } from 'vue'
 
-import {
-  computed,
-  inject,
-  ref,
-} from 'vue'
+import { computed, inject, ref } from 'vue'
 
 import IconClear from '~assets/sprites/actions/clear.svg'
 import IconPinned from '~assets/sprites/map-and-places/pinned.svg'

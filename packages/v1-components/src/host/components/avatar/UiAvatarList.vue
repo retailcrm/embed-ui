@@ -19,16 +19,13 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
 
+import { computed, provide } from 'vue'
+
 import UiAvatar from './UiAvatar.vue'
 
-import {
-  computed,
-  provide,
-} from 'vue'
+import { SIZE } from '@/common/components/avatar'
 
 import { AvatarSizeKey } from './injection'
-
-import { SIZE } from '@/common/components/avatar'
 
 const props = defineProps({
   /** Список аватарок пользователей */

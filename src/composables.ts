@@ -19,22 +19,17 @@ import type { CustomContextStore } from '@retailcrm/embed-ui-v1-contexts/remote/
 
 import type { Endpoint, RemoteCallable } from '@remote-ui/rpc'
 
+import type { ComputedRef, WritableComputedRef } from 'vue'
+
 import { Router } from '@omnicajs/symfony-router'
 
-import type {
-  ComputedRef,
-  WritableComputedRef,
-} from 'vue'
-
-import {
-  computed,
-  shallowRef,
-  watch,
-} from 'vue'
+import { computed, shallowRef, watch } from 'vue'
 
 import { defineStore } from 'pinia'
 
-import { useContext as useSettings } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
+import {
+  useContext as useSettings,
+} from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
 type Computed<S extends ContextSchema, F extends keyof S> = IsReadonly<S[F]> extends true
   ? ComputedRef<TypeOf<S[F]>>

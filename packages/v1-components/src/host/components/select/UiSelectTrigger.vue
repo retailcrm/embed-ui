@@ -69,8 +69,9 @@ import {
   watch,
 } from 'vue'
 
-import { UiTextbox } from '@/host'
 import IconCaret from '~assets/sprites/arrows/caret-down.svg'
+
+import { UiTextbox } from '@/host'
 
 import _i18n from '@/host/components/select/i18n'
 

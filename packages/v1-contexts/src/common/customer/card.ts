@@ -6,10 +6,10 @@ import type {
 import type { Schema } from '~types/customer/card'
 
 import {
+  arrayOf,
   isNull,
   isNumber,
   isString,
-  arrayOf,
   oneOf,
 } from '@/predicates'
 

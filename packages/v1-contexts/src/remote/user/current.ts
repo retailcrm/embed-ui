@@ -1,9 +1,6 @@
 import { defineContext } from '@/remote'
 
-import {
-  id,
-  schema,
-} from '@/common/user/current'
+import { id, schema } from '@/common/user/current'
 
 export { schema }
 

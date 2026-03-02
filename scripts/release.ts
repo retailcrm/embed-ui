@@ -1,26 +1,21 @@
-import type {
-  Dependencies,
-  Manifest,
-} from '@modulify/pkg/types/manifest'
+import type { Dependencies, Manifest } from '@modulify/pkg/types/manifest'
+
+import { relative } from 'node:path'
 
 import { GitCommander } from '@modulify/git-toolkit'
+
+import chalk from 'chalk'
+
+import { read, update, walk } from '@modulify/pkg'
+
+import figures from 'figures'
 
 import ChangelogWriter from './lib/ChangelogWriter'
 import Logger from './lib/Logger'
 import Runner from './lib/Runner'
 import VersionGenerator from './lib/VersionGenerator'
 
-import chalk from 'chalk'
-import { relative } from 'node:path'
-
-import {
-  read,
-  update,
-  walk,
-} from '@modulify/pkg'
-
 import args from './args/release'
-import figures from 'figures'
 
 import { DEFAULTS } from './args/release'
 

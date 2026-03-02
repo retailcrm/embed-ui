@@ -1,8 +1,10 @@
 import { createRequire } from 'module'
 import { dirname } from 'node:path'
-import { defineMain } from '@storybook/vue3-vite/node'
+
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
+
+import { defineMain } from '@storybook/vue3-vite/node'
 
 import remarkGfm from 'remark-gfm'
 

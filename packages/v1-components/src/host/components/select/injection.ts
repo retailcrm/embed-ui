@@ -1,7 +1,4 @@
-import type {
-  InjectionKey,
-  ComputedRef,
-} from 'vue'
+import type { ComputedRef, InjectionKey } from 'vue'
 
 export type Option = {
   id: string;

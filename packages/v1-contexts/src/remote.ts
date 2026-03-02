@@ -1,4 +1,6 @@
 import type {
+  ActionList,
+  ActionSchema,
   Context,
   ContextAccessor,
   ContextSchema,
@@ -6,8 +8,6 @@ import type {
   EventMap,
   Rejection,
   RejectionHandler,
-  ActionList,
-  ActionSchema,
   TypeOf,
   Writable,
 } from '@retailcrm/embed-ui-v1-types/context'
@@ -17,6 +17,7 @@ import type { Maybe } from '@retailcrm/embed-ui-v1-types/scaffolding'
 import type { PiniaPluginContext } from 'pinia'
 
 import { defineStore } from 'pinia'
+
 import { keysOf } from '@/utilities'
 
 declare module 'pinia' {

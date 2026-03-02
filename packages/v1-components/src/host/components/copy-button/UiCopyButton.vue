@@ -50,16 +50,12 @@
 import type { PropType } from 'vue'
 import type { TooltipOptions } from '@/common/components/copy-button'
 
+import { computed, onMounted, ref } from 'vue'
+
 import IconCheckmarkCircleOutlined from '~assets/sprites/actions/checkmark-circle-outlined.svg'
 import IconCopy from '~assets/sprites/media-and-editing/copy.svg'
 import UiButton from '@/host/components/button/UiButton.vue'
 import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
-
-import {
-  computed,
-  onMounted,
-  ref,
-} from 'vue'
 
 import { SIZE } from '@/common/components/button'
 

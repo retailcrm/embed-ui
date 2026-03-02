@@ -1,9 +1,7 @@
 import type { RemoteProperties } from '@/remote/scaffolding'
 import type { SchemaType } from '@omnicajs/vue-remote/remote'
 
-import type {
-  UiPopperProperties,
-} from '@/common/components/popper'
+import type { UiPopperProperties } from '@/common/components/popper'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

@@ -1,15 +1,12 @@
 import {
-  isNumber,
-  isShape,
-  isString,
-} from '@/predicates'
-import {
   assertType,
   describe,
   expectTypeOf,
   it,
   test,
 } from 'vitest'
+
+import { isNumber, isShape, isString } from '@/predicates'
 
 type InferShape<S> = S extends (value: unknown) => value is infer U
   ? U

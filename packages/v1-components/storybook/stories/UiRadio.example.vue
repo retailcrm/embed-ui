@@ -24,9 +24,9 @@
 </template>
 
 <script lang="ts" setup>
-import UiRadio from '@/host/components/radio/UiRadio.vue'
-
 import { ref } from 'vue'
+
+import UiRadio from '@/host/components/radio/UiRadio.vue'
 
 type Option = {
   label: string;

@@ -10,31 +10,8 @@ import type {
 
 import type { Endpoint } from '@remote-ui/rpc'
 
-import {
-  createContextAccessor,
-  createCustomContextAccessor,
-  createGetter,
-  createSetter,
-  LogicalError,
-} from '@/host'
-
-import {
-  defineActions,
-  defineContext,
-  injectEndpoint,
-} from '@/remote'
-
-import {
-  injectAccessor,
-  useContext,
-  useDictionary,
-} from '@/remote/custom'
-
-import {
-  createPinia,
-  setActivePinia,
-} from 'pinia'
 import { createApp } from 'vue'
+import { createPinia, setActivePinia } from 'pinia'
 
 import {
   beforeEach,
@@ -43,6 +20,18 @@ import {
   test,
   vi,
 } from 'vitest'
+
+import {
+  createContextAccessor,
+  createCustomContextAccessor,
+  createGetter,
+  createSetter,
+  LogicalError,
+} from '@/host'
+
+import { defineActions, defineContext, injectEndpoint } from '@/remote'
+
+import { injectAccessor, useContext, useDictionary } from '@/remote/custom'
 
 const actionSchema = {
   save: {

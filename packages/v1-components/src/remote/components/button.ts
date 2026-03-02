@@ -7,10 +7,7 @@ import type {
   SerializedFocusEvent,
 } from '@omnicajs/vue-remote/types/events'
 
-import type {
-  UiButtonProperties,
-  UiButtonMethods,
-} from '@/common/components/button'
+import type { UiButtonMethods, UiButtonProperties } from '@/common/components/button'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

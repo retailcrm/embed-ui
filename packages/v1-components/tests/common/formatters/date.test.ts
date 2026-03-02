@@ -2,14 +2,14 @@ import { describe, expect, test } from 'vitest'
 
 import { mount } from '@vue/test-utils'
 
+import { createI18n } from 'vue-i18n'
+import { h, nextTick } from 'vue'
+
 import {
   formatDate,
   formatDateTime,
   formatTime,
 } from '../../../src/common/formatters/date'
-
-import { createI18n } from 'vue-i18n'
-import { h, nextTick } from 'vue'
 
 describe('common/formatters/date', () => {
   describe('formatDate', () => {

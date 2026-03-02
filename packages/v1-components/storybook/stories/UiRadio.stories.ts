@@ -1,13 +1,11 @@
-import type {
-  Meta,
-  StoryObj,
-} from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 import type { UiRadioProperties } from '@/common/components/radio'
 
+import { computed, ref } from 'vue'
+
 import UiRadio from '@/host/components/radio/UiRadio.vue'
 
-import { computed, ref } from 'vue'
 import { without } from '@/common/utils'
 
 import page from './UiRadio.mdx'

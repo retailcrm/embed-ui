@@ -1,8 +1,6 @@
+import { join, resolve } from 'node:path'
+
 import { defineConfig } from 'vite'
-import {
-  join,
-  resolve,
-} from 'node:path'
 
 export default defineConfig({
   plugins: [],

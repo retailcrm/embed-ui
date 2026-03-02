@@ -5,12 +5,9 @@ import type {
   FieldSetters,
 } from '@retailcrm/embed-ui-v1-types/context'
 
-import {
-  createGetter,
-  createSetter,
-} from '@/host'
-
 import { createHandler } from '@retailcrm/embed-ui-v1-testing/lib/createHandler'
+
+import { createGetter, createSetter } from '@/host'
 
 export const createAccessor = <S extends ContextSchema>(
   id: string,

@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 
 import UiAvatar from '@/host/components/avatar/UiAvatar.vue'
 
-import page from './UiAvatar.mdx'
+import { SIZE, STATUS } from '@/common/components/avatar'
 
-import { STATUS, SIZE } from '@/common/components/avatar'
+import page from './UiAvatar.mdx'
 
 const meta = {
   title: 'Components/UiAvatar',

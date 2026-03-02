@@ -2,8 +2,8 @@ import type {
   ContextSchema,
   EventHandler,
   EventMap,
-  TypeOf,
   FieldGetters,
+  TypeOf,
 } from '@retailcrm/embed-ui-v1-types/context'
 
 import { retain } from '@remote-ui/rpc'

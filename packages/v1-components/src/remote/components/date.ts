@@ -1,9 +1,7 @@
 import type { RemoteProperties } from '@/remote/scaffolding'
 import type { SchemaType } from '@omnicajs/vue-remote/remote'
 
-import type {
-  UiDateProperties,
-} from '@/common/components/date'
+import type { UiDateProperties } from '@/common/components/date'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

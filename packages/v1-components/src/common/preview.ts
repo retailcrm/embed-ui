@@ -1,9 +1,6 @@
 import type { InjectionKey, Ref } from 'vue'
 
-import {
-  inject,
-  ref,
-} from 'vue'
+import { inject, ref } from 'vue'
 
 import { preview } from '@retailcrm/image-preview'
 

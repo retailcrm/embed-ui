@@ -30,11 +30,7 @@
 </template>
 
 <script lang="ts" setup>
-import type {
-  Alignment,
-  Side,
-  Strategy,
-} from '@floating-ui/dom'
+import type { Alignment, Side, Strategy } from '@floating-ui/dom'
 
 import type { Numeric } from '@/common/types'
 
@@ -47,16 +43,11 @@ import type {
 
 import type { PropType, Ref } from 'vue'
 
+import { ref } from 'vue'
+
 import UiPopper from '@/host/components/popper/UiPopper.vue'
 
-import {
-  ref,
-} from 'vue'
-
-import {
-  isPlacementLiteral,
-  isPlacementOptions,
-} from '@/common/components/popper'
+import { isPlacementLiteral, isPlacementOptions } from '@/common/components/popper'
 
 defineProps({
   /** Флаг для ручного переключения видимости */

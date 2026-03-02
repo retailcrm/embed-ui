@@ -1,8 +1,4 @@
-import type {
-  Trigger,
-  TriggerHandler,
-  TriggerSchema,
-} from '@/common/components/popper'
+import type { Trigger, TriggerHandler, TriggerSchema } from '@/common/components/popper'
 
 import isEqual from 'lodash.isequal'
 

@@ -31,15 +31,9 @@ import UiButton from '@/host/components/button/UiButton.vue'
 import { isURL } from '@/common/predicate'
 import { without } from '@/common/utils'
 
-import {
-  SIZE,
-  VARIANT,
-} from '@/common/components/button'
+import { SIZE, VARIANT } from '@/common/components/button'
 
-import {
-  useToolbarSize,
-  SIZE as TOOLBAR_SIZE,
-} from '@/host/components/toolbar/inject'
+import { SIZE as TOOLBAR_SIZE, useToolbarSize } from '@/host/components/toolbar/inject'
 
 defineProps({
   /** Устанавливает атрибут href якоря */

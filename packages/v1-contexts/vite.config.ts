@@ -1,16 +1,10 @@
-import {
-  defineConfig,
-  mergeConfig,
-} from 'vite'
+import * as path from 'node:path'
+
+import { defineConfig, mergeConfig } from 'vite'
 
 import dts from 'vite-plugin-dts'
 
-import * as path from 'node:path'
-
-import {
-  name,
-  peerDependencies,
-} from './package.json'
+import { name, peerDependencies } from './package.json'
 
 import basic from './vite.config.basic'
 

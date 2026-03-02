@@ -1,9 +1,9 @@
 import type { ActionSchema } from '@retailcrm/embed-ui-v1-types/context'
 
 import type {
-  ObjectDescription,
   ContextSchemaDescription,
   ContextSchemaUsage,
+  ObjectDescription,
 } from '@retailcrm/embed-ui-v1-types/context-doc'
 
 import type { KnownTypes } from '~generated/order/card.d.ts'

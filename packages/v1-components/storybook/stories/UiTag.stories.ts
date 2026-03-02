@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 
 import UiTag from '@/host/components/tag/UiTag.vue'
 
-import page from './UiTag.mdx'
-
 import { SIZE } from '@/common/components/tag'
+
+import page from './UiTag.mdx'
 
 const meta = {
   title: 'Components/UiTag',

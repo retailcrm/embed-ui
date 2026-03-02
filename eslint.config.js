@@ -1,12 +1,18 @@
+import { defineConfig } from 'eslint/config'
+
 import globals from 'globals'
 
+import pluginDependencies from '@omnicajs/eslint-plugin-dependencies'
 import pluginJs from '@eslint/js'
 import pluginTs from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
 
-export default [
+export default defineConfig([
   { files: ['**/*.{js,mjs,cjs,ts}'] },
   {
+    plugins: {
+      dependencies: pluginDependencies,
+    },
     languageOptions: {
       globals: {
         ymaps3: true,
@@ -63,6 +69,61 @@ export default [
         fixStyle: 'separate-type-imports',
       }],
       '@typescript-eslint/naming-convention': 'off',
+
+      'dependencies/import-style': ['error', {
+        maxSingleLineLength: 90,
+        maxSingleLineSpecifiers: 3,
+      }],
+      'dependencies/separate-type-imports': 'error',
+      'dependencies/separate-type-partitions': 'error',
+      'dependencies/sort-named-imports': ['error', {
+        type: 'alphabetical',
+        ignoreAlias: true,
+      }],
+      'dependencies/sort-imports': ['error', {
+        type: 'alphabetical',
+        imports: {
+          orderBy: 'alias',
+          splitDeclarations: true,
+        },
+        groups: [
+          'side-effect-style',
+          'side-effect',
+          [
+            'type-import',
+            'type-external',
+            'type-vue-components',
+            'type-internal',
+            'type-parent',
+            'type-sibling',
+            'type-index',
+          ],
+          'builtin',
+          'value-external',
+          'value-vue-components',
+          'value-internal',
+          ['value-parent', 'value-sibling'],
+          'index',
+          'ts-equals-import',
+          'unknown',
+        ],
+        customGroups: [{
+          groupName: 'type-vue-components',
+          selector: 'type',
+          elementNamePattern: ['\\.(svg|vue)$'],
+        }, {
+          groupName: 'value-vue-components',
+          elementNamePattern: ['\\.(svg|vue)$'],
+        }],
+        newlinesInside: 1,
+        partitions: {
+          orderBy: 'type-first',
+          splitBy: {
+            comments: false,
+            newlines: true,
+          },
+        },
+      }],
     },
   },
   pluginJs.configs.recommended,
@@ -111,4 +172,4 @@ export default [
   },
   { ignores: ['dist/*'] },
   { ignores: ['**/dist/*'] },
-]
+])

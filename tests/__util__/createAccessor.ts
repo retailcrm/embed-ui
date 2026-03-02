@@ -5,10 +5,7 @@ import type {
   FieldSetters,
 } from '@retailcrm/embed-ui-v1-types/context'
 
-import {
-  createGetter,
-  createSetter,
-} from '@retailcrm/embed-ui-v1-contexts/host'
+import { createGetter, createSetter } from '@retailcrm/embed-ui-v1-contexts/host'
 
 import { createHandler } from '@retailcrm/embed-ui-v1-testing/lib/createHandler'
 

@@ -1,13 +1,11 @@
-import type {
-  Meta,
-  StoryObj,
-} from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3'
 
 import type { UiCheckboxProperties } from '@/common/components/checkbox'
 
+import { computed, ref } from 'vue'
+
 import UiCheckbox from '@/host/components/checkbox/UiCheckbox.vue'
 
-import { computed, ref } from 'vue'
 import { without } from '@/common/utils'
 
 import page from './UiCheckbox.mdx'

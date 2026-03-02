@@ -7,10 +7,7 @@ import type {
   SerializedFocusEvent,
 } from '@omnicajs/vue-remote/types/events'
 
-import type {
-  UiRadioProperties,
-  UiRadioMethods,
-} from '@/common/components/radio'
+import type { UiRadioMethods, UiRadioProperties } from '@/common/components/radio'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

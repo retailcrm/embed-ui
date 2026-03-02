@@ -56,21 +56,23 @@
 import type { Dimensions } from '@/common/preview'
 import type { PropType } from 'vue'
 
+import {
+  computed,
+  inject,
+  ref,
+  useSlots,
+} from 'vue'
+
 import IconHelpOutlined from '../../../../assets/sprites/actions/help-outlined.svg'
 import SpriteBAD from '../../../../assets/sprites/user/bad.svg'
 import SpriteVIP from '../../../../assets/sprites/user/vip.svg'
 import UiImage from '@/host/components/image/UiImage.vue'
 
-import { computed, inject, ref, useSlots } from 'vue'
-
 import { isURL } from '@/common/predicate'
 
-import { AvatarSizeKey } from './injection'
+import { SIZE, STATUS } from '@/common/components/avatar'
 
-import {
-  SIZE,
-  STATUS,
-} from '@/common/components/avatar'
+import { AvatarSizeKey } from './injection'
 
 const firstLetterOf = (name: string) => name.charAt(0).toUpperCase()
 

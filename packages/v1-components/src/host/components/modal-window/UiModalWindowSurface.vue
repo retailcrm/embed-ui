@@ -1,16 +1,12 @@
 <script lang="ts" setup>
 import type { PropType, VNode } from 'vue'
 
-import type { Layer } from '@/host/components/modal/layer'
 import type { EmbedModal } from '@/host/components/modal/plugin'
+import type { Layer } from '@/host/components/modal/layer'
 
 import type { UiModalWindowSurfaceMethods } from '@/common/components/modal-window'
 
-import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
-import UiTransition from '@/host/components/transition/UiTransition.vue'
-
 import {
-  Teleport,
   computed,
   h,
   inject,
@@ -20,12 +16,16 @@ import {
   onMounted,
   reactive,
   ref,
+  Teleport,
   useAttrs,
   useSlots,
   vShow,
   watch,
   withDirectives,
 } from 'vue'
+
+import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
+import UiTransition from '@/host/components/transition/UiTransition.vue'
 
 import { expect } from '@/common/utils'
 import { nextAnimationFrame } from '@/host/dom'
@@ -35,10 +35,7 @@ import { layers } from '@/host/components/modal/layer'
 
 import { ModalInjectKey } from '@/host/components/modal/plugin'
 
-import {
-  APPEARANCE,
-  SCROLLING,
-} from '@/common/components/modal-window'
+import { APPEARANCE, SCROLLING } from '@/common/components/modal-window'
 
 const props = defineProps({
   /** Атрибут id корневого элемента модального окна. Должен быть уникальным на странице */

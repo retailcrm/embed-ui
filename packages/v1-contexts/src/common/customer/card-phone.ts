@@ -5,10 +5,7 @@ import type {
 
 import type { Schema } from '~types/customer/card-phone'
 
-import {
-  isNumber,
-  isString,
-} from '@/predicates'
+import { isNumber, isString } from '@/predicates'
 
 export const id = 'customer/card:phone'
 

@@ -1,14 +1,8 @@
-import {
-  join,
-  resolve,
-} from 'node:path'
+import { join, resolve } from 'node:path'
 
 import { defineConfig } from 'vite'
 
-import {
-  dependencies,
-  peerDependencies,
-} from './package.json'
+import { dependencies, peerDependencies } from './package.json'
 
 export default defineConfig({
   resolve: {

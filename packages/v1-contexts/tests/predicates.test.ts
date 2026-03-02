@@ -1,15 +1,11 @@
+import { describe, expect, test } from 'vitest'
+
 import {
-  isNumeric,
   isNumber,
+  isNumeric,
   isShape,
   isString,
 } from '@/predicates'
-
-import {
-  describe,
-  expect,
-  test,
-} from 'vitest'
 
 describe('isShape', () => {
   const isMoney = isShape({

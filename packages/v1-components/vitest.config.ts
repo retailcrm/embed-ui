@@ -1,6 +1,6 @@
-import { defineConfig, mergeConfig } from 'vitest/config'
-
 import { join } from 'node:path'
+
+import { defineConfig, mergeConfig } from 'vitest/config'
 
 import basic from './vite.config.basic'
 

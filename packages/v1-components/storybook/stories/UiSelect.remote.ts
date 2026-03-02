@@ -1,12 +1,13 @@
+import { h } from 'vue'
+
+import IconError from '../../assets/sprites/alerts/error-outlined.svg'
+import IconNotification from '../../assets/sprites/alerts/notifications.svg'
+import IconWarning from '../../assets/sprites/alerts/warning.svg'
+
 import { UiSelect } from '../../src/remote/components/select'
 import { UiSelectOption } from '../../src/remote/components/select'
 
 import { createComponentEndpoint } from '../endpoint'
-import { h } from 'vue'
-
-import IconNotification from '../../assets/sprites/alerts/notifications.svg'
-import IconWarning from '../../assets/sprites/alerts/warning.svg'
-import IconError from '../../assets/sprites/alerts/error-outlined.svg'
 
 type UiSelectProps = InstanceType<typeof UiSelect>['$props']
 

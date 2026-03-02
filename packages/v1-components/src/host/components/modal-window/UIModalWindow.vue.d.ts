@@ -1,8 +1,8 @@
 import type { DefineComponent } from '@/common/vue'
 
 import type {
-  UiModalWindowProperties,
   UiModalWindowMethods,
+  UiModalWindowProperties,
 } from '@/common/components/modal-window'
 
 declare const UiModalWindow: DefineComponent<

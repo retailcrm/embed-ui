@@ -1,5 +1,6 @@
-import { schema, routingDataDefaults } from '@/common/settings'
 import { expect, test } from 'vitest'
+
+import { routingDataDefaults, schema } from '@/common/settings'
 
 test('accepts default routing data', () => {
   expect(schema['system.routing'].accepts(routingDataDefaults)).toBe(true)

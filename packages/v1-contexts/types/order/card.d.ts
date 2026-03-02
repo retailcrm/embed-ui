@@ -1,5 +1,5 @@
-import type { Money } from '@retailcrm/embed-ui-v1-types/domain'
 import type { Dimensions } from '@retailcrm/embed-ui-v1-types/domain'
+import type { Money } from '@retailcrm/embed-ui-v1-types/domain'
 import type { Weight } from '@retailcrm/embed-ui-v1-types/domain'
 
 import type { Field, ReadonlyField } from '@retailcrm/embed-ui-v1-types/context'

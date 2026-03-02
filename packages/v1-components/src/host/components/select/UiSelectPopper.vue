@@ -40,25 +40,26 @@
 <script lang="ts" setup>
 import type { Alignment } from '@floating-ui/dom'
 import type { CSSProperties } from 'vue'
+import type { PlacementOptions } from '@/common/components/popper'
 import type { PropType } from 'vue'
 import type { Side } from '@floating-ui/dom'
-import type { UiPopperProperties ,
-  PlacementOptions,
+import type {
   Trigger,
-  TriggerSchema } from '@/common/components/popper'
-
-import {
-  isPlacementLiteral,
-  isPlacementOptions,
+  TriggerSchema,
+  UiPopperProperties,
 } from '@/common/components/popper'
-
-import UiPopper from '@/host/components/popper/UiPopper.vue'
 
 import { computed } from 'vue'
 import { onMounted } from 'vue'
 import { ref } from 'vue'
-import { useElementRef } from '@/host/composables'
+
 import { watch } from 'vue'
+
+import UiPopper from '@/host/components/popper/UiPopper.vue'
+
+import { isPlacementLiteral, isPlacementOptions } from '@/common/components/popper'
+
+import { useElementRef } from '@/host/composables'
 
 import { PLACEMENT } from '@/common/components/select'
 

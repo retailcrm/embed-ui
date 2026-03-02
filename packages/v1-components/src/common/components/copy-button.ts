@@ -1,5 +1,5 @@
-import type { UiPopperProperties } from '@/common/components/popper'
 import type { SIZE } from '@/common/components/button'
+import type { UiPopperProperties } from '@/common/components/popper'
 
 export type TooltipOptions = Omit<
   UiPopperProperties,
