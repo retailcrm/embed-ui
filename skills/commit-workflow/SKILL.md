@@ -21,6 +21,7 @@ Use this skill when the user asks to:
 - Commit format: Conventional Commits.
 - Commit message language: English.
 - Allowed types: `feat`, `fix`, `build`, `ci`, `perf`, `docs`, `refactor`, `style`, `test`, `chore`.
+- Always keep commit type in lowercase (`feat`, `fix`, `build`, ...), even when the summary starts with uppercase.
 - Scope rule for workspace changes: use workspace folder name (not npm package name).
   - Current workspace scopes:
     - `v1-components`
