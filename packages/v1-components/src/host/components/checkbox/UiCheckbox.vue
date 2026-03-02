@@ -38,13 +38,14 @@ export default {}
 </script>
 
 <script lang="ts" setup>
-import type { PropType } from 'vue'
 import type { Primitive } from '@/common/types'
+import type { PropType } from 'vue'
 import type { UiCheckboxMethods } from '@/common/components/checkbox'
+
+import { computed } from 'vue'
 
 import IconDone from '~assets/sprites/actions/done.svg'
 
-import { computed } from 'vue'
 import { pick } from '@/common/utils'
 import { useElementRef } from '@/host/composables'
 

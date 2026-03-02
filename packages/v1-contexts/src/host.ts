@@ -20,8 +20,9 @@ import type {
 
 import type { If, IsTilda, Maybe } from '@retailcrm/embed-ui-v1-types/scaffolding'
 
+import { release, retain } from '@remote-ui/rpc'
+
 import { keysOf } from '@/utilities'
-import { retain, release } from '@remote-ui/rpc'
 
 export class HostError extends Error {
   constructor (message: string, previous: Error | undefined = undefined) {

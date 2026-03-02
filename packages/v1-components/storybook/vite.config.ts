@@ -1,7 +1,4 @@
-import {
-  defineConfig,
-  mergeConfig,
-} from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
 import svg from 'vite-svg-loader'
 import vue from '@vitejs/plugin-vue'
 

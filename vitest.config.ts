@@ -1,9 +1,6 @@
-import {
-  defineConfig,
-  defaultExclude,
-} from 'vitest/config'
-
 import { join } from 'node:path'
+
+import { defaultExclude, defineConfig } from 'vitest/config'
 
 import vue from '@vitejs/plugin-vue'
 
@@ -37,6 +34,7 @@ export default defineConfig({
       '.',
       'packages/v1-contexts',
       'packages/v1-components',
+      'packages/v1-pages',
     ],
   },
 })

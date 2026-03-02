@@ -1,15 +1,12 @@
 import type {
   Coords,
-  Placement,
   Middleware,
+  Placement,
   Side,
   Strategy,
 } from '@floating-ui/dom'
 
-import type {
-  Adaptation,
-  FloatingOptions,
-} from '@/common/components/popper'
+import type { Adaptation, FloatingOptions } from '@/common/components/popper'
 
 import {
   arrow as arrowMiddleware,

@@ -19,8 +19,6 @@ import type {
   YMapLocationRequest,
 } from '@yandex/ymaps3-types'
 
-import UiLoader from '@/host/components/loader/UiLoader.vue'
-
 import {
   computed,
   inject,
@@ -28,9 +26,11 @@ import {
   watch,
 } from 'vue'
 
-import { load as loadScript } from './loadScript'
+import UiLoader from '@/host/components/loader/UiLoader.vue'
 
 import { I18nInjectKey } from '@/host/i18n/plugin'
+
+import { load as loadScript } from './loadScript'
 
 type YMapNamespace = typeof ymaps3
 

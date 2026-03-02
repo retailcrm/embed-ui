@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 import type { UiYandexMapProperties } from '@/common/components/yandex-map'
 
-import UiYandexMap from '@/host/components/yandex-map/UiYandexMap.vue'
-
 import { ref } from 'vue'
+
+import UiYandexMap from '@/host/components/yandex-map/UiYandexMap.vue'
 
 import page from './UiYandexMap.mdx'
 

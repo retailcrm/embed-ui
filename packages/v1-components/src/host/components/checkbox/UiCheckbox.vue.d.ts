@@ -1,8 +1,8 @@
 import type { DefineComponent } from '@/common/vue'
 
 import type {
-  UiCheckboxProperties,
   UiCheckboxMethods,
+  UiCheckboxProperties,
 } from '@/common/components/checkbox'
 
 declare const UiCheckbox: DefineComponent<UiCheckboxProperties, UiCheckboxMethods>

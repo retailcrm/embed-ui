@@ -3,9 +3,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 import IconAdd from '~assets/sprites/actions/add.svg'
 import UiToolbarButton from '@/host/components/toolbar/UiToolbarButton.vue'
 
-import page from './UiToolbarButton.mdx'
-
 import { VARIANT } from '@/common/components/button'
+
+import page from './UiToolbarButton.mdx'
 
 const meta = {
   title: 'Components/UiToolbarButton',

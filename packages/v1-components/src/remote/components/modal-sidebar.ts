@@ -3,9 +3,9 @@ import type { SchemaType } from '@omnicajs/vue-remote/remote'
 
 import type { UiModalSidebarProperties } from '@/common/components/modal-sidebar'
 
-import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
-
 import type { CLOSE_METHOD } from '@/common/components/modal-sidebar'
+
+import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 
 export const UiModalSidebarType = 'UiModalSidebar' as SchemaType<
   'UiModalSidebar',

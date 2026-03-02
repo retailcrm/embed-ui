@@ -1,3 +1,5 @@
+import './utilities.less'
+
 import type { Preview } from '@storybook/vue3'
 
 import { ref } from 'vue'
@@ -6,8 +8,6 @@ import { setup } from '@storybook/vue3'
 import theme from './theme'
 
 import { ImageWorkersKey } from '../src/common/preview'
-
-import './utilities.less'
 
 setup((app) => {
   app.provide(ImageWorkersKey, ref(['worker1.retailcrm.tech']))

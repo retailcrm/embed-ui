@@ -2,20 +2,13 @@
 import type { PropType } from 'vue'
 import type { UiButtonMethods } from '@/common/components/button'
 
-import {
-  defineComponent,
-  h,
-} from 'vue'
+import { defineComponent, h } from 'vue'
 
 import { isURL } from '@/common/predicate'
 import { normalize } from '@/host/render'
 import { useElementRef } from '@/host/composables'
 
-import {
-  APPEARANCE,
-  SIZE,
-  VARIANT,
-} from '@/common/components/button'
+import { APPEARANCE, SIZE, VARIANT } from '@/common/components/button'
 
 export default defineComponent({
   props: {

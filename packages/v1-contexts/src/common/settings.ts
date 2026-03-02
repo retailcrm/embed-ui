@@ -5,16 +5,9 @@ import type {
 
 import type { Predicate } from '@/predicates'
 
-import type {
-  Locale,
-  Schema,
-} from '~types/settings'
+import type { Locale, Schema } from '~types/settings'
 
-import type {
-  Route,
-  RoutesMap,
-  RoutingData,
-} from '@omnicajs/symfony-router'
+import type { Route, RoutesMap, RoutingData } from '@omnicajs/symfony-router'
 
 import {
   arrayOf,

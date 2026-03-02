@@ -44,10 +44,7 @@ import IconOpenInNew from '~assets/sprites/actions/open-in-new.svg'
 import { isURL } from '@/common/predicate'
 import { useElementRef } from '@/host/composables'
 
-import {
-  APPEARANCE,
-  SIZE,
-} from '@/common/components/link'
+import { APPEARANCE, SIZE } from '@/common/components/link'
 
 defineProps({
   /** Атрибут ссылки */

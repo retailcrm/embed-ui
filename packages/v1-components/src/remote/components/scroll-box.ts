@@ -8,8 +8,8 @@ import type {
 } from '@omnicajs/vue-remote/types/events'
 
 import type {
-  UiScrollBoxProperties,
   UiScrollBoxMethods,
+  UiScrollBoxProperties,
 } from '@/common/components/scroll-box'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'

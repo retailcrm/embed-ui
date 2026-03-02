@@ -1,8 +1,8 @@
 import type { DefineComponent } from '@/common/vue'
 
 import type {
-  UiScrollBoxProperties,
   UiScrollBoxMethods,
+  UiScrollBoxProperties,
 } from '@/common/components/scroll-box'
 
 declare const UiScrollBox: DefineComponent<

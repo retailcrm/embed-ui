@@ -1,13 +1,6 @@
-import type {
-  ComputedRef,
-  WritableComputedRef,
-} from 'vue'
+import type { ComputedRef, WritableComputedRef } from 'vue'
 
-import type {
-  Endpoint,
-  MessageEndpoint,
-  RemoteCallable,
-} from '@remote-ui/rpc'
+import type { Endpoint, MessageEndpoint, RemoteCallable } from '@remote-ui/rpc'
 
 import type {
   ContextAccessor,
@@ -26,12 +19,24 @@ import type {
 
 import type { Router } from '@omnicajs/symfony-router'
 
-import type { Schema as CustomerCardSchema } from '@retailcrm/embed-ui-v1-contexts/types/customer/card'
-import type { Schema as CustomerCardPhoneSchema } from '@retailcrm/embed-ui-v1-contexts/types/customer/card-phone'
-import type { Schema as OrderCardSchema } from '@retailcrm/embed-ui-v1-contexts/types/order/card'
-import type { Schema as OrderCardSettingsSchema } from '@retailcrm/embed-ui-v1-contexts/types/order/card-settings'
-import type { Schema as CurrentUserSchema } from '@retailcrm/embed-ui-v1-contexts/types/user/current'
-import type { Schema as SettingsSchema } from '@retailcrm/embed-ui-v1-contexts/types/settings'
+import type {
+  Schema as CurrentUserSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/user/current'
+import type {
+  Schema as CustomerCardPhoneSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/customer/card-phone'
+import type {
+  Schema as CustomerCardSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/customer/card'
+import type {
+  Schema as OrderCardSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/order/card'
+import type {
+  Schema as OrderCardSettingsSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/order/card-settings'
+import type {
+  Schema as SettingsSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/settings'
 
 import type { SchemaList } from '@retailcrm/embed-ui-v1-contexts/types'
 

@@ -8,8 +8,8 @@ import type {
 } from '@omnicajs/vue-remote/types/events'
 
 import type {
-  UiCheckboxProperties,
   UiCheckboxMethods,
+  UiCheckboxProperties,
 } from '@/common/components/checkbox'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'

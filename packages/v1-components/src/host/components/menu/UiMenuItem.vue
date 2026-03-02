@@ -86,10 +86,7 @@ import type { PropType } from 'vue'
 
 import { ref } from 'vue'
 
-import {
-  deltaTransition,
-  SIZE,
-} from '@/common/components/menu'
+import { deltaTransition, SIZE } from '@/common/components/menu'
 
 const props = defineProps({
   /** Размер */

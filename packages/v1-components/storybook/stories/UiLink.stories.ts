@@ -2,12 +2,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 
 import UiLink from '@/host/components/link/UiLink.vue'
 
-import page from './UiLink.mdx'
+import { APPEARANCE, SIZE } from '@/common/components/link'
 
-import {
-  APPEARANCE,
-  SIZE,
-} from '@/common/components/link'
+import page from './UiLink.mdx'
 
 const meta = {
   title: 'Components/UiLink',

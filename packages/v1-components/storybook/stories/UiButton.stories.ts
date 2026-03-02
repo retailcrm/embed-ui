@@ -3,13 +3,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 import IconAdd from '~assets/sprites/actions/add.svg'
 import UiButton from '@/host/components/button/UiButton.vue'
 
-import page from './UiButton.mdx'
+import { APPEARANCE, SIZE, VARIANT } from '@/common/components/button'
 
-import {
-  APPEARANCE,
-  SIZE,
-  VARIANT,
-} from '@/common/components/button'
+import page from './UiButton.mdx'
 
 const meta = {
   title: 'Components/UiButton',

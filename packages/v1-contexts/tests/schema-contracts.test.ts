@@ -1,20 +1,13 @@
 import type { ContextSchema } from '@retailcrm/embed-ui-v1-types/context'
 
-import {
-  actions as orderActions,
-  schema as orderSchema,
-} from '@/common/order/card'
+import { describe, expect, test } from 'vitest'
 
-import { schema as orderSettingsSchema } from '@/common/order/card-settings'
-import { schema as customerSchema } from '@/common/customer/card'
+import { actions as orderActions, schema as orderSchema } from '@/common/order/card'
+
 import { schema as customerPhoneSchema } from '@/common/customer/card-phone'
+import { schema as customerSchema } from '@/common/customer/card'
+import { schema as orderSettingsSchema } from '@/common/order/card-settings'
 import { schema as userSchema } from '@/common/user/current'
-
-import {
-  describe,
-  expect,
-  test,
-} from 'vitest'
 
 type FieldDescriptor = {
   accepts: (value: unknown) => boolean;

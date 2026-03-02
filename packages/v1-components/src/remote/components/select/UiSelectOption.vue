@@ -58,22 +58,9 @@
 
 <script lang="ts" setup>
 import type { Option } from '@/common/components/select'
-import type {
-  PropType,
-  Ref,
-} from 'vue'
-
-import IconCheckmarkCircle from '~assets/sprites/actions/checkmark-circle.svg'
-import IconAddCircleOutlined from '~assets/sprites/actions/add-circle-outlined.svg'
-
-import { UiMenuItem } from '@/remote/components/menu'
+import type { PropType, Ref } from 'vue'
 
 import isEqual from 'lodash.isequal'
-
-import {
-  highlight as _highlight,
-  uid,
-} from '@/common/components/select'
 
 import {
   computed,
@@ -84,12 +71,19 @@ import {
   watch,
 } from 'vue'
 
+import IconAddCircleOutlined from '~assets/sprites/actions/add-circle-outlined.svg'
+import IconCheckmarkCircle from '~assets/sprites/actions/checkmark-circle.svg'
+
+import { UiMenuItem } from '@/remote/components/menu'
+
+import { highlight as _highlight, uid } from '@/common/components/select'
+
 import { SIZE } from '@/common/components/menu'
 
 import {
   FastenedKey,
-  FilterKey,
   FilteredKey,
+  FilterKey,
   IsSelectedKey,
   MultipleKey,
   RegisterKey,

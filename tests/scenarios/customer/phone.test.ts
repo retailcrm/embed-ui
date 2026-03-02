@@ -1,16 +1,10 @@
-import type {
-  Component,
-  PropType,
-} from 'vue'
+import type { Component, PropType } from 'vue'
 
 import type { MessageEndpoint } from '@remote-ui/rpc'
 
 import type { Receiver } from '@omnicajs/vue-remote/host'
 
-import type {
-  WidgetEndpoint,
-  WidgetTarget,
-} from '~types/widget'
+import type { WidgetEndpoint, WidgetTarget } from '~types/widget'
 
 import { HostedTree } from '@omnicajs/vue-remote/host'
 
@@ -24,29 +18,38 @@ import {
   test,
 } from 'vitest'
 
-import { createApp, h, nextTick, ref } from 'vue'
-
 import {
-  createProvider,
-  createReceiver,
-} from '@omnicajs/vue-remote/host'
+  createApp,
+  h,
+  nextTick,
+  ref,
+} from 'vue'
+
+import { createProvider, createReceiver } from '@omnicajs/vue-remote/host'
 
 import { createContextAccessor } from '@retailcrm/embed-ui-v1-contexts/host'
-import { createWidgetEndpoint } from '@/index'
+
+import { createEndpoint, fromMessagePort } from '@remote-ui/rpc'
 
 import {
-  createEndpoint,
-  fromMessagePort,
-} from '@remote-ui/rpc'
-
-import { createHostContext as createCustomerHostContext } from '~tests/__util__/customer/card'
-import { createHostContext as createCustomerPhoneHostContext } from '~tests/__util__/customer/card-phone'
+  createHostContext as createCustomerHostContext,
+} from '~tests/__util__/customer/card'
+import {
+  createHostContext as createCustomerPhoneHostContext,
+} from '~tests/__util__/customer/card-phone'
 import { createHostContext as createSettingsHostContext } from '~tests/__util__/settings'
 
 import { flushPromises } from '@vue/test-utils'
 
-import { useContext as usePhone } from '@retailcrm/embed-ui-v1-contexts/remote/customer/card-phone'
-import { useContext as useSettings } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
+import {
+  useContext as usePhone,
+} from '@retailcrm/embed-ui-v1-contexts/remote/customer/card-phone'
+import {
+  useContext as useSettings,
+} from '@retailcrm/embed-ui-v1-contexts/remote/settings'
+
+import { createWidgetEndpoint } from '@/index'
+
 import { useField } from '@/composables'
 
 describe('scenarios/customer/phone', () => {

@@ -1,23 +1,17 @@
 import type { Manifest } from '@modulify/pkg/types/manifest'
 
-import { GitCommander } from '@modulify/git-toolkit'
+import { join, relative } from 'node:path'
 
-import Logger from './lib/Logger'
-import Runner from './lib/Runner'
+import { GitCommander } from '@modulify/git-toolkit'
 
 import chalk from 'chalk'
 import gitSemverTags from 'git-semver-tags'
 import semver from 'semver'
 
-import {
-  join,
-  relative,
-} from 'node:path'
+import { read, walk } from '@modulify/pkg'
 
-import {
-  read,
-  walk,
-} from '@modulify/pkg'
+import Logger from './lib/Logger'
+import Runner from './lib/Runner'
 
 import args from './args/publish'
 

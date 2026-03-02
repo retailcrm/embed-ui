@@ -35,24 +35,21 @@
 </template>
 
 <script lang="ts" setup>
+import type { Group, Option } from '@/host/components/select/injection'
 import type { Ref } from 'vue'
-import type {
-  Option,
-  Group,
-} from '@/host/components/select/injection'
-
-import { UiMenuItemGroup } from '@/remote/components/menu'
-
-import UiSelectOptionGroupHeader from './UiSelectOptionGroupHeader.vue'
 
 import {
   computed,
   inject,
-  onMounted,
   onBeforeUnmount,
+  onMounted,
   provide,
   ref,
 } from 'vue'
+
+import UiSelectOptionGroupHeader from './UiSelectOptionGroupHeader.vue'
+
+import { UiMenuItemGroup } from '@/remote/components/menu'
 
 import { uid } from '@/common/components/select'
 

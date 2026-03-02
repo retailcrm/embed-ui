@@ -1,9 +1,7 @@
-import {
-  defineConfig,
-  mergeConfig,
-} from 'vitest/config'
-
 import { join } from 'node:path'
+
+import { defineConfig, mergeConfig } from 'vitest/config'
+
 import vue from '@vitejs/plugin-vue'
 
 import basic from './vite.config.basic'

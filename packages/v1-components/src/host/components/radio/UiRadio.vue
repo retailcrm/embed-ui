@@ -31,11 +31,12 @@ export default {}
 </script>
 
 <script lang="ts" setup>
-import type { PropType } from 'vue'
 import type { Primitive } from '@/common/types'
+import type { PropType } from 'vue'
 import type { UiRadioMethods } from '@/common/components/radio'
 
 import { computed } from 'vue'
+
 import { pick } from '@/common/utils'
 import { useElementRef } from '@/host/composables'
 

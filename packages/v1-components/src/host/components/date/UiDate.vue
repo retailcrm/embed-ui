@@ -9,12 +9,10 @@ import type { Locale } from '@/common/components/date'
 import type { PropType } from 'vue'
 
 import { formatISO } from 'date-fns'
+
 import { useElementRef } from '@/host/composables'
 
-import {
-  formatDate,
-  formatDateTime,
-} from '@/common/formatters/date'
+import { formatDate, formatDateTime } from '@/common/formatters/date'
 
 defineProps({
   date: {

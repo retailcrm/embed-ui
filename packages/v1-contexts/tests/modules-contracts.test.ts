@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 import * as customerCard from '@/common/customer/card'
 import * as customerCardPhone from '@/common/customer/card-phone'
 import * as orderCard from '@/common/order/card'
@@ -10,14 +12,8 @@ import * as remoteCustomerCard from '@/remote/customer/card'
 import * as remoteCustomerCardPhone from '@/remote/customer/card-phone'
 import * as remoteOrderCard from '@/remote/order/card'
 import * as remoteOrderCardSettings from '@/remote/order/card-settings'
-import * as remoteUserCurrent from '@/remote/user/current'
 import * as remoteSettings from '@/remote/settings'
-
-import {
-  describe,
-  expect,
-  test,
-} from 'vitest'
+import * as remoteUserCurrent from '@/remote/user/current'
 
 describe('context module contracts', () => {
   test('exports stable ids and schema objects from common modules', () => {

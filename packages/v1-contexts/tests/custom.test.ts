@@ -6,18 +6,11 @@ import type {
   CustomFieldType,
 } from '@retailcrm/embed-ui-v1-types/context'
 
-import { LogicalError } from '@/host'
 import { MessageChannel } from '@retailcrm/embed-ui-v1-testing/lib/rpc'
 
-import {
-  expect,
-  test,
-} from 'vitest'
+import { expect, test } from 'vitest'
 
-import {
-  flushPromises,
-  mount,
-} from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 
 import {
   createApp,
@@ -28,18 +21,13 @@ import {
 
 import { createPinia } from 'pinia'
 
-import {
-  createEndpoint,
-  fromMessagePort,
-  retain,
-} from '@remote-ui/rpc'
+import { createEndpoint, fromMessagePort, retain } from '@remote-ui/rpc'
+
+import { LogicalError } from '@/host'
 
 import { createCustomContextAccessor } from '@/host'
 
-import {
-  injectAccessor,
-  useContext,
-} from '@/remote/custom'
+import { injectAccessor, useContext } from '@/remote/custom'
 
 test('serves bidirectional connection', async () => {
   const { port1, port2 } = new MessageChannel()

@@ -1,8 +1,4 @@
-import type {
-  Channel,
-  RemoteRoot,
-  SchemaOf,
-} from '@omnicajs/vue-remote/remote'
+import type { Channel, RemoteRoot, SchemaOf } from '@omnicajs/vue-remote/remote'
 
 import { createRemoteRoot } from '@omnicajs/vue-remote/remote'
 

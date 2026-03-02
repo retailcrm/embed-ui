@@ -7,8 +7,8 @@ import type {
   SerializedFocusEvent,
 } from '@omnicajs/vue-remote/types/events'
 
-import type { UiToolbarButtonProperties } from '@/common/components/toolbar-button'
 import type { UiButtonMethods } from '@/common/components/button'
+import type { UiToolbarButtonProperties } from '@/common/components/toolbar-button'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
 

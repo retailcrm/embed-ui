@@ -1,3 +1,7 @@
+import '@/host/components/modal/modal.less'
+import '@/host/components/modal-sidebar/modal-sidebar.less'
+import '@/host/components/transition/transition.less'
+
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 import { ref } from 'vue'
@@ -5,17 +9,9 @@ import { ref } from 'vue'
 import UiButton from '@/host/components/button/UiButton.vue'
 import UiModalSidebar from '@/host/components/modal-sidebar/UiModalSidebar.vue'
 
+import { DIRECTION, SCROLLING, SIZE } from '@/common/components/modal-sidebar'
+
 import page from './UiModalSidebar.mdx'
-
-import {
-  DIRECTION,
-  SCROLLING,
-  SIZE,
-} from '@/common/components/modal-sidebar'
-
-import '@/host/components/modal/modal.less'
-import '@/host/components/modal-sidebar/modal-sidebar.less'
-import '@/host/components/transition/transition.less'
 
 const meta = {
   title: 'Components/UiModalSidebar',

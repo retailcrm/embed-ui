@@ -1,18 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 
+import { computed } from 'vue'
+
+import { ref } from 'vue'
+
 import IconCaret from '~assets/sprites/arrows/caret-down.svg'
 import IconSearch from '~assets/sprites/actions/search.svg'
 import UiTextbox from '@/host/components/textbox/UiTextbox.vue'
 
-import { computed } from 'vue'
 import { omit } from '@/common/utils'
-import { ref } from 'vue'
-
-import page from './UiTextbox.mdx'
 
 import { INPUTMODE } from '@/common/components/textbox'
 import { SIZE } from '@/common/components/textbox'
 import { TYPE } from '@/common/components/textbox'
+
+import page from './UiTextbox.mdx'
 
 const meta = {
   title: 'Components/UiTextbox',

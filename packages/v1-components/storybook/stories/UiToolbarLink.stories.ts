@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/vue3'
 
 import UiToolbarLink from '@/host/components/toolbar/UiToolbarLink.vue'
 
-import page from './UiToolbarLink.mdx'
-
 import { APPEARANCE } from '@/common/components/link'
+
+import page from './UiToolbarLink.mdx'
 
 const meta = {
   title: 'Components/UiToolbarLink',

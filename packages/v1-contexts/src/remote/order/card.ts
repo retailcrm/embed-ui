@@ -1,11 +1,7 @@
 import { defineActions } from '@/remote'
 import { defineContext } from '@/remote'
 
-import {
-  actions,
-  id,
-  schema,
-} from '@/common/order/card'
+import { actions, id, schema } from '@/common/order/card'
 
 export { schema }
 

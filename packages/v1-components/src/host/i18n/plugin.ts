@@ -1,7 +1,4 @@
-import type {
-  InjectionKey,
-  Plugin,
-} from 'vue'
+import type { InjectionKey, Plugin } from 'vue'
 
 import type { Locale } from '@/host/i18n/index'
 

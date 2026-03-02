@@ -1,3 +1,7 @@
+import '@/host/components/modal/modal.less'
+import '@/host/components/modal-window/modal-window.less'
+import '@/host/components/transition/transition.less'
+
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 import { ref } from 'vue'
@@ -5,16 +9,9 @@ import { ref } from 'vue'
 import UiButton from '@/host/components/button/UiButton.vue'
 import UiModalWindow from '@/host/components/modal-window/UiModalWindow.vue'
 
+import { APPEARANCE, SCROLLING } from '@/common/components/modal-window'
+
 import page from './UiModalWindow.mdx'
-
-import {
-  APPEARANCE,
-  SCROLLING,
-} from '@/common/components/modal-window'
-
-import '@/host/components/modal/modal.less'
-import '@/host/components/modal-window/modal-window.less'
-import '@/host/components/transition/transition.less'
 
 const meta = {
   title: 'Components/UiModalWindow',

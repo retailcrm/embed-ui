@@ -60,9 +60,9 @@
 </template>
 
 <script lang="ts" setup>
-import UiCheckbox from '@/host/components/checkbox/UiCheckbox.vue'
-
 import { computed, ref } from 'vue'
+
+import UiCheckbox from '@/host/components/checkbox/UiCheckbox.vue'
 
 const email = ref(true)
 const phone = ref(true)

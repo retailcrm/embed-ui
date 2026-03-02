@@ -1,8 +1,4 @@
-import type {
-  Alignment,
-  Side,
-  Strategy,
-} from '@floating-ui/dom'
+import type { Alignment, Side, Strategy } from '@floating-ui/dom'
 
 import type { Numeric } from '@/common/types'
 

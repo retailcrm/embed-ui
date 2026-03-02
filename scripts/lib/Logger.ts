@@ -1,7 +1,7 @@
+import * as util from 'node:util'
+
 import chalk from 'chalk'
 import figures from 'figures'
-
-import * as util from 'node:util'
 
 export default class Logger {
   private readonly dry: boolean

@@ -95,14 +95,8 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue'
 
-import type { Layer } from '@/host/components/modal/layer'
 import type { EmbedModal } from '@/host/components/modal/plugin'
-
-import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
-import UiTransition from '@/host/components/transition/UiTransition.vue'
-import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
-
-import IconClear from '~assets/sprites/actions/clear.svg'
+import type { Layer } from '@/host/components/modal/layer'
 
 import {
   computed,
@@ -116,9 +110,15 @@ import {
   watch,
 } from 'vue'
 
+import UiScrollBox from '@/host/components/scroll-box/UiScrollBox.vue'
+import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
+import UiTransition from '@/host/components/transition/UiTransition.vue'
+
+import IconClear from '~assets/sprites/actions/clear.svg'
+
+import { layers } from '@/host/components/modal/layer'
 import { ModalInjectKey } from '@/host/components/modal/plugin'
 import { nextAnimationFrame } from '@/host/dom'
-import { layers } from '@/host/components/modal/layer'
 import uid from '@/host/uid'
 
 import {

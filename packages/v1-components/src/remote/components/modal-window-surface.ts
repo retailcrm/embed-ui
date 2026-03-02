@@ -4,13 +4,11 @@ import type { SchemaType } from '@omnicajs/vue-remote/remote'
 
 import type { SerializedDOMRect } from '@/common/types'
 
-import type {
-  SerializedEvent,
-} from '@omnicajs/vue-remote/types/events'
+import type { SerializedEvent } from '@omnicajs/vue-remote/types/events'
 
 import type {
-  UiModalWindowSurfaceProperties,
   UiModalWindowSurfaceMethods,
+  UiModalWindowSurfaceProperties,
 } from '@/common/components/modal-window'
 
 import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'

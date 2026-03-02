@@ -3,24 +3,24 @@ import type { Lifecycle } from '../endpoint'
 import type { Meta } from '@storybook/vue3'
 import type { StoryObj } from '@storybook/vue3'
 
+import { createEndpoint } from '@remote-ui/rpc'
+import { createProvider } from '@omnicajs/vue-remote/host'
+import { createReceiver } from '@omnicajs/vue-remote/host'
+import { HostedTree } from '@omnicajs/vue-remote/host'
+import { watch } from 'vue'
+
 import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
 import UiMenuItemGroup from '@/host/components/menu/UiMenuItemGroup.vue'
 import UiPopperConnector from '@/host/components/popper/UiPopperConnector.vue'
 import UiSelectPopper from '@/host/components/select/UiSelectPopper.vue'
 import UiSelectTrigger from '@/host/components/select/UiSelectTrigger.vue'
 
+import { PLACEMENT } from '@/common/components/select'
+import { SIZE } from '@/common/components/select'
+
 import { UiSelect } from '../../src/remote/components/select'
 
-import { HostedTree } from '@omnicajs/vue-remote/host'
-import { createEndpoint } from '@remote-ui/rpc'
-import { createProvider } from '@omnicajs/vue-remote/host'
-import { createReceiver } from '@omnicajs/vue-remote/host'
-import { watch } from 'vue'
-
 import page from './UiSelect.mdx'
-
-import { SIZE } from '@/common/components/select'
-import { PLACEMENT } from '@/common/components/select'
 
 const provider = createProvider({
   UiMenuItem,

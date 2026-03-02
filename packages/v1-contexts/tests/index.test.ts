@@ -8,39 +8,23 @@ import type { MessageEndpoint } from '@remote-ui/rpc'
 
 import { MessageChannel } from '@retailcrm/embed-ui-v1-testing/lib/rpc'
 
-import { RuntimeError } from '@/host'
+import { expect, test } from 'vitest'
 
-import {
-  expect,
-  test,
-} from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
 
-import {
-  flushPromises,
-  mount,
-} from '@vue/test-utils'
-
-import {
-  createApp,
-  nextTick,
-  reactive,
-} from 'vue'
+import { createApp, nextTick, reactive } from 'vue'
 
 import { createPinia } from 'pinia'
 
-import {
-  createEndpoint,
-  fromMessagePort,
-} from '@remote-ui/rpc'
+import { createEndpoint, fromMessagePort } from '@remote-ui/rpc'
+
+import { createAccessor } from '~tests/__util__/createAccessor'
+
+import { RuntimeError } from '@/host'
 
 import { createContextAccessor } from '@/host'
 
-import {
-  defineContext,
-  injectEndpoint,
-} from '@/remote'
-
-import { createAccessor } from '~tests/__util__/createAccessor'
+import { defineContext, injectEndpoint } from '@/remote'
 
 type User = {
   id: Field<number, true>;

@@ -10,11 +10,7 @@ import * as fs from 'node:fs'
 
 import { fileURLToPath } from 'node:url'
 
-import {
-  dirname,
-  join,
-  resolve,
-} from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 
 import { keysOf } from '@/utilities'
 
@@ -22,8 +18,8 @@ import * as customer from '@/common/customer/card'
 import * as customerPhone from '@/common/customer/card-phone'
 import * as order from '@/common/order/card'
 import * as orderSettings from '@/common/order/card-settings'
-import * as user from '@/common/user/current'
 import * as settings from '@/common/settings'
+import * as user from '@/common/user/current'
 
 const schema: SchemaList = {
   [customer.id]: customer.schema,

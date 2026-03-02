@@ -1,10 +1,6 @@
 import type { InjectionKey, Ref } from 'vue'
 
-import {
-  inject,
-  provide,
-  ref,
-} from 'vue'
+import { inject, provide, ref } from 'vue'
 
 export const ElementRefKey = Symbol.for(
   '[@retailcrm/embed-ui-v1-components]:ElementRef'

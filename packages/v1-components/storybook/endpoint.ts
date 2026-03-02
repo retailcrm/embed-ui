@@ -1,31 +1,15 @@
-import type {
-  Channel,
-  RemoteRoot,
-  SchemaOf,
-} from '@omnicajs/vue-remote/remote'
-import type { ShallowReactive ,
-  Component,
-  CreateAppFunction } from 'vue'
+import type { Channel } from '@omnicajs/vue-remote/remote'
+import type { Component, CreateAppFunction } from 'vue'
+import type { RemoteRoot, SchemaOf } from '@omnicajs/vue-remote/remote'
+import type { ShallowReactive } from 'vue'
 
-import {
-  shallowReactive,
-} from 'vue'
+import type { Endpoint, MessageEndpoint } from '@remote-ui/rpc'
 
-import type {
-  Endpoint,
-  MessageEndpoint,
-} from '@remote-ui/rpc'
+import { shallowReactive } from 'vue'
 
-import {
-  createEndpoint,
-  release,
-  retain,
-} from '@remote-ui/rpc'
+import { createEndpoint, release, retain } from '@remote-ui/rpc'
 
-import {
-  createRemoteRenderer,
-  createRemoteRoot,
-} from '@omnicajs/vue-remote/remote'
+import { createRemoteRenderer, createRemoteRoot } from '@omnicajs/vue-remote/remote'
 
 export type Lifecycle<T extends object = object> = {
   run (channel: Channel, props?: Partial<T>): Promise<void>;

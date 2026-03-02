@@ -1,11 +1,11 @@
 import type {
-  CustomField,
-  CustomFieldKind,
-  CustomFieldType,
   CustomContext,
   CustomContextAccessor,
   CustomContextSchema,
   CustomDictionary,
+  CustomField,
+  CustomFieldKind,
+  CustomFieldType,
   Rejection,
   RejectionHandler,
 } from '@retailcrm/embed-ui-v1-types/context'
