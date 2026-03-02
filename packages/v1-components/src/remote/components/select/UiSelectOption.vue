@@ -149,7 +149,10 @@ const props = defineProps({
 
 const id = uid('u1-v1-select-option')
 
-const isSelected = inject(IsSelectedKey, ref(() => false))
+const isSelected = inject(
+  IsSelectedKey,
+  computed<((value: unknown) => boolean)>(() => () => false)
+)
 
 const syncInSelect = inject(SyncKey, () => {})
 
