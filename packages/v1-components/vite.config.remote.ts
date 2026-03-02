@@ -1,10 +1,11 @@
 import { resolve } from 'node:path'
 
-import { defineConfig, mergeConfig } from 'vite'
-
+import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
+import { mergeConfig } from 'vite'
 
 import basic from './vite.config.basic'
+import { formatDeclarationFile } from './vite.dts-format'
 
 import { dependencies, name, peerDependencies } from './package.json'
 
@@ -35,6 +36,18 @@ export default mergeConfig(basic, defineConfig({
   },
 
   plugins: [
-    dts({ rollupTypes: true }),
+    dts({
+      rollupTypes: true,
+      beforeWriteFile: (filePath, content) => {
+        if (!filePath.endsWith('.d.ts')) {
+          return
+        }
+
+        return {
+          filePath,
+          content: formatDeclarationFile(content),
+        }
+      },
+    }),
   ],
 }))
