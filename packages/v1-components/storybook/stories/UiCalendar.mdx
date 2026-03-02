@@ -1,0 +1,188 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiCalendarSingle from './UiCalendar.single.example.vue'
+import UiCalendarRange from './UiCalendar.range.example.vue'
+import UiCalendarNullable from './UiCalendar.nullable.example.vue'
+import UiCalendarBounds from './UiCalendar.bounds.example.vue'
+import UiCalendarDoubleRange from './UiCalendar.double-range.example.vue'
+import UiCalendarLocale from './UiCalendar.locale.example.vue'
+
+# UiCalendar
+
+`UiCalendar` - компонент выбора даты и диапазона дат для встраиваемых интерфейсов.
+
+## Для чего подходит
+
+* выбор одной даты (дедлайн, дата события, день отгрузки);
+* выбор диапазона (период отчета, фильтр по датам);
+* сценарии с ограничением доступных дат (`minDate`/`maxDate`);
+* локализованные интерфейсы (`en-GB`, `es-ES`, `ru-RU`).
+
+## Быстрый старт
+
+```vue
+<template>
+  <UiCalendar v-model:value="value" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiCalendar } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref<Date | null>(new Date())
+</script>
+```
+
+<ToReact is={UiCalendarSingle} />
+
+## Импорт
+
+### Если вы пишете remote-расширение
+
+```ts
+import { UiCalendar } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+### Если используете host-слой библиотеки напрямую
+
+```ts
+import { UiCalendar } from '@retailcrm/embed-ui-v1-components/host'
+```
+
+## Модель данных (`value`)
+
+Значение зависит от `type`:
+
+* `type="single"`: `Date | null`;
+* `type="range"`: `Date[]`.
+
+Рекомендация:
+
+* для `single` храните `ref<Date | null>`;
+* для `range` храните `ref<Date[]>`.
+
+## Сценарии использования
+
+### 1) Диапазон дат
+
+```vue
+<template>
+  <UiCalendar v-model:value="value" type="range" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiCalendar } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref<Date[]>([
+  new Date('2024-11-10'),
+  new Date('2024-11-19'),
+])
+</script>
+```
+
+<ToReact is={UiCalendarRange} />
+
+### 2) Сброс значения (`nullable`)
+
+```vue
+<UiCalendar v-model:value="value" nullable />
+```
+
+`nullable` полезен, когда пользователь должен иметь возможность снять выбор даты в `single`-режиме.
+
+<ToReact is={UiCalendarNullable} />
+
+### 3) Два месяца одновременно (`appearance="double"`)
+
+```vue
+<UiCalendar
+  v-model:value="value"
+  type="range"
+  appearance="double"
+/>
+```
+
+Подходит для выбора диапазонов, которые часто пересекают границы месяцев.
+
+<ToReact is={UiCalendarDoubleRange} />
+
+### 4) Ограничение доступных дат
+
+```vue
+<UiCalendar
+  v-model:value="value"
+  type="range"
+  :min-date="new Date('2024-11-05')"
+  :max-date="new Date('2024-11-25')"
+/>
+```
+
+<ToReact is={UiCalendarBounds} />
+
+### 5) Локаль и первый день недели
+
+```vue
+<UiCalendar
+  v-model:value="value"
+  locale="ru-RU"
+  :first-day-of-week="1"
+/>
+```
+
+`firstDayOfWeek` принимает значения от `0` до `6`:
+
+* `0` - неделя начинается с воскресенья;
+* `1` - неделя начинается с понедельника;
+* и так далее.
+
+<ToReact is={UiCalendarLocale} />
+
+## События
+
+Компонент эмитит:
+
+* `update:value` - основное событие обновления значения;
+* `change` - событие пользовательского выбора.
+
+Пример явной подписки:
+
+```vue
+<UiCalendar
+  :value="value"
+  @update:value="value = $event"
+  @change="onCalendarChange"
+/>
+```
+
+## Управление с клавиатуры
+
+В режиме дней:
+
+* `ArrowLeft` / `ArrowRight` - перейти на день назад/вперед;
+* `ArrowUp` / `ArrowDown` - перейти на неделю назад/вперед;
+* `Home` / `End` - перейти к началу/концу недели;
+* `PageUp` / `PageDown` - предыдущий/следующий месяц;
+* `Shift + PageUp` / `Shift + PageDown` - предыдущий/следующий год;
+* `Enter` / `Space` - выбрать дату или границу диапазона.
+
+## Доступность (A11y)
+
+`UiCalendar` реализует `grid`-паттерн для интерактивного выбора:
+
+* корректные роли `grid` / `row` / `gridcell`;
+* `aria-selected` для выбранных дат;
+* `aria-disabled` для заблокированных дат;
+* `aria-current="date"` для сегодняшней даты;
+* `aria-describedby` с подсказкой горячих клавиш;
+* live-анонсы (`aria-live`) при изменении выбора.
+
+## Важное про RPC и `Date`
+
+В текущем стеке библиотеки значения `Date` в `props`/событиях `UiCalendar` корректно проходят через RPC.
+Если строите внешние долгоживущие контракты поверх вашего API, можно дополнительно нормализовать даты до ISO-строк или timestamp.
+
+## Полный API
+
+<ArgTypes />
