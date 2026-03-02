@@ -93,27 +93,7 @@ yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
 ```
 
 ## Commit Workflow
-- Commit format: Conventional Commits.
-- Commit message language: English.
-- Scope rule: use workspace folder name (not npm package name).
-- Valid workspace scopes currently are:
-  - `v1-components`
-  - `v1-contexts`
-  - `v1-testing`
-  - `v1-types`
-- For root/global changes, scope may be omitted.
-- Split commits by logical intent.
-- Keep commit subject concise and factual.
-- Start commit subject description with an uppercase letter.
-- Mention affected component(s) or area in subject description when applicable.
-- Commit subject should describe completed change in past tense.
-- Prefer passive voice for changelog-friendly phrasing.
-- Do not amend/rewrite history unless explicitly requested.
-
-Examples:
-- `feat(v1-components): UiSelect searchable option group header added`
-- `fix(v1-contexts): OrderContext missing customer id handling corrected`
-- `docs: AGENTS commit workflow section updated`
+- Before creating commits, you must read `skills/commit-workflow/SKILL.md` and follow its rules.
 
 ## Skills
 - Repository-local skills are available under `skills/`.
