@@ -1,6 +1,7 @@
 export { default as UiAvatar } from '@/host/components/avatar/UiAvatar.vue'
 export { default as UiAvatarList } from '@/host/components/avatar/UiAvatarList.vue'
 export { default as UiButton } from '@/host/components/button/UiButton.vue'
+export { default as UiCalendar } from '@/host/components/calendar/UiCalendar.vue'
 export { default as UiCheckbox } from '@/host/components/checkbox/UiCheckbox.vue'
 export { default as UiCopyButton } from '@/host/components/copy-button/UiCopyButton.vue'
 export { default as UiDate } from '@/host/components/date/UiDate.vue'

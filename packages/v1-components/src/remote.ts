@@ -1,5 +1,6 @@
 export * from '@/remote/components/avatar'
 export * from '@/remote/components/button'
+export * from '@/remote/components/calendar'
 export * from '@/remote/components/checkbox'
 export * from '@/remote/components/copy-button'
 export * from '@/remote/components/date'

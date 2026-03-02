@@ -1,0 +1,214 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-calendar-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  gap: @spacing-s;
+}
+
+.ui-v1-calendar {
+  .text-small();
+
+  width: fit-content;
+  color: @black-500;
+  font-family: @font-family;
+
+  &__table {
+    display: flex;
+    width: 7 * 36px;
+    flex-wrap: wrap;
+    margin-top: @spacing-xs;
+  }
+
+  &__row {
+    display: flex;
+    width: 100%;
+
+    &_justify-end {
+      justify-content: flex-end;
+    }
+  }
+
+  &__cell-weekday {
+    display: inline-flex;
+    width: calc(100% / 7);
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    color: @grey-800;
+    .text-small-accent();
+  }
+
+  &__cell-day {
+    width: calc(100% / 7);
+
+    &_muted {
+      color: @grey-700;
+    }
+  }
+
+  &__cell-month,
+  &__cell-year {
+    width: calc(100% / 4);
+  }
+
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    border: 0;
+  }
+}
+
+.ui-v1-calendar-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__button {
+    .square(36px);
+
+    min-width: 36px;
+    padding: 0;
+  }
+
+  &__placeholder {
+    .square(36px);
+
+    display: inline-flex;
+  }
+
+  &__switch-button {
+    min-width: 0;
+    padding: 0 20px;
+  }
+
+  &__icon {
+    .square(20px);
+
+    color: @black-500;
+    fill: currentColor;
+
+    &_prev {
+      transform: scaleX(-1);
+    }
+  }
+
+  &__text {
+    align-self: center;
+    padding: 0 20px;
+    color: @black-500;
+    .text-regular-accent();
+    white-space: nowrap;
+    cursor: default;
+  }
+}
+
+.ui-v1-calendar-cell {
+  display: flex;
+  height: 36px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border-radius: @border-radius-sm;
+  position: relative;
+
+  &:not(&_selected):not(&_disabled):hover {
+    background: @blue-100;
+    cursor: pointer;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible &__content {
+    box-shadow: inset 0 0 0 2px @blue-500;
+    border-radius: @border-radius-sm;
+  }
+
+  &_selected {
+    background: @blue-500;
+    color: #FFFFFF;
+  }
+
+  &_disabled {
+    cursor: not-allowed;
+  }
+
+  &__backdrop {
+    display: none;
+    width: 100%;
+    height: 24px;
+    background: @blue-100;
+    position: absolute;
+  }
+
+  &_in-range:not(&_selected):not(&_disabled) &__backdrop {
+    display: block;
+  }
+
+  &_in-range&_is-range-first &__backdrop,
+  &_in-range:first-child &__backdrop {
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+  }
+
+  &_in-range&_is-range-first:not(:first-child) &__backdrop {
+    width: calc(100% - 4px);
+    left: 4px;
+  }
+
+  &_in-range&_is-range-last &__backdrop,
+  &_in-range:last-child &__backdrop {
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+  }
+
+  &_in-range&_is-range-last:not(:last-child) &__backdrop {
+    width: calc(100% - 4px);
+    right: 4px;
+  }
+
+  &_in-range&_is-range-first&_is-range-last &__backdrop {
+    width: calc(100% - 8px);
+  }
+
+  &_in-range&_is-range-first&_is-range-last:first-child &__backdrop,
+  &_in-range&_is-range-first&_is-range-last:last-child &__backdrop {
+    width: calc(100% - 4px);
+  }
+
+  &__content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  &_current &__content:before {
+    display: block;
+    .circle(4px);
+    background: @black-500;
+    position: absolute;
+    bottom: 4px;
+    content: ' ';
+  }
+
+  &_current&_selected &__content:before {
+    background-color: #FFFFFF;
+  }
+}
