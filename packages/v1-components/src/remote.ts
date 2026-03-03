@@ -1,3 +1,4 @@
+export * from '@/remote/components/add-button'
 export * from '@/remote/components/alert'
 export * from '@/remote/components/avatar'
 export * from '@/remote/components/button'

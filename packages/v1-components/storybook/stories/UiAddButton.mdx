@@ -1,0 +1,104 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiAddButtonBasic from './UiAddButton.basic.example.vue'
+import UiAddButtonColors from './UiAddButton.colors.example.vue'
+import UiAddButtonDescription from './UiAddButton.description.example.vue'
+import UiAddButtonHeight from './UiAddButton.height.example.vue'
+import UiAddButtonSmall from './UiAddButton.small.example.vue'
+
+# UiAddButton
+
+`UiAddButton` - кнопка для добавления нового элемента с поддержкой двух размеров и цветовых пресетов.
+
+## Когда использовать
+
+* добавить сущность в список или таблицу;
+* показать явное CTA-действие "добавить";
+* вывести компактный action в строке списка (`small`).
+
+## Импорт
+
+```ts
+import { UiAddButton } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовый пример
+
+```vue
+<UiAddButton>
+  Add Button
+</UiAddButton>
+```
+
+<ToReact is={UiAddButtonBasic} />
+
+## Размеры
+
+### Большой (по умолчанию)
+
+Используется в карточках, футерах и блоках с заметным CTA.
+
+### Маленький (`small`)
+
+Используется в строках списков и компактных местах интерфейса.
+
+```vue
+<UiAddButton small>
+  Add Button
+</UiAddButton>
+```
+
+<ToReact is={UiAddButtonSmall} />
+
+## Описание (`description` slot)
+
+Дополнительный текст показывается только в обычном режиме (не `small`).
+
+```vue
+<UiAddButton color="blue">
+  Add Button
+
+  <template #description>
+    Description
+  </template>
+</UiAddButton>
+```
+
+<ToReact is={UiAddButtonDescription} />
+
+## Цветовые варианты
+
+Поддерживаются:
+
+* `green` (по умолчанию)
+* `blue`
+* `red`
+* `yellow`
+* `purple`
+
+<ToReact is={UiAddButtonColors} />
+
+## Кастомная высота
+
+Высота применяется только для обычного режима.
+
+* число/числовая строка трактуется как `px`;
+* строка с единицами (`%`, `rem`, `vh`) применяется как есть.
+
+```vue
+<UiAddButton :height="120">Add Button</UiAddButton>
+<UiAddButton height="50%">Add Button</UiAddButton>
+```
+
+<ToReact is={UiAddButtonHeight} />
+
+## A11y
+
+* компонент использует нативный `<button>`;
+* `disabled` прокидывается в нативный атрибут;
+* внешние `aria-*` атрибуты можно передавать напрямую.
+
+## Полный API
+
+<ArgTypes />
