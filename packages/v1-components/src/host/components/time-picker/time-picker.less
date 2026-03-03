@@ -1,0 +1,50 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-time-picker {
+  .reset-box-sizing();
+
+  width: 96px;
+  max-width: 100%;
+  font-family: @font-family;
+  position: relative;
+
+  &_disabled,
+  &_readonly {
+    cursor: default;
+  }
+
+  &__input {
+    width: 100%;
+  }
+
+  &__icon {
+    color: @grey-700;
+  }
+
+  &__menu {
+    --ui-v1-popper-width: 100%;
+    --ui-v1-popper-width-max: 100%;
+    --ui-v1-popper-width-min: 0;
+
+    max-width: 280px;
+  }
+
+  &__list {
+    width: 100%;
+    max-height: 160px;
+  }
+
+  &__item_selected .ui-v1-menu-item__inner {
+    background: @blue-100;
+    border-color: @blue-500;
+  }
+
+  &__empty {
+    padding: @spacing-xs @spacing-s;
+    color: @grey-800;
+    .text-small();
+  }
+}
