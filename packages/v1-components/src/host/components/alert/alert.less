@@ -1,0 +1,104 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-alert {
+  .reset-box-sizing();
+
+  --ui-v1-alert-main-color: var(--ui-alert-main-color, @blue-500);
+  --ui-v1-alert-background-color: var(--ui-alert-background-color, @blue-100);
+  --ui-v1-alert-outline-color: var(--ui-alert-outline-color, @blue-200);
+  --ui-v1-alert-title-color: var(--ui-alert-title-color, @blue-600);
+
+  display: flex;
+  align-items: flex-start;
+  max-width: 100%;
+  padding: @spacing-xs 36px @spacing-xs @spacing-xs;
+  background: var(--ui-v1-alert-background-color);
+  border: 2px solid var(--ui-v1-alert-main-color);
+  border-radius: @border-radius-lg;
+  position: relative;
+
+  &__icon {
+    .square(28px);
+
+    color: var(--ui-v1-alert-main-color);
+    position: relative;
+    top: -3px;
+    left: -3px;
+  }
+
+  &__icon-outline {
+    .square(32px);
+
+    background: #fff;
+    border: @spacing-xxs + 1 solid currentColor;
+    border-radius: 50%;
+    color: var(--ui-v1-alert-outline-color);
+  }
+
+  &__title {
+    flex: 1 0 1px;
+    max-width: 720px;
+    min-width: 0;
+    .text-regular();
+    color: var(--ui-v1-alert-title-color);
+    margin-left: @spacing-xs;
+    margin-top: @spacing-xxs;
+
+    &_ellipsis {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    &_fluid {
+      max-width: 100%;
+      padding-right: @spacing-xs;
+    }
+  }
+
+  &__close {
+    .square(20px);
+
+    cursor: pointer;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    position: absolute;
+    top: 14px;
+    right: 10px;
+  }
+
+  &__close-icon {
+    color: var(--ui-v1-alert-main-color);
+  }
+
+  &_warning {
+    --ui-v1-alert-main-color: var(--ui-alert-main-color-warning, @yellow-500);
+    --ui-v1-alert-background-color: var(--ui-alert-background-color-warning, @yellow-100);
+    --ui-v1-alert-outline-color: var(--ui-alert-outline-color-warning, @yellow-200);
+    --ui-v1-alert-title-color: var(--ui-alert-title-color-warning, @yellow-600);
+  }
+
+  &_success {
+    --ui-v1-alert-main-color: var(--ui-alert-main-color-success, @green-500);
+    --ui-v1-alert-background-color: var(--ui-alert-background-color-success, @green-100);
+    --ui-v1-alert-outline-color: var(--ui-alert-outline-color-success, @green-200);
+    --ui-v1-alert-title-color: var(--ui-alert-title-color-success, @green-600);
+  }
+
+  &_danger {
+    --ui-v1-alert-main-color: var(--ui-alert-main-color-danger, @red-500);
+    --ui-v1-alert-background-color: var(--ui-alert-background-color-danger, @red-100);
+    --ui-v1-alert-outline-color: var(--ui-alert-outline-color-danger, @red-200);
+    --ui-v1-alert-title-color: var(--ui-alert-title-color-danger, @red-600);
+  }
+
+  &_small &__title {
+    .text-small();
+    margin-top: 6px;
+  }
+}
