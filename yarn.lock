@@ -1201,7 +1201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@retailcrm/embed-ui-v1-components@npm:^0.9.9, @retailcrm/embed-ui-v1-components@workspace:packages/v1-components":
+"@retailcrm/embed-ui-v1-components@npm:^0.9.10, @retailcrm/embed-ui-v1-components@npm:^0.9.9, @retailcrm/embed-ui-v1-components@workspace:packages/v1-components":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-components@workspace:packages/v1-components"
   dependencies:
@@ -1242,7 +1242,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-contexts@npm:^0.9.10, @retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts":
+"@retailcrm/embed-ui-v1-contexts@npm:^0.9.10, @retailcrm/embed-ui-v1-contexts@npm:^0.9.9, @retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts"
   dependencies:
@@ -1269,19 +1269,19 @@ __metadata:
   resolution: "@retailcrm/embed-ui-v1-pages@workspace:packages/v1-pages"
   dependencies:
     "@remote-ui/rpc": "npm:^1.4.7"
-    "@retailcrm/embed-ui-v1-components": "npm:^0.9.10"
-    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.10"
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.10"
+    "@retailcrm/embed-ui-v1-components": "npm:^0.9.9"
+    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.9"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.9"
   peerDependencies:
     "@remote-ui/rpc": ^1.4
-    "@retailcrm/embed-ui-v1-contexts": ^0.9.10
-    "@retailcrm/embed-ui-v1-types": ^0.9.10
+    "@retailcrm/embed-ui-v1-contexts": ^0.9.9
+    "@retailcrm/embed-ui-v1-types": ^0.9.9
     pinia: ^2.2
     vue: ^3.5
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-testing@npm:^0.9.10, @retailcrm/embed-ui-v1-testing@npm:^0.9.9, @retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing":
+"@retailcrm/embed-ui-v1-testing@npm:^0.9.10, @retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing"
   dependencies:
@@ -1293,7 +1293,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-types@npm:^0.9.10, @retailcrm/embed-ui-v1-types@workspace:packages/v1-types":
+"@retailcrm/embed-ui-v1-types@npm:^0.9.10, @retailcrm/embed-ui-v1-types@npm:^0.9.9, @retailcrm/embed-ui-v1-types@workspace:packages/v1-types":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-types@workspace:packages/v1-types"
   languageName: unknown
