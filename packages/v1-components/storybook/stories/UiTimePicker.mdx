@@ -1,0 +1,128 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiTimePickerBasic from './UiTimePicker.basic.example.vue'
+import UiTimePickerInterval from './UiTimePicker.interval.example.vue'
+import UiTimePickerBounds from './UiTimePicker.bounds.example.vue'
+import UiTimePickerCustomVariants from './UiTimePicker.custom-variants.example.vue'
+import UiTimePickerDisabledReadonly from './UiTimePicker.disabled-readonly.example.vue'
+import UiTimePickerKeyboard from './UiTimePicker.keyboard.example.vue'
+
+# UiTimePicker
+
+`UiTimePicker` - компонент выбора времени в формате `hh:mm` с ручным вводом и выпадающим списком вариантов.
+
+## Когда использовать
+
+* выбор времени события, звонка, напоминания;
+* фильтры с ограничением доступного диапазона (`minTime` / `maxTime`);
+* формы, где нужно быстро выбрать ближайшее время из списка с шагом.
+
+## Импорт
+
+### Remote
+
+```ts
+import { UiTimePicker } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+### Host
+
+```ts
+import { UiTimePicker } from '@retailcrm/embed-ui-v1-components/host'
+```
+
+## Базовое использование
+
+```vue
+<template>
+  <UiTimePicker v-model:value="value" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiTimePicker } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref('10:30')
+</script>
+```
+
+<ToReact is={UiTimePickerBasic} />
+
+## Сценарии
+
+### Шаг вариантов (`interval`)
+
+```vue
+<UiTimePicker
+  v-model:value="value"
+  :interval="15"
+/>
+```
+
+<ToReact is={UiTimePickerInterval} />
+
+### Ограничение диапазона (`minTime` / `maxTime`)
+
+```vue
+<UiTimePicker
+  v-model:value="value"
+  :min-time="[9, 30]"
+  :max-time="[18, 0]"
+/>
+```
+
+<ToReact is={UiTimePickerBounds} />
+
+### Собственные варианты (`timeVariants`)
+
+```vue
+<UiTimePicker
+  v-model:value="value"
+  :time-variants="['09:00', '09:30', '12:25', '16:00']"
+/>
+```
+
+<ToReact is={UiTimePickerCustomVariants} />
+
+### Disabled и Readonly
+
+<ToReact is={UiTimePickerDisabledReadonly} />
+
+### Управление с клавиатуры
+
+<ToReact is={UiTimePickerKeyboard} />
+
+## Модель данных и события
+
+Значение компонента:
+
+* `value: string` в формате `hh:mm`;
+* при вводе компонент санитизирует строку (оставляет цифры и `:`);
+* на blur значение нормализуется.
+
+События:
+
+* `update:value` - новое значение времени для `v-model:value`;
+* `change` - пользовательское изменение значения;
+* `focus` - фокус на поле;
+* `blur` - потеря фокуса полем.
+
+## A11y и клавиатура
+
+`UiTimePicker` реализует паттерн `combobox` + `listbox`:
+
+* `role="combobox"` на корневом элементе;
+* `role="listbox"` у выпадающего списка;
+* `role="option"` и `aria-selected` у вариантов времени.
+
+Горячие клавиши:
+
+* `ArrowDown` / `ArrowUp` - перемещение по вариантам;
+* `Enter` - выбрать активный вариант;
+* `Escape` - закрыть список;
+* `Tab` - перейти к следующему элементу формы.
+
+## Полный API
+
+<ArgTypes />

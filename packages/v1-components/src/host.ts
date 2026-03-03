@@ -29,6 +29,7 @@ export { default as UiSelectTrigger } from '@/host/components/select/UiSelectTri
 export { default as UiSwitch } from '@/host/components/switch/UiSwitch.vue'
 export { default as UiTag } from '@/host/components/tag/UiTag.vue'
 export { default as UiTextbox } from '@/host/components/textbox/UiTextbox.vue'
+export { default as UiTimePicker } from '@/host/components/time-picker/UiTimePicker.vue'
 export { default as UiToolbar } from '@/host/components/toolbar/UiToolbar.vue'
 export { default as UiToolbarButton } from '@/host/components/toolbar/UiToolbarButton.vue'
 export { default as UiToolbarLink } from '@/host/components/toolbar/UiToolbarLink.vue'
