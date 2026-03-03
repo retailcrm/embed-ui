@@ -1,6 +1,6 @@
-import type { Endpoint, MessageEndpoint } from '@remote-ui/rpc'
-
 import type { Callable } from '~types/host/callable'
+import type { Channel } from '@omnicajs/vue-remote/remote'
+import type { Endpoint, MessageEndpoint } from '@remote-ui/rpc'
 
 import type {
   ContextAccessor,
@@ -12,17 +12,13 @@ import type { SchemaList } from '@retailcrm/embed-ui-v1-contexts/types'
 
 import type { WidgetRunner, WidgetTarget } from '~types/widget'
 
-import { createEndpoint, release, retain } from '@remote-ui/rpc'
-
+import { createEndpoint } from '@remote-ui/rpc'
 import { createPinia } from 'pinia'
-
 import { createRemoteRenderer } from '@omnicajs/vue-remote/remote'
 import { injectAccessor } from '@retailcrm/embed-ui-v1-contexts/remote/custom'
 import { injectEndpoint } from '@retailcrm/embed-ui-v1-contexts/remote'
 import { mountEndpointRoot } from '@retailcrm/embed-ui-v1-components/remote'
-
-type EndpointChannel = Parameters<typeof mountEndpointRoot>[0]
-type WidgetEndpointRoot = Parameters<typeof createRemoteRenderer>[0]
+import { release, retain } from '@remote-ui/rpc'
 
 export {
   schema as customerCardSchema,
@@ -71,10 +67,10 @@ export const createWidgetEndpoint = (
   let onRelease = () => {}
 
   endpoint.expose({
-    async run (channel: EndpointChannel, target: WidgetTarget) {
+    async run (channel: Channel, target: WidgetTarget) {
       retain(channel)
 
-      const root = await mountEndpointRoot(channel) as WidgetEndpointRoot
+      const root = await mountEndpointRoot(channel)
 
       const { createApp } = createRemoteRenderer(root)
 
