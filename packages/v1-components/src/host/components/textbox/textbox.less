@@ -253,4 +253,22 @@
     padding-inline: var(--padding);
     background: @grey-200;
   }
+
+  &_autofit input,
+  &_autofit textarea {
+    width: auto;
+    max-width: 100%;
+    flex-grow: 0;
+  }
+
+  &__placeholder {
+    opacity: 0;
+    visibility: hidden;
+    transform: rotateX(90deg);
+    position: absolute;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    white-space: pre;
+  }
 }

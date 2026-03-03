@@ -5,6 +5,7 @@
         :class="{
             'ui-v1-textbox': true,
             'ui-v1-textbox_active': active,
+            'ui-v1-textbox_autofit': autofit,
             'ui-v1-textbox_invalid': invalid,
             'ui-v1-textbox_outlined': outlined,
             'ui-v1-textbox_xs': size === SIZE.XS,
@@ -33,6 +34,7 @@
             v-if="!multiline"
             :id="id ?? uid"
             ref="textbox"
+            v-bind="inputAttributes"
             :type="type"
             :value="text"
             :max="isDecimal ? max : undefined"
@@ -58,6 +60,7 @@
             v-else
             :id="id ?? uid"
             ref="textbox"
+            v-bind="inputAttributes"
             :value="text"
             :aria-invalid="invalid ? 'true' : 'false'"
             :autocomplete="autocomplete"
@@ -76,6 +79,14 @@
             @focus="onFocus"
             @blur="onBlur"
         />
+
+        <span
+            v-if="autofit"
+            ref="placeholderRef"
+            class="ui-v1-textbox__placeholder"
+        >
+            {{ placeholder }}
+        </span>
 
         <span
             v-if="clearable && String(value)"
@@ -109,29 +120,25 @@
 <script lang="ts" setup>
 import type { I18nLocalized } from '@/host/i18n'
 import type { PropType } from 'vue'
-import type { UiTextboxMethods } from '@/common/components/textbox'
+import type {
+  UiTextboxInputAttributes,
+  UiTextboxMethods,
+} from '@/common/components/textbox'
 
 import { computed } from 'vue'
-
 import { inject } from 'vue'
-
 import { nextTick } from 'vue'
 import { onMounted } from 'vue'
-
 import { shallowRef } from 'vue'
-
 import { useId } from 'vue'
 import { watch } from 'vue'
 
 import IconClearCircle from '../../../../assets/sprites/actions/clear-circle.svg'
 
 import { decimalsOf } from '@/common/components/textbox'
-
 import { isMaxDecimalsExceeded } from '@/common/components/textbox'
-
 import { sanitizeDecimal } from '@/common/components/textbox'
 import { sanitizeNumeric } from '@/common/components/textbox'
-
 import { useElementRef } from '@/host/composables'
 
 import { I18nInjectKey } from '@/host/i18n/plugin'
@@ -144,6 +151,8 @@ import _i18n from './i18n'
 
 const KEYS_MANIPULATORS = ['Backspace', 'Delete', 'Enter', 'ArrowLeft', 'ArrowRight']
 const KEYS_MODIFIERS = ['Alt', 'CapsLock', 'Control', 'Shift', 'Meta']
+const IS_DESKTOP_SAFARI = typeof navigator !== 'undefined'
+  && /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
 const props = defineProps({
   /** Уникальный идентификатор поля */
@@ -310,6 +319,18 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+
+  /** Автоматическое изменение ширины при вводе */
+  autofit: {
+    type: Boolean,
+    default: false,
+  },
+
+  /** Дополнительные атрибуты нативного input|textarea */
+  inputAttributes: {
+    type: Object as unknown as PropType<UiTextboxInputAttributes>,
+    default: () => ({}),
+  },
 })
 
 const emit = defineEmits<{
@@ -438,6 +459,7 @@ const onInput = (event: Event) => {
     emit('update:value', next)
   }
 
+  void adjustWidth()
   emit('input', event)
 }
 
@@ -460,6 +482,7 @@ const onChange = (event: Event) => {
     emit('update:value', value)
   }
 
+  void adjustWidth()
   emit('change', event)
 }
 
@@ -509,6 +532,99 @@ const onKeyDown = (event: KeyboardEvent) => {
 
 const root = useElementRef<HTMLAnchorElement>()
 const textbox = shallowRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
+const placeholderRef = shallowRef<HTMLElement | null>(null)
+
+const getInputScrollWidth = () => {
+  const el = textbox.value
+
+  if (!el) {
+    return 0
+  }
+
+  let width = el.scrollWidth
+
+  if (IS_DESKTOP_SAFARI) {
+    const style = getComputedStyle(el)
+    const pl = parseFloat(style.paddingLeft) || 0
+    const pr = parseFloat(style.paddingRight) || 0
+
+    width += pl + pr
+  }
+
+  return width + 1
+}
+
+const getInputMaxWidth = () => {
+  const el = root.value
+  if (!el) {
+    return Infinity
+  }
+
+  const maxWidth = getComputedStyle(el).maxWidth
+  if (maxWidth.endsWith('px')) {
+    const parsed = parseFloat(maxWidth)
+
+    return isNaN(parsed)
+      ? Infinity
+      : parsed
+  }
+
+  return Infinity
+}
+
+const adjustWidth = async () => {
+  const el = textbox.value
+  if (!el) return
+
+  if (!props.autofit) {
+    el.style.width = ''
+    el.style.minWidth = ''
+
+    return
+  }
+
+  el.style.transition = 'none'
+  el.style.width = '0px'
+  el.style.minWidth = '0px'
+
+  await nextTick()
+
+  const scrollWidth = getInputScrollWidth()
+  const placeholderWidth = (placeholderRef.value?.clientWidth ?? 0) + 1
+  const maxWidth = getInputMaxWidth()
+  const targetWidth = Math.max(scrollWidth, placeholderWidth)
+  let width = Number.isFinite(maxWidth)
+    ? Math.min(targetWidth, maxWidth)
+    : targetWidth
+
+  el.style.minWidth = `${Math.ceil(Math.min(placeholderWidth, width))}px`
+  el.style.width = `${Math.ceil(width)}px`
+
+  // A small correction pass removes premature inner scrolling due to subpixel
+  // rounding and browser-specific width calculations.
+  for (let i = 0; i < 2; i++) {
+    if (el.clientWidth <= 0) {
+      break
+    }
+
+    const overflow = el.scrollWidth - el.clientWidth
+    if (overflow <= 0) {
+      break
+    }
+
+    width = Number.isFinite(maxWidth)
+      ? Math.min(width + overflow + 1, maxWidth)
+      : width + overflow + 1
+
+    el.style.minWidth = `${Math.ceil(Math.min(placeholderWidth, width))}px`
+    el.style.width = `${Math.ceil(width)}px`
+  }
+
+  // Required for Safari to apply width changes in the same frame.
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  el.offsetWidth
+  el.style.transition = ''
+}
 
 const getSelectionStart = () => textbox.value?.selectionStart ?? 0
 const getSelectionEnd = () => textbox.value?.selectionEnd ?? 0
@@ -547,6 +663,7 @@ const insert = async (subject: string) => {
 
   await nextTick()
 
+  await adjustWidth()
   setSelectionRange(position, position)
   focus()
 }
@@ -574,9 +691,13 @@ onMounted(() => {
   if (props.autofocus && !props.disabled) {
     focus()
   }
+
+  void adjustWidth()
 })
 
 watch(() => props.value, (value) => {
+  void adjustWidth()
+
   if (!isDecimal.value || typeof value !== 'string' || !value.includes(',')) return
 
   const converted = value.replace(/,/g, '.')
@@ -584,6 +705,14 @@ watch(() => props.value, (value) => {
     emit('update:value', converted)
   }
 }, { immediate: true })
+
+watch(() => props.autofit, () => {
+  void adjustWidth()
+})
+
+watch(() => props.placeholder, () => {
+  void adjustWidth()
+})
 </script>
 
 <style lang="less" src="./textbox.less" />

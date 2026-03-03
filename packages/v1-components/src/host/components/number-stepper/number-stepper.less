@@ -1,0 +1,263 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-number-stepper {
+  --button-size: 36px;
+
+  .reset-box-sizing();
+
+  display: inline-flex;
+  align-items: stretch;
+  font-family: @font-family;
+  position: relative;
+
+  &_disabled,
+  &_readonly {
+    cursor: default;
+  }
+
+  &__input {
+    min-width: 64px;
+  }
+
+  &__button {
+    display: inline-flex;
+    width: var(--button-size);
+    min-width: var(--button-size);
+    height: var(--button-size);
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    color: @black-500;
+    cursor: pointer;
+    transition: @transition;
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px @blue-300;
+      outline: none;
+      z-index: 4;
+    }
+
+    &:disabled {
+      color: @grey-700;
+      cursor: not-allowed;
+    }
+  }
+
+  &__icon {
+    .square(16px);
+
+    color: inherit;
+    fill: currentColor;
+  }
+
+  &_horizontal {
+    max-width: 100%;
+  }
+
+  &_horizontal &__input.ui-v1-textbox input {
+    text-align: center;
+  }
+
+  &_outlined &__button {
+    background: #FFFFFF;
+    border: 1px solid @grey-500;
+  }
+
+  &_outlined &__button:not(:disabled):hover {
+    border-color: @blue-500;
+    color: @blue-500;
+    z-index: 3;
+  }
+
+  &_outlined.ui-v1-number-stepper_horizontal &__button_decrease {
+    .border-radius-left(@border-radius-md);
+    .border-radius-right(0);
+  }
+
+  &_outlined.ui-v1-number-stepper_horizontal &__button_increase {
+    .border-radius-left(0);
+    .border-radius-right(@border-radius-md);
+  }
+
+  &_outlined.ui-v1-number-stepper_horizontal &__input.ui-v1-textbox {
+    margin-inline: -1px;
+    border-radius: 0;
+  }
+
+  &_outlined.ui-v1-number-stepper_horizontal &__button:disabled {
+    background: @grey-300;
+    color: @grey-700;
+  }
+
+  &_outlined.ui-v1-number-stepper_horizontal {
+    max-width: 136px;
+  }
+
+  &_outlined&_disabled.ui-v1-number-stepper_horizontal &__button {
+    border-color: @grey-600;
+  }
+
+  &_outlined&_readonly.ui-v1-number-stepper_horizontal &__button {
+    border-color: @grey-500;
+  }
+
+  &_outlined:has(.ui-v1-textbox_xs) {
+    --button-size: 24px;
+  }
+
+  &_outlined:has(.ui-v1-textbox_xs).ui-v1-number-stepper_horizontal {
+    max-width: 112px;
+  }
+
+  &_outlined:has(.ui-v1-textbox_md) {
+    --button-size: 48px;
+  }
+
+  &_outlined:has(.ui-v1-textbox_md).ui-v1-number-stepper_horizontal {
+    max-width: 160px;
+  }
+
+  &_outlined:has(.ui-v1-textbox_lg),
+  &_outlined:has(.ui-v1-textbox_xl) {
+    --button-size: 56px;
+  }
+
+  &_outlined:has(.ui-v1-textbox_lg).ui-v1-number-stepper_horizontal,
+  &_outlined:has(.ui-v1-textbox_xl).ui-v1-number-stepper_horizontal {
+    max-width: 176px;
+  }
+
+  &_inline {
+    align-items: center;
+    --button-size: 24px;
+  }
+
+  &_inline &__button {
+    background: transparent;
+    border: none;
+  }
+
+  &_inline &__button:not(:disabled):hover {
+    color: @blue-500;
+  }
+
+  &_inline.ui-v1-number-stepper_horizontal &__button_decrease,
+  &_inline.ui-v1-number-stepper_horizontal &__button_increase {
+    border-radius: 0;
+  }
+
+  &_inline &__input.ui-v1-textbox {
+    min-width: 22px;
+    margin-inline: 2px;
+  }
+
+  &_inline:has(.ui-v1-textbox_md),
+  &_inline:has(.ui-v1-textbox_lg),
+  &_inline:has(.ui-v1-textbox_xl) {
+    --button-size: 36px;
+  }
+
+  &_vertical {
+    width: 80px;
+    padding-right: 24px;
+  }
+
+  &_vertical:has(.ui-v1-textbox__eraser) {
+    width: 112px;
+  }
+
+  &_vertical:has(.ui-v1-textbox__eraser) &__input.ui-v1-textbox {
+    width: 92px;
+  }
+
+  &_vertical &__input.ui-v1-textbox {
+    min-width: 0;
+    width: 100%;
+  }
+
+  &_vertical &__input.ui-v1-textbox input {
+    text-align: start;
+  }
+
+  &_vertical &__button {
+    position: absolute;
+    right: 0;
+    width: 24px;
+    min-width: 24px;
+    height: 18px;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    color: @black-500;
+  }
+
+  &_vertical &__icon {
+    .square(18px);
+  }
+
+  &_vertical &__button_increase {
+    top: 0;
+  }
+
+  &_vertical &__button_decrease {
+    bottom: 0;
+  }
+
+  &_vertical &__button:not(:disabled):hover {
+    color: @blue-500;
+  }
+
+  &_vertical &__button:disabled {
+    background: transparent;
+    color: @grey-700;
+  }
+
+  &_vertical:has(.ui-v1-textbox_xs) &__button {
+    height: 12px;
+  }
+
+  &_vertical:has(.ui-v1-textbox_xs) &__icon {
+    .square(14px);
+  }
+
+  &_vertical:has(.ui-v1-textbox_md) &__button {
+    height: 24px;
+  }
+
+  &_vertical:has(.ui-v1-textbox_md) &__icon {
+    .square(20px);
+  }
+
+  &_vertical:has(.ui-v1-textbox_lg) &__button,
+  &_vertical:has(.ui-v1-textbox_xl) &__button {
+    height: 28px;
+  }
+
+  &_vertical:has(.ui-v1-textbox_lg) &__icon,
+  &_vertical:has(.ui-v1-textbox_xl) &__icon {
+    .square(20px);
+  }
+
+  &_vertical&_inline {
+    width: auto;
+  }
+
+  &_vertical&_inline:has(.ui-v1-textbox_xs) &__button {
+    height: 10px;
+  }
+
+  &_vertical&_inline:has(.ui-v1-textbox_xs) &__icon {
+    .square(12px);
+  }
+
+  &_vertical&_inline:not(:has(.ui-v1-textbox_md)):not(:has(.ui-v1-textbox_lg)):not(:has(.ui-v1-textbox_xl)) &__button {
+    height: 12px;
+  }
+
+  &_vertical&_inline:not(:has(.ui-v1-textbox_md)):not(:has(.ui-v1-textbox_lg)):not(:has(.ui-v1-textbox_xl)) &__icon {
+    .square(14px);
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "label": "Numero",
+  "increaseBy": "Aumentar en {step}",
+  "decreaseBy": "Disminuir en {step}"
+}

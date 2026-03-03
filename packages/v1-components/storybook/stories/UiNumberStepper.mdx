@@ -1,0 +1,90 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiNumberStepperBasic from './UiNumberStepper.basic.example.vue'
+import UiNumberStepperNullable from './UiNumberStepper.nullable.example.vue'
+import UiNumberStepperClamp from './UiNumberStepper.clamp.example.vue'
+import UiNumberStepperDecimal from './UiNumberStepper.decimal.example.vue'
+import UiNumberStepperInline from './UiNumberStepper.inline.example.vue'
+import UiNumberStepperVertical from './UiNumberStepper.vertical.example.vue'
+
+# UiNumberStepper
+
+`UiNumberStepper` - числовое поле с кнопками увеличения/уменьшения значения.
+
+## Импорт
+
+```ts
+import { UiNumberStepper } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовое использование
+
+```vue
+<template>
+  <UiNumberStepper v-model:value="value" :min="0" :max="100" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiNumberStepper } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref<number | null>(10)
+</script>
+```
+
+<ToReact is={UiNumberStepperBasic} />
+
+## Режимы
+
+### `nullable`
+
+Если `nullable=true`, пустое поле эмитит `null`.
+
+<ToReact is={UiNumberStepperNullable} />
+
+### `clamp`
+
+Если `clamp=true`, значение ограничивается диапазоном `[min, max]`.
+Если `clamp=false`, значение не ограничивается, а выход за диапазон приходит через `violation`.
+
+<ToReact is={UiNumberStepperClamp} />
+
+### Дробные шаги (`decimals`, `step`)
+
+<ToReact is={UiNumberStepperDecimal} />
+
+### Inline режим (`outlined=false`)
+
+Режим без рамки наследует правила `UiTextbox` для inline и поддерживает размеры.
+
+<ToReact is={UiNumberStepperInline} />
+
+### Вертикальные кнопки (`direction="vertical"`)
+
+<ToReact is={UiNumberStepperVertical} />
+
+## События
+
+* `update:value` - новое значение для `v-model:value` (`number | null`);
+* `change` - изменение значения пользователем;
+* `increase` / `decrease` - шаговые операции;
+* `focus` / `blur` - события фокуса поля;
+* `violation` - объект `{ value, codes }` с кодами нарушений (`too-large`, `too-small`, `nan`).
+
+## Доступность и клавиатура
+
+Компонент использует паттерн `spinbutton`:
+
+* `role="spinbutton"` и `aria-valuenow/min/max` на поле ввода;
+* `aria-controls` и доступные `aria-label` на кнопках.
+
+Клавиатура:
+
+* `ArrowUp` / `ArrowDown` - увеличить / уменьшить на `step`;
+* `PageUp` / `PageDown` - увеличить / уменьшить на `step * 10`;
+* `Home` / `End` - перейти к `min` / `max` (если заданы).
+
+## Полный API
+
+<ArgTypes />
