@@ -172,4 +172,5 @@ export default defineConfig([
   },
   { ignores: ['dist/*'] },
   { ignores: ['**/dist/*'] },
+  { ignores: ['packages/**/generated/**'] },
 ])
