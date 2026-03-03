@@ -1,0 +1,118 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiCollapseBoxBasic from './UiCollapseBox.basic.example.vue'
+import UiCollapseBoxDisabled from './UiCollapseBox.disabled.example.vue'
+import UiCollapseBoxGroup from './UiCollapseBox.group.example.vue'
+import UiCollapseBoxIconSlot from './UiCollapseBox.icon-slot.example.vue'
+
+# UiCollapseBox / UiCollapseGroup
+
+`UiCollapseBox` - готовый disclosure-блок с заголовком, описанием и коллапсируемым контентом.
+`UiCollapseGroup` объединяет несколько боксов и синхронизирует активный элемент.
+
+## Когда использовать
+
+* нужно компактно сгруппировать длинный контент по секциям;
+* важен стандартный UI "заголовок -> раскрываемое содержимое";
+* нужно поведение "в группе открыт только один бокс".
+
+## Импорт
+
+### Remote
+
+```ts
+import { UiCollapseBox, UiCollapseGroup } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+### Host
+
+```ts
+import { UiCollapseBox, UiCollapseGroup } from '@retailcrm/embed-ui-v1-components/host'
+```
+
+## Базовый пример
+
+```vue
+<UiCollapseBox v-model:expanded="expanded">
+  <template #title>Section title</template>
+  <template #body-content>Section content</template>
+</UiCollapseBox>
+```
+
+<ToReact is={UiCollapseBoxBasic} />
+
+## Работа в группе
+
+`UiCollapseGroup` управляется через `v-model:activeBoxId`.
+Открытие нового бокса закрывает предыдущий (если его можно свернуть).
+
+```vue
+<UiCollapseGroup v-model:activeBoxId="activeBoxId">
+  <UiCollapseBox id="one">
+    <template #title>One</template>
+    <template #body-content>...</template>
+  </UiCollapseBox>
+
+  <UiCollapseBox id="two">
+    <template #title>Two</template>
+    <template #body-content>...</template>
+  </UiCollapseBox>
+</UiCollapseGroup>
+```
+
+<ToReact is={UiCollapseBoxGroup} />
+
+## Состояния
+
+### Disabled
+
+```vue
+<UiCollapseBox disabled>
+  <template #title>Disabled section</template>
+</UiCollapseBox>
+```
+
+<ToReact is={UiCollapseBoxDisabled} />
+
+### Кастомная иконка через слот
+
+Иконка задаётся через `icon` slot.
+
+```vue
+<UiCollapseBox>
+  <template #icon>
+    <MyCustomIcon />
+  </template>
+</UiCollapseBox>
+```
+
+<ToReact is={UiCollapseBoxIconSlot} />
+
+## A11y
+
+* Заголовок реализован нативной кнопкой.
+* На кнопке выставляются `aria-expanded` и `aria-controls`.
+* Контентный блок получает `role="region"` и `aria-labelledby`.
+* В отключённом состоянии используется нативный `disabled` для корректной клавиатурной семантики.
+
+## События
+
+`UiCollapseBox`:
+
+* `update:expanded`
+* `toggle`
+* `expand-cancel`
+* `collapse-cancel`
+* `expanded`
+* `collapsed`
+
+`UiCollapseGroup`:
+
+* `update:activeBoxId`
+* `expanded`
+* `expand-cancelled`
+
+## Полный API
+
+<ArgTypes />
