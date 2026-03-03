@@ -9,6 +9,7 @@ export { default as UiCollapseBox } from '@/host/components/collapse-box/UiColla
 export { default as UiCollapseGroup } from '@/host/components/collapse-box/UiCollapseGroup.vue'
 export { default as UiCopyButton } from '@/host/components/copy-button/UiCopyButton.vue'
 export { default as UiDate } from '@/host/components/date/UiDate.vue'
+export { default as UiDatePicker } from '@/host/components/date-picker/UiDatePicker.vue'
 export { default as UiError } from '@/host/components/error/UiError.vue'
 export { default as UiImage } from '@/host/components/image/UiImage.vue'
 export { default as UiLink } from '@/host/components/link/UiLink.vue'

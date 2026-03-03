@@ -1,0 +1,132 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiDatePickerBasic from './UiDatePicker.basic.example.vue'
+import UiDatePickerBounds from './UiDatePicker.bounds.example.vue'
+import UiDatePickerConfirmed from './UiDatePicker.confirmed.example.vue'
+import UiDatePickerLocale from './UiDatePicker.locale.example.vue'
+import UiDatePickerQuickOptions from './UiDatePicker.quick-options.example.vue'
+import UiDatePickerRange from './UiDatePicker.range.example.vue'
+
+# UiDatePicker
+
+`UiDatePicker` - компонент выбора даты и диапазона дат поверх `UiCalendar` с полем ввода и popper-контейнером.
+
+## Когда использовать
+
+* фильтры по дате/периоду в embedded-интерфейсах;
+* формы с выбором одной даты или диапазона;
+* сценарии с быстрыми пресетами (`quickOptions`);
+* формы, где нужно подтвердить выбор через `Apply`.
+
+## Импорт
+
+```ts
+import { UiDatePicker } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовое использование
+
+```vue
+<template>
+  <UiDatePicker v-model:value="value" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiDatePicker } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref<Date | null>(new Date())
+</script>
+```
+
+<ToReact is={UiDatePickerBasic} />
+
+## Модель данных
+
+Тип значения зависит от `type`:
+
+* `type="single"` -> `Date | null`;
+* `type="range"` -> `Date[] | null`.
+
+События:
+
+* `update:value` - событие для `v-model:value`;
+* `change` - пользовательское изменение значения;
+* `open` / `close` - открытие и закрытие popper.
+
+## Режимы синхронизации
+
+`synchronization="instant"`:
+
+* в `single` значение эмитится сразу после выбора даты;
+* в `range` эмит после выбора второй границы.
+
+`synchronization="confirmed"`:
+
+* выбор хранится во внутреннем состоянии;
+* для публикации значения используйте `Apply`;
+* `Clear` очищает выбранное значение.
+
+<ToReact is={UiDatePickerConfirmed} />
+
+## Примеры
+
+### Выбор диапазона
+
+```vue
+<UiDatePicker
+  v-model:value="value"
+  type="range"
+/>
+```
+
+<ToReact is={UiDatePickerRange} />
+
+### Быстрые пресеты (`quickOptions`)
+
+```vue
+<UiDatePicker
+  v-model:value="value"
+  synchronization="confirmed"
+  :quick-options="[
+    { label: 'Today', value: new Date() },
+    { label: 'This week', value: [new Date('2024-11-18'), new Date('2024-11-24')] },
+  ]"
+/>
+```
+
+<ToReact is={UiDatePickerQuickOptions} />
+
+### Ограничение дат (`minDate` / `maxDate`)
+
+<ToReact is={UiDatePickerBounds} />
+
+### Локаль и первый день недели
+
+<ToReact is={UiDatePickerLocale} />
+
+## A11y и клавиатура
+
+Компонент использует паттерн `combobox` + `dialog` + `grid`:
+
+* `role="combobox"` на корневом элементе;
+* `role="dialog"` на popup;
+* внутри popup используется `UiCalendar` с семантикой `grid`.
+
+Клавиатура в textbox:
+
+* `ArrowDown` / `ArrowUp` - открыть popup;
+* `Enter` - открыть popup; в `confirmed` при открытом popup эквивалент кнопке `Apply`;
+* `Escape` - закрыть popup.
+
+После открытия календаря доступны клавиши навигации `UiCalendar` (`Arrow`, `Home/End`, `PageUp/PageDown`, `Enter/Space`).
+
+## Ограничения текущей версии
+
+Вложенный выбор времени внутри `UiDatePicker` в текущей версии не поддерживается.
+Для выбора времени используйте отдельный `UiTimePicker`.
+
+## Полный API
+
+<ArgTypes />
