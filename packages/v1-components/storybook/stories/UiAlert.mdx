@@ -1,0 +1,100 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiAlertBasic from './UiAlert.basic.example.vue'
+import UiAlertVariants from './UiAlert.variants.example.vue'
+import UiAlertClosable from './UiAlert.closable.example.vue'
+import UiAlertContent from './UiAlert.content.example.vue'
+
+# UiAlert
+
+`UiAlert` - компонент статусных уведомлений для сценариев, когда нужно показать контекстное сообщение на странице без модального окна.
+
+## Когда использовать
+
+* информирование о результате действия;
+* предупреждение о важных изменениях;
+* отображение ошибок в потоке интерфейса;
+* показ успешного завершения операции.
+
+Для короткого текста ошибки без иконки и контейнера используйте `UiError`.
+
+## Импорт
+
+### Remote
+
+```ts
+import { UiAlert } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+### Host
+
+```ts
+import { UiAlert } from '@retailcrm/embed-ui-v1-components/host'
+```
+
+## Базовое использование
+
+```vue
+<UiAlert text="Basic alert" />
+```
+
+<ToReact is={UiAlertBasic} />
+
+## Варианты (`variant`)
+
+Поддерживаются варианты:
+
+* `primary`
+* `warning`
+* `success`
+* `danger`
+
+```vue
+<UiAlert variant="warning" text="Warning alert" />
+```
+
+<ToReact is={UiAlertVariants} />
+
+## Закрываемый alert
+
+Если `closable=true`, справа появляется кнопка закрытия.
+
+```vue
+<UiAlert
+  closable
+  text="You can close this alert manually"
+/>
+```
+
+<ToReact is={UiAlertClosable} />
+
+## Контент и размер
+
+* `ellipsis` - обрезка заголовка в одну строку;
+* `small` - уменьшенный размер текста;
+* `fluid` - снять ограничение ширины контента.
+
+<ToReact is={UiAlertContent} />
+
+## A11y
+
+* Корневой элемент использует `role="alert"`.
+* `aria-live` настраивается автоматически по `variant`:
+* `danger` -> `assertive`;
+* `warning` -> `polite`;
+* `primary` / `success` -> `off`.
+* Для close-кнопки используется нативный `button` с клавиатурной доступностью.
+
+## События
+
+Переходы видимости:
+
+* `showing`
+* `shown`
+* `hiding`
+* `hidden`
+
+## Полный API
+
+<ArgTypes />

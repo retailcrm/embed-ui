@@ -1,3 +1,4 @@
+export { default as UiAlert } from '@/host/components/alert/UiAlert.vue'
 export { default as UiAvatar } from '@/host/components/avatar/UiAvatar.vue'
 export { default as UiAvatarList } from '@/host/components/avatar/UiAvatarList.vue'
 export { default as UiButton } from '@/host/components/button/UiButton.vue'
