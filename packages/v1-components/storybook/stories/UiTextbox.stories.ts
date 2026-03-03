@@ -32,6 +32,7 @@ const meta = {
     active: false,
     invalid: false,
     multiline: false,
+    autofit: false,
   },
 
   argTypes: {

@@ -21,6 +21,7 @@ export { default as UiMenuItemGroup } from '@/host/components/menu/UiMenuItemGro
 export { default as UiModalSidebar } from '@/host/components/modal-sidebar/UiModalSidebar.vue'
 export { default as UiModalWindow } from '@/host/components/modal-window/UiModalWindow.vue'
 export { default as UiModalWindowSurface } from '@/host/components/modal-window/UiModalWindowSurface.vue'
+export { default as UiNumberStepper } from '@/host/components/number-stepper/UiNumberStepper.vue'
 export { default as UiPopper } from '@/host/components/popper/UiPopper.vue'
 export { default as UiPopperConnector } from '@/host/components/popper/UiPopperConnector.vue'
 export { default as UiPopperTarget } from '@/host/components/popper/UiPopperTarget.vue'

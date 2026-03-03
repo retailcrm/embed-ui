@@ -1,0 +1,5 @@
+{
+  "label": "Number",
+  "increaseBy": "Increase by {step}",
+  "decreaseBy": "Decrease by {step}"
+}

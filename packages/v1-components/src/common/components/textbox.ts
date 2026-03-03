@@ -26,6 +26,8 @@ export enum SIZE {
   XL = 'xl',
 }
 
+export type UiTextboxInputAttributes = Record<string, string | number | boolean | undefined>
+
 export type UiTextboxProperties = {
   id?: string;
   type?: TYPE | `${TYPE}`;
@@ -54,6 +56,8 @@ export type UiTextboxProperties = {
   rows?: number | `${number}`;
   cols?: number | `${number}`;
   outlined?: boolean;
+  autofit?: boolean;
+  inputAttributes?: UiTextboxInputAttributes;
 }
 
 export type UiTextboxMethods = {
