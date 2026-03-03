@@ -1,0 +1,96 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiCollapseBasic from './UiCollapse.basic.example.vue'
+import UiCollapseDispose from './UiCollapse.dispose.example.vue'
+
+# UiCollapse
+
+`UiCollapse` - базовый контейнер для анимированного скрытия/раскрытия содержимого.
+
+## Когда использовать
+
+* нужно показать/скрыть блок без собственной шапки;
+* у вас уже есть собственный триггер (кнопка, чекбокс, таб и т.д.);
+* требуется выбрать поведение скрытия: `hide` или `dispose`.
+
+Если нужен готовый паттерн "заголовок + тело", используйте `UiCollapseBox` и `UiCollapseGroup`.
+
+## Импорт
+
+### Remote
+
+```ts
+import { UiCollapse } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+### Host
+
+```ts
+import { UiCollapse } from '@retailcrm/embed-ui-v1-components/host'
+```
+
+## Быстрый старт
+
+```vue
+<template>
+  <UiCollapse :expanded="opened">
+    <div>Collapsible content</div>
+  </UiCollapse>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiCollapse } from '@retailcrm/embed-ui-v1-components/remote'
+
+const opened = ref(false)
+</script>
+```
+
+<ToReact is={UiCollapseBasic} />
+
+## Поведение при сворачивании
+
+`collapseBehaviour` определяет, что происходит с DOM в свернутом состоянии:
+
+* `hide` - контент остаётся в DOM и скрывается;
+* `dispose` - контент удаляется из DOM.
+
+```vue
+<UiCollapse
+  :expanded="opened"
+  collapse-behaviour="dispose"
+>
+  <div>Disposed content</div>
+</UiCollapse>
+```
+
+<ToReact is={UiCollapseDispose} />
+
+## События
+
+Компонент эмитит жизненный цикл анимации:
+
+* `expanding`
+* `expanded`
+* `collapsing`
+* `collapsed`
+
+Пример:
+
+```vue
+<UiCollapse
+  :expanded="opened"
+  @expanded="onExpanded"
+  @collapsed="onCollapsed"
+/>
+```
+
+## A11y
+
+* `UiCollapse` используется как анимируемый контейнер и не навязывает конкретную роль.
+* Для доступности управляйте связью триггера и контента снаружи (`aria-controls`, `aria-expanded`, `role="region"`) там, где это нужно по вашему UX.
+
+## Полный API
+
+<ArgTypes />
