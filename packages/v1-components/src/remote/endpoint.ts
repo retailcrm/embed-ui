@@ -17,6 +17,7 @@ export const createEndpointRoot = async (
       'UiCollapseGroup',
       'UiCopyButton',
       'UiDate',
+      'UiDatePicker',
       'UiError',
       'UiImage',
       'UiLink',
