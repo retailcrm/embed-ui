@@ -20,6 +20,7 @@ export const createEndpointRoot = async (
       'UiDatePicker',
       'UiError',
       'UiImage',
+      'UiInfobox',
       'UiLink',
       'UiLoader',
       'UiMenuItem',

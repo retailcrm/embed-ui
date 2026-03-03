@@ -1,0 +1,107 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+import UiInfoboxBasic from './UiInfobox.basic.example.vue'
+import UiInfoboxClosable from './UiInfobox.closable.example.vue'
+import UiInfoboxControlled from './UiInfobox.controlled.example.vue'
+import UiInfoboxExpandable from './UiInfobox.expandable.example.vue'
+import UiInfoboxSlots from './UiInfobox.slots.example.vue'
+import UiInfoboxWarning from './UiInfobox.warning.example.vue'
+
+# UiInfobox
+
+`UiInfobox` - блок для заметок, подсказок и предупреждений с поддержкой скрытия и раскрываемого контента.
+
+## Когда использовать
+
+* показать важный контекст рядом с формой;
+* добавить предупреждение с отличающимся визуальным акцентом;
+* дать пользователю возможность скрыть сообщение;
+* раскрывать дополнительные детали по запросу (`expandable`).
+
+## Импорт
+
+```ts
+import { UiInfobox } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовый пример
+
+```vue
+<UiInfobox title="Important information">
+  Content
+</UiInfobox>
+```
+
+<ToReact is={UiInfoboxBasic} />
+
+## Состояния и режимы
+
+### Warning
+
+```vue
+<UiInfobox warning title="Warning">
+  Content
+</UiInfobox>
+```
+
+<ToReact is={UiInfoboxWarning} />
+
+### Expandable
+
+```vue
+<UiInfobox
+  v-model:expanded="expanded"
+  expandable
+/>
+```
+
+<ToReact is={UiInfoboxExpandable} />
+
+### Closable
+
+```vue
+<UiInfobox
+  v-model:shown="shown"
+  closable
+/>
+```
+
+<ToReact is={UiInfoboxClosable} />
+
+## Контролируемый режим
+
+`UiInfobox` поддерживает внешнее управление через:
+
+* `v-model:shown`
+* `v-model:expanded`
+
+<ToReact is={UiInfoboxControlled} />
+
+## Слоты
+
+Доступны слоты:
+
+* `icon`
+* `title`
+* `toggle`
+* `default`
+
+<ToReact is={UiInfoboxSlots} />
+
+## A11y
+
+* корневой элемент использует `role="alert"` и `aria-live="polite"`;
+* для toggle/close используются нативные `button`;
+* при наличии заголовка инфобокс связывается через `aria-labelledby`.
+
+## События
+
+* `show`
+* `hide`
+* `update:shown`
+* `update:expanded`
+
+## Полный API
+
+<ArgTypes />
