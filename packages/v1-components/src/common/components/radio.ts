@@ -5,6 +5,7 @@ export type UiRadioProperties = {
   name?: string;
   model?: Primitive | Primitive[];
   value?: Primitive;
+  required?: boolean;
   disabled?: boolean;
 }
 
