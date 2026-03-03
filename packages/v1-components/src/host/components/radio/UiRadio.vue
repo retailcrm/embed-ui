@@ -5,7 +5,7 @@
             'ui-v1-radio_checked': checked,
             'ui-v1-radio_disabled': disabled,
         }"
-        v-bind="pick($attrs, (key: string) => !key.startsWith('aria-') && !key.startsWith('on'))"
+        v-bind="rootAttributes"
     >
         <input
             :id="id"
@@ -13,8 +13,9 @@
             :name="name"
             :value="value"
             :checked="checked"
+            :required="required"
             :disabled="disabled"
-            v-bind="pick($attrs, (key: string) => key.startsWith('aria-') || key.startsWith('on'))"
+            v-bind="inputAttributes"
             type="radio"
             class="ui-v1-radio__input"
             @change="onChange"
@@ -25,7 +26,8 @@
 </template>
 
 <script lang="ts">
-let counter = 0
+let nameCounter = 0
+let idCounter = 0
 
 export default {}
 </script>
@@ -36,24 +38,29 @@ import type { PropType } from 'vue'
 import type { UiRadioMethods } from '@/common/components/radio'
 
 import { computed } from 'vue'
+import { useAttrs } from 'vue'
 
 import { pick } from '@/common/utils'
 import { useElementRef } from '@/host/composables'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 const props = defineProps({
   id: {
     type: null as unknown as PropType<string | undefined>,
     validator: (id: unknown) => id === undefined || typeof id === 'string' && id.length > 0 && /^[A-Za-z]/.test(id),
-    default: undefined,
+    default: () => 'ui-v1-radio-' + ++idCounter,
   },
 
   /** Атрибут name нативного поля ввода */
   name: {
     type: String,
-    default: () => 'ui-v1-radio-' + ++counter,
+    default: () => 'ui-v1-radio-' + ++nameCounter,
   },
 
-  /** Значение модели используемое с директивой v-model */
+  /** Значение модели, используемое с директивой v-model */
   model: {
     type: null as unknown as PropType<Primitive>,
     default: undefined,
@@ -70,6 +77,12 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+
+  /** Является ли поле обязательным */
+  required: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits([
@@ -80,6 +93,19 @@ const emit = defineEmits([
 ])
 
 const radio = useElementRef<HTMLInputElement>()
+const attrs = useAttrs()
+
+const rootAttributes = computed(() => pick(attrs, (key: string) => !key.startsWith('aria-') && !key.startsWith('on')))
+
+const inputAttributes = computed(() => {
+  const attributes = pick(attrs, (key: string) => key.startsWith('aria-') || key.startsWith('on'))
+
+  // Native radio already exposes checked state semantically; forcing aria-checked
+  // can conflict with ARIA-in-HTML rules.
+  delete attributes['aria-checked']
+
+  return attributes
+})
 
 const click = () => radio.value?.click()
 const focus = () => radio.value?.focus()

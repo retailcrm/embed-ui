@@ -1,21 +1,26 @@
 <template>
     <div :class="$style['container']">
-        <div
-            v-for="(option, index) in options"
-            :key="option.value"
-            :class="$style['option']"
-        >
-            <UiRadio
-                :id="'radio-' + index"
-                v-model:model="model"
-                :value="option.value"
-                :disabled="option.disabled"
-            />
+        <fieldset :class="$style['group']">
+            <legend>Delivery type</legend>
 
-            <label :for="'radio-' + index">
-                {{ option.label }}
-            </label>
-        </div>
+            <div
+                v-for="(option, index) in options"
+                :key="option.value"
+                :class="$style['option']"
+            >
+                <UiRadio
+                    :id="'radio-' + index"
+                    v-model:model="model"
+                    :value="option.value"
+                    :name="groupName"
+                    :disabled="option.disabled"
+                />
+
+                <label :for="'radio-' + index">
+                    {{ option.label }}
+                </label>
+            </div>
+        </fieldset>
 
         <div>
             Value: {{ model }}
@@ -48,6 +53,7 @@ const options: Option[] = [{
   disabled: true,
 }]
 
+const groupName = 'delivery-type'
 const model = ref(options[0].value)
 </script>
 
@@ -59,6 +65,12 @@ const model = ref(options[0].value)
   padding: @spacing-s;
   border: 1px solid @grey-500;
   border-radius: @border-radius-lg;
+}
+
+.group {
+  margin: 0 0 @spacing-s;
+  padding: 0;
+  border: none;
 }
 
 .option {
