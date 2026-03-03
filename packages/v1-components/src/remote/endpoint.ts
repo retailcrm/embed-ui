@@ -7,6 +7,7 @@ export const createEndpointRoot = async (
 ): Promise<RemoteRoot<SchemaOf<string>>> => {
   return createRemoteRoot(channel, {
     components: [
+      'UiAddButton',
       'UiAvatar',
       'UiAvatarList',
       'UiAlert',
