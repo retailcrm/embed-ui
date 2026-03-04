@@ -1,6 +1,29 @@
 # Changelog
 
 
+## [0.9.11-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.10...v0.9.11-alpha.1) (2026-03-04)
+
+### Features
+
+* **v1-components:** UiAddButton component, tests and docs were added ([e90978c](https://github.com/retailcrm/embed-ui/commit/e90978c0ae0a10e824d700fe39467503f496ff98))
+* **v1-components:** UiAlert component, tests, and Storybook guides were added ([3febafa](https://github.com/retailcrm/embed-ui/commit/3febafa580e4eb88bc7f90f3cb851395a798a602))
+* **v1-components:** UiCalendar component, tests, and Storybook docs were added ([c2d1840](https://github.com/retailcrm/embed-ui/commit/c2d1840c9eef2c475185347ea01188d2a489c518))
+* **v1-components:** UiCollapse components were added with slot-based icons ([bf4ecf5](https://github.com/retailcrm/embed-ui/commit/bf4ecf544228418935a3dc433e8d841a502127b2))
+* **v1-components:** UiDatePicker component, tests and docs were added ([77ce644](https://github.com/retailcrm/embed-ui/commit/77ce6444bd7fd82a74961f1028b10350018ead7d))
+* **v1-components:** UiField remote-only component was migrated ([e855be9](https://github.com/retailcrm/embed-ui/commit/e855be97e04a23537baef60bed3e58a7456b7dba))
+* **v1-components:** UiInfobox component, tests and docs were added ([5be7c66](https://github.com/retailcrm/embed-ui/commit/5be7c66ee04c8a02bff72d94e02ea60b9e9b3d99))
+* **v1-components:** UiNumberStepper and UiTextbox autofit were added ([2237175](https://github.com/retailcrm/embed-ui/commit/2237175dc2d4121a404a312cc704a2e4e9bc3155))
+* **v1-components:** UiSlider component, tests, and Storybook guides were added ([7206a16](https://github.com/retailcrm/embed-ui/commit/7206a16bd50eaf2b95330aa4fcf3ee8f042b4c22))
+* **v1-components:** UiSwitch component, styles, tests, and Storybook docs were added ([eb50c43](https://github.com/retailcrm/embed-ui/commit/eb50c438648cf1f1c22b2c10a6805abf7c276f23))
+* **v1-components:** UiTimePicker component and docs were added ([853aa16](https://github.com/retailcrm/embed-ui/commit/853aa1643b827dfea3daaf44c20857114112a73a))
+
+### Bug Fixes
+
+* **v1-components:** Align select option default isSelected return type ([5ec5fb8](https://github.com/retailcrm/embed-ui/commit/5ec5fb88876ebef10376749662b14ed8b67bf12e))
+* **v1-components:** Host internal imports were decoupled from host entrypoint ([886c6bf](https://github.com/retailcrm/embed-ui/commit/886c6bffc752e3d87ec250d7d7dbad51ec9c74ce))
+* **v1-components:** UiRadio aria handling and accessibility docs were improved ([26ca271](https://github.com/retailcrm/embed-ui/commit/26ca271a0b76b0d5e099c9babbec56cc61136dfe))
+* **v1-components:** UiTextbox input sizing was corrected ([11677e0](https://github.com/retailcrm/embed-ui/commit/11677e04192d7a15205db9f6b0e6424f459240aa))
+* **v1-endpoint:** Build and test workspace configuration were corrected ([f323e2a](https://github.com/retailcrm/embed-ui/commit/f323e2aff11373a1cadde9fa0a9c3f035491f65b))
 ## [0.9.10](https://github.com/retailcrm/embed-ui/compare/v0.9.9...v0.9.10) (2026-02-18)
 
 ### Features
