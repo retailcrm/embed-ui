@@ -1228,6 +1228,7 @@ __metadata:
     "@vue/test-utils": "npm:^2.4.6"
     "@yandex/ymaps3-types": "npm:^0.0.21"
     date-fns: "npm:^4.1.0"
+    highlight.js: "npm:^11.11.1"
     less: "npm:^4.4.2"
     lodash.isequal: "npm:^4.5.0"
     react: "npm:^18.3.1"
@@ -5491,6 +5492,13 @@ __metadata:
   bin:
     he: bin/he
   checksum: 10/d09b2243da4e23f53336e8de3093e5c43d2c39f8d0d18817abfa32ce3e9355391b2edb4bb5edc376aea5d4b0b59d6a0482aab4c52bc02ef95751e4b818e847f1
+  languageName: node
+  linkType: hard
+
+"highlight.js@npm:^11.11.1":
+  version: 11.11.1
+  resolution: "highlight.js@npm:11.11.1"
+  checksum: 10/205272f12f2c8ab1760452a75c58b043b11129cf3a5d2a9c0c90d43993580d0f5c385a73a4b8aba197eef20c0ec37d64000e6b35c4ed5991324f4c2dc78f4e43
   languageName: node
   linkType: hard
 
