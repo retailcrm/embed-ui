@@ -1,0 +1,104 @@
+{
+  "name": "@retailcrm/embed-ui-v1-endpoint",
+  "type": "module",
+  "version": "0.9.10",
+  "description": "Endpoint API for integrations in RetailCRM",
+  "license": "MIT",
+  "author": "RetailDriverLLC <integration@retailcrm.ru>",
+  "repository": "git@github.com:retailcrm/embed-ui.git",
+  "exports": {
+    ".": {
+      "types": "./dist/remote.d.ts",
+      "import": "./dist/remote.js",
+      "require": "./dist/remote.cjs",
+      "default": "./dist/remote.js"
+    },
+    "./common": {
+      "types": "./dist/common.d.ts",
+      "import": "./dist/common.js",
+      "require": "./dist/common.cjs",
+      "default": "./dist/common.js"
+    },
+    "./common/targets": {
+      "types": "./dist/common/targets.d.ts",
+      "import": "./dist/common/targets.js",
+      "require": "./dist/common/targets.cjs",
+      "default": "./dist/common/targets.js"
+    },
+    "./remote": {
+      "types": "./dist/remote.d.ts",
+      "import": "./dist/remote.js",
+      "require": "./dist/remote.cjs",
+      "default": "./dist/remote.js"
+    },
+    "./remote/widgets": {
+      "types": "./dist/remote/widgets.d.ts",
+      "import": "./dist/remote/widgets.js",
+      "require": "./dist/remote/widgets.cjs",
+      "default": "./dist/remote/widgets.js"
+    },
+    "./remote/pages": {
+      "types": "./dist/remote/pages.d.ts",
+      "import": "./dist/remote/pages.js",
+      "require": "./dist/remote/pages.cjs",
+      "default": "./dist/remote/pages.js"
+    },
+    "./dist/*": "./dist/*",
+    "./*": "./*"
+  },
+  "typesVersions": {
+    "*": {
+      "common": [
+        "./dist/common.d.ts"
+      ],
+      "common/targets": [
+        "./dist/common/targets.d.ts"
+      ],
+      "remote": [
+        "./dist/remote.d.ts"
+      ],
+      "remote/widgets": [
+        "./dist/remote/widgets.d.ts"
+      ],
+      "remote/pages": [
+        "./dist/remote/pages.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "yarn build:code",
+    "build:code": "vite build -c ./vite.config.ts",
+    "test:e2e": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
+    "test:playwright": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
+    "test": "vitest --run"
+  },
+  "peerDependencies": {
+    "@remote-ui/rpc": "^1.4",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.9",
+    "@retailcrm/embed-ui-v1-types": "^0.9.9",
+    "pinia": "^2.2",
+    "vue": "^3.5"
+  },
+  "dependencies": {
+    "@remote-ui/rpc": "^1.4.7",
+    "@retailcrm/embed-ui-v1-components": "^0.9.9",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.9",
+    "@retailcrm/embed-ui-v1-types": "^0.9.9"
+  },
+  "devDependencies": {
+    "@retailcrm/image-preview": "^1.0.2",
+    "@vitest/browser": "4.0.15",
+    "@vitest/browser-playwright": "4.0.15",
+    "date-fns": "^4.1.0",
+    "lodash.isequal": "^4.5.0",
+    "playwright": "1.58.2",
+    "vitest": "4.0.15"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

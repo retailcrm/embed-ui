@@ -11,6 +11,7 @@ dist
 generated
 node_modules
 coverage
+packages/v1-endpoint/artifacts/
 
 .npmrc
 .pnp.cjs

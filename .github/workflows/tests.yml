@@ -76,3 +76,19 @@ jobs:
 
       - name: Run typecheck tests
         run: yarn vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json
+
+      - name: Install Playwright Chromium
+        if: ${{ matrix.node-version == '24.x' }}
+        run: yarn workspace @retailcrm/embed-ui-v1-endpoint exec playwright install --with-deps chromium
+
+      - name: Run v1-endpoint e2e tests
+        if: ${{ matrix.node-version == '24.x' }}
+        run: yarn workspace @retailcrm/embed-ui-v1-endpoint run test:e2e
+
+      - name: Upload v1-endpoint e2e screenshots
+        if: ${{ failure() && matrix.node-version == '24.x' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: v1-endpoint-playwright-screenshots-${{ matrix.node-version }}
+          path: packages/v1-endpoint/artifacts/playwright/screenshots
+          if-no-files-found: ignore
