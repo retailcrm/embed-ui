@@ -1283,6 +1283,8 @@ __metadata:
     date-fns: "npm:^4.1.0"
     lodash.isequal: "npm:^4.5.0"
     playwright: "npm:1.58.2"
+    vite: "npm:^7.2.7"
+    vite-plugin-dts: "npm:^4.5.4"
     vitest: "npm:4.0.15"
   peerDependencies:
     "@remote-ui/rpc": ^1.4

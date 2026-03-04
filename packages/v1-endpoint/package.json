@@ -96,6 +96,8 @@
     "date-fns": "^4.1.0",
     "lodash.isequal": "^4.5.0",
     "playwright": "1.58.2",
+    "vite": "^7.2.7",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "4.0.15"
   },
   "publishConfig": {
