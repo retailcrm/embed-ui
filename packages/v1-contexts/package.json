@@ -101,8 +101,6 @@
     "pinia": "^2.2"
   },
   "dependencies": {
-    "@floating-ui/core": "^1.7.3",
-    "@floating-ui/dom": "^1.7.4",
     "@omnicajs/symfony-router": "^1.0.0",
     "@retailcrm/embed-ui-v1-types": "^0.9.10"
   },
