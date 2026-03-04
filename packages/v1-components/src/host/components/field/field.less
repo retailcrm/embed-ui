@@ -1,0 +1,93 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-field {
+  .reset-box-sizing();
+
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+
+  &__headline {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  &__label {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    color: @grey-800;
+    .text-small-accent();
+  }
+
+  &__required-mark {
+    color: @red-500;
+  }
+
+  &__hint {
+    display: inline-flex;
+    align-items: center;
+    align-self: baseline;
+    justify-content: center;
+  }
+
+  &__hint-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: @grey-700;
+    cursor: help;
+    outline: none;
+  }
+
+  &__hint-trigger:hover,
+  &__hint-trigger:focus-visible {
+    color: @blue-500;
+  }
+
+  &__hint-icon {
+    .square(16px);
+    color: inherit;
+    fill: currentColor;
+  }
+
+  &__hint-tooltip.ui-v1-tooltip {
+    --ui-v1-popper-background: #FFFFFF;
+    --ui-v1-popper-padding: 12px 16px;
+    --ui-v1-popper-roundings: @border-radius-md;
+
+    color: @black-500;
+  }
+
+  &_disabled {
+    opacity: .72;
+  }
+
+  &_invalid &__label {
+    color: @red-500;
+  }
+
+  &_invalid &__hint-trigger:focus-visible {
+    color: @red-500;
+  }
+
+  &__addon {
+    min-width: 0;
+    color: @grey-800;
+    .text-small();
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-top: 2px;
+    margin-left: auto;
+  }
+
+  &__control {
+    min-width: 0;
+  }
+}

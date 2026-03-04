@@ -1,3 +1,5 @@
+import '@/host/components/field/field.less'
+
 export * from '@/host/components'
 export * from '@/host/provider'
 
