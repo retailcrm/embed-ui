@@ -27,7 +27,7 @@ import type { PropType } from 'vue'
 
 import IconChevronRight from '~assets/sprites/arrows/chevron-right.svg'
 
-import { UiButton } from '@/host'
+import UiButton from '@/host/components/button/UiButton.vue'
 
 defineProps({
   label: {

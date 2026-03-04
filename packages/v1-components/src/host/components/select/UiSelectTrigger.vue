@@ -71,7 +71,7 @@ import {
 
 import IconCaret from '~assets/sprites/arrows/caret-down.svg'
 
-import { UiTextbox } from '@/host'
+import UiTextbox from '@/host/components/textbox/UiTextbox.vue'
 
 import _i18n from '@/host/components/select/i18n'
 

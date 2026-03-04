@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { UiButton } from '@/host'
+import UiButton from '@/host/components/button/UiButton.vue'
 
 defineProps({
   locked: {
