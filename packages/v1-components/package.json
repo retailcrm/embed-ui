@@ -74,6 +74,7 @@
     "@vue/compiler-sfc": "^3.5.25",
     "@vue/test-utils": "^2.4.6",
     "@yandex/ymaps3-types": "^0.0.21",
+    "highlight.js": "^11.11.1",
     "less": "^4.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

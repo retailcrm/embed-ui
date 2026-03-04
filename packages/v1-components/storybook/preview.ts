@@ -5,6 +5,7 @@ import type { Preview } from '@storybook/vue3'
 import { ref } from 'vue'
 import { setup } from '@storybook/vue3'
 
+import { MdxCodeBlock, MdxCodePreBlock } from './src/utils/mdxCodeBlock'
 import theme from './theme'
 
 import { ImageWorkersKey } from '../src/common/preview'
@@ -25,6 +26,13 @@ const preview: Preview = {
       sort: 'none',
     },
     docs: {
+      components: {
+        code: MdxCodeBlock,
+        pre: MdxCodePreBlock,
+      },
+      source: {
+        language: 'text',
+      },
       theme,
     },
     options: {

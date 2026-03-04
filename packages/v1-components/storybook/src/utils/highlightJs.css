@@ -1,0 +1,52 @@
+pre.omnica-hljs-block {
+  margin: 1rem 0 !important;
+  padding: 0 !important;
+  border: 1px solid #c7cdd4 !important;
+  border-radius: 4px !important;
+  background-color: #f6f8fa !important;
+  position: relative;
+}
+
+pre.omnica-hljs-block > code.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 12px;
+  background-color: transparent;
+  font-size: 14px !important;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace !important;
+  font-variant-ligatures: none;
+  line-height: 1.3;
+  white-space: pre !important;
+  tab-size: 4;
+}
+
+pre.omnica-hljs-block > code.hljs * {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit;
+  font-variant-ligatures: inherit;
+}
+
+pre.omnica-hljs-block .omnica-hljs-copy {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 1;
+  border: 1px solid #c7cdd4;
+  border-radius: 4px;
+  padding: 2px 8px;
+  background-color: #fff;
+  color: #1e2248;
+  font-size: 10px;
+  line-height: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+pre.omnica-hljs-block .omnica-hljs-copy:hover {
+  background-color: #f3f5f8;
+}
+
+pre.omnica-hljs-block .omnica-hljs-copy:active {
+  background-color: #dce1e8;
+}
