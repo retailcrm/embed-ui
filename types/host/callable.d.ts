@@ -1,10 +1,3 @@
-import type { Pojo } from '@retailcrm/embed-ui-v1-types/scaffolding'
+import type { HostApi } from '@retailcrm/embed-ui-v1-types/host'
 
-export type Callable = {
-  goTo (route: string, params?: Record<string, unknown>): void;
-
-  httpCall (
-    action: string,
-    payload?: string | Pojo
-  ): Promise<{ body: string; status: number }>;
-}
+export type Callable = HostApi
