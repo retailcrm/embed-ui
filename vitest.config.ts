@@ -34,7 +34,7 @@ export default defineConfig({
       '.',
       'packages/v1-contexts',
       'packages/v1-components',
-      'packages/v1-pages',
+      'packages/v1-endpoint',
     ],
   },
 })
