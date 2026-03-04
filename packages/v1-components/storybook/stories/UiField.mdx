@@ -1,0 +1,76 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+# UiField
+
+`UiField` - remote-only обертка для построения семантики поля формы.
+Компонент связывает `label` и вложенный контрол через id/ARIA атрибуты, а `hint` показывает в tooltip рядом с label.
+
+## Когда использовать
+
+* Нужно единообразно оформлять поля ввода в формах.
+* Нужно передавать в контрол связки `aria-labelledby`/`aria-invalid`.
+* Нужно выводить `hint` как tooltip у названия поля.
+* Нужно вывести справа от заголовка дополнительный контент (`addon`) без разметки вокруг контрола.
+* Нужно вынести логику обязательности (`required`) и состояния ошибки (`invalid`) в общий контейнер.
+
+## Базовое применение
+
+```html
+<template>
+    <UiField id="name-field" label="Название" hint="Минимум 3 символа">
+        <template #default="field">
+            <UiTextbox
+                :id="field.id"
+                :input-attributes="{
+                    'aria-labelledby': field.ariaLabelledby,
+                    'aria-invalid': field.ariaInvalid,
+                }"
+            />
+        </template>
+    </UiField>
+</template>
+
+<script lang="ts" setup>
+import {
+  UiField,
+  UiTextbox,
+} from '@retailcrm/embed-ui-v1-components/remote'
+</script>
+```
+
+## Слоты
+
+* `default` - вложенный контрол (через slot-props получает `id` и ARIA значения).
+* `label` - кастомная разметка label.
+* `hint` - контент tooltip рядом с label.
+* `addon` - дополнительный контент справа от label.
+
+## Addon рядом с label
+
+```html
+<template>
+    <UiField id="name-field" label="Название">
+        <template #addon>
+            До 32 символов
+        </template>
+
+        <template #default="field">
+            <UiTextbox
+                :id="field.id"
+                :input-attributes="{
+                    'aria-labelledby': field.ariaLabelledby,
+                    'aria-invalid': field.ariaInvalid,
+                }"
+            />
+        </template>
+    </UiField>
+</template>
+```
+
+## Подсказка (`hint`) в белом tooltip
+
+Tooltip у `UiField` оформляется белым фоном в host-стилях и может быть переопределен через слоты/переменные при необходимости.
+
+## API
+
+<ArgTypes />

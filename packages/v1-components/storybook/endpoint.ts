@@ -29,7 +29,6 @@ export interface Runner<T extends object = object> {
     root: RemoteRoot<SchemaOf<string>>,
     props: ShallowReactive<Partial<T>>,
   ): Promise<() => void>;
-
 }
 
 const createRoot = async (channel: Channel) => {
@@ -38,8 +37,11 @@ const createRoot = async (channel: Channel) => {
       'UiMenuItem',
       'UiMenuItemGroup',
       'UiPopperConnector',
+      'UiPopperTarget',
       'UiSelectPopper',
       'UiSelectTrigger',
+      'UiTextbox',
+      'UiTooltip',
     ],
   })
 
