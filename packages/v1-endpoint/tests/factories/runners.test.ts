@@ -19,30 +19,48 @@ afterEach(() => {
 
 test('definePageRunner and defineWidgetRunner mount and unmount apps', async () => {
   const beforePageMount = vi.fn(async () => {})
-  const use = vi.fn()
-  const mount = vi.fn()
-  const unmount = vi.fn()
-  const createAppFn = vi.fn(() => ({
-    use,
-    mount,
-    unmount,
-  }))
+  const beforeWidgetMount = vi.fn(async () => {})
+  const apps: Array<{
+    use: ReturnType<typeof vi.fn>;
+    mount: ReturnType<typeof vi.fn>;
+    unmount: ReturnType<typeof vi.fn>;
+  }> = []
+
+  const createAppFn = vi.fn(() => {
+    const app = {
+      use: vi.fn(),
+      mount: vi.fn(),
+      unmount: vi.fn(),
+    }
+
+    apps.push(app)
+
+    return app
+  })
 
   const pageRunner = definePageRunner({ render: () => null } as Component, beforePageMount)
-  const widgetRunner = defineWidgetRunner({ render: () => null } as Component)
+  const widgetRunner = defineWidgetRunner({ render: () => null } as Component, beforeWidgetMount)
+  const pagePinia = {} as never
+  const widgetPinia = {} as never
 
-  const pageDestroy = await pageRunner.run(createAppFn as never, {} as never, {} as never, 'orders')
-  const widgetDestroy = await widgetRunner.run(createAppFn as never, {} as never, {} as never, 'order/card:common.before')
+  const pageDestroy = await pageRunner.run(createAppFn as never, {} as never, pagePinia, 'orders')
+  const widgetDestroy = await widgetRunner.run(createAppFn as never, {} as never, widgetPinia, 'order/card:common.before')
 
   expect(createAppFn).toHaveBeenCalledTimes(2)
   expect(beforePageMount).toHaveBeenCalledTimes(1)
-  expect(use).toHaveBeenCalledTimes(2)
-  expect(mount).toHaveBeenCalledTimes(2)
+  expect(beforeWidgetMount).toHaveBeenCalledTimes(1)
+  expect(beforePageMount).toHaveBeenCalledWith(apps[0], pagePinia)
+  expect(beforeWidgetMount).toHaveBeenCalledWith(apps[1], widgetPinia)
+  expect(apps[0].use).toHaveBeenCalledTimes(1)
+  expect(apps[1].use).toHaveBeenCalledTimes(1)
+  expect(apps[0].mount).toHaveBeenCalledTimes(1)
+  expect(apps[1].mount).toHaveBeenCalledTimes(1)
 
   pageDestroy()
   widgetDestroy()
 
-  expect(unmount).toHaveBeenCalledTimes(2)
+  expect(apps[0].unmount).toHaveBeenCalledTimes(1)
+  expect(apps[1].unmount).toHaveBeenCalledTimes(1)
 })
 
 test('defineMultiRunner for pages and widgets delegates to mapped runners', async () => {
