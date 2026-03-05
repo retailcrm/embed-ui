@@ -1,7 +1,7 @@
 {
   "name": "@retailcrm/embed-ui-v1-endpoint",
   "type": "module",
-  "version": "0.9.11-alpha.1",
+  "version": "0.9.11-alpha.2",
   "description": "Endpoint API for integrations in RetailCRM",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
@@ -78,16 +78,16 @@
   },
   "peerDependencies": {
     "@remote-ui/rpc": "^1.4",
-    "@retailcrm/embed-ui-v1-contexts": "^0.9.11-alpha.1",
-    "@retailcrm/embed-ui-v1-types": "^0.9.11-alpha.1",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.11-alpha.2",
+    "@retailcrm/embed-ui-v1-types": "^0.9.11-alpha.2",
     "pinia": "^2.2",
     "vue": "^3.5"
   },
   "dependencies": {
     "@remote-ui/rpc": "^1.4.7",
-    "@retailcrm/embed-ui-v1-components": "^0.9.11-alpha.1",
-    "@retailcrm/embed-ui-v1-contexts": "^0.9.11-alpha.1",
-    "@retailcrm/embed-ui-v1-types": "^0.9.11-alpha.1"
+    "@retailcrm/embed-ui-v1-components": "^0.9.11-alpha.2",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.11-alpha.2",
+    "@retailcrm/embed-ui-v1-types": "^0.9.11-alpha.2"
   },
   "devDependencies": {
     "@retailcrm/image-preview": "^1.0.2",

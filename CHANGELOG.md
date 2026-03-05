@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [0.9.11-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.1...v0.9.11-alpha.2) (2026-03-05)
+
+### Features
+
+* @omnicajs/vue-remote was upgraded to v0.2.14 ([62f34f6](https://github.com/retailcrm/embed-ui/commit/62f34f6fcba7b51279bbfd94b5bfa8dfee752dc7))
+* **v1-components:** Added Storybook MDX code block highlighting ([138106d](https://github.com/retailcrm/embed-ui/commit/138106d70317d22b826b8c16c1e5edb5b83b2cb0))
+
+### Bug Fixes
+
+* External package subpath matching was unified in build configs ([40cf7c6](https://github.com/retailcrm/embed-ui/commit/40cf7c613d5b534e91d0001cec729a5b62442462))
+* **v1-components:** Modal roles and close controls were improved ([96d67f5](https://github.com/retailcrm/embed-ui/commit/96d67f5a4f3035bc1e6e3bb783d839060740ebe2))
+* **v1-components:** UiSelect keyboard navigation and aria state were improved ([7d293d9](https://github.com/retailcrm/embed-ui/commit/7d293d949177cebb34def991d0dbe185eb56ee6c))
+* **v1-components:** UiTag remove control semantics were switched to native button ([3262686](https://github.com/retailcrm/embed-ui/commit/326268681cc638ed77f214ed763d8c267cfc430e))
+* **v1-components:** UiTextbox clear control semantics and icon focus ring were improved ([c58e72c](https://github.com/retailcrm/embed-ui/commit/c58e72ce80225a20d0aa9481edd158dafa866958))
+* **v1-endpoint:** BeforeMount hook arguments were extended with app and pinia ([bc14730](https://github.com/retailcrm/embed-ui/commit/bc14730bd92782246e8066d925face6fa4fc046e))
 ## [0.9.11-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.10...v0.9.11-alpha.1) (2026-03-04)
 
 ### Features
