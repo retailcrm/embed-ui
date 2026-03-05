@@ -35,12 +35,18 @@
 
   &__remove-icon {
     .square(20px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
     color: @close-icon-fill;
     cursor: pointer;
     transition: .25s ease;
     position: relative;
     margin-left: @spacing-xxs;
+    padding: 0;
+    border: 0;
+    background: transparent;
 
     &:hover {
       color: @close-icon-hover-fill;
