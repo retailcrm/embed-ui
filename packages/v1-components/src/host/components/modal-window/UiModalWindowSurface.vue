@@ -4,7 +4,10 @@ import type { PropType, VNode } from 'vue'
 import type { EmbedModal } from '@/host/components/modal/plugin'
 import type { Layer } from '@/host/components/modal/layer'
 
-import type { UiModalWindowSurfaceMethods } from '@/common/components/modal-window'
+import type {
+  MODAL_WINDOW_ROLE,
+  UiModalWindowSurfaceMethods,
+} from '@/common/components/modal-window'
 
 import {
   computed,
@@ -91,6 +94,13 @@ const props = defineProps({
     type: String as unknown as PropType<SCROLLING>,
     validator: (scrolling: string) => Object.values(SCROLLING).includes(scrolling as SCROLLING),
     default: SCROLLING.NORMAL,
+  },
+
+  /** ARIA-роль модального контейнера */
+  role: {
+    type: String as PropType<MODAL_WINDOW_ROLE>,
+    validator: (role: string) => ['dialog', 'alertdialog'].includes(role),
+    default: 'dialog',
   },
 })
 
@@ -325,6 +335,7 @@ const EmbedModalWindowSurface = () => !state.attached ? undefined : h(Teleport, 
     id: props.id,
     'aria-hidden': visibility.value !== 'shown' ? 'true' : 'false',
     'aria-modal': 'true',
+    role: props.role,
     ...attrs,
     class: [attrs.class, {
       'ui-v1-modal': true,

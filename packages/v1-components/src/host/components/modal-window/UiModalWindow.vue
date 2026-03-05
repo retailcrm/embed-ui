@@ -8,6 +8,7 @@
         :responsive="responsive"
         :dispose-timeout="disposeTimeout"
         :scrolling="scrolling"
+        :role="role"
         v-bind="{
             ...$attrs,
             ...($slots.title ? { 'aria-labelledby': id + '-title' } : {})
@@ -47,18 +48,20 @@
                 <slot name="title" :overlapped="state.overlapped" />
             </div>
 
-            <div
+            <button
                 v-if="appearance !== APPEARANCE.ALERT"
-                aria-label="Esc"
+                aria-keyshortcuts="Esc"
+                aria-label="Close dialog"
                 class="ui-v1-modal-window__close"
-                role="button"
-                @click="state.overlapped ? null : close()"
+                type="button"
+                :disabled="state.overlapped"
+                @click="close()"
             >
                 <IconClear
-                    title="Esc"
+                    title="Close dialog"
                     style="width: 100%"
                 />
-            </div>
+            </button>
         </div>
 
         <UiScrollBox
@@ -100,6 +103,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { MODAL_WINDOW_ROLE } from '@/common/components/modal-window'
 import type { PropType } from 'vue'
 import type { SerializedDOMRect } from '@/common/types'
 import type { UiModalWindowMethods } from '@/common/components/modal-window'
@@ -171,6 +175,13 @@ const props = defineProps({
     type: String as unknown as PropType<SCROLLING>,
     validator: (scrolling: string) => Object.values(SCROLLING).includes(scrolling as SCROLLING),
     default: SCROLLING.NORMAL,
+  },
+
+  /** ARIA-роль модального контейнера */
+  role: {
+    type: String as PropType<MODAL_WINDOW_ROLE>,
+    validator: (role: string) => ['dialog', 'alertdialog'].includes(role),
+    default: 'dialog',
   },
 })
 

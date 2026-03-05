@@ -20,6 +20,8 @@ export enum SIZE {
   SM = 'sm',
 }
 
+export type MODAL_SIDEBAR_ROLE = 'dialog' | 'alertdialog'
+
 export type UiModalSidebarProperties = {
   id?: string;
   opened?: boolean;
@@ -29,4 +31,5 @@ export type UiModalSidebarProperties = {
   fixed?: boolean;
   scrolling?: SCROLLING | `${SCROLLING}`;
   size?: SIZE | `${SIZE}`;
+  role?: MODAL_SIDEBAR_ROLE;
 }

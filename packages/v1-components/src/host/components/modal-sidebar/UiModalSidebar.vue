@@ -19,6 +19,7 @@
                     [`ui-v1-modal-sidebar-overlay_${direction}`]: fixed,
                 }]"
                 aria-modal="true"
+                :role="role"
                 v-bind="$attrs"
                 @click="onBackdropClick"
             >
@@ -50,11 +51,13 @@
                                 </div>
                             </div>
 
-                            <div
+                            <button
                                 ref="closer"
-                                aria-label="Esc"
+                                aria-keyshortcuts="Esc"
+                                aria-label="Close dialog"
                                 class="ui-v1-modal-sidebar__close"
-                                role="button"
+                                type="button"
+                                :disabled="state.overlapped"
                                 @click="onCloserClick"
                             >
                                 <IconClear aria-hidden="true" width="32" />
@@ -62,7 +65,7 @@
                                 <UiTooltip :target="closerTarget" :offset-main-axis="0">
                                     Esc
                                 </UiTooltip>
-                            </div>
+                            </button>
                         </header>
 
                         <div v-if="scrolling === SCROLLING.NONE" class="ui-v1-modal-sidebar__body-fixed">
@@ -93,6 +96,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { MODAL_SIDEBAR_ROLE } from '@/common/components/modal-sidebar'
 import type { PropType } from 'vue'
 
 import type { EmbedModal } from '@/host/components/modal/plugin'
@@ -181,6 +185,13 @@ const props = defineProps({
   size: {
     type: String as unknown as PropType<SIZE>,
     default: SIZE.SM,
+  },
+
+  /** ARIA-роль модального контейнера */
+  role: {
+    type: String as PropType<MODAL_SIDEBAR_ROLE>,
+    validator: (role: string) => ['dialog', 'alertdialog'].includes(role),
+    default: 'dialog',
   },
 })
 
