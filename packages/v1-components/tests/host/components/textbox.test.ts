@@ -138,8 +138,11 @@ describe('host/components/textbox', () => {
       value: 'test',
     })
 
-    const clearButton = wrapper?.find('.ui-v1-textbox__eraser svg')
+    const clearButton = wrapper?.find('.ui-v1-textbox__eraser')
     expect(clearButton?.exists()).toBe(true)
+    expect(clearButton?.element.tagName).toBe('BUTTON')
+    expect(clearButton?.attributes('type')).toBe('button')
+    expect(clearButton?.attributes('aria-label')).toBeTruthy()
 
     await clearButton?.trigger('click')
 

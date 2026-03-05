@@ -185,11 +185,14 @@
     padding-inline-end: var(--gap);
     align-items: center;
     justify-content: center;
+    border: 0;
+    background: transparent;
     cursor: pointer;
     z-index: 2;
 
     svg {
       .square(var(--icon-size));
+      border-radius: 50%;
       color: @grey-700;
       fill: @grey-700;
     }
@@ -197,6 +200,21 @@
     svg:hover {
       color: var(--ui-v1-textbox-primary-color);
       fill: var(--ui-v1-textbox-primary-color);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+    }
+
+    &:focus-visible svg {
+      color: var(--ui-v1-textbox-primary-color);
+      fill: var(--ui-v1-textbox-primary-color);
+      box-shadow: 0 0 0 4px var(--ui-v1-textbox-primary-shadow-color);
     }
   }
 
