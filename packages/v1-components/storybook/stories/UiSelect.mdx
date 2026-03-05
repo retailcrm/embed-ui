@@ -1,4 +1,5 @@
-import { ArgTypes } from '@storybook/addon-docs/blocks'
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiSelectStories from './UiSelect.stories'
 
 # UiSelect
 
@@ -11,7 +12,9 @@ import { ArgTypes } from '@storybook/addon-docs/blocks'
 * Нужен множественный выбор (`multiple`) с отображением количества выбранных элементов.
 * Нужен поиск по опциям (`filterable`), включая подсветку совпадений в `UiSelectOption`.
 
-## Базовое применение
+## Примеры (код + результат)
+
+### 1. Базовый выбор
 
 ```html
 <template>
@@ -30,21 +33,37 @@ import {
 </script>
 ```
 
-## Множественный выбор
+<Story of={UiSelectStories.BasicSingle} />
+
+### 2. Множественный выбор с очисткой
 
 Для множественного режима включите `multiple`.
 
 ```html
 <template>
-    <UiSelect multiple clearable placeholder="Исполнители">
+    <UiSelect
+        v-model:value="value"
+        multiple
+        clearable
+        placeholder="Исполнители"
+    >
         <UiSelectOption value="kyle" label="Kyle Simmons" />
         <UiSelectOption value="eduardo" label="Eduardo Henry" />
         <UiSelectOption value="philip" label="Philip Williamson" />
     </UiSelect>
 </template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { UiSelect, UiSelectOption } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref<string[]>([])
+</script>
 ```
 
-## Поиск по опциям
+<Story of={UiSelectStories.MultipleClearable} />
+
+### 3. Поиск по опциям
 
 Чтобы включить поиск, передайте `filterable`.
 В этом режиме ввод в триггере используется как строка фильтра, а опции автоматически скрываются/подсвечиваются по совпадению.
@@ -59,7 +78,61 @@ import {
 </template>
 ```
 
-## Опции как объекты
+<Story of={UiSelectStories.FilterableSearch} />
+
+### 4. Состояние ошибки (`invalid`)
+
+```html
+<template>
+    <UiSelect
+        v-model:value="value"
+        invalid
+        placeholder="Пользователь"
+    >
+        <UiSelectOption value="kyle" label="Kyle Simmons" />
+        <UiSelectOption value="eduardo" label="Eduardo Henry" />
+    </UiSelect>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { UiSelect, UiSelectOption } from '@retailcrm/embed-ui-v1-components/remote'
+
+const value = ref('eduardo')
+</script>
+```
+
+<Story of={UiSelectStories.InvalidState} />
+
+### 5. `readonly` режим
+
+```html
+<template>
+    <UiSelect readonly placeholder="Пользователь">
+        <UiSelectOption value="kyle" label="Kyle Simmons" />
+        <UiSelectOption value="eduardo" label="Eduardo Henry" />
+    </UiSelect>
+</template>
+```
+
+<Story of={UiSelectStories.ReadonlyState} />
+
+### 6. `disabled` режим
+
+```html
+<template>
+    <UiSelect disabled placeholder="Пользователь">
+        <UiSelectOption value="kyle" label="Kyle Simmons" />
+        <UiSelectOption value="eduardo" label="Eduardo Henry" />
+    </UiSelect>
+</template>
+```
+
+<Story of={UiSelectStories.DisabledState} />
+
+## Дополнительные сценарии
+
+### Опции как объекты
 
 Если `value` у опций - объекты, задайте `equalsFn`, чтобы корректно сравнивать значения.
 
@@ -76,7 +149,7 @@ import {
 </template>
 ```
 
-## Группировка опций
+### Группировка опций
 
 Для групп используйте `UiSelectOptionGroup`.
 
