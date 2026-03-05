@@ -76,7 +76,13 @@
   }
 
   &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     .square(32px);
+    border: 0;
+    background: transparent;
+    padding: 0;
     color: @close-icon-fill;
     transition: color 0.25s ease;
     cursor: pointer;
@@ -86,6 +92,10 @@
 
     &:hover {
       color: @close-icon-hover-fill;
+    }
+
+    &:disabled {
+      cursor: default;
     }
   }
 }

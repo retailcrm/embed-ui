@@ -10,6 +10,8 @@ export enum SCROLLING {
   NATIVE = 'native',
 }
 
+export type MODAL_WINDOW_ROLE = 'dialog' | 'alertdialog'
+
 export type UiModalWindowProperties = UiModalWindowSurfaceProperties
 export type UiModalWindowMethods = UiModalWindowSurfaceMethods
 
@@ -22,6 +24,7 @@ export type UiModalWindowSurfaceProperties = {
   responsive?: boolean;
   disposeTimeout?: number | string | null;
   scrolling?: SCROLLING | `${SCROLLING}`;
+  role?: MODAL_WINDOW_ROLE;
 }
 
 export type UiModalWindowSurfaceMethods = {

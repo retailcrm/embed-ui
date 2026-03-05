@@ -37,6 +37,9 @@
     justify-content: center;
     align-items: center;
     .square(24px);
+    border: 0;
+    background: transparent;
+    padding: 0;
     color: @black-500;
     cursor: pointer;
     transition: color .25s ease;
@@ -47,6 +50,10 @@
 
     &:hover {
       color: @grey-900;
+    }
+
+    &:disabled {
+      cursor: default;
     }
   }
 
