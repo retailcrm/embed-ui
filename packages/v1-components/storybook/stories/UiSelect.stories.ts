@@ -1,13 +1,7 @@
-import type { Callable } from '../endpoint'
-import type { Lifecycle } from '../endpoint'
 import type { Meta } from '@storybook/vue3'
 import type { StoryObj } from '@storybook/vue3'
 
-import { createEndpoint } from '@remote-ui/rpc'
 import { createProvider } from '@omnicajs/vue-remote/host'
-import { createReceiver } from '@omnicajs/vue-remote/host'
-import { HostedTree } from '@omnicajs/vue-remote/host'
-import { watch } from 'vue'
 
 import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
 import UiMenuItemGroup from '@/host/components/menu/UiMenuItemGroup.vue'
@@ -20,6 +14,8 @@ import { SIZE } from '@/common/components/select'
 
 import { UiSelect } from '../../src/remote/components/select'
 
+import { createRemoteStoryRender } from '../createRemoteStoryRender'
+import { docsOnlyStory } from '../docsOnlyStory'
 import page from './UiSelect.mdx'
 
 const provider = createProvider({
@@ -29,7 +25,6 @@ const provider = createProvider({
   UiSelectPopper,
   UiSelectTrigger,
 })
-const receiver = createReceiver()
 
 const meta = {
   title: 'Components/UiSelect',
@@ -65,37 +60,9 @@ const meta = {
     popperTriggers: { control: false },
   },
 
-  render: (args) => ({
-    components: {
-      HostedTree,
-      UiMenuItem,
-      UiMenuItemGroup,
-      UiPopperConnector,
-      UiSelectPopper,
-      UiSelectTrigger,
-    },
-
-    setup () {
-      const worker = new Worker(new URL('./UiSelect.remote.ts', import.meta.url), { type: 'module' })
-
-      const endpoint = createEndpoint<Callable & Lifecycle>(worker)
-
-      endpoint.call.run(receiver.receive, args)
-
-      watch(args, (newArgs) => {
-        endpoint.call.setProps(newArgs)
-      })
-
-      return {
-        args,
-        provider,
-        receiver,
-      }
-    },
-
-    template: `
-      <HostedTree :provider="provider" :receiver="receiver" />
-    `,
+  render: createRemoteStoryRender({
+    provider,
+    workerUrl: new URL('./UiSelect.remote.ts', import.meta.url),
   }),
 
   parameters: {
@@ -119,7 +86,7 @@ export const Sandbox: Story = {
   },
 }
 
-export const BasicSingle: Story = {
+export const BasicSingle: Story = docsOnlyStory({
   args: {
     placeholder: 'Исполнитель',
     ticker: false,
@@ -127,9 +94,9 @@ export const BasicSingle: Story = {
     multiple: false,
     filterable: false,
   },
-}
+})
 
-export const MultipleClearable: Story = {
+export const MultipleClearable: Story = docsOnlyStory({
   args: {
     placeholder: 'Исполнители',
     ticker: false,
@@ -138,9 +105,9 @@ export const MultipleClearable: Story = {
     clearable: true,
     filterable: false,
   },
-}
+})
 
-export const FilterableSearch: Story = {
+export const FilterableSearch: Story = docsOnlyStory({
   args: {
     placeholder: 'Найти пользователя',
     ticker: false,
@@ -149,9 +116,9 @@ export const FilterableSearch: Story = {
     filterable: true,
     clearable: true,
   },
-}
+})
 
-export const InvalidState: Story = {
+export const InvalidState: Story = docsOnlyStory({
   args: {
     placeholder: 'Пользователь',
     value: 'Eduardo Henry',
@@ -161,9 +128,9 @@ export const InvalidState: Story = {
     filterable: false,
     invalid: true,
   },
-}
+})
 
-export const ReadonlyState: Story = {
+export const ReadonlyState: Story = docsOnlyStory({
   args: {
     placeholder: 'Пользователь',
     value: 'Kyle Simmmons',
@@ -173,9 +140,9 @@ export const ReadonlyState: Story = {
     multiple: false,
     filterable: false,
   },
-}
+})
 
-export const DisabledState: Story = {
+export const DisabledState: Story = docsOnlyStory({
   args: {
     placeholder: 'Пользователь',
     value: 'Philip Williamson',
@@ -184,4 +151,4 @@ export const DisabledState: Story = {
     multiple: false,
     filterable: false,
   },
-}
+})

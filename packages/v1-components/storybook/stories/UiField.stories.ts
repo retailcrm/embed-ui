@@ -1,11 +1,8 @@
 import '@/host/components/field/field.less'
 
-import type { Callable, Lifecycle } from '../endpoint'
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import { createEndpoint } from '@remote-ui/rpc'
-import { createProvider, createReceiver, HostedTree } from '@omnicajs/vue-remote/host'
-import { watch } from 'vue'
+import { createProvider } from '@omnicajs/vue-remote/host'
 
 import UiPopperConnector from '@/host/components/popper/UiPopperConnector.vue'
 import UiPopperTarget from '@/host/components/popper/UiPopperTarget.vue'
@@ -14,6 +11,7 @@ import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
 
 import { UiField } from '../../src/remote/components/field'
 
+import { createRemoteStoryRender } from '../createRemoteStoryRender'
 import page from './UiField.mdx'
 
 type UiFieldProps = InstanceType<typeof UiField>['$props']
@@ -34,7 +32,6 @@ const provider = createProvider({
   UiTextbox,
   UiTooltip,
 })
-const receiver = createReceiver()
 
 const meta = {
   title: 'Components/UiField',
@@ -60,30 +57,9 @@ const meta = {
     containerWidth: { control: 'number' },
   },
 
-  render: (args: UiFieldStoryArgs) => ({
-    components: {
-      HostedTree,
-    },
-
-    setup () {
-      const worker = new Worker(new URL('./UiField.remote.ts', import.meta.url), { type: 'module' })
-      const endpoint = createEndpoint<Callable & Lifecycle>(worker)
-
-      endpoint.call.run(receiver.receive, args)
-
-      watch(args, (next) => {
-        endpoint.call.setProps(next)
-      })
-
-      return {
-        provider,
-        receiver,
-      }
-    },
-
-    template: `
-      <HostedTree :provider="provider" :receiver="receiver" />
-    `,
+  render: createRemoteStoryRender({
+    provider,
+    workerUrl: new URL('./UiField.remote.ts', import.meta.url),
   }),
 
   parameters: {
