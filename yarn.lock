@@ -1367,6 +1367,8 @@ __metadata:
   peerDependencies:
     pinia: ^2.2
     vue: ^3.5
+  bin:
+    embed-ui: ./bin/embed-ui-update.mjs
   languageName: unknown
   linkType: soft
 
