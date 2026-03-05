@@ -4,9 +4,18 @@ import { defineConfig, mergeConfig } from 'vite'
 
 import dts from 'vite-plugin-dts'
 
-import { name, peerDependencies } from './package.json'
+import { dependencies, name, peerDependencies } from './package.json'
 
 import basic from './vite.config.basic'
+
+const externalPackages = [
+  ...Object.keys(dependencies),
+  ...Object.keys(peerDependencies),
+]
+
+const isPackageExternal = (id: string): boolean => externalPackages.some(
+  packageName => id === packageName || id.startsWith(`${packageName}/`)
+)
 
 export default mergeConfig(basic, defineConfig({
   build: {
@@ -31,9 +40,7 @@ export default mergeConfig(basic, defineConfig({
     },
     minify: false,
     rollupOptions: {
-      external: [
-        ...Object.keys(peerDependencies),
-      ],
+      external: id => isPackageExternal(id),
       output: {
         exports: 'named',
         dir: path.join(__dirname, '/dist'),

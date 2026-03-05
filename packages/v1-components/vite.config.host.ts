@@ -9,6 +9,15 @@ import { formatDeclarationFile } from './vite.dts-format'
 
 import { dependencies, name, peerDependencies } from './package.json'
 
+const externalPackages = [
+  ...Object.keys(dependencies),
+  ...Object.keys(peerDependencies),
+]
+
+const isPackageExternal = (id: string): boolean => externalPackages.some(
+  packageName => id === packageName || id.startsWith(`${packageName}/`)
+)
+
 // noinspection JSUnusedGlobalSymbols
 export default mergeConfig(basic, defineConfig({
   build: {
@@ -23,10 +32,7 @@ export default mergeConfig(basic, defineConfig({
     },
     minify: false,
     rollupOptions: {
-      external: [
-        ...Object.keys(dependencies),
-        ...Object.keys(peerDependencies),
-      ],
+      external: id => isPackageExternal(id),
       output: {
         assetFileNames: 'host[extname]',
       },
