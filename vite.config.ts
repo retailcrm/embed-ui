@@ -4,6 +4,15 @@ import { defineConfig } from 'vite'
 
 import { dependencies, peerDependencies } from './package.json'
 
+const externalPackages = [
+  ...Object.keys(dependencies),
+  ...Object.keys(peerDependencies),
+]
+
+const isPackageExternal = (id: string): boolean => externalPackages.some(
+  packageName => id === packageName || id.startsWith(`${packageName}/`)
+)
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -23,12 +32,9 @@ export default defineConfig({
     },
     minify: false,
     rollupOptions: {
-      external: [
-        ...Object.keys(dependencies),
-        ...Object.keys(peerDependencies),
-        /^@omnicajs\/vue-remote\/.*/,
-        /^@retailcrm\/embed-ui-v1-contexts\/.*/,
-      ],
+      external: id =>
+        isPackageExternal(id)
+        || /^@retailcrm\/embed-ui-v1-contexts\/.*/.test(id),
       output: {
         exports: 'named',
         dir: join(__dirname, '/dist'),

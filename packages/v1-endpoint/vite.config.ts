@@ -7,6 +7,15 @@ import { mergeConfig } from 'vite'
 import basic from './vite.config.basic'
 import { dependencies, peerDependencies } from './package.json'
 
+const externalPackages = [
+  ...Object.keys(peerDependencies ?? {}),
+  ...Object.keys(dependencies ?? {}),
+]
+
+const isPackageExternal = (id: string): boolean => externalPackages.some(
+  packageName => id === packageName || id.startsWith(`${packageName}/`)
+)
+
 export default mergeConfig(basic, defineConfig({
   plugins: [dts({
     tsconfigPath: path.resolve(__dirname, './tsconfig.json'),
@@ -37,7 +46,9 @@ export default mergeConfig(basic, defineConfig({
       }[format as 'es' | 'cjs']}`,
     },
     rollupOptions: {
-      external: [...Object.keys(peerDependencies ?? {}), ...Object.keys(dependencies ?? {})],
+      external: id =>
+        isPackageExternal(id)
+        || /^@omnicajs\/vue-remote\/.*/.test(id),
       output: {
         exports: 'named',
         dir: path.join(__dirname, '/dist'),
