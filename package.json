@@ -19,6 +19,7 @@
     "./dist/*": "./dist/*",
     "./types/*": "./types/*"
   },
+  "bin": "./bin/embed-ui-update.mjs",
   "types": "index.d.ts",
   "workspaces": [
     "packages/*"
