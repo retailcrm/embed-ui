@@ -8,19 +8,21 @@
             Use closable mode when info can be dismissed by the user.
         </UiInfobox>
 
-        <button
+        <UiButton
             v-if="!shown"
-            type="button"
+            appearance="secondary"
+            style="justify-self: start; width: fit-content;"
             @click="shown = true"
         >
             Show again
-        </button>
+        </UiButton>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import UiButton from '@/host/components/button/UiButton.vue'
 import UiInfobox from '@/host/components/infobox/UiInfobox.vue'
 
 const shown = ref(true)

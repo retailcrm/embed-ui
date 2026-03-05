@@ -3,6 +3,7 @@ import type { UiCollapseProperties } from '@/common/components/collapse'
 
 import { computed, ref, watch } from 'vue'
 
+import UiButton from '@/host/components/button/UiButton.vue'
 import UiCollapse from '@/host/components/collapse/UiCollapse.vue'
 
 import { COLLAPSE_BEHAVIOUR } from '@/common/components/collapse'
@@ -34,6 +35,7 @@ const meta = {
 
   render: (args: UiCollapseProperties) => ({
     components: {
+      UiButton,
       UiCollapse,
     },
 
@@ -54,9 +56,9 @@ const meta = {
 
     template: `
       <div style="width: 520px; display: grid; gap: 12px;">
-          <button type="button" @click="expanded = !expanded">
+          <UiButton appearance="secondary" @click="expanded = !expanded">
               {{ expanded ? 'Hide content' : 'Show content' }}
-          </button>
+          </UiButton>
 
           <UiCollapse
               :expanded="expanded"

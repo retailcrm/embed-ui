@@ -13,13 +13,21 @@
         </div>
 
         <div :class="$style['controls']">
-            <button type="button" @click="value = true">
+            <UiButton
+                appearance="secondary"
+                style="flex: none; align-self: flex-start;"
+                @click="value = true"
+            >
                 Set on
-            </button>
+            </UiButton>
 
-            <button type="button" @click="value = false">
+            <UiButton
+                appearance="secondary"
+                style="flex: none; align-self: flex-start;"
+                @click="value = false"
+            >
                 Set off
-            </button>
+            </UiButton>
         </div>
 
         <div>
@@ -31,6 +39,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
+import UiButton from '@/host/components/button/UiButton.vue'
 import UiSwitch from '@/host/components/switch/UiSwitch.vue'
 
 const value = ref(false)
@@ -61,13 +70,5 @@ const value = ref(false)
 .controls {
   display: inline-flex;
   gap: @spacing-xs;
-
-  :global(button) {
-    border: 1px solid @grey-500;
-    border-radius: @border-radius-sm;
-    background: #fff;
-    padding: @spacing-xxs @spacing-xs;
-    cursor: pointer;
-  }
 }
 </style>

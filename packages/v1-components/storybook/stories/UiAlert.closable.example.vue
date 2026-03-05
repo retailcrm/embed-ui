@@ -7,9 +7,9 @@
             @hidden="onHidden"
         />
 
-        <button type="button" @click="shown = true">
+        <UiButton appearance="secondary" @click="shown = true">
             Show alert
-        </button>
+        </UiButton>
     </div>
 </template>
 
@@ -17,6 +17,7 @@
 import { ref } from 'vue'
 
 import UiAlert from '@/host/components/alert/UiAlert.vue'
+import UiButton from '@/host/components/button/UiButton.vue'
 
 const shown = ref(true)
 
@@ -27,20 +28,11 @@ const onHidden = () => {
 
 <style lang="less" module>
 @import (reference) '../../assets/stylesheets/geometry.less';
-@import (reference) '../../assets/stylesheets/palette.less';
 @import (reference) '../../assets/stylesheets/variables.less';
 
 .container {
   display: grid;
   gap: @spacing-xs;
-}
-
-:global(button) {
-  width: fit-content;
-  border: 1px solid @grey-500;
-  border-radius: @border-radius-sm;
-  background: #fff;
-  padding: @spacing-xxs @spacing-xs;
-  cursor: pointer;
+  justify-items: start;
 }
 </style>

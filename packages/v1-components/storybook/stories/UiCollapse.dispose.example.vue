@@ -1,8 +1,8 @@
 <template>
     <div style="display: grid; gap: 12px; width: 420px;">
-        <button type="button" @click="expanded = !expanded">
+        <UiButton appearance="secondary" @click="expanded = !expanded">
             {{ expanded ? 'Unmount content' : 'Mount content' }}
-        </button>
+        </UiButton>
 
         <UiCollapse
             :expanded="expanded"
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import UiButton from '@/host/components/button/UiButton.vue'
 import UiCollapse from '@/host/components/collapse/UiCollapse.vue'
 
 const expanded = ref(true)

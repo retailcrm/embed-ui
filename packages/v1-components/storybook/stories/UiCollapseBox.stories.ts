@@ -3,6 +3,7 @@ import type { UiCollapseBoxProperties } from '@/common/components/collapse-box'
 
 import { computed, ref, watch } from 'vue'
 
+import UiButton from '@/host/components/button/UiButton.vue'
 import UiCollapseBox from '@/host/components/collapse-box/UiCollapseBox.vue'
 import UiCollapseGroup from '@/host/components/collapse-box/UiCollapseGroup.vue'
 
@@ -54,6 +55,7 @@ const meta = {
 
   render: (args: UiCollapseBoxProperties) => ({
     components: {
+      UiButton,
       UiCollapseBox,
       IconSettingsOutlined,
     },
@@ -102,9 +104,13 @@ const meta = {
               </template>
 
               <template #footer-content>
-                  <button type="button" @click="expanded = false">
+                  <UiButton
+                      appearance="secondary"
+                      style="flex: none; align-self: flex-start;"
+                      @click="expanded = false"
+                  >
                       Collapse
-                  </button>
+                  </UiButton>
               </template>
           </UiCollapseBox>
       </div>
