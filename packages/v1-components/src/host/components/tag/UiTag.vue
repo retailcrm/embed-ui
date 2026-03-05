@@ -38,8 +38,9 @@
                 Срабатывает при клике на кнопку удаления
                 @event remove
             -->
-            <div
+            <button
                 v-if="removable || $slots['remove-icon']"
+                type="button"
                 class="ui-v1-tag__remove-icon"
                 :aria-label="i18n.t('delete')"
                 @click.stop="$emit('remove')"
@@ -48,7 +49,7 @@
                 <slot name="remove-icon">
                     <IconClear />
                 </slot>
-            </div>
+            </button>
         </div>
     </div>
 </template>
