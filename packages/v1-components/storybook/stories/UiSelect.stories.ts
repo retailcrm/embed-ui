@@ -118,3 +118,70 @@ export const Sandbox: Story = {
     filterable: false,
   },
 }
+
+export const BasicSingle: Story = {
+  args: {
+    placeholder: 'Исполнитель',
+    ticker: false,
+    disabled: false,
+    multiple: false,
+    filterable: false,
+  },
+}
+
+export const MultipleClearable: Story = {
+  args: {
+    placeholder: 'Исполнители',
+    ticker: false,
+    disabled: false,
+    multiple: true,
+    clearable: true,
+    filterable: false,
+  },
+}
+
+export const FilterableSearch: Story = {
+  args: {
+    placeholder: 'Найти пользователя',
+    ticker: false,
+    disabled: false,
+    multiple: false,
+    filterable: true,
+    clearable: true,
+  },
+}
+
+export const InvalidState: Story = {
+  args: {
+    placeholder: 'Пользователь',
+    value: 'Eduardo Henry',
+    ticker: false,
+    disabled: false,
+    multiple: false,
+    filterable: false,
+    invalid: true,
+  },
+}
+
+export const ReadonlyState: Story = {
+  args: {
+    placeholder: 'Пользователь',
+    value: 'Kyle Simmmons',
+    ticker: false,
+    disabled: false,
+    readonly: true,
+    multiple: false,
+    filterable: false,
+  },
+}
+
+export const DisabledState: Story = {
+  args: {
+    placeholder: 'Пользователь',
+    value: 'Philip Williamson',
+    ticker: false,
+    disabled: true,
+    multiple: false,
+    filterable: false,
+  },
+}
