@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.9.11-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.2...v0.9.11-alpha.3) (2026-03-05)
+
+### Features
+
+* CLI updater for embed-ui dependencies was added ([5de7d2d](https://github.com/retailcrm/embed-ui/commit/5de7d2dcba32d73c37b7257bf9748818189a0536))
+
+### Bug Fixes
+
+* **v1-components:** UiTextbox named prefix and suffix slots were corrected ([0bc36f0](https://github.com/retailcrm/embed-ui/commit/0bc36f0ff69db43f169fa42dcd7abc413661410d))
 ## [0.9.11-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.1...v0.9.11-alpha.2) (2026-03-05)
 
 ### Features
