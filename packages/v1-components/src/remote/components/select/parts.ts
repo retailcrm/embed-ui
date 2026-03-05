@@ -6,6 +6,7 @@ import type {
   SerializedEvent,
   SerializedFocusEvent,
   SerializedInputEvent,
+  SerializedKeyboardEvent,
 } from '@omnicajs/vue-remote/types/events'
 
 import type {
@@ -30,6 +31,7 @@ export const UiSelectTrigger = defineRemoteComponent(
     'input',
     'focus',
     'blur',
+    'keydown',
     'clear',
     'update:value',
     'update:expanded',
@@ -37,6 +39,7 @@ export const UiSelectTrigger = defineRemoteComponent(
     'input': (event: SerializedInputEvent) => boolean,
     'focus': (event: SerializedFocusEvent) => boolean,
     'blur': (event: SerializedEvent) => boolean,
+    'keydown': (event: SerializedKeyboardEvent) => boolean,
     'clear': () => boolean,
     'update:value': (value: string | number) => boolean,
     'update:expanded': (expanded: boolean) => boolean,

@@ -1,7 +1,7 @@
 <template>
     <UiPopperConnector>
         <UiSelectTrigger
-            :id="id"
+            :id="resolvedId"
             :value="state.value"
             :multiple="multiple"
             :selection="selection"
@@ -15,13 +15,15 @@
             :placeholder-only="placeholderOnly"
             :placeholder="placeholder"
             :textbox-size="textboxSize"
+            :active-descendant="activeOptionId"
             @input="onInput"
+            @keydown="onKeyDown"
             @update:value="state.value = $event"
             @update:expanded="state.expanded = $event"
         />
 
         <UiSelectPopper
-            :id="id"
+            :id="resolvedId"
             :disabled="disabled || readonly"
             :multiple="multiple"
             :opened="state.expanded"
@@ -53,6 +55,7 @@
 import type { I18nLocalized } from '@/host/i18n'
 import type { Option } from '@/host/components/select/injection'
 import type { PropType } from 'vue'
+import type { SerializedKeyboardEvent } from '@omnicajs/vue-remote/types/events'
 import type { Trigger } from '@/common/components/popper'
 import type { TriggerSchema } from '@/common/components/popper'
 import type { UiSelectPopperProperties } from '@/common/components/select'
@@ -72,8 +75,13 @@ import _18n from '@/host/components/select/i18n'
 
 import { PLACEMENT } from '@/common/components/select'
 import { SIZE } from '@/common/components/textbox'
+import { uid } from '@/common/components/select'
 
-import { FilteredKey, FilterKey } from '@/host/components/select/injection'
+import {
+  ActiveOptionIdKey,
+  FilteredKey,
+  FilterKey,
+} from '@/host/components/select/injection'
 import { I18nInjectKey } from '@/host/i18n/plugin'
 import {
   IsSelectedKey,
@@ -226,10 +234,14 @@ const state = reactive({
   value: props.value as unknown | unknown[],
 })
 
+const localId = uid('ui-v1-select')
+const resolvedId = computed(() => props.id ?? localId)
+
 const i18n = computed((): I18nLocalized => _18n.init(inject(I18nInjectKey, null)?.locale ?? _18n.fallback))
 const noResult = computed(() => i18n.value.t('search.noResult', { filter: state.filter }))
 
 const optionsRegistry = ref<Option[]>([])
+const activeOptionId = ref<string | null>(null)
 
 const selection = computed(() => {
   const model = arraify<unknown>(state.value)
@@ -252,6 +264,7 @@ const arraify = <T> (value: T): A<T> => Array.isArray(value)
 const equals = (a: unknown, b: unknown) => props.equalsFn(a, b)
 
 const contains = (array: unknown[], value: unknown) => array.some(v => equals(v, value))
+const navigableOptions = computed(() => optionsRegistry.value.filter(option => option.isMatched() && !option.disabled))
 
 provide(RegisterKey, (option: Option) => {
   if (optionsRegistry.value.some(item => item.id === option.id)) {
@@ -261,11 +274,12 @@ provide(RegisterKey, (option: Option) => {
   optionsRegistry.value.push(option)
 })
 
-provide(SyncKey, (id: string, data: { label: string; value: unknown }) => {
+provide(SyncKey, (id: string, data: { label: string; value: unknown; disabled: boolean }) => {
   const option = optionsRegistry.value.find(option => option.id === id)
   if (option) {
     option.label = data.label
     option.value = data.value
+    option.disabled = data.disabled
   }
 })
 
@@ -310,15 +324,147 @@ provide(FilterKey, computed(() => state.filter))
 provide(FilteredKey, computed(() => props.filterable && state.filter.length > 0))
 provide(TickerKey, computed(() => props.ticker))
 provide(MultipleKey, computed(() => props.multiple))
+provide(ActiveOptionIdKey, computed(() => activeOptionId.value))
 
 const onInput = (value: string) => {
   state.filter = value
+}
+
+const resolveHighlightedOption = (mode: 'first' | 'last' | 'selected-first' = 'selected-first') => {
+  const options = navigableOptions.value
+  if (options.length === 0) {
+    activeOptionId.value = null
+    return
+  }
+
+  if (mode === 'first') {
+    activeOptionId.value = options[0].id
+    return
+  }
+
+  if (mode === 'last') {
+    activeOptionId.value = options[options.length - 1].id
+    return
+  }
+
+  const selectedOption = options.find(option => {
+    return Array.isArray(state.value)
+      ? contains(state.value as unknown[], option.value)
+      : equals(state.value, option.value)
+  })
+
+  activeOptionId.value = selectedOption?.id ?? options[0].id
+}
+
+const moveHighlight = (step: 1 | -1) => {
+  const options = navigableOptions.value
+  if (options.length === 0) {
+    activeOptionId.value = null
+    return
+  }
+
+  const currentIndex = options.findIndex(option => option.id === activeOptionId.value)
+  const nextIndex = currentIndex === -1
+    ? (step > 0 ? 0 : options.length - 1)
+    : (currentIndex + step + options.length) % options.length
+
+  activeOptionId.value = options[nextIndex].id
+}
+
+const selectHighlightedOption = () => {
+  const option = navigableOptions.value.find(item => item.id === activeOptionId.value)
+  if (!option) {
+    return
+  }
+
+  if (props.multiple) {
+    const model = arraify<unknown>(state.value)
+    const index = model.findIndex(item => equals(item, option.value))
+
+    if (index !== -1) {
+      model.splice(index, 1)
+    } else {
+      model.push(option.value)
+    }
+
+    state.value = model
+  } else {
+    state.value = option.value
+    close()
+  }
+}
+
+const onKeyDown = (event: SerializedKeyboardEvent) => {
+  if (props.disabled || props.readonly) {
+    return
+  }
+
+  if (event.key === 'Escape') {
+    close()
+    return
+  }
+
+  if (event.key === 'Tab') {
+    close()
+    return
+  }
+
+  if (event.key === 'Home') {
+    if (!state.expanded) {
+      state.expanded = true
+    }
+
+    resolveHighlightedOption('first')
+    return
+  }
+
+  if (event.key === 'End') {
+    if (!state.expanded) {
+      state.expanded = true
+    }
+
+    resolveHighlightedOption('last')
+    return
+  }
+
+  if (event.key === 'ArrowDown') {
+    if (!state.expanded) {
+      state.expanded = true
+      resolveHighlightedOption('first')
+      return
+    }
+
+    moveHighlight(1)
+    return
+  }
+
+  if (event.key === 'ArrowUp') {
+    if (!state.expanded) {
+      state.expanded = true
+      resolveHighlightedOption('last')
+      return
+    }
+
+    moveHighlight(-1)
+    return
+  }
+
+  if (event.key === 'Enter') {
+    if (!state.expanded) {
+      state.expanded = true
+      resolveHighlightedOption('selected-first')
+      return
+    }
+
+    selectHighlightedOption()
+  }
 }
 
 const close = () => {
   if (state.expanded) {
     state.expanded = false
     state.filter = ''
+    activeOptionId.value = null
   }
 }
 
@@ -326,7 +472,25 @@ watch(() => props.expanded, (newVal) => {
   state.expanded = newVal
   if (!newVal) {
     state.filter = ''
+    activeOptionId.value = null
   }
 })
 watch(() => props.value, (newVal) => { state.value = newVal as unknown | unknown[] })
+watch(() => state.expanded, (expanded) => {
+  if (expanded) {
+    resolveHighlightedOption('selected-first')
+  } else {
+    activeOptionId.value = null
+  }
+})
+watch(navigableOptions, () => {
+  if (!state.expanded) {
+    return
+  }
+
+  const exists = navigableOptions.value.some(option => option.id === activeOptionId.value)
+  if (!exists) {
+    resolveHighlightedOption('selected-first')
+  }
+})
 </script>

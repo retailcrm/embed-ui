@@ -1,11 +1,6 @@
 <template>
     <div
         ref="trigger"
-        :aria-controls="id + '-popper'"
-        :aria-expanded="expanded ? 'true' : 'false'"
-        :aria-invalid="invalid ? 'true' : 'false'"
-        role="combobox"
-        aria-haspopup="listbox"
         :class="{
             'ui-v1-select': true,
             'ui-v1-select_active': expanded,
@@ -33,11 +28,13 @@
                 :readonly="inputReadonly"
                 :size="textboxSize"
                 :disabled="disabled"
+                :input-attributes="textboxAttributes"
                 class="ui-v1-select__trigger"
                 @input="onInput"
                 @focus="onFocus"
                 @blur="onBlur"
                 @clear="onClear"
+                @keydown="onKeyDown"
             >
                 <template v-if="$slots['leading-icon']" #leading-icon>
                     <!-- @slot Иконка слева от поля ввода -->
@@ -159,6 +156,12 @@ const props = defineProps({
     default: false,
   },
 
+  /** Идентификатор активной опции для aria-activedescendant */
+  activeDescendant: {
+    type: null as unknown as PropType<string | null>,
+    default: null,
+  },
+
   /** Выбранные элементы из выпадающего списка. Должен содержать значение или массив значений, соответствующих атрибуту value опций из выпадающего списка */
   selection: {
     type: Array as PropType<Option[]>,
@@ -179,6 +182,8 @@ const emit = defineEmits([
   'update:value',
   /** Открытие выпадающего списка */
   'update:expanded',
+  /** Нажатие клавиши в поле ввода */
+  'keydown',
 ])
 
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
@@ -203,6 +208,17 @@ const selectionText = computed(() => {
 })
 
 const selectionWidth = ref(0)
+
+const textboxAttributes = computed(() => ({
+  role: 'combobox',
+  'aria-controls': props.id ? `${props.id}-popper` : undefined,
+  'aria-expanded': props.expanded ? 'true' : 'false',
+  'aria-haspopup': 'listbox',
+  'aria-activedescendant': props.activeDescendant ?? undefined,
+  ...!inputReadonly.value && {
+    'aria-autocomplete': 'list',
+  },
+}))
 
 const updateSelectionWidth = () => {
   if (touchstone.value && !props.placeholderOnly) {
@@ -239,6 +255,35 @@ const onClick = () => {
   if (props.disabled || props.readonly) return
 
   return props.expanded ? close() : open()
+}
+
+const onKeyDown = (event: KeyboardEvent) => {
+  if (props.disabled || props.readonly) return
+
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    event.preventDefault()
+    open()
+  }
+
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    close()
+  }
+
+  if (event.key === 'Enter') {
+    event.preventDefault()
+
+    if (!props.expanded) {
+      open()
+    }
+  }
+
+  if (event.key === ' ' && inputReadonly.value) {
+    event.preventDefault()
+    onClick()
+  }
+
+  emit('keydown', event)
 }
 
 const onInput = (event: Event) => {
