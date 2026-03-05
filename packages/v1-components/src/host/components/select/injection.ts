@@ -4,6 +4,7 @@ export type Option = {
   id: string;
   value: unknown;
   label: string;
+  disabled?: boolean;
   isMatched (): boolean;
 }
 
@@ -15,13 +16,14 @@ export type Group = {
 
 export const IsSelectedKey = Symbol('UiSelectedIsSelected') as InjectionKey<ComputedRef<(value: unknown) => boolean>>
 export const RegisterKey = Symbol('UiSelectRegister') as InjectionKey<(option: Option) => void>
-export const SyncKey = Symbol('UiSelectSync') as InjectionKey<(id: string, data: { label: string; value: unknown }) => void>
+export const SyncKey = Symbol('UiSelectSync') as InjectionKey<(id: string, data: { label: string; value: unknown; disabled: boolean }) => void>
 export const UnregisterKey = Symbol('UiSelectUnregister') as InjectionKey<(id: string) => void>
 export const ToggleKey = Symbol('UiSelectToggle') as InjectionKey<(value: unknown) => void>
 export const FilterKey = Symbol('UiSelectFilter') as InjectionKey<ComputedRef<string>>
 export const FilteredKey = Symbol('UiSelectFiltered') as InjectionKey<ComputedRef<boolean>>
 export const TickerKey = Symbol('UiSelectTicker') as InjectionKey<ComputedRef<boolean>>
 export const MultipleKey = Symbol('UiSelectMultiple') as InjectionKey<ComputedRef<boolean>>
+export const ActiveOptionIdKey = Symbol('UiSelectActiveOptionId') as InjectionKey<ComputedRef<string | null>>
 export const FastenedKey = Symbol('UiSelectFastened') as InjectionKey<ComputedRef<boolean>>
 export const UnregisterOptionKey = Symbol('UiSelectUnregisterOption') as InjectionKey<(id: string) => void>
 export const RegisterOptionKey = Symbol('UiSelectRegisterOption') as InjectionKey<(option: Option) => void>

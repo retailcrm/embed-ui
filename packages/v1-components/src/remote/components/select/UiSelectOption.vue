@@ -1,9 +1,12 @@
 <template>
     <div
+        :id="id"
         v-bind="$attrs"
         :aria-selected="selected ? 'true' : 'false'"
+        :aria-current="active ? 'true' : undefined"
         :class="{
             'ui-v1-select-option': true,
+            'ui-v1-select-option_active': active,
             'ui-v1-select-option_selected': selected,
             'ui-v1-select-option_disabled': disabled,
             'ui-v1-select-option_hidden': hidden,
@@ -15,6 +18,7 @@
         <slot :highlight="highlight" :selected="selected">
             <UiMenuItem
                 :accent="accent"
+                :active="active"
                 :counter="counter"
                 :disabled="disabled"
                 :size="size"
@@ -81,6 +85,7 @@ import { highlight as _highlight, uid } from '@/common/components/select'
 import { SIZE } from '@/common/components/menu'
 
 import {
+  ActiveOptionIdKey,
   FastenedKey,
   FilteredKey,
   FilterKey,
@@ -154,7 +159,7 @@ const isSelected = inject(
   computed<((value: unknown) => boolean)>(() => () => false)
 )
 
-const syncInSelect = inject(SyncKey, () => {})
+const syncInSelect = inject(SyncKey, (() => undefined) as (id: string, data: { label: string; value: unknown; disabled: boolean }) => void)
 
 const registerInGroup = inject(RegisterOptionKey, () => {})
 const registerInSelect = inject(RegisterKey, () => {})
@@ -164,6 +169,7 @@ const unregisterInSelect = inject(UnregisterKey, () => {})
 const toggle = inject(ToggleKey, () => {})
 
 const fastened = inject<boolean>(FastenedKey, false)
+const activeOptionId = inject<Ref<string | null>>(ActiveOptionIdKey, ref(null))
 const filter = inject<Ref<string>>(FilterKey, ref(''))
 const filtered = inject<Ref<boolean>>(FilteredKey, ref(false))
 const ticker = inject<Ref<boolean>>(TickerKey, ref(false))
@@ -177,6 +183,7 @@ const texts = computed(() => ({
 }))
 
 const matched = computed((): boolean => texts.value.label !== props.label || texts.value.description !== props.description)
+const active = computed((): boolean => props.active || activeOptionId.value === id)
 const selected = computed((): boolean => props.active || isSelected.value(props.value))
 const hidden = computed((): boolean => !(fastened || !filtered.value || matched.value))
 
@@ -189,11 +196,13 @@ const onClick = () => {
 const off = watch([
   () => props.label,
   () => props.value,
-], ([newLabel, newValue], [oldLabel, oldValue]) => {
-  if (newLabel !== oldLabel || !isEqual(newValue, oldValue)) {
+  () => props.disabled,
+], ([newLabel, newValue, newDisabled], [oldLabel, oldValue, oldDisabled]) => {
+  if (newLabel !== oldLabel || !isEqual(newValue, oldValue) || newDisabled !== oldDisabled) {
     syncInSelect(id, {
       label: newLabel,
       value: newValue,
+      disabled: newDisabled,
     })
   }
 })
@@ -203,6 +212,7 @@ onBeforeMount(() => {
     id,
     value: props.value,
     label: props.label,
+    disabled: props.disabled,
     isMatched: () => !filtered.value || matched.value,
   }
 

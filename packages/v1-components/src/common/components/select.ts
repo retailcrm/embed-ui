@@ -26,16 +26,21 @@ export type Option = {
   id: string;
   value: unknown;
   label: string;
+  disabled?: boolean;
   isMatched (): boolean;
 }
 
 export type UiSelectTriggerProperties = {
+  id?: string;
   value?: unknown|unknown[];
+  selection?: Option[];
   clearable?: boolean;
   filter?: string;
+  filterable?: boolean;
   invalid?: boolean;
   multiple?: boolean;
   expanded?: boolean;
+  activeDescendant?: string | null;
   placeholder?: string;
   placeholderOnly?: boolean;
   readonly?: boolean;
@@ -46,7 +51,8 @@ export type UiSelectTriggerProperties = {
 export type UiSelectTriggerMethods = {
   open (): void;
   close (): void;
-  onClick (): void;
+  onClick (event?: MouseEvent): void;
+  onKeyDown (event: KeyboardEvent): void;
   onInput (event: Event): void;
   onFocus (event: Event): void;
   onBlur (event: Event): void;
