@@ -1,4 +1,4 @@
-import type { Component, CreateAppFunction } from 'vue'
+import type { App, Component, CreateAppFunction } from 'vue'
 
 import type { Pinia } from 'pinia'
 import type { RunIdentity } from '@/common/pages'
@@ -20,9 +20,11 @@ export interface Runner {
   ): Promise<() => void>
 }
 
+type BeforeMountHook = (app: App, pinia: Pinia) => Promise<void> | void
+
 export const defineSingleRunner = (
   component: Component,
-  beforeMount?: () => Promise<void>
+  beforeMount?: BeforeMountHook
 ): Runner => ({
   async run (createApp, root, pinia, code) {
     const app = createApp({
@@ -33,7 +35,7 @@ export const defineSingleRunner = (
 
     app.use(pinia)
 
-    await beforeMount?.()
+    await beforeMount?.(app, pinia)
     app.mount(root)
 
     return () => app.unmount()
@@ -68,11 +70,11 @@ function isRunnersMap (value: Component | RunnersMap): value is RunnersMap {
   )
 }
 
-export function defineRunner (component: Component, beforeMount?: () => Promise<void>): Runner
+export function defineRunner (component: Component, beforeMount?: BeforeMountHook): Runner
 export function defineRunner (runners: RunnersMap): Runner
 export function defineRunner (
   input: Component | RunnersMap,
-  beforeMount?: () => Promise<void>
+  beforeMount?: BeforeMountHook
 ): Runner {
   if (isRunnersMap(input)) {
     return defineMultiRunner(input)
