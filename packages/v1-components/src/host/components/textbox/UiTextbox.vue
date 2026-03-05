@@ -88,17 +88,19 @@
             {{ placeholder }}
         </span>
 
-        <span
+        <button
             v-if="clearable && String(value)"
+            type="button"
             class="ui-v1-textbox__eraser"
+            :disabled="disabled || readonly"
+            :aria-controls="id ?? uid"
+            :aria-label="i18n.t('clear')"
+            @click="clear"
         >
             <IconClearCircle
-                :aria-controls="id ?? uid"
-                :aria-label="i18n.t('clear')"
-                role="button"
-                @click="clear"
+                aria-hidden="true"
             />
-        </span>
+        </button>
 
         <span
             v-if="'trailing-icon' in $slots"
