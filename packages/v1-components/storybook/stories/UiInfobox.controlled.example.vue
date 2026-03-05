@@ -1,17 +1,22 @@
 <template>
     <div style="display: grid; gap: 8px; width: 680px;">
         <div style="display: flex; gap: 8px;">
-            <button type="button" @click="shown = !shown">
+            <UiButton
+                appearance="secondary"
+                style="flex: none; align-self: flex-start;"
+                @click="shown = !shown"
+            >
                 {{ shown ? 'Hide' : 'Show' }}
-            </button>
+            </UiButton>
 
-            <button
-                type="button"
+            <UiButton
+                appearance="secondary"
+                style="flex: none; align-self: flex-start;"
                 :disabled="!expandable"
                 @click="expanded = !expanded"
             >
                 {{ expanded ? 'Collapse' : 'Expand' }}
-            </button>
+            </UiButton>
         </div>
 
         <UiInfobox
@@ -28,6 +33,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+import UiButton from '@/host/components/button/UiButton.vue'
 import UiInfobox from '@/host/components/infobox/UiInfobox.vue'
 
 const shown = ref(true)
