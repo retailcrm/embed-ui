@@ -19,7 +19,7 @@
             v-if="prefix || 'prefix' in $slots"
             class="ui-v1-textbox__prefix"
         >
-            <slot>{{ prefix }}</slot>
+            <slot name="prefix">{{ prefix }}</slot>
         </span>
 
         <span
@@ -114,7 +114,7 @@
             v-if="suffix || 'suffix' in $slots"
             class="ui-v1-textbox__suffix"
         >
-            <slot>{{ suffix }}</slot>
+            <slot name="suffix">{{ suffix }}</slot>
         </span>
     </span>
 </template>
