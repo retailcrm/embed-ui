@@ -103,7 +103,7 @@ describe('host/components/time-picker', () => {
 
     const root = wrapper?.find('.ui-v1-time-picker')
 
-    expect(root?.attributes('id')).toBe('timepicker-a11y')
+    expect(root?.attributes('id')).toBe('timepicker-a11y-root')
     expect(root?.attributes('role')).toBe('combobox')
     expect(root?.attributes('aria-haspopup')).toBe('listbox')
     expect(root?.attributes('aria-controls')).toBe('timepicker-a11y-listbox')

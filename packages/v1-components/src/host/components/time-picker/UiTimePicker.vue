@@ -1,9 +1,9 @@
 <template>
     <div
-        :id="boxId"
+        :id="`${inputId}-root`"
         ref="root"
         :aria-activedescendant="expanded && activeOptionId ? activeOptionId : undefined"
-        :aria-controls="listboxId"
+        :aria-controls="`${inputId}-listbox`"
         :aria-disabled="disabled ? 'true' : 'false'"
         :aria-expanded="expanded ? 'true' : 'false'"
         :aria-haspopup="'listbox'"
@@ -48,7 +48,7 @@
         </UiTextbox>
 
         <UiPopper
-            :id="listboxId"
+            :id="`${inputId}-listbox`"
             :visible="expanded"
             :target="rootTarget"
             :global-triggers="[]"
@@ -223,9 +223,8 @@ const emit = defineEmits([
 ])
 
 const uid = useId()
-const boxId = computed(() => props.id ?? uid)
-const inputId = computed(() => `${boxId.value}-input`)
-const listboxId = computed(() => `${boxId.value}-listbox`)
+const inputId = computed(() => props.id ?? uid)
+const listboxId = computed(() => `${inputId.value}-listbox`)
 
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
 
