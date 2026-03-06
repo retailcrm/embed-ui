@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.11-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.3...v0.9.11-alpha.4) (2026-03-06)
+
+### Bug Fixes
+
+* **v1-components:** Remote Storybook docs isolation corrected ([3b1af4d](https://github.com/retailcrm/embed-ui/commit/3b1af4d586d7d2f7e88137a2ddbcbbc04d411ada))
 ## [0.9.11-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.2...v0.9.11-alpha.3) (2026-03-05)
 
 ### Features
