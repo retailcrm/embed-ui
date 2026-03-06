@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.11-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.5...v0.9.11-alpha.6) (2026-03-06)
+
+### Bug Fixes
+
+* **v1-components:** UiSelect trigger width fill behavior was restored ([0793c1a](https://github.com/retailcrm/embed-ui/commit/0793c1a840bc5efe1424ec6f884599b1fa0f3a31))
 ## [0.9.11-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.4...v0.9.11-alpha.5) (2026-03-06)
 
 ### Bug Fixes
