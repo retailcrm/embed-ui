@@ -1,12 +1,74 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
 import ToReact from '../ToReact.ts'
 import UiCheckbox from './UiCheckbox.example.vue'
 
 # UiCheckbox
 
-Множественный выбор из представленных вариантов
+`UiCheckbox` - компонент для выбора одного или нескольких значений.
 
-## Описание
-Используется для выбора или выделения нескольких опций из представленных вариантов
+## Когда использовать
 
-## Отображение
+* для независимых булевых флагов (вкл/выкл);
+* для множественного выбора из списка;
+* для иерархических сценариев с промежуточным состоянием (`indeterminate`).
+
+## Импорт
+
+```ts
+import { UiCheckbox } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовое использование
+
+```vue
+<template>
+  <UiCheckbox id="notifications" v-model:model="enabled" />
+  <label for="notifications">Уведомления</label>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiCheckbox } from '@retailcrm/embed-ui-v1-components/remote'
+
+const enabled = ref(false)
+</script>
+```
+
+## Сценарии
+
+### Одиночный флаг
+
+Когда `model` — `boolean`, компонент работает как обычный переключаемый флаг.
+
+### Множественный выбор
+
+Когда `model` — массив, используйте `value` у каждого чекбокса:
+
+```vue
+<UiCheckbox v-model:model="channels" value="email" />
+<UiCheckbox v-model:model="channels" value="sms" />
+```
+
+### Промежуточное состояние (`indeterminate`)
+
+Полезно для “родительского” чекбокса, который управляет группой дочерних значений.
+
 <ToReact is={UiCheckbox} />
+
+## События и модель
+
+`UiCheckbox` поддерживает:
+
+* `v-model:model` — основное состояние (`boolean | Primitive[]`);
+* `change` — событие изменения, которое удобно использовать для ручной синхронизации сложных групп.
+
+## A11y
+
+* Используйте явную связку через `id` + `<label for="...">`.
+* Для группы чекбоксов с общим названием предпочтительно использовать `fieldset` + `legend`.
+* Для отключённых значений (`disabled`) не полагайтесь только на цветовую индикацию: текстовое описание состояния тоже желательно.
+
+## Полный API
+
+<ArgTypes />

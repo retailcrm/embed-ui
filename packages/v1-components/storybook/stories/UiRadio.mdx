@@ -1,19 +1,62 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
 import ToReact from '../ToReact.ts'
 import UiRadio from './UiRadio.example.vue'
 
 # UiRadio
 
-Одиночный выбор из представленных вариантов
+`UiRadio` - компонент для выбора одного значения из набора взаимоисключающих вариантов.
 
-## Описание
+## Когда использовать
 
-Используется для выбора одного варианта из набора. Состояние с галочкой — функция включена/выделена.
-Без — выключена/не выделена.
+* выбор одного варианта доставки, статуса, тарифа;
+* переключение между взаимоисключающими режимами;
+* формы, где важно явно показать все доступные варианты.
 
-### Accessibility
+## Импорт
 
-- Для набора радио-кнопок обязательно используйте общий `name`.
-- Для группировки и названия набора используйте `fieldset` + `legend` (или `role="radiogroup"` с доступным именем).
-- Для каждой отдельной кнопки нужен текстовый label через `<label for="...">` или `aria-label`/`aria-labelledby`.
+```ts
+import { UiRadio } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовое использование
+
+```vue
+<template>
+  <UiRadio id="delivery-courier" v-model:model="deliveryType" value="courier" name="delivery-type" />
+  <label for="delivery-courier">Курьер</label>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiRadio } from '@retailcrm/embed-ui-v1-components/remote'
+
+const deliveryType = ref('courier')
+</script>
+```
+
+## Сценарии
+
+### Группа с общим `name`
+
+Чтобы радио-кнопки работали как единая группа, у них должен быть одинаковый `name`.
+
+### Логика выбора
+
+Компонент считается выбранным, когда `model === value`.
+При выборе `UiRadio` эмитит:
+
+* `change` - выбранное значение;
+* `update:model` - выбранное значение для `v-model:model`.
 
 <ToReact is={UiRadio} />
+
+## A11y
+
+* Для группы радио-кнопок используйте общий `name`.
+* Для подписи группы предпочтительно использовать `fieldset` + `legend`.
+* Для каждой кнопки задавайте текстовую метку через `<label for="...">` (или `aria-label`/`aria-labelledby`).
+
+## Полный API
+
+<ArgTypes />
