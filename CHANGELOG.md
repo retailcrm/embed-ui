@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.9.11-alpha.7](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.6...v0.9.11-alpha.7) (2026-03-06)
+
+### Bug Fixes
+
+* **v1-components:** UiDatePicker root and popper ids were aligned ([c299531](https://github.com/retailcrm/embed-ui/commit/c299531928bc30c9c5ea60db3f8dcf6e1964f80e))
+* **v1-components:** UiModalSidebar fixed-left animation behavior was corrected ([e8b1906](https://github.com/retailcrm/embed-ui/commit/e8b1906319ece3626881964c428da627406b040f))
+* **v1-components:** UiTimePicker ids were aligned with input id ([03d3808](https://github.com/retailcrm/embed-ui/commit/03d3808ab0a5dfb12b2649ddb7a1612292b52a83))
 ## [0.9.11-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.5...v0.9.11-alpha.6) (2026-03-06)
 
 ### Bug Fixes
