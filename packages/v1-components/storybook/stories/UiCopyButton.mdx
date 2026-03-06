@@ -1,39 +1,79 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
 import ToReact from '../ToReact.ts'
 
 import ExampleBasic from '../examples/copy-button/ExampleBasic.vue'
 
 # UiCopyButton
 
-Кнопки для копирования текста
+`UiCopyButton` - кнопка для копирования значения в буфер обмена с подсказкой об успешном копировании.
 
-## Механика
+## Когда использовать
 
-При клике на кнопку (по-умолчанию третичная) копируется заранее заготовленный текст. Кнопка при этом имеет всплывающую
-подсказку, контент которой на некоторое время меняется после копирования текста в буфер обмена (индикация, что текст
-скопирован).
+* копирование ссылки, id, токена, API-ключа;
+* быстрое копирование значений из карточек и таблиц;
+* интерфейсы, где нужна явная индикация «Скопировано».
 
-## Применение
+## Импорт
 
-Код:
+```ts
+import { UiCopyButton } from '@retailcrm/embed-ui-v1-components/remote'
+```
 
-```html
+## Базовое использование
+
+```vue
 <template>
-    <UiCopyButton text="Текст для копирования" size="sm">
-        <template #hint>
-            Скопировать
-        </template>
+  <UiCopyButton text="Текст для копирования" size="sm">
+    <template #hint>
+      Скопировать
+    </template>
 
-        <template #hint-copied>
-            Скопировано
-        </template>
-    </UiCopyButton>
+    <template #hint-copied>
+      Скопировано
+    </template>
+  </UiCopyButton>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { UiCopyButton } from '@retailcrm/embed-ui-v1-components/remote'
 </script>
 ```
 
-Результат:
-
 <ToReact is={ExampleBasic} />
+
+## Сценарии
+
+### Кастомный триггер
+
+Слот `trigger` позволяет подставить любую кнопку или элемент, который будет вызывать копирование.
+
+### Настройка всплывающей подсказки
+
+Через `tooltipOptions` можно передать параметры `UiTooltip` (например, `placement`, `offset`, `container`).
+
+### Размер кнопки
+
+Параметр `size` принимает размеры из `UiButton` (`xs`, `sm`, `md`, `lg`).
+
+## Слоты
+
+Компонент поддерживает:
+
+* `trigger` - кастомный элемент-триггер;
+* `hint` - текст подсказки до копирования;
+* `hint-copied` - текст после успешного копирования.
+
+## События
+
+* `error` - эмитится, если не удалось записать текст в буфер обмена.
+
+## A11y
+
+* По умолчанию используется нативная кнопка `UiButton`, доступная с клавиатуры.
+* Статус копирования сообщается через содержимое `UiTooltip`.
+* При недоступном Clipboard API используется fallback через скрытое поле ввода.
+
+## Полный API
+
+<ArgTypes />
