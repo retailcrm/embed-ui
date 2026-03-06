@@ -10,6 +10,7 @@ import UiTextbox from '@/host/components/textbox/UiTextbox.vue'
 import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
 
 import { UiField } from '../../src/remote/components/field'
+import UiFieldWorker from './UiField.remote.ts?worker'
 
 import { createRemoteStoryRender } from '../createRemoteStoryRender'
 import page from './UiField.mdx'
@@ -59,7 +60,7 @@ const meta = {
 
   render: createRemoteStoryRender({
     provider,
-    workerUrl: new URL('./UiField.remote.ts', import.meta.url),
+    worker: UiFieldWorker,
   }),
 
   parameters: {

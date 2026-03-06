@@ -13,6 +13,7 @@ import { PLACEMENT } from '@/common/components/select'
 import { SIZE } from '@/common/components/select'
 
 import { UiSelect } from '../../src/remote/components/select'
+import UiSelectWorker from './UiSelect.remote.ts?worker'
 
 import { createRemoteStoryRender } from '../createRemoteStoryRender'
 import { docsOnlyStory } from '../docsOnlyStory'
@@ -62,7 +63,7 @@ const meta = {
 
   render: createRemoteStoryRender({
     provider,
-    workerUrl: new URL('./UiSelect.remote.ts', import.meta.url),
+    worker: UiSelectWorker,
   }),
 
   parameters: {
