@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.9.11-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.4...v0.9.11-alpha.5) (2026-03-06)
+
+### Bug Fixes
+
+* **v1-components:** ID's inside UiNumberStepper ([5985012](https://github.com/retailcrm/embed-ui/commit/5985012be1e79d4a1746beb9a7b81ae32b59cdea))
+* **v1-components:** Storybook remote worker loading was corrected ([a367ee1](https://github.com/retailcrm/embed-ui/commit/a367ee161442cf61d107eeda527d600453599fa9))
+* **v1-components:** UiSelect attrs forwarding to trigger was enabled ([5913f39](https://github.com/retailcrm/embed-ui/commit/5913f39a6b412018d896c033ec674efb9cb91d5c))
+* **v1-components:** UiSelect remote value prop typing was corrected ([89d9f14](https://github.com/retailcrm/embed-ui/commit/89d9f14f159867e86cb6a0bc0032f1a19188603b))
 ## [0.9.11-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.3...v0.9.11-alpha.4) (2026-03-06)
 
 ### Bug Fixes
