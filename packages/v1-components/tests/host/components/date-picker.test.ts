@@ -103,7 +103,7 @@ describe('host/components/date-picker', () => {
 
     const root = wrapper?.find('.ui-v1-date-picker')
 
-    expect(root?.attributes('id')).toBe('dp-test')
+    expect(root?.attributes('id')).toBe('dp-test-root')
     expect(root?.attributes('role')).toBe('combobox')
     expect(root?.attributes('aria-haspopup')).toBe('dialog')
     expect(root?.attributes('aria-controls')).toBe('dp-test-popper')

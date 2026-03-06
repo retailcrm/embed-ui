@@ -1,8 +1,8 @@
 <template>
     <span
-        :id="boxId"
+        :id="`${inputId}-root`"
         ref="trigger"
-        :aria-controls="popperId"
+        :aria-controls="`${inputId}-popper`"
         :aria-disabled="disabled ? 'true' : 'false'"
         :aria-expanded="showCalendar ? 'true' : 'false'"
         :aria-haspopup="'dialog'"
@@ -50,7 +50,7 @@
         </UiTextbox>
 
         <UiPopper
-            :id="popperId"
+            :id="`${inputId}-popper`"
             :visible="showCalendar"
             :target="triggerTarget"
             :global-triggers="[]"
@@ -64,7 +64,7 @@
             @update:visible="onVisibleChange"
         >
             <div
-                :id="popperContentId"
+                :id="`${inputId}-popper-content`"
                 ref="popperContent"
                 class="ui-v1-date-picker__popper-content"
                 @click.stop
@@ -313,10 +313,8 @@ const emit = defineEmits([
 ])
 
 const uid = useId()
-const boxId = computed(() => props.id ?? uid)
-const inputId = computed(() => `${boxId.value}-input`)
-const popperId = computed(() => `${boxId.value}-popper`)
-const popperContentId = computed(() => `${boxId.value}-content`)
+
+const inputId = computed(() => props.id ?? uid)
 
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
 
