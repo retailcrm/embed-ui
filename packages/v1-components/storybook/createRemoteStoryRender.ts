@@ -9,12 +9,14 @@ import { onUnmounted, watch } from 'vue'
 
 type RemoteStoryRenderOptions = {
   provider: object;
-  workerUrl: URL;
+  worker: {
+    new (options?: WorkerOptions): Worker;
+  };
 }
 
 export const createRemoteStoryRender = <TArgs extends object>({
   provider,
-  workerUrl,
+  worker: Worker,
 }: RemoteStoryRenderOptions) => (args: TArgs) => defineComponent({
     name: 'RemoteStoryRender',
 
@@ -24,7 +26,7 @@ export const createRemoteStoryRender = <TArgs extends object>({
 
     setup () {
       const receiver = createReceiver()
-      const worker = new Worker(workerUrl, { type: 'module' })
+      const worker = new Worker()
       const endpoint = createEndpoint<Callable<TArgs> & Lifecycle>(worker)
 
       endpoint.call.run(receiver.receive, args)
