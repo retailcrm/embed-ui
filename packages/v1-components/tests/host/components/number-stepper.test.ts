@@ -41,15 +41,17 @@ describe('host/components/number-stepper', () => {
     })
 
     const input = wrapper?.find('input')
+    const inputId = input?.attributes('id')
 
     expect(input?.attributes('role')).toBe('spinbutton')
     expect(input?.attributes('aria-valuenow')).toBe('7')
     expect(input?.attributes('aria-valuemin')).toBe('0')
     expect(input?.attributes('aria-valuemax')).toBe('10')
+    expect(inputId).toBe('stepper-a11y')
 
     const buttons = wrapper?.findAll('button')
-    expect(buttons?.[0].attributes('aria-controls')).toBe('stepper-a11y-input')
-    expect(buttons?.[1].attributes('aria-controls')).toBe('stepper-a11y-input')
+    expect(buttons?.[0].attributes('aria-controls')).toBe(inputId)
+    expect(buttons?.[1].attributes('aria-controls')).toBe(inputId)
   })
 
   test('supports inline mode via outlined=false', () => {
