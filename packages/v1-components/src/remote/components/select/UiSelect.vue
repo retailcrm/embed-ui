@@ -16,6 +16,7 @@
             :placeholder="placeholder"
             :textbox-size="textboxSize"
             :active-descendant="activeOptionId"
+            v-bind="$attrs"
             @input="onInput"
             @keydown="onKeyDown"
             @update:value="state.value = $event"
@@ -95,6 +96,10 @@ import {
 
 import { UiSelectPopper } from './parts'
 import { UiSelectTrigger } from './parts'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 const props = defineProps({
   /** Атрибут id корневого элемента выпадающего списка. Должен быть уникальным на странице */
