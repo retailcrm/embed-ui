@@ -13,7 +13,7 @@
                 :aria-hidden="visibility !== 'shown' ? 'true' : 'false'"
                 :class="[$attrs.class, {
                     ['ui-v1-modal']: true,
-                    ['ui-v1-modal_overlapped']: state.overlapped,
+                    ['ui-v1-modal_overlapped']: state.overlapped || fixed,
                     ['ui-v1-modal-sidebar-overlay']: true,
                     ['ui-v1-modal-sidebar-overlay_fixed']: fixed,
                     [`ui-v1-modal-sidebar-overlay_${direction}`]: fixed,
@@ -35,6 +35,7 @@
                         :id="id + '-sidebar'"
                         :class="{
                             'ui-v1-modal-sidebar': true,
+                            'ui-v1-modal-sidebar_fixed': fixed,
                             'ui-v1-modal-sidebar_left': direction === DIRECTION.LEFT,
                             'ui-v1-modal-sidebar_size_sm': size === SIZE.SM,
                             'ui-v1-modal-sidebar_size_lg': size === SIZE.LG,

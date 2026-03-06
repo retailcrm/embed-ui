@@ -9,8 +9,14 @@
     width: 416px;
     background: none;
   }
-  &_left { right: auto; }
-  &_right { left: auto; }
+  &_left {
+    left: 0;
+    right: auto;
+  }
+  &_right {
+    left: auto;
+    right: 0;
+  }
 }
 
 .ui-v1-modal-sidebar {
@@ -25,6 +31,10 @@
   top: 0;
   right: 0;
   bottom: 0;
+
+  &_fixed {
+    position: fixed;
+  }
 
   &_left {
     left: 0;
