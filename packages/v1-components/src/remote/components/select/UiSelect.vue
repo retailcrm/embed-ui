@@ -111,7 +111,6 @@ const props = defineProps({
   /** Атрибут value, содержащий выбранный элемент из выпадающего списка */
   value: {
     type: null as unknown as PropType<unknown|unknown[]>,
-    default: undefined,
   },
 
   /** Атрибут placeholder нативного поля ввода input */
