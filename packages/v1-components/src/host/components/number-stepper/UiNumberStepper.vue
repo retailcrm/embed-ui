@@ -1,6 +1,6 @@
 <template>
     <div
-        :id="stepperId"
+        :id="`${stepperId}-root`"
         :class="{
             'ui-v1-number-stepper': true,
             'ui-v1-number-stepper_horizontal': direction === DIRECTION.HORIZONTAL,
@@ -16,8 +16,8 @@
         v-bind="$attrs"
     >
         <button
-            :id="decreaseId"
-            :aria-controls="inputId"
+            :id="`${stepperId}-decrease`"
+            :aria-controls="stepperId"
             :aria-label="decreaseLabel"
             :disabled="!canDecrease"
             class="ui-v1-number-stepper__button ui-v1-number-stepper__button_decrease"
@@ -40,7 +40,7 @@
 
         <UiTextbox
             v-bind="resolvedTextboxOptions"
-            :id="inputId"
+            :id="stepperId"
             ref="textbox"
             :value="model"
             :size="size"
@@ -60,8 +60,8 @@
         />
 
         <button
-            :id="increaseId"
-            :aria-controls="inputId"
+            :id="`${stepperId}-increase`"
+            :aria-controls="stepperId"
             :aria-label="increaseLabel"
             :disabled="!canIncrease"
             class="ui-v1-number-stepper__button ui-v1-number-stepper__button_increase"
@@ -222,11 +222,8 @@ const emit = defineEmits<{
   'violation': [payload: ViolationPayload];
 }>()
 
-const uid = useId()
+const uid = 'embed-ui-' + useId()
 const stepperId = computed(() => props.id ?? uid)
-const inputId = computed(() => `${stepperId.value}-input`)
-const increaseId = computed(() => `${stepperId.value}-increase`)
-const decreaseId = computed(() => `${stepperId.value}-decrease`)
 
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
 
