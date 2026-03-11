@@ -105,4 +105,6 @@ yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
 
 ## Notes
 - Do not assume legacy rules from other repositories (especially `omnica`) apply here.
+- Keep imports grouped by type-only, external, internal alias, and relative blocks, separated from each other and alphabetized within each block: this improves scanability and reduces merge conflicts when multiple PRs add imports to the same file.
+- When resolving lint issues, prefer running `eslint` with `--fix` first to avoid manual import reshuffling and unnecessary reading of repository-specific lint rules.
 - If repository policy is unclear, ask a short clarifying question before making irreversible actions.
