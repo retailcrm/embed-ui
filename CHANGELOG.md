@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.9.12](https://github.com/retailcrm/embed-ui/compare/v0.9.11...v0.9.12) (2026-03-11)
+
+### Features
+
+* Recursive updater scan and add mode were added ([72725e9](https://github.com/retailcrm/embed-ui/commit/72725e989fbfd8f5192ff226401ee7ad5501ad3e))
+* **v1-components:** Remote component method delegates were typed ([4bfcd4c](https://github.com/retailcrm/embed-ui/commit/4bfcd4c7964f342f581701390a370e504ef213e4))
+* **v1-components:** Vue remote tooling was applied to UiSelect ([2be366c](https://github.com/retailcrm/embed-ui/commit/2be366cec6a9dba32ff0ddb24b0716d6498880a0))
+
+### Bug Fixes
+
+* **v1-components:** Test lint violations were corrected ([8c0968c](https://github.com/retailcrm/embed-ui/commit/8c0968ccfaaacd37538bb76e2382f253ba20287e))
+* **v1-components:** UiSelect remote tests were aligned with remote tooling ([5c76150](https://github.com/retailcrm/embed-ui/commit/5c7615085c01e6c198527725c54f6f52d4764379))
 ## [0.9.11](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.7...v0.9.11) (2026-03-11)
 ## [0.9.11-alpha.7](https://github.com/retailcrm/embed-ui/compare/v0.9.11-alpha.6...v0.9.11-alpha.7) (2026-03-06)
 
