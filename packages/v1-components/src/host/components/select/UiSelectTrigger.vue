@@ -56,6 +56,7 @@
 import type { I18nLocalized } from '@/host/i18n'
 import type { Option } from '@/host/components/select/injection'
 import type { PropType } from 'vue'
+import type { UiSelectTriggerMethods } from '@/common/components/select'
 
 import {
   computed,
@@ -298,6 +299,17 @@ const onClear = (event?: MouseEvent) => {
   emit('update:value', value)
   emit('clear', event)
 }
+
+defineExpose({
+  open,
+  close,
+  onClick,
+  onKeyDown,
+  onInput,
+  onFocus,
+  onBlur,
+  onClear,
+} satisfies UiSelectTriggerMethods)
 
 watch(() => props.value, () => {
   updateSelectionWidth()

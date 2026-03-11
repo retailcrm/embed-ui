@@ -25,6 +25,7 @@
 
         <UiSelectPopper
             :id="resolvedId"
+            ref="popper"
             :disabled="disabled || readonly"
             :multiple="multiple"
             :opened="state.expanded"
@@ -52,7 +53,7 @@
     </UiPopperConnector>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" remote setup>
 import type { I18nLocalized } from '@/host/i18n'
 import type { Option } from '@/host/components/select/injection'
 import type { PropType } from 'vue'
@@ -65,9 +66,11 @@ type A<T> = T extends unknown[] ? T : T[]
 
 import { computed } from 'vue'
 import { inject } from 'vue'
+import { nextTick } from '@omnicajs/vue-remote/remote'
 import { provide } from 'vue'
 import { reactive } from 'vue'
 import { ref } from 'vue'
+import { useTemplateRef } from 'vue'
 import { watch } from 'vue'
 
 import { UiPopperConnector } from '@/remote/components/popper'
@@ -246,6 +249,7 @@ const noResult = computed(() => i18n.value.t('search.noResult', { filter: state.
 
 const optionsRegistry = ref<Option[]>([])
 const activeOptionId = ref<string | null>(null)
+const popper = useTemplateRef('popper')
 
 const selection = computed(() => {
   const model = arraify<unknown>(state.value)
@@ -472,6 +476,16 @@ const close = () => {
   }
 }
 
+const syncPopper = async () => {
+  if (!state.expanded) {
+    return
+  }
+
+  await nextTick()
+  await popper.value?.updateWidth()
+  await popper.value?.autoScroll()
+}
+
 watch(() => props.expanded, (newVal) => {
   state.expanded = newVal
   if (!newVal) {
@@ -483,6 +497,7 @@ watch(() => props.value, (newVal) => { state.value = newVal as unknown | unknown
 watch(() => state.expanded, (expanded) => {
   if (expanded) {
     resolveHighlightedOption('selected-first')
+    void syncPopper()
   } else {
     activeOptionId.value = null
   }
@@ -495,6 +510,15 @@ watch(navigableOptions, () => {
   const exists = navigableOptions.value.some(option => option.id === activeOptionId.value)
   if (!exists) {
     resolveHighlightedOption('selected-first')
+    void syncPopper()
   }
+})
+
+watch(activeOptionId, (next, prev) => {
+  if (!state.expanded || next === prev) {
+    return
+  }
+
+  void syncPopper()
 })
 </script>

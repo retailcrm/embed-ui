@@ -37,6 +37,11 @@
     ],
     "useDefineForClassFields": true
   },
+  "vueCompilerOptions": {
+    "plugins": [
+      "@omnicajs/vue-remote/tooling"
+    ]
+  },
   "include": [
     "shims-*.d.ts",
     "src/**/*.ts",

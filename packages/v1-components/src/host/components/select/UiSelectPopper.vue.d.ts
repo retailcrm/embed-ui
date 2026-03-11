@@ -1,11 +1,16 @@
 import type { DefineComponent } from '@/common/vue'
 import type { Ref } from 'vue'
 
-import type { UiPopperMethods, UiPopperProperties } from '@/common/components/popper'
+import type { UiPopperMethods } from '@/common/components/popper'
+
+import type {
+  UiSelectPopperMethods,
+  UiSelectPopperProperties,
+} from '@/common/components/select'
 
 declare const UiSelectPopper: DefineComponent<
-    UiPopperProperties, { target: Ref<HTMLElement | null> },
-    UiPopperMethods
+    UiSelectPopperProperties, { target: Ref<HTMLElement | null> },
+    UiSelectPopperMethods & UiPopperMethods
 >
 
 export default UiSelectPopper

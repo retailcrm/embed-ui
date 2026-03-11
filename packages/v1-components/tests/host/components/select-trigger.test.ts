@@ -1,3 +1,4 @@
+import type { UiSelectTriggerMethods } from '@/common/components/select'
 import type { VueWrapper } from '@vue/test-utils'
 
 import {
@@ -63,5 +64,26 @@ describe('host/components/select-trigger', () => {
     await input?.trigger('keydown', { key: 'Escape' })
     expect(wrapper?.emitted('update:expanded')?.at(-1)).toEqual([false])
     expect(wrapper?.emitted('keydown')?.at(-1)?.[0]).toMatchObject({ key: 'Escape' })
+  })
+
+  test('exposes imperative trigger methods', async () => {
+    createComponent({
+      expanded: false,
+      filterable: true,
+    })
+
+    const methods = wrapper?.vm as unknown as UiSelectTriggerMethods
+
+    methods.open()
+    expect(wrapper?.emitted('update:expanded')?.at(-1)).toEqual([true])
+
+    await wrapper?.setProps({ expanded: true })
+
+    methods.close()
+    expect(wrapper?.emitted('update:expanded')?.at(-1)).toEqual([false])
+
+    methods.onClear()
+    expect(wrapper?.emitted('update:value')?.at(-1)).toEqual([null])
+    expect(wrapper?.emitted('clear')?.at(-1)).toEqual([undefined])
   })
 })

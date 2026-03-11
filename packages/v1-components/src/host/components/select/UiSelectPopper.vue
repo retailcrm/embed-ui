@@ -46,8 +46,10 @@ import type { Side } from '@floating-ui/dom'
 import type {
   Trigger,
   TriggerSchema,
+  UiPopperMethods,
   UiPopperProperties,
 } from '@/common/components/popper'
+import type { UiSelectPopperMethods } from '@/common/components/select'
 
 import { computed } from 'vue'
 import { onMounted } from 'vue'
@@ -169,7 +171,9 @@ const width = ref<string>('auto')
 const visible = computed(() => props.opened)
 
 const autoScroll = async () => {
-  const option = scrollable.value?.querySelector<HTMLElement>('.ui-v1-select-option_selected')
+  const option = scrollable.value?.querySelector<HTMLElement>('.ui-v1-select-option_active')
+    ?? scrollable.value?.querySelector<HTMLElement>('.ui-v1-select-option_selected')
+
   if (scrollable.value && option) {
     scrollable.value.scrollTop = option.offsetTop
   }
@@ -192,11 +196,13 @@ const scrollableStyle = computed((): CSSProperties => {
 })
 
 defineExpose({
+  autoScroll,
+  updateWidth,
   adjust: () => popper.value?.adjust(),
   dispose: () => popper.value?.dispose(),
   show: () => popper.value?.show(),
   hide: () => popper.value?.hide(),
-})
+} satisfies UiSelectPopperMethods & UiPopperMethods)
 
 watch(() => props.opened, () => updateWidth())
 
