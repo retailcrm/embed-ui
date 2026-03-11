@@ -5,11 +5,21 @@ import {
   describe,
   expect,
   test,
+  vi,
 } from 'vitest'
 
 import { defineComponent, h } from 'vue'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
+
+vi.mock('@omnicajs/vue-remote/remote', async (importOriginal) => {
+  const actual = await importOriginal() as typeof import('@omnicajs/vue-remote/remote')
+
+  return {
+    ...actual,
+    nextTick,
+  }
+})
 
 import UiSelect from '@/remote/components/select/UiSelect.vue'
 import UiSelectOption from '@/remote/components/select/UiSelectOption.vue'
@@ -28,6 +38,10 @@ const UiSelectTriggerStub = defineComponent({
 
 const UiSelectPopperStub = defineComponent({
   name: 'UiSelectPopper',
+  methods: {
+    updateWidth() {},
+    autoScroll() {},
+  },
   template: '<div class="ui-v1-select-popper-stub"><slot /></div>',
 })
 
