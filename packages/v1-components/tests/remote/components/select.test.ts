@@ -13,7 +13,7 @@ import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
 
 vi.mock('@omnicajs/vue-remote/remote', async (importOriginal) => {
-  const actual = await importOriginal() as typeof import('@omnicajs/vue-remote/remote')
+  const actual = await importOriginal()
 
   return {
     ...actual,

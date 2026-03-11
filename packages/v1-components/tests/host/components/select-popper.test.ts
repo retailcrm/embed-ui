@@ -8,10 +8,12 @@ import {
   test,
 } from 'vitest'
 
+import { computed } from 'vue'
 import { mount } from '@vue/test-utils'
-import { computed, nextTick } from 'vue'
+import { nextTick } from 'vue'
 
 import UiSelectPopper from '@/host/components/select/UiSelectPopper.vue'
+
 import { PopperTargetKey } from '@/host/components/popper/composables'
 
 describe('host/components/select-popper', () => {
