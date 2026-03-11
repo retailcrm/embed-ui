@@ -7,7 +7,7 @@ import type {
   UiDatePickerProperties,
 } from '@/common/components/date-picker'
 
-import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
+import { defineRemoteComponent, defineRemoteMethod } from '@omnicajs/vue-remote/remote'
 
 export const UiDatePickerType = 'UiDatePicker' as SchemaType<
   'UiDatePicker',
@@ -15,9 +15,8 @@ export const UiDatePickerType = 'UiDatePicker' as SchemaType<
   RemoteCallable<UiDatePickerMethods>
 >
 
-export const UiDatePicker = defineRemoteComponent(
-  UiDatePickerType,
-  [
+export const UiDatePicker = defineRemoteComponent(UiDatePickerType, {
+  emits: [
     'open',
     'close',
     'change',
@@ -27,5 +26,10 @@ export const UiDatePicker = defineRemoteComponent(
     'close': () => boolean;
     'change': (value: Date | Date[] | null) => boolean;
     'update:value': (value: Date | Date[] | null) => boolean;
-  }
-)
+  },
+  methods: {
+    open: defineRemoteMethod<[], void>(),
+    close: defineRemoteMethod<[], void>(),
+    toggle: defineRemoteMethod<[], void>(),
+  },
+})

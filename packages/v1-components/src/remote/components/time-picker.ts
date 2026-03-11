@@ -7,7 +7,7 @@ import type {
   UiTimePickerProperties,
 } from '@/common/components/time-picker'
 
-import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
+import { defineRemoteComponent, defineRemoteMethod } from '@omnicajs/vue-remote/remote'
 
 export const UiTimePickerType = 'UiTimePicker' as SchemaType<
   'UiTimePicker',
@@ -15,9 +15,8 @@ export const UiTimePickerType = 'UiTimePicker' as SchemaType<
   RemoteCallable<UiTimePickerMethods>
 >
 
-export const UiTimePicker = defineRemoteComponent(
-  UiTimePickerType,
-  [
+export const UiTimePicker = defineRemoteComponent(UiTimePickerType, {
+  emits: [
     'change',
     'update:value',
     'focus',
@@ -27,5 +26,10 @@ export const UiTimePicker = defineRemoteComponent(
     'update:value': (value: string) => boolean;
     'focus': (event: FocusEvent) => boolean;
     'blur': (event: Event) => boolean;
-  }
-)
+  },
+  methods: {
+    open: defineRemoteMethod<[], void>(),
+    close: defineRemoteMethod<[], void>(),
+    focus: defineRemoteMethod<[], void>(),
+  },
+})

@@ -17,7 +17,7 @@ import type {
   UiSelectTriggerProperties,
 } from '@/common/components/select'
 
-import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
+import { defineRemoteComponent, defineRemoteMethod } from '@omnicajs/vue-remote/remote'
 
 export const UiSelectTriggerType = 'UiSelectTrigger' as SchemaType<
   'UiSelectTrigger',
@@ -25,9 +25,8 @@ export const UiSelectTriggerType = 'UiSelectTrigger' as SchemaType<
   RemoteCallable<UiSelectTriggerMethods>
 >
 
-export const UiSelectTrigger = defineRemoteComponent(
-  UiSelectTriggerType,
-  [
+export const UiSelectTrigger = defineRemoteComponent(UiSelectTriggerType, {
+  emits: [
     'input',
     'focus',
     'blur',
@@ -43,8 +42,18 @@ export const UiSelectTrigger = defineRemoteComponent(
     'clear': () => boolean,
     'update:value': (value: string | number) => boolean,
     'update:expanded': (expanded: boolean) => boolean,
-  }
-)
+  },
+  methods: {
+    open: defineRemoteMethod<[], void>(),
+    close: defineRemoteMethod<[], void>(),
+    onClick: defineRemoteMethod<[event?: MouseEvent], void>(),
+    onKeyDown: defineRemoteMethod<[event: KeyboardEvent], void>(),
+    onInput: defineRemoteMethod<[event: Event], void>(),
+    onFocus: defineRemoteMethod<[event: Event], void>(),
+    onBlur: defineRemoteMethod<[event: Event], void>(),
+    onClear: defineRemoteMethod<[event: MouseEvent], void>(),
+  },
+})
 
 export const UiSelectPopperType = 'UiSelectPopper' as SchemaType<
   'UiSelectPopper',
@@ -52,9 +61,8 @@ export const UiSelectPopperType = 'UiSelectPopper' as SchemaType<
   RemoteCallable<UiSelectPopperMethods>
 >
 
-export const UiSelectPopper = defineRemoteComponent(
-  UiSelectPopperType,
-  [
+export const UiSelectPopper = defineRemoteComponent(UiSelectPopperType, {
+  emits: [
     'update:visible',
     'show',
     'hide',
@@ -68,8 +76,12 @@ export const UiSelectPopper = defineRemoteComponent(
     'shown': () => boolean,
     'hidden': () => boolean,
     'dispose': () => boolean,
-  }
-)
+  },
+  methods: {
+    autoScroll: defineRemoteMethod<[], void>(),
+    updateWidth: defineRemoteMethod<[], void>(),
+  },
+})
 
 export const UiSelectOptionType = 'UiSelectOption' as SchemaType<
   'UiSelectOption',

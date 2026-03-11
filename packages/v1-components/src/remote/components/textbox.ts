@@ -11,7 +11,7 @@ import type {
 
 import type { UiTextboxMethods, UiTextboxProperties } from '@/common/components/textbox'
 
-import { defineRemoteComponent } from '@omnicajs/vue-remote/remote'
+import { defineRemoteComponent, defineRemoteMethod } from '@omnicajs/vue-remote/remote'
 
 import { events } from '@/common/components/textbox'
 
@@ -21,9 +21,8 @@ export const UiTextboxType = 'UiTextbox' as SchemaType<
   RemoteCallable<UiTextboxMethods>
 >
 
-export const UiTextbox = defineRemoteComponent(
-  UiTextboxType,
-  events as unknown as {
+export const UiTextbox = defineRemoteComponent(UiTextboxType, {
+  emits: events as unknown as {
     'input': (event: SerializedInputEvent) => boolean,
     'keydown': (event: SerializedKeyboardEvent) => boolean,
     'paste': (event: SerializedEvent) => boolean,
@@ -33,5 +32,15 @@ export const UiTextbox = defineRemoteComponent(
     'update:focused': (focused: boolean) => boolean,
     'update:value': (value: string | number) => boolean,
     'clear': () => boolean,
-  }
-)
+  },
+  methods: {
+    getSelectionStart: defineRemoteMethod<[], number | null>(),
+    getSelectionEnd: defineRemoteMethod<[], number | null>(),
+    setSelectionRange: defineRemoteMethod<[start: number, end: number], void>(),
+    focus: defineRemoteMethod<[], void>(),
+    blur: defineRemoteMethod<[], void>(),
+    select: defineRemoteMethod<[], void>(),
+    insert: defineRemoteMethod<[value: string], void>(),
+    clear: defineRemoteMethod<[], void>(),
+  },
+})
