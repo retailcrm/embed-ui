@@ -1169,14 +1169,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@omnicajs/vue-remote@npm:^0.2.16":
-  version: 0.2.16
-  resolution: "@omnicajs/vue-remote@npm:0.2.16"
+"@omnicajs/vue-remote@npm:^0.2.17":
+  version: 0.2.17
+  resolution: "@omnicajs/vue-remote@npm:0.2.17"
   dependencies:
     "@remote-ui/rpc": "npm:^1.4.5"
   peerDependencies:
     vue: ^3.4
-  checksum: 10/248c533553591b4ce1610781b6c7bc57b706b62041dfe1f406ff642142564cb47f40dfe55696d1509c755c93471727836f1c4dff3792c95355ec05d4428b7c7c
+  checksum: 10/9a6c6e624336b07cea662273001c6e95ea14aa9793633548e1a820af73ade76cbc8b1e619485f3dba89e9d59b36510f745fc0819ab1c27551e5e9473d803fd9f
   languageName: node
   linkType: hard
 
@@ -1326,7 +1326,7 @@ __metadata:
     "@modulify/pkg": "npm:^1.0.1"
     "@omnicajs/eslint-plugin-dependencies": "npm:^0.0.2"
     "@omnicajs/symfony-router": "npm:^1.0.0"
-    "@omnicajs/vue-remote": "npm:^0.2.16"
+    "@omnicajs/vue-remote": "npm:^0.2.17"
     "@remote-ui/rpc": "npm:^1.4.5"
     "@retailcrm/embed-ui-v1-components": "npm:^0.9.11-alpha.7"
     "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.11-alpha.7"
