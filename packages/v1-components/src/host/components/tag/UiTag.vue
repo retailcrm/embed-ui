@@ -1,7 +1,7 @@
 <template>
     <div
         class="ui-v1-tag-wrapper"
-        v-on="$attrs"
+        v-bind="$attrs"
     >
         <div
             :class="{
