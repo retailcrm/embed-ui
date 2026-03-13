@@ -23,6 +23,7 @@ export * from '@/remote/components/radio'
 export * from '@/remote/components/scroll-box'
 export * from '@/remote/components/slider'
 export * from '@/remote/components/switch'
+export * from '@/remote/components/table'
 export * from '@/remote/components/tag'
 export * from '@/remote/components/textbox'
 export * from '@/remote/components/time-picker'
@@ -38,6 +39,7 @@ export * from '@/remote/endpoint'
 export { usePreview } from '@/common/preview'
 
 export { ImageWorkersKey } from '@/common/preview'
+export * from '@/common/components/table'
 
 export {
   formatDate,

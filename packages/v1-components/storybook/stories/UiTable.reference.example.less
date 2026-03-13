@@ -1,0 +1,163 @@
+@import (reference) '../../assets/stylesheets/palette.less';
+@import (reference) '../../assets/stylesheets/typography.less';
+
+.reference-table {
+  width: 100%;
+  max-width: 1037px;
+  background: #fff;
+
+  &__table {
+    --ui-v1-table-cell-padding-x: 12px;
+    --ui-v1-table-cell-padding-y: 12px;
+    --ui-v1-table-padding-start: 16px;
+    --ui-v1-table-padding-end: 16px;
+  }
+
+  &__centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__title-link {
+    max-width: 188px;
+    color: @blue-500;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__status-tag-box {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+
+    &_draft {
+      color: @blue-500;
+    }
+
+    &_canceled {
+      color: @grey-900;
+    }
+
+    &_failed {
+      color: @red-500;
+    }
+
+    &_planned {
+      color: @yellow-600;
+    }
+
+    &_sent {
+      color: @green-600;
+    }
+  }
+
+  &__status-tag {
+    display: block;
+    width: 158px;
+  }
+
+  &__status-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &__date {
+    display: grid;
+    gap: 1px;
+    color: @black-500;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__body-text {
+    color: @black-500;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__phone-action {
+    width: 20px;
+    height: 20px;
+    color: @blue-500;
+  }
+
+  &__customer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__customer-link {
+    color: @blue-500;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+
+  &__activity-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  &__empty {
+    padding: 12px 0;
+    color: @grey-900;
+  }
+
+  &__footer-control {
+    color: @black-500;
+    .text-small();
+
+    .ui-v1-table__footer-button,
+    .ui-v1-table__footer-button-content,
+    .reference-table__footer-caption,
+    .reference-table__footer-delimiter {
+      font: inherit;
+      line-height: inherit;
+    }
+  }
+
+  &__footer-caption {
+    display: inline-block;
+    margin-right: 4px;
+    vertical-align: baseline;
+    line-height: inherit;
+  }
+
+  &__footer-button {
+    color: @blue-500;
+
+    &_passive {
+      color: @black-500;
+    }
+  }
+
+  &__footer-delimiter {
+    display: inline-block;
+    padding: 0 5px;
+    color: @grey-800;
+    vertical-align: baseline;
+    line-height: inherit;
+  }
+
+  &__footer-export {
+    display: inline-block;
+    color: @blue-500;
+    vertical-align: baseline;
+    .text-small();
+
+    .ui-v1-table__footer-button,
+    .ui-v1-table__footer-button-content,
+    .reference-table__footer-export-icon {
+      line-height: inherit;
+    }
+  }
+
+  &__footer-export-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    vertical-align: -3px;
+  }
+}

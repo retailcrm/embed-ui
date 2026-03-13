@@ -21,6 +21,13 @@ services:
       traefik.http.services.embed-ui-v1-components.loadbalancer.server.port: '6006'
       dev.orbstack.domains: 'v1.embed-ui.local'
 
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.58.2-noble
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./:/project
+    working_dir: /project
+
   actionlint:
     image: rhysd/actionlint:latest
     volumes:

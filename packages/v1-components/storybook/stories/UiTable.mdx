@@ -1,0 +1,360 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiTableStories from './UiTable.stories'
+
+# UiTable
+
+`UiTable` - декларативная slot-based таблица для remote-части `embed-ui`.
+Компонент собирается из `UiTable` и дочерних `UiTableColumn`, а сложные сценарии добираются через слоты `expand`, `group-head` и footer-slots.
+
+## Когда использовать
+
+* Нужна таблица с ручной композицией колонок и ячеек.
+* Нужны grouping, expandable rows или кастомный footer без жёсткого data-driven API.
+* Нужно сохранить разделение `host`-примитивов и `remote`-orchestration, как у `UiSelect`.
+
+## Контент ячеек
+
+`UiTable` рассчитана на типовые сценарии контента в `header` и `body`, а в историях и прикладном коде можно сразу опираться на готовые `v1-components`.
+
+Для body-ячеек подходят такие комбинации:
+
+* `Text` или `Text + description` - обычный текст, ссылка через <a className="ui-table-docs__component-link" href="?path=/docs/components-uilink--docs"><code>UiLink</code></a>, а вторую строку удобно собирать простым `div/span`.
+* `Status` - статусные плашки через <a className="ui-table-docs__component-link" href="?path=/docs/components-uitag--docs"><code>UiTag</code></a>.
+* `Avatar + Text` - типовой сценарий клиента, менеджера или пользователя через <a className="ui-table-docs__component-link" href="?path=/docs/components-uiavatar--docs"><code>UiAvatar</code></a> и <a className="ui-table-docs__component-link" href="?path=/docs/components-uilink--docs"><code>UiLink</code></a> или обычный текст.
+* `Icon 20x20` - декоративные и action-иконки, если нужен только маркер состояния или компактное действие.
+* `Button` - обычные кнопки дизайн-системы, когда внутри ячейки нужно явное действие, например через <a className="ui-table-docs__component-link" href="?path=/docs/components-uibutton--docs"><code>UiButton</code></a>.
+* `Checkbox` - выделение строки или массовые действия через <a className="ui-table-docs__component-link" href="?path=/docs/components-uicheckbox--docs"><code>UiCheckbox</code></a>.
+* `Image` - превью товара или сущности, если в колонке нужен визуальный контент.
+
+Для header обычно хватает таких паттернов:
+
+* `Text` - обычный заголовок колонки.
+* `Text + Icon` - сортировка или вспомогательное действие; для сортировки лучше использовать <a className="ui-table-docs__component-link" href="?path=/docs/components-uitable--docs"><code>UiTableSorter</code></a>.
+* `Checkbox + Icon` - service column с массовым выделением и дополнительным действием через <a className="ui-table-docs__component-link" href="?path=/docs/components-uicheckbox--docs"><code>UiCheckbox</code></a>.
+* `Icon` или `Icon + Text + Icon` - узкие служебные колонки и более сложные action-header сценарии.
+
+## Примеры
+
+### Базовая таблица
+
+<Story of={UiTableStories.Basic} />
+
+```vue
+<template>
+  <UiTable
+    bordered
+    :rows="rows"
+    row-key="id"
+  >
+    <UiTableColumn label="Название">
+      <template #cell="{ row }">
+        <strong>{{ row.title }}</strong>
+      </template>
+    </UiTableColumn>
+
+    <UiTableColumn label="Клиент" width="180">
+      <template #cell="{ row }">
+        {{ row.customer }}
+      </template>
+    </UiTableColumn>
+
+    <UiTableColumn label="Статус" width="160">
+      <template #cell="{ row }">
+        <UiTag :background="statusBackgroundByName[row.status]" size="md" saturated :ticker="false">
+          {{ row.status }}
+        </UiTag>
+      </template>
+    </UiTableColumn>
+  </UiTable>
+</template>
+
+<script lang="ts" remote setup>
+import { UiTable, UiTableColumn } from '@/remote/components/table'
+import { UiTag } from '@/remote/components/tag'
+
+const rows = [
+  { id: 101, title: 'Весенняя рассылка', customer: 'Анна Смирнова', status: 'Запланирована' },
+  { id: 102, title: 'Скидка на аксессуары', customer: 'Илья Кузнецов', status: 'Отправлена' },
+]
+
+const statusBackgroundByName = {
+  Запланирована: '#005EEB',
+  Отправлена: '#1FA971',
+}
+</script>
+```
+
+### Таблица с раскрытием строки
+
+<Story of={UiTableStories.ExpandableRows} />
+
+```vue
+<template>
+  <UiTable
+    bordered
+    :rows="rows"
+    row-key="id"
+  >
+    <UiTableColumn :width="44" label="" trim>
+      <template #cell="{ expanded, toggle }">
+        <button class="table-expand" type="button" @click="toggle">
+          {{ expanded ? '−' : '+' }}
+        </button>
+      </template>
+    </UiTableColumn>
+
+    <UiTableColumn label="Название">
+      <template #cell="{ row }">
+        {{ row.title }}
+      </template>
+    </UiTableColumn>
+
+    <template #expand="{ row }">
+      <div class="table-expand-content">
+        <strong>Подробности</strong>
+        <div>{{ row.description }}</div>
+        <div>Контакт: {{ row.phone }}</div>
+      </div>
+    </template>
+  </UiTable>
+</template>
+
+<script lang="ts" remote setup>
+import { UiTable, UiTableColumn } from '@/remote/components/table'
+
+const rows = [
+  {
+    id: 101,
+    title: 'Весенняя рассылка',
+    description: 'Сегмент: постоянные клиенты. Канал: SMS + email.',
+    phone: '+7 (999) 123-45-67',
+  },
+]
+</script>
+```
+
+### Таблица с группировкой
+
+<Story of={UiTableStories.GroupedRows} />
+
+```vue
+<template>
+  <UiTable
+    bordered
+    :rows="rows"
+    row-key="id"
+    :group-by="groupByStatus"
+  >
+    <UiTableColumn label="Название">
+      <template #cell="{ row }">
+        {{ row.title }}
+      </template>
+    </UiTableColumn>
+
+    <UiTableColumn label="Статус" width="160">
+      <template #cell="{ row }">
+        {{ row.status }}
+      </template>
+    </UiTableColumn>
+
+    <template #group-head="{ group }">
+      <span>{{ group.data.title }}</span>
+    </template>
+  </UiTable>
+</template>
+
+<script lang="ts" remote setup>
+import type { Group } from '@/common/components/table'
+import { UiTable, UiTableColumn } from '@/remote/components/table'
+
+const rows = [
+  { id: 101, title: 'Весенняя рассылка', status: 'Запланирована' },
+  { id: 102, title: 'Скидка на аксессуары', status: 'Отправлена' },
+]
+
+const groupByStatus = (items: readonly typeof rows): Group<(typeof rows)[number], { title: string }>[] => {
+  return ['Запланирована', 'Отправлена']
+    .map((status) => ({
+      key: status,
+      data: { title: status },
+      rows: items.filter((row) => row.status === status),
+    }))
+    .filter((group) => group.rows.length > 0)
+}
+</script>
+```
+
+### Таблица кампаний и отправок
+
+<Story of={UiTableStories.CampaignsOverview} />
+
+```vue
+<template>
+  <div class="reference-table">
+    <UiTable class="reference-table__table" bordered :rows="sortedRows" row-key="id">
+      <UiTableColumn :width="42" label="" trim>
+        <template #label>
+          <UiCheckbox :model="allVisibleSelected" :indeterminate="partiallySelected" @update:model="toggleAllVisible" />
+        </template>
+
+        <template #cell="{ row }">
+          <UiCheckbox :model="selectedIds" :value="row.id" @update:model="updateSelectedIds" />
+        </template>
+      </UiTableColumn>
+
+      <UiTableColumn label="Название" width="28.5%" :min-width="220">
+        <template #label>
+          <UiTableSorter
+            aria-label="Сортировка по названию"
+            :direction="sortDirection"
+            @click="toggleSortDirection"
+          >
+            Название
+          </UiTableSorter>
+        </template>
+
+        <template #cell="{ row }">
+          <UiLink accent class="reference-table__title-link" href="javascript:void(0);">
+            {{ row.title }}
+          </UiLink>
+        </template>
+      </UiTableColumn>
+
+      <UiTableColumn v-slot="{ row }" label="Статус" width="20%" :min-width="168">
+        <UiTag size="md" :ticker="false" :background="statusPalette[row.status.tone].background">
+          {{ row.status.label }}
+        </UiTag>
+      </UiTableColumn>
+
+      <template #footer-summary="{ rowsCount }">
+        <span>{{ rowsCount }} элементов</span>
+      </template>
+
+      <template #footer-page-size>
+          <UiTableFooterSection class="reference-table__footer-control">
+            <span>Показывать:</span>
+            <UiTableFooterButton>по 20</UiTableFooterButton>
+            <span>/</span>
+            <UiTableFooterButton>по 50</UiTableFooterButton>
+        </UiTableFooterSection>
+      </template>
+    </UiTable>
+  </div>
+</template>
+
+<script lang="ts" remote setup>
+import { computed, ref } from 'vue'
+
+import { UiCheckbox } from '@/remote/components/checkbox'
+import { UiLink } from '@/remote/components/link'
+import {
+  UiTable,
+  UiTableColumn,
+  UiTableFooterButton,
+  UiTableFooterSection,
+  UiTableSorter,
+} from '@/remote/components/table'
+import { UiTag } from '@/remote/components/tag'
+
+const selectedIds = ref<number[]>([])
+const rows = [
+  // Данные кампаний, palette и вспомогательные computed усечены для читаемости.
+]
+
+const sortDirection = ref<DIRECTION | null>(null)
+const sortedRows = computed(() => sortDirection.value === null
+  ? rows
+  : [...rows].sort(/* сортировка по title */))
+const allVisibleSelected = computed(() => false)
+const partiallySelected = computed(() => false)
+const toggleSortDirection = () => {}
+const toggleAllVisible = () => {}
+const updateSelectedIds = () => {}
+</script>
+```
+
+## Важные свойства
+
+* `headless` - скрывает стандартный header.
+* `bordered` - включает внешний контур таблицы.
+* `fixed` - переводит таблицу в `table-layout: fixed`.
+* `rows` и `rowKey` - основной источник данных и стабильных ключей строк.
+
+## Важные слоты
+
+* `default` - список колонок `UiTableColumn`.
+* `expand` - раскрытое содержимое строки.
+* `group-head` - заголовок группы.
+* `footer`, `footer-summary`, `footer-page-size`, `footer-export`, `footer-pagination` - footer API.
+
+## CSS tokens
+
+Стили `UiTable` можно настраивать через CSS custom properties на корневом элементе таблицы.
+
+* `--ui-v1-table-border-width` - толщина внешней рамки и базовая величина для border-aware расчётов внутренних отступов.
+* `--ui-v1-table-rounding`, `--ui-v1-table-rounding-start-start`, `--ui-v1-table-rounding-start-end`, `--ui-v1-table-rounding-end-start`, `--ui-v1-table-rounding-end-end` - общее и покомпонентное скругление таблицы.
+* `--ui-v1-table-cell-padding-x`, `--ui-v1-table-cell-padding-y` - базовые горизонтальные и вертикальные padding всех ячеек.
+* `--ui-v1-table-cell-padding-block-start`, `--ui-v1-table-cell-padding-inline-end`, `--ui-v1-table-cell-padding-block-end`, `--ui-v1-table-cell-padding-inline-start` - точечные переопределения padding ячейки по logical-сторонам.
+* `--ui-v1-table-padding-start`, `--ui-v1-table-padding-end` - внешние отступы первой и последней ячейки в строке; в `bordered`-варианте таблица сама вычитает из них ширину рамки.
+* `--ui-v1-table-head-cell-padding-block-start`, `--ui-v1-table-head-cell-padding-block-end` - отступы header-ячейки по block-оси.
+* `--ui-v1-table-body-cell-padding-block-start`, `--ui-v1-table-body-cell-padding-block-end` - отступы body-ячейки по block-оси.
+* `--ui-v1-table-group-head-padding-block-start`, `--ui-v1-table-group-head-padding-block-end` - отступы строк-заголовков групп по block-оси.
+* `--ui-v1-table-head-background` - фон шапки таблицы.
+* `--ui-v1-table-group-head-background` - фон заголовков групп.
+
+### Dense table
+
+<Story of={UiTableStories.Dense} />
+
+```vue
+<template>
+  <UiTable
+    class="campaign-table campaign-table_dense"
+    bordered
+    :rows="rows"
+    row-key="id"
+  >
+    <UiTableColumn label="Название">
+      <template #cell="{ row }">
+        {{ row.title }}
+      </template>
+    </UiTableColumn>
+
+    <UiTableColumn label="Статус" width="160">
+      <template #cell="{ row }">
+        {{ row.status }}
+      </template>
+    </UiTableColumn>
+  </UiTable>
+</template>
+
+<script lang="ts" remote setup>
+import { UiTable, UiTableColumn } from '@/remote/components/table'
+
+const rows = [
+  { id: 101, title: 'Весенняя рассылка', status: 'Запланирована' },
+  { id: 102, title: 'Скидка на аксессуары', status: 'Отправлена' },
+]
+</script>
+
+<style lang="less">
+.campaign-table_dense {
+  --ui-v1-table-cell-padding-x: 8px;
+  --ui-v1-table-cell-padding-y: 8px;
+  --ui-v1-table-padding-start: 8px;
+  --ui-v1-table-padding-end: 8px;
+  --ui-v1-table-head-cell-padding-block-start: 8px;
+  --ui-v1-table-head-cell-padding-block-end: 8px;
+  --ui-v1-table-body-cell-padding-block-start: 8px;
+  --ui-v1-table-body-cell-padding-block-end: 8px;
+  --ui-v1-table-group-head-padding-block-start: 4px;
+  --ui-v1-table-group-head-padding-block-end: 4px;
+  --ui-v1-table-head-background: #f4f6f8;
+  --ui-v1-table-group-head-background: #f7f9fb;
+}
+</style>
+```
+
+## API
+
+<ArgTypes />

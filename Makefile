@@ -30,6 +30,33 @@ build: .require-compose ## [Build][docker][heavy] Builds all workspaces
 	$(YARN) workspaces foreach -A --topological-dev run build
 	$(TARGET_OK)
 
+.PHONY: storybook.build
+storybook.build: .require-compose ## [Build][docker][heavy] Builds Storybook for v1-components
+	$(TARGET_HEADER)
+	$(YARN) workspace @retailcrm/embed-ui-v1-components run storybook:build
+	$(TARGET_OK)
+
+.PHONY: storybook.serve
+storybook.serve: .require-compose ## [Build][docker] Runs Storybook for v1-components
+	$(TARGET_HEADER)
+	$(COMPOSE) up v1-components
+
+.PHONY: storybook.shot
+storybook.shot: .require-compose ## [Research][docker] Captures a Storybook screenshot for v1-components docs/story page
+	$(TARGET_HEADER)
+	@$(COMPOSE) up -d v1-components
+	@UID=$$(id -u) GID=$$(id -g) $(COMPOSE) run --rm playwright \
+		yarn workspace @retailcrm/embed-ui-v1-components run storybook:shot \
+			--base-url http://v1-components:6006 \
+			--path "$(if $(story_path),$(story_path),/iframe.html?viewMode=docs&id=components-uitable--docs)" \
+			--output "$(if $(output),$(output),artifacts/storybook/UiTable.docs.png)" \
+			--wait-for-selector "$(if $(wait_for),$(wait_for),#storybook-docs)" \
+			--settle-ms "$(if $(settle_ms),$(settle_ms),2500)" \
+			--timeout-ms "$(if $(timeout_ms),$(timeout_ms),60000)" \
+			--viewport-width "$(if $(viewport_width),$(viewport_width),1600)" \
+			--viewport-height "$(if $(viewport_height),$(viewport_height),1600)"
+	$(TARGET_OK)
+
 .PHONY: prepare
 prepare: .require-compose ## [Build][docker][heavy] Runs prepare in all workspaces
 	$(TARGET_HEADER)

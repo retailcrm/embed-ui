@@ -1,0 +1,33 @@
+@import (reference) '../../assets/stylesheets/palette.less';
+@import (reference) '../../assets/stylesheets/typography.less';
+
+.ui-table-story_dense {
+  .text-tiny();
+
+  --ui-v1-table-cell-padding-x: 8px;
+  --ui-v1-table-cell-padding-y: 8px;
+  --ui-v1-table-padding-start: 8px;
+  --ui-v1-table-padding-end: 8px;
+  --ui-v1-table-head-cell-padding-block-start: 8px;
+  --ui-v1-table-head-cell-padding-block-end: 8px;
+  --ui-v1-table-body-cell-padding-block-start: 8px;
+  --ui-v1-table-body-cell-padding-block-end: 8px;
+  --ui-v1-table-group-head-padding-block-start: 4px;
+  --ui-v1-table-group-head-padding-block-end: 4px;
+  --ui-v1-table-head-background: @grey-200;
+  --ui-v1-table-group-head-background: @grey-200;
+}
+
+.ui-table-docs__component-link {
+  color: inherit;
+  text-decoration: none;
+
+  code {
+    transition: color 160ms ease;
+  }
+
+  &:hover code,
+  &:focus-visible code {
+    color: @blue-500;
+  }
+}
