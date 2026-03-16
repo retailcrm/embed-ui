@@ -116,7 +116,6 @@
             </UiTableColumn>
 
             <UiTableColumn
-                v-slot
                 label=""
                 :width="46"
                 trim
@@ -221,7 +220,6 @@
 <script lang="ts" remote setup>
 import { computed, ref } from 'vue'
 
-import { DIRECTION } from '@/common/components/table'
 import IconCalendar from '../../assets/sprites/actions/calendar.svg'
 import IconCallTalking from '../../assets/sprites/communication/call-talking.svg'
 import IconCheckmarkCircle from '../../assets/sprites/actions/checkmark-circle.svg'
@@ -231,6 +229,8 @@ import IconClearCircleOutlined from '../../assets/sprites/actions/clear-circle-o
 import IconDownloadTo from '../../assets/sprites/ui/download-to.svg'
 import IconEdit from '../../assets/sprites/ui/edit.svg'
 import IconErrorOutlined from '../../assets/sprites/alerts/error-outlined.svg'
+
+import { DIRECTION } from '@/common/components/table'
 
 import { UiAvatar } from '@/remote/components/avatar'
 import { UiCheckbox } from '@/remote/components/checkbox'

@@ -1,3 +1,6 @@
+import './UiTable.reference.example.less'
+import './UiTable.stories.less'
+
 import type { Meta, StoryObj } from '@storybook/vue3'
 
 import { createProvider } from '@omnicajs/vue-remote/host'
@@ -22,8 +25,7 @@ import UiTableWorker from './UiTable.remote.ts?worker'
 
 import { createRemoteStoryRender } from '../createRemoteStoryRender'
 import { docsOnlyStory } from '../docsOnlyStory'
-import './UiTable.reference.example.less'
-import './UiTable.stories.less'
+
 import page from './UiTable.mdx'
 
 type UiTableProps = InstanceType<typeof UiTable>['$props']

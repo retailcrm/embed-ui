@@ -3,13 +3,13 @@ import type { Group } from '../../src/common/components/table'
 import { h, ref } from 'vue'
 
 import { UiCheckbox } from '../../src/remote/components/checkbox'
-import { UiTag } from '../../src/remote/components/tag'
 import {
   UiTable,
   UiTableColumn,
   UiTableFooterButton,
   UiTableFooterSection,
 } from '../../src/remote/components/table'
+import { UiTag } from '../../src/remote/components/tag'
 
 import { createComponentEndpoint } from '../endpoint'
 
