@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [0.9.13](https://github.com/retailcrm/embed-ui/compare/v0.9.12...v0.9.13) (2026-03-16)
+
+### Features
+
+* Host query contract was added ([b2bfc48](https://github.com/retailcrm/embed-ui/commit/b2bfc486f667bb97efd8d47662e32dfd39d93119))
+* **v1-components:** UiTable stories and tooling were added ([18c89ba](https://github.com/retailcrm/embed-ui/commit/18c89bac8c6481c889e0e0071cd140a6b74520c9))
+
+### Bug Fixes
+
+* **v1-components:** UiTag attrs forwarding was corrected ([e3f653b](https://github.com/retailcrm/embed-ui/commit/e3f653bac555121d06d03f1bc2832296973c8aa9))
 ## [0.9.12](https://github.com/retailcrm/embed-ui/compare/v0.9.11...v0.9.12) (2026-03-11)
 
 ### Features
