@@ -107,6 +107,22 @@ export const useHost = (): RemoteCallable<Callable> => {
         ? endpoint.call.httpCall(action, payload)
         : endpoint.call.httpCall(action)
     },
+
+    getLocation () {
+      return endpoint.call.getLocation()
+    },
+
+    replaceQuery (query, options = undefined) {
+      return options
+        ? endpoint.call.replaceQuery(query, options)
+        : endpoint.call.replaceQuery(query)
+    },
+
+    pushQuery (query, options = undefined) {
+      return options
+        ? endpoint.call.pushQuery(query, options)
+        : endpoint.call.pushQuery(query)
+    },
   }
 }
 
