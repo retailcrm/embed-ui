@@ -10,6 +10,7 @@ import {
 import { mount } from '@vue/test-utils'
 
 import UiTableBodyCell from '@/host/components/table/UiTableBodyCell.vue'
+import UiTableCol from '@/host/components/table/UiTableCol.vue'
 import UiTableRoot from '@/host/components/table/UiTableRoot.vue'
 import UiTableSorter from '@/host/components/table/UiTableSorter.vue'
 
@@ -64,6 +65,23 @@ describe('host/components/table', () => {
     expect(cell.classes()).toContain('ui-v1-table__body-cell_theme-group')
     expect(cell.classes()).toContain('ui-v1-table__body-cell_trim')
     expect(cell.text()).toBe('Cell content')
+  })
+
+  test('renders col width as attribute and style', () => {
+    wrapper = mount(UiTableCol, {
+      props: {
+        width: 240,
+        minWidth: '160px',
+        maxWidth: '40%',
+      },
+    })
+
+    const col = wrapper.find('col')
+
+    expect(col.attributes('width')).toBe('240')
+    expect(col.attributes('style')).toContain('width: 240px;')
+    expect(col.attributes('style')).toContain('min-width: 160px;')
+    expect(col.attributes('style')).toContain('max-width: 40%;')
   })
 
   test('renders sorter state in inline table control', () => {

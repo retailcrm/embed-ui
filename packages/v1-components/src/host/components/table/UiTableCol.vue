@@ -34,6 +34,7 @@ export default defineComponent({
   setup (props, { attrs }) {
     return () => h('col', {
       ...attrs,
+      width: props.width,
       style: [
         attrs.style ?? null,
         {

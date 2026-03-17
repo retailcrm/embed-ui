@@ -1224,6 +1224,8 @@ __metadata:
     "@storybook/vue3-vite": "npm:^10.1.11"
     "@types/lodash.isequal": "npm:^4.5.8"
     "@vitejs/plugin-vue": "npm:^6.0.2"
+    "@vitest/browser": "npm:4.0.15"
+    "@vitest/browser-playwright": "npm:4.0.15"
     "@vue/compiler-sfc": "npm:^3.5.25"
     "@vue/test-utils": "npm:^2.4.6"
     "@yandex/ymaps3-types": "npm:^0.0.21"
