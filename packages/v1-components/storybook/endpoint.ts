@@ -35,10 +35,12 @@ const createRoot = async (channel: Channel) => {
   const root = createRemoteRoot(channel, {
     components: [
       'UiAvatar',
+      'UiButton',
       'UiCheckbox',
       'UiLink',
       'UiMenuItem',
       'UiMenuItemGroup',
+      'UiPageHeaderTitle',
       'UiPopperConnector',
       'UiPopperTarget',
       'UiSelectPopper',

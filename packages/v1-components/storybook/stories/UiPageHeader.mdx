@@ -1,0 +1,91 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+# UiPageHeader
+
+`UiPageHeader` - заголовок страницы с опциональной inline-зоной рядом с title и зоной действий справа.
+В обычном состоянии заголовок рендерится как `h1`, а в режиме редактирования переключается на `UiTextbox`.
+В remote-режиме компонент может показывать tooltip ошибки для пустого невалидного значения.
+
+## Когда использовать
+
+* Нужен основной заголовок страницы расширения.
+* Нужно дать пользователю возможность редактировать заголовок по клику.
+* Нужно показать рядом с заголовком дополнительный inline-элемент, например ссылку `Свернуть фильтр`.
+* Нужна компактная зона действий справа от заголовка.
+* Нужно показать ошибку в tooltip, если заголовок обязателен и остаётся пустым.
+
+## Поведение
+
+* Если включён `editable`, заголовок в display-state рендерится как `h1` и переходит в режим редактирования по клику.
+* В режиме редактирования используется `UiTextbox`.
+* Нажатие `Enter` завершает редактирование и сохраняет введённое значение.
+* Если `invalid=true`, заголовок пустой и передан `error`, в remote-режиме показывается tooltip ошибки и компонент остаётся в режиме редактирования.
+* В editable display-state заголовок рисует underline, визуально согласованный с underline-режимом `UiTextbox`.
+* Слот `addon` рендерится рядом с заголовком, но вне tooltip-target, поэтому tooltip продолжает якориться именно к title.
+
+## Пример
+
+```html
+<template>
+    <UiPageHeader
+        v-model:value="title"
+        :error="title ? '' : 'Заголовок обязателен'"
+        :invalid="!title"
+        editable
+        placeholder="Введите заголовок"
+    >
+        <template #addon>
+            <UiLink>
+                Свернуть фильтр
+            </UiLink>
+        </template>
+
+        <template #actions>
+            <UiButton appearance="tertiary">
+                Действия
+                <IconCaretDown aria-hidden="true" />
+            </UiButton>
+        </template>
+    </UiPageHeader>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+
+import IconCaretDown from '@retailcrm/embed-ui-v1-components/assets/sprites/arrows/caret-down.svg'
+import {
+  UiButton,
+  UiLink,
+  UiPageHeader,
+} from '@retailcrm/embed-ui-v1-components/remote'
+
+const title = ref('Возвраты')
+</script>
+```
+
+## Важные свойства
+
+* `id` - идентификатор корневого элемента.
+* `value` - текст заголовка.
+* `placeholder` - плейсхолдер для пустого заголовка.
+* `error` - текст ошибки для tooltip в remote-режиме.
+* `editable` - разрешает перейти в режим редактирования по клику.
+* `autofocus` - переводит фокус во встроенный `UiTextbox` при входе в режим редактирования.
+* `autoselect` - выделяет текст заголовка при фокусе на встроенном поле.
+* `readonly` - делает заголовок только для чтения.
+* `disabled` - полностью отключает компонент.
+* `invalid` - включает невалидное состояние встроенного `UiTextbox`.
+
+## События
+
+* `update:value` - изменение текста заголовка.
+* `focus`, `blur`, `change`, `keydown` - проксируются из встроенного `UiTextbox`.
+
+## Слоты
+
+* `addon` - дополнительный inline-контент рядом с заголовком, например `UiLink` со ссылкой `Свернуть фильтр`.
+* `actions` - действия справа от заголовка, например `UiButton`, `UiToolbarButton` или `UiToolbarLink`.
+
+## API
+
+<ArgTypes />
