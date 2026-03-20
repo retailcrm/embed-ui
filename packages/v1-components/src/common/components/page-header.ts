@@ -1,0 +1,25 @@
+export type UiPageHeaderProperties = {
+  id?: string;
+  value?: string | number | null;
+  placeholder?: string;
+  error?: string;
+  editable?: boolean;
+  autofocus?: boolean;
+  autoselect?: boolean;
+  readonly?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+}
+
+export type UiPageHeaderMethods = {
+  focus (): void;
+  blur (): void;
+}
+
+export const events = [
+  'blur',
+  'change',
+  'focus',
+  'keydown',
+  'update:value',
+]
