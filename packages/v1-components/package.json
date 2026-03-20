@@ -37,8 +37,10 @@
     }
   },
   "files": [
+    "AGENTS.md",
     "assets",
     "dist",
+    "docs",
     "index.cjs",
     "index.js",
     "README.md"
