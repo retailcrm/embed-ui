@@ -21,7 +21,7 @@
 
 ```vue
 <template>
-  <UiPageHeader v-model:value="title" editable />
+  <UiPageHeader v-model:value="title" editable size="xl" />
 
   <UiField
     id="comment"
