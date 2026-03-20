@@ -1,0 +1,54 @@
+import ToReact from '../ToReact.ts'
+import UiPageHeader from './UiPageHeader.example.vue'
+
+# UiPageHeader
+
+Компонент для заголовка страницы с встроенным `UiTextbox` и зоной действий справа.
+Подходит для сценариев, где заголовок страницы должен редактироваться как текстовое поле, но оставаться частью page layout.
+
+Пример:
+
+<span className="d-inline-block w-100 mb-3"><ToReact
+    is={UiPageHeader}
+    value="Новая рассылка"
+    size="xl"
+/></span>
+
+
+## API
+
+### Свойства
+
+* `id` – идентификатор корневого элемента. Тип: `string | undefined`. По умолчанию: `undefined`.
+* `value` – текст заголовка. Тип: `string | number | null`. По умолчанию: `''`.
+* `placeholder` – плейсхолдер для пустого заголовка. Тип: `string`. По умолчанию: `''`.
+* `size` – размер встроенного `UiTextbox`. Тип: `'xs' | 'sm' | 'md' | 'lg' | 'xl'`. По умолчанию: `'xl'`.
+* `autofocus` – автоматически переводит фокус во встроенный `UiTextbox` при монтировании. Тип: `boolean`. По умолчанию: `false`.
+* `autoselect` – выделяет текст заголовка при получении фокуса встроенным полем. Тип: `boolean`. По умолчанию: `true`.
+* `readonly` – делает заголовок только для чтения. Тип: `boolean`. По умолчанию: `false`.
+* `disabled` – полностью отключает компонент. Тип: `boolean`. По умолчанию: `false`.
+* `invalid` – передает невалидное состояние во встроенный `UiTextbox`. Тип: `boolean`. По умолчанию: `false`.
+
+### События
+
+* `update:value` – изменение текста заголовка
+* `focus`, `blur`, `change`, `keydown` – проксируются из встроенного `UiTextbox`
+
+### Слоты
+
+* `actions` – действия справа от заголовка, например `UiButton`, `UiToolbarButton` или `UiToolbarLink`
+
+## Пример
+
+```html
+<template>
+    <UiPageHeader v-model:value="title" size="xl">
+        <template #actions>
+            <UiButton appearance="tertiary">
+                Действия
+                <IconCaretDown aria-hidden="true" />
+            </UiButton>
+        </template>
+    </UiPageHeader>
+</template>
+```

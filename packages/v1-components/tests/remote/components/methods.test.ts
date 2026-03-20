@@ -1,4 +1,5 @@
 import type { UiDatePicker } from '@/remote/components/date-picker'
+import type { UiPageHeader } from '@/remote/components/page-header'
 import type { UiSelectPopper, UiSelectTrigger } from '@/remote/components/select/parts'
 import type { UiTextbox } from '@/remote/components/textbox'
 import type { UiTimePicker } from '@/remote/components/time-picker'
@@ -25,6 +26,13 @@ describe('remote component method typing', () => {
     expectTypeOf<Instance['open']>().toEqualTypeOf<() => Promise<void>>()
     expectTypeOf<Instance['close']>().toEqualTypeOf<() => Promise<void>>()
     expectTypeOf<Instance['toggle']>().toEqualTypeOf<() => Promise<void>>()
+  })
+
+  test('exposes typed UiPageHeader host methods on instance refs', () => {
+    type Instance = InstanceType<typeof UiPageHeader>
+
+    expectTypeOf<Instance['blur']>().toEqualTypeOf<() => Promise<void>>()
+    expectTypeOf<Instance['focus']>().toEqualTypeOf<() => Promise<void>>()
   })
 
   test('exposes typed UiTimePicker host methods on instance refs', () => {
