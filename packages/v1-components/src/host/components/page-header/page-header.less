@@ -1,0 +1,48 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-page-header {
+  .reset-box-sizing();
+
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: @spacing-s @spacing-l;
+  flex-wrap: wrap;
+
+  &_disabled {
+    opacity: 0.7;
+  }
+
+  &__main {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ui-v1-page-header__trigger.ui-v1-textbox,
+  .ui-v1-page-header__trigger.ui-v1-textbox input,
+  .ui-v1-page-header__trigger.ui-v1-textbox textarea {
+    max-width: 100%;
+  }
+
+  .ui-v1-page-header__trigger.ui-v1-textbox input:not(:disabled),
+  .ui-v1-page-header__trigger.ui-v1-textbox textarea:not(:disabled) {
+    cursor: pointer;
+  }
+
+  .ui-v1-page-header__textbox.ui-v1-textbox,
+  .ui-v1-page-header__textbox.ui-v1-textbox input,
+  .ui-v1-page-header__textbox.ui-v1-textbox textarea {
+    max-width: 100%;
+    background: transparent;
+  }
+
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: @spacing-s;
+    flex: 0 0 auto;
+  }
+}
