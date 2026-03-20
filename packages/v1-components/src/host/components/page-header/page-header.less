@@ -21,17 +21,22 @@
     min-width: 0;
   }
 
+  .ui-v1-page-header__trigger.ui-v1-textbox,
+  .ui-v1-page-header__trigger.ui-v1-textbox input,
+  .ui-v1-page-header__trigger.ui-v1-textbox textarea {
+    max-width: 100%;
+  }
+
+  .ui-v1-page-header__trigger.ui-v1-textbox input:not(:disabled),
+  .ui-v1-page-header__trigger.ui-v1-textbox textarea:not(:disabled) {
+    cursor: pointer;
+  }
+
   .ui-v1-page-header__textbox.ui-v1-textbox,
   .ui-v1-page-header__textbox.ui-v1-textbox input,
   .ui-v1-page-header__textbox.ui-v1-textbox textarea {
     max-width: 100%;
     background: transparent;
-    cursor: pointer;
-  }
-
-  .ui-v1-page-header__textbox.ui-v1-textbox input:focus,
-  .ui-v1-page-header__textbox.ui-v1-textbox textarea:focus {
-    cursor: text;
   }
 
   &__actions {

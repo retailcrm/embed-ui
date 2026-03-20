@@ -3,14 +3,16 @@ import UiPageHeader from './UiPageHeader.example.vue'
 
 # UiPageHeader
 
-Компонент для заголовка страницы с встроенным `UiTextbox` и зоной действий справа.
-Подходит для сценариев, где заголовок страницы должен редактироваться как текстовое поле, но оставаться частью page layout.
+Компонент для заголовка страницы с зоной действий справа.
+Если включён `editable`, заголовок переходит в режим редактирования только после клика.
+Нажатие `Enter` завершает редактирование и сохраняет введённое значение.
 
 Пример:
 
 <span className="d-inline-block w-100 mb-3"><ToReact
     is={UiPageHeader}
     value="Новая рассылка"
+    editable={true}
     size="xl"
 /></span>
 
@@ -23,7 +25,8 @@ import UiPageHeader from './UiPageHeader.example.vue'
 * `value` – текст заголовка. Тип: `string | number | null`. По умолчанию: `''`.
 * `placeholder` – плейсхолдер для пустого заголовка. Тип: `string`. По умолчанию: `''`.
 * `size` – размер встроенного `UiTextbox`. Тип: `'xs' | 'sm' | 'md' | 'lg' | 'xl'`. По умолчанию: `'xl'`.
-* `autofocus` – автоматически переводит фокус во встроенный `UiTextbox` при монтировании. Тип: `boolean`. По умолчанию: `false`.
+* `editable` – разрешает редактирование заголовка по клику. Тип: `boolean`. По умолчанию: `false`.
+* `autofocus` – автоматически переводит фокус во встроенный `UiTextbox` в момент входа в режим редактирования. Тип: `boolean`. По умолчанию: `false`.
 * `autoselect` – выделяет текст заголовка при получении фокуса встроенным полем. Тип: `boolean`. По умолчанию: `true`.
 * `readonly` – делает заголовок только для чтения. Тип: `boolean`. По умолчанию: `false`.
 * `disabled` – полностью отключает компонент. Тип: `boolean`. По умолчанию: `false`.
@@ -42,7 +45,7 @@ import UiPageHeader from './UiPageHeader.example.vue'
 
 ```html
 <template>
-    <UiPageHeader v-model:value="title" size="xl">
+    <UiPageHeader v-model:value="title" editable size="xl">
         <template #actions>
             <UiButton appearance="tertiary">
                 Действия

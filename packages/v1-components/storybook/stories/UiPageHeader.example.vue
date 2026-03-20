@@ -28,6 +28,7 @@ const props = withDefaults(defineProps<UiPageHeaderProperties>(), {
   value: 'Новая рассылка',
   placeholder: '',
   size: 'xl',
+  editable: true,
   autofocus: false,
   autoselect: true,
   readonly: false,

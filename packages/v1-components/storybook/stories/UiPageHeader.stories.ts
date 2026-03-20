@@ -17,6 +17,7 @@ const meta = {
     value: 'Новая рассылка',
     placeholder: 'Введите заголовок',
     size: SIZE.XL,
+    editable: true,
     autofocus: false,
     autoselect: true,
     readonly: false,
@@ -27,6 +28,7 @@ const meta = {
   argTypes: {
     value: { control: 'text' },
     placeholder: { control: 'text' },
+    editable: { control: 'boolean' },
     size: {
       control: 'select',
       options: Object.values(SIZE),

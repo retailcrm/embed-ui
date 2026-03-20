@@ -5,6 +5,7 @@ export type UiPageHeaderProperties = {
   value?: string | number | null;
   placeholder?: string;
   size?: SIZE | `${SIZE}`;
+  editable?: boolean;
   autofocus?: boolean;
   autoselect?: boolean;
   readonly?: boolean;

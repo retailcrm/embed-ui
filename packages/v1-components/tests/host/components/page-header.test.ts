@@ -37,14 +37,19 @@ describe('host/components/page-header', () => {
       'actions': () => h('button', { class: 'action' }, 'Действия'),
     })
 
+    expect(wrapper?.find('.ui-v1-page-header__trigger').exists()).toBe(true)
     expect(wrapper?.find('input').element.value).toBe('Новая рассылка')
+    expect(wrapper?.find('input').attributes('readonly')).toBeDefined()
     expect(wrapper?.find('.action').exists()).toBe(true)
   })
 
-  test('forwards title updates from textbox', async () => {
+  test('forwards title updates from textbox after click in editable mode', async () => {
     createComponent({
+      editable: true,
       size: SIZE.MD,
     })
+
+    await wrapper?.find('.ui-v1-page-header__trigger').trigger('click')
 
     const input = wrapper?.find('input')
     ;(input?.element as HTMLInputElement).value = 'Новое название'
@@ -56,19 +61,52 @@ describe('host/components/page-header', () => {
   })
 
   test('forwards blur event from textbox', async () => {
-    createComponent()
+    createComponent({
+      editable: true,
+    })
+
+    await wrapper?.find('.ui-v1-page-header__trigger').trigger('click')
 
     await wrapper?.find('input').trigger('blur')
 
     expect(wrapper?.emitted('blur')).toBeTruthy()
+    expect(wrapper?.find('.ui-v1-page-header__trigger').exists()).toBe(true)
+    expect(wrapper?.find('input').attributes('readonly')).toBeDefined()
+  })
+
+  test('saves and exits edit mode on Enter', async () => {
+    createComponent({
+      editable: true,
+    })
+
+    await wrapper?.find('.ui-v1-page-header__trigger').trigger('click')
+
+    const input = wrapper?.find('input')
+    ;(input?.element as HTMLInputElement).value = 'Сохраненный заголовок'
+
+    await input?.trigger('input')
+    await input?.trigger('keydown', { key: 'Enter' })
+
+    expect(wrapper?.emitted('update:value')?.at(-1)).toEqual(['Сохраненный заголовок'])
+    expect(wrapper?.find('.ui-v1-page-header__trigger').exists()).toBe(true)
+    expect(wrapper?.find('input').element.value).toBe('Сохраненный заголовок')
   })
 
   test('marks textbox as disabled', () => {
     createComponent({
+      editable: true,
       disabled: true,
     })
 
     expect(wrapper?.find('.ui-v1-page-header_disabled').exists()).toBe(true)
+    expect(wrapper?.find('.ui-v1-page-header__trigger').exists()).toBe(true)
     expect(wrapper?.find('input').attributes('disabled')).toBeDefined()
+  })
+
+  test('does not enter edit mode without editable flag', async () => {
+    createComponent()
+
+    expect(wrapper?.find('.ui-v1-page-header__trigger').exists()).toBe(true)
+    expect(wrapper?.find('input').attributes('readonly')).toBeDefined()
   })
 })
