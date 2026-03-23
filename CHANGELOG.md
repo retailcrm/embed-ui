@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.14](https://github.com/retailcrm/embed-ui/compare/v0.9.13...v0.9.14) (2026-03-23)
+
+### Bug Fixes
+
+* **v1-components:** UiTable col width rendering was corrected ([a145d94](https://github.com/retailcrm/embed-ui/commit/a145d948a80755900ef98f93d62681e28a35561f))
 ## [0.9.13](https://github.com/retailcrm/embed-ui/compare/v0.9.12...v0.9.13) (2026-03-16)
 
 ### Features
