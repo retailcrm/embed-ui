@@ -1,0 +1,33 @@
+component: UiToolbarButton
+summary: >
+  UiToolbarButton is a compact button for toolbar zones. It shares action semantics with buttons
+  but is tuned for dense toolbar layouts.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiToolbarButton
+
+use_when:
+  - You need a compact button in a toolbar or action strip.
+
+avoid_when:
+  - You need the full visual weight of UiButton.
+
+api:
+  emits:
+    - name: click
+    - name: focus
+    - name: blur
+  methods:
+    - name: click
+    - name: focus
+    - name: blur
+
+provenance:
+  public_types:
+    - src/common/components/toolbar-button.ts
+  implementation:
+    - src/remote/components/toolbar-button.ts
+  docs:
+    - storybook/stories/UiToolbarButton.mdx

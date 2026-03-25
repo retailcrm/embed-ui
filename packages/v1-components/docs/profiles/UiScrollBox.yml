@@ -1,0 +1,27 @@
+component: UiScrollBox
+summary: >
+  UiScrollBox is a scrollable container for constrained content areas. Use it when content
+  should remain inside a dedicated scrolling region instead of growing the whole page.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiScrollBox
+
+use_when:
+  - You need a bounded scroll area.
+  - You need long content inside a fixed-height or fixed-width region.
+
+avoid_when:
+  - You need normal page scrolling.
+
+api:
+  key_props: []
+
+provenance:
+  public_types:
+    - src/common/components/scroll-box.ts
+  implementation:
+    - src/remote/components/scroll-box.ts
+  docs:
+    - storybook/stories/UiScrollBox.mdx

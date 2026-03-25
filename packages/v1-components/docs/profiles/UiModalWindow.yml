@@ -1,0 +1,40 @@
+component: UiModalWindow
+summary: >
+  UiModalWindow is the main centered modal container. It supports open state, closability,
+  appearance variants, fullscreen and responsive behavior, and dialog roles.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiModalWindow
+
+related_components:
+  - UiModalWindowSurface
+
+use_when:
+  - You need a centered dialog.
+  - You need modal interaction with standard dialog semantics.
+
+avoid_when:
+  - You need a side-docked modal, use UiModalSidebar instead.
+
+api:
+  key_props:
+    - name: opened
+    - name: closable
+    - name: appearance
+    - name: fullscreen
+    - name: responsive
+    - name: scrolling
+    - name: role
+  methods:
+    - name: open
+    - name: close
+
+provenance:
+  public_types:
+    - src/common/components/modal-window.ts
+  implementation:
+    - src/remote/components/modal-window.ts
+  docs:
+    - storybook/stories/UiModalWindow.mdx

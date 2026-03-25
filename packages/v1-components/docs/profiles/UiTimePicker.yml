@@ -1,0 +1,42 @@
+component: UiTimePicker
+summary: >
+  UiTimePicker is a time input component that combines textbox-like entry with a list of
+  normalized time variants and bounds.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTimePicker
+
+related_components:
+  - UiTextbox
+  - UiPopper
+
+use_when:
+  - You need editable time input.
+  - You need bounded time variants or interval-based time selection.
+
+avoid_when:
+  - You need raw text input without time semantics.
+
+api:
+  key_props:
+    - name: value
+    - name: placeholder
+    - name: interval
+    - name: timeVariants
+    - name: minTime
+    - name: maxTime
+    - name: textboxOptions
+  methods:
+    - name: open
+    - name: close
+    - name: focus
+
+provenance:
+  public_types:
+    - src/common/components/time-picker.ts
+  implementation:
+    - src/remote/components/time-picker.ts
+  docs:
+    - storybook/stories/UiTimePicker.mdx

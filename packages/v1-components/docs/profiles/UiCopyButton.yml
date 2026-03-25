@@ -1,0 +1,48 @@
+component: UiCopyButton
+summary: >
+  UiCopyButton is an action component for copying text values with tooltip feedback.
+  It wraps copy behavior and copied-state hinting into one compact UI.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiCopyButton
+
+related_components:
+  - UiTooltip
+  - UiButton
+
+use_when:
+  - You need a copy-to-clipboard action for a value.
+  - You need built-in hint and copied-state tooltip text.
+
+avoid_when:
+  - You need a generic button with no copy semantics.
+
+api:
+  key_props:
+    - name: text
+    - name: size
+    - name: tooltipOptions
+  slots:
+    - name: trigger
+      zone: trigger
+      creates: Visible trigger content.
+    - name: hint
+      zone: tooltip
+      creates: Default tooltip content.
+    - name: hint-copied
+      zone: tooltip
+      creates: Tooltip content after copy succeeds.
+
+ai_notes:
+  do:
+    - Use for copy-specific flows instead of recreating copy state manually.
+
+provenance:
+  public_types:
+    - src/common/components/copy-button.ts
+  implementation:
+    - src/remote/components/copy-button.ts
+  docs:
+    - storybook/stories/UiCopyButton.mdx

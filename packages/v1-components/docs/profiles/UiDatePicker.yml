@@ -1,0 +1,55 @@
+component: UiDatePicker
+summary: >
+  UiDatePicker combines textbox-like date display, popper behavior, and calendar selection.
+  It supports single-date and range flows, constraints, and quick options.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiDatePicker
+
+related_components:
+  - UiCalendar
+  - UiTextbox
+  - UiPopper
+
+use_when:
+  - You need editable date input.
+  - You need date-range selection through a textbox-plus-popup flow.
+
+avoid_when:
+  - You need always-visible inline calendar selection only.
+
+api:
+  key_props:
+    - name: value
+    - name: type
+    - name: minDate
+    - name: maxDate
+    - name: nullable
+    - name: synchronization
+    - name: quickOptions
+    - name: textboxOptions
+  methods:
+    - name: open
+    - name: close
+    - name: toggle
+
+behavior:
+  notes:
+    - Supports single-date and range flows.
+    - synchronization controls instant versus confirmed behavior.
+
+ai_notes:
+  do:
+    - Prefer UiDatePicker for typed or popup date input.
+  avoid:
+    - Do not use UiCalendar directly if a textbox trigger is expected.
+
+provenance:
+  public_types:
+    - src/common/components/date-picker.ts
+  implementation:
+    - src/remote/components/date-picker.ts
+  docs:
+    - storybook/stories/UiDatePicker.mdx

@@ -1,84 +1,77 @@
 # Public Components Catalog
 
-Этот каталог описывает публичные компоненты и helpers, доступные потребителю пакета
+This catalog describes the public components and helpers available to consumers of
 `@retailcrm/embed-ui-v1-components`.
 
-Если не указано иное, для extension UI код нужно импортировать сущности из
+Unless stated otherwise, extension UI code should import these entities from
 `@retailcrm/embed-ui-v1-components/remote`.
+
+Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 
 ## Form And Input
 
-- `UiTextbox`: text input
-- `UiNumberStepper`: numeric input with increment and decrement controls
-- `UiCheckbox`: boolean choice
-- `UiRadio`: single choice
-- `UiSwitch`: state toggle
-- `UiSlider`: ranged value selection
-- `UiSelect`: select container
-- `UiSelectOption`: select option
-- `UiSelectOptionGroup`: grouped options
-- `UiSelectOptionGroupHeader`: option group header
-- `UiDatePicker`: date or date-range selection
-- `UiTimePicker`: time selection
-- `UiCalendar`: calendar primitive
+- [`UiField`](./profiles/UiField.yml): field wrapper with label, hint, validation state, and slot props for ARIA wiring
+- [`UiTextbox`](./profiles/UiTextbox.yml): text or numeric input with prefix, suffix, clear action, and multiline mode
+- [`UiCheckbox`](./profiles/UiCheckbox.yml): boolean choice
+- [`UiRadio`](./profiles/UiRadio.yml): single choice
+- [`UiSwitch`](./profiles/UiSwitch.yml): state toggle
+- [`UiSlider`](./profiles/UiSlider.yml): ranged value selection
+- [`UiSelect`](./profiles/UiSelect.yml): select container for single or multiple choice
+- [`UiSelectOption`](./profiles/UiSelectOption.yml): select option
+- [`UiSelectOptionGroup`](./profiles/UiSelectOptionGroup.yml): grouped options
+- [`UiSelectOptionGroupHeader`](./profiles/UiSelectOptionGroupHeader.yml): option group header
+- [`UiDatePicker`](./profiles/UiDatePicker.yml): date or date-range selection
+- [`UiTimePicker`](./profiles/UiTimePicker.yml): time selection
+- [`UiCalendar`](./profiles/UiCalendar.yml): calendar primitive
+- [`UiNumberStepper`](./profiles/UiNumberStepper.yml): numeric input with increment and decrement controls
 
-## Form Structure
+## Actions And Navigation
 
-- `UiField`: field wrapper with label, hint and validation state
+- [`UiButton`](./profiles/UiButton.yml): main action button that can render as a button or anchor
+- [`UiAddButton`](./profiles/UiAddButton.yml): add action button
+- [`UiCopyButton`](./profiles/UiCopyButton.yml): copy value action
+- [`UiToolbarButton`](./profiles/UiToolbarButton.yml): toolbar button
+- [`UiToolbarLink`](./profiles/UiToolbarLink.yml): toolbar link
+- [`UiLink`](./profiles/UiLink.yml): text link
+- [`UiMenuItem`](./profiles/UiMenuItem.yml): menu item
+- [`UiMenuItemGroup`](./profiles/UiMenuItemGroup.yml): menu item group
 
-## Actions
+## Layout And Structure
 
-- `UiButton`: primary action button
-- `UiAddButton`: add action button
-- `UiCopyButton`: copy value action
-- `UiToolbarButton`: toolbar button
-- `UiToolbarLink`: toolbar link
-
-## Navigation And Interaction
-
-- `UiLink`: text link
-- `UiMenuItem`: menu item
-- `UiMenuItemGroup`: menu item group
-- `UiCollapse`: collapsible section
-- `UiCollapseBox`: collapsible container
-- `UiCollapseGroup`: multiple collapse coordination
+- [`UiPageHeader`](./profiles/UiPageHeader.yml): page or section header with an editable title and action zone
+- [`UiCollapse`](./profiles/UiCollapse.yml): collapsible section
+- [`UiCollapseBox`](./profiles/UiCollapseBox.yml): collapsible container
+- [`UiCollapseGroup`](./profiles/UiCollapseGroup.yml): multiple collapse coordination
+- [`UiScrollBox`](./profiles/UiScrollBox.yml): scrollable container
+- [`UiTransition`](./profiles/UiTransition.yml): transition wrapper
 
 ## Feedback And Status
 
-- `UiAlert`: contextual alert or notification
-- `UiInfobox`: highlighted explanatory block
-- `UiError`: compact error state
-- `UiLoader`: loading indicator
-- `UiTag`: labels and statuses
-
-## People, Media And Maps
-
-- `UiAvatar`: avatar
-- `UiAvatarList`: avatar list
-- `UiImage`: image display
-- `UiYandexMap`: Yandex map component
+- [`UiAlert`](./profiles/UiAlert.yml): contextual alert or notification
+- [`UiInfobox`](./profiles/UiInfobox.yml): highlighted explanatory block
+- [`UiError`](./profiles/UiError.yml): compact error state
+- [`UiLoader`](./profiles/UiLoader.yml): loading indicator
+- [`UiTag`](./profiles/UiTag.yml): labels and statuses
 
 ## Overlays And Modal Patterns
 
-- `UiModalWindow`: modal window
-- `UiModalWindowSurface`: modal surface
-- `UiModalSidebar`: sidebar modal
-- `UiTooltip`: tooltip
-- `UiPopper`: floating layer
-- `UiPopperTarget`: popper target
-- `UiPopperConnector`: target-to-floating connector
+- [`UiModalWindow`](./profiles/UiModalWindow.yml): modal window
+- [`UiModalWindowSurface`](./profiles/UiModalWindowSurface.yml): modal surface
+- [`UiModalSidebar`](./profiles/UiModalSidebar.yml): sidebar modal
+- [`UiTooltip`](./profiles/UiTooltip.yml): tooltip
+- [`UiPopper`](./profiles/UiPopper.yml): floating layer
+- [`UiPopperTarget`](./profiles/UiPopperTarget.yml): popper target
+- [`UiPopperConnector`](./profiles/UiPopperConnector.yml): target-to-floating connector
 
-## Layout And Presentation
+## Content And Data Display
 
-- `UiPageHeader`: page or section header
-- `UiScrollBox`: scrollable container
-- `UiTransition`: transition wrapper
-- `UiDate`: formatted date display
-
-## Tables
-
-- `UiTable`: table root
-- `UiTableColumn`: table column declaration
+- [`UiAvatar`](./profiles/UiAvatar.yml): avatar
+- [`UiAvatarList`](./profiles/UiAvatarList.yml): avatar list
+- [`UiDate`](./profiles/UiDate.yml): formatted date display
+- [`UiImage`](./profiles/UiImage.yml): image display
+- [`UiTable`](./profiles/UiTable.yml): table root
+- [`UiTableColumn`](./profiles/UiTableColumn.yml): table column declaration
+- [`UiYandexMap`](./profiles/UiYandexMap.yml): Yandex map component
 
 ## Helpers
 

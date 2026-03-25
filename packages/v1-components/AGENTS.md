@@ -122,3 +122,5 @@ const save = () => {}
   [`/packages/v1-components/docs/README.md`](/Users/knigor/Desktop/Work/Embed-UI/embed-ui/packages/v1-components/docs/README.md)
 - Machine-oriented package summary:
   [`/packages/v1-components/docs/AI.md`](/Users/knigor/Desktop/Work/Embed-UI/embed-ui/packages/v1-components/docs/AI.md)
+- Component profiles:
+  [`/packages/v1-components/docs/PROFILES.md`](/Users/knigor/Desktop/Work/Embed-UI/embed-ui/packages/v1-components/docs/PROFILES.md)

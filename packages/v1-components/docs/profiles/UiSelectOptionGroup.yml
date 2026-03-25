@@ -1,0 +1,30 @@
+component: UiSelectOptionGroup
+summary: >
+  UiSelectOptionGroup groups related UiSelectOption nodes under a shared label.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiSelectOptionGroup
+
+related_components:
+  - UiSelect
+  - UiSelectOption
+
+use_when:
+  - You need grouped select options.
+
+avoid_when:
+  - You only have a flat list of options.
+
+api:
+  key_props:
+    - name: label
+
+ai_notes:
+  do:
+    - Use to structure large option lists inside UiSelect.
+
+provenance:
+  implementation:
+    - src/remote/components/select/UiSelectOptionGroup.vue

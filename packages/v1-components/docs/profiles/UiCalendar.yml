@@ -1,0 +1,44 @@
+component: UiCalendar
+summary: >
+  UiCalendar is the date selection primitive behind date and date-range flows. It supports
+  single and range selection, multiple visual appearances, and locale-sensitive behavior.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiCalendar
+
+use_when:
+  - You need inline date selection.
+  - You need single-date or date-range picking without a textbox wrapper.
+
+avoid_when:
+  - You need the full textbox-plus-popper date picker flow.
+
+api:
+  key_props:
+    - name: value
+    - name: type
+    - name: appearance
+    - name: minDate
+    - name: maxDate
+    - name: locale
+
+behavior:
+  notes:
+    - Supports single and range selection.
+    - minDate and maxDate constrain selection.
+
+ai_notes:
+  do:
+    - Use UiCalendar when inline calendar selection is the actual UI.
+  avoid:
+    - Use UiDatePicker instead if users expect textbox plus popup behavior.
+
+provenance:
+  public_types:
+    - src/common/components/calendar.ts
+  implementation:
+    - src/remote/components/calendar.ts
+  docs:
+    - storybook/stories/UiCalendar.mdx

@@ -1,0 +1,35 @@
+component: UiModalWindowSurface
+summary: >
+  UiModalWindowSurface is the lower-level modal surface API behind modal window flows.
+  Use it when you need modal surface behavior with more explicit composition control.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiModalWindowSurface
+
+related_components:
+  - UiModalWindow
+
+use_when:
+  - You need explicit modal surface composition.
+  - You need modal surface behavior without the higher-level modal wrapper.
+
+avoid_when:
+  - You just need the regular centered modal API, use UiModalWindow instead.
+
+api:
+  key_props:
+    - name: opened
+    - name: closable
+    - name: appearance
+    - name: fullscreen
+    - name: responsive
+    - name: scrolling
+    - name: role
+
+provenance:
+  public_types:
+    - src/common/components/modal-window.ts
+  implementation:
+    - src/remote/components/modal-window-surface.ts

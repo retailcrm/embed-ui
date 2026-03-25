@@ -1,9 +1,9 @@
 # AI Context For `@retailcrm/embed-ui-v1-components`
 
-Этот файл предназначен для ИИ-ассистентов и автоматизаций, которые используют установленный пакет
-`@retailcrm/embed-ui-v1-components` в другом проекте.
+This file is intended for AI assistants and automations that use the installed
+`@retailcrm/embed-ui-v1-components` package inside another project.
 
-Ниже описан только публичный контракт пакета, без привязки к внутренней структуре репозитория.
+Only the public package contract is described below, without depending on the repository's internal structure.
 
 ## Package Identity
 
@@ -15,46 +15,27 @@
   - `@retailcrm/embed-ui-v1-components/host`
   - `@retailcrm/embed-ui-v1-components/assets/...`
 
-## How To Choose An Entrypoint
-
-- Use `@retailcrm/embed-ui-v1-components/remote` for extension UI code.
-- Use `@retailcrm/embed-ui-v1-components/host` only if your application is the runtime side that renders or integrates the component layer.
-- Use `@retailcrm/embed-ui-v1-components/assets/...` for icons and static assets shipped with the package.
-
-If you are not sure which entrypoint to use, default to `remote`.
-
 ## Safe Usage Rules
 
 - Import only from documented public entrypoints.
-- Do not import from `src/*` or any repository-internal paths.
-- Do not rely on repository layout, Storybook internals or implementation details.
+- Do not import from `src/*`, `dist/*`, or repository-internal files.
 - Treat `remote` as the default public surface for extension authors.
 - Treat `host` as a specialized public surface for runtime-side integrations.
+- If a requested capability is not present in public exports, say that directly instead of suggesting internal imports.
 
-## Public API Areas
+## Reading Strategy For AI
 
-The package publicly exposes:
+When generating UI code, use this order:
 
-- form and selection components:
-  `UiTextbox`, `UiCheckbox`, `UiRadio`, `UiSwitch`, `UiSlider`, `UiNumberStepper`,
-  `UiSelect`, `UiSelectOption`, `UiSelectOptionGroup`, `UiDatePicker`, `UiTimePicker`, `UiCalendar`
-- structure and layout:
-  `UiField`, `UiPageHeader`, `UiCollapse`, `UiCollapseBox`, `UiScrollBox`
-- actions and navigation:
-  `UiButton`, `UiAddButton`, `UiCopyButton`, `UiToolbarButton`, `UiToolbarLink`, `UiLink`,
-  `UiMenuItem`, `UiMenuItemGroup`
-- feedback and overlays:
-  `UiAlert`, `UiError`, `UiInfobox`, `UiLoader`, `UiTooltip`, `UiPopper`,
-  `UiModalWindow`, `UiModalWindowSurface`, `UiModalSidebar`
-- content and data display:
-  `UiAvatar`, `UiAvatarList`, `UiDate`, `UiImage`, `UiTable`, `UiTableColumn`,
-  `UiTag`, `UiYandexMap`, `UiTransition`
-- helpers:
-  `usePreview`, `ImageWorkersKey`, `formatDate`, `formatDateTime`, `formatTime`
+1. read [`COMPONENTS.md`](./COMPONENTS.md) to identify candidate components;
+2. open a detailed profile from [`PROFILES.md`](./PROFILES.md) if one exists;
+3. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
+4. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
+5. if no profile exists yet, fall back to Storybook docs and public type declarations, and state any inference explicitly.
 
-## Default Recommendation For AI
+## Default Recommendation For Common Forms
 
-When generating extension code, prefer imports like:
+When building a basic form or settings screen, start from patterns like:
 
 ```ts
 import {
@@ -66,10 +47,57 @@ import {
 } from '@retailcrm/embed-ui-v1-components/remote'
 ```
 
-If a requested capability is not available through public package exports, state that directly instead of suggesting internal imports.
+Typical compositions:
+
+- `UiField` + `UiTextbox`
+- `UiField` + `UiSelect`
+- `UiPageHeader` + `UiButton`
+- `UiSelect` + `UiSelectOption`
+
+## What Codex Needs In A Good Component Profile
+
+The most useful format for Codex is a component profile that explicitly answers:
+
+- when to use the component and when not to use it;
+- which imports are public and safe;
+- which props, emits, slots, and `v-model` pairs actually matter in practice;
+- what the rendered shape looks like conceptually;
+- how the component behaves in disabled, readonly, invalid, empty, opened, and focused states;
+- how it composes with neighboring components;
+- which assumptions are safe, and which are merely current implementation details.
+
+That schema is documented in [`FORMAT.md`](./FORMAT.md).
+
+## Important Boundary About DOM And CSS
+
+Profiles may describe current host DOM shape and root classes so that AI can reason about geometry,
+states, and composition more accurately.
+
+However, extension code should not rely on `.ui-v1-*` classes as a stable public styling contract unless
+the package explicitly documents that contract.
+
+The preferred styling signal is:
+
+1. props such as `size`, `appearance`, `outlined`, or `variant`;
+2. documented CSS variables from profile `styling.css_variables`;
+3. descriptive classes only for debugging or narrow local integrations.
+
+## Current High-Signal Profiles
+
+- [`UiField`](./profiles/UiField.yml)
+- [`UiTextbox`](./profiles/UiTextbox.yml)
+- [`UiButton`](./profiles/UiButton.yml)
+- [`UiPageHeader`](./profiles/UiPageHeader.yml)
+- [`UiSelect`](./profiles/UiSelect.yml)
+- [`UiPopper`](./profiles/UiPopper.yml)
+- [`UiPopperConnector`](./profiles/UiPopperConnector.yml)
+- [`UiPopperTarget`](./profiles/UiPopperTarget.yml)
 
 ## Related Public Docs
 
-- [`README.md`](../README.md)
+- [`README.md`](./README.md)
 - [`COMPONENTS.md`](./COMPONENTS.md)
+- [`FORMAT.md`](./FORMAT.md)
+- [`STYLING.md`](./STYLING.md)
+- [`AUTOMATION.md`](./AUTOMATION.md)
 - [`../AGENTS.md`](../AGENTS.md)

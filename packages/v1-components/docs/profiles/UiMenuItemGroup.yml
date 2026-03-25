@@ -1,0 +1,42 @@
+component: UiMenuItemGroup
+summary: >
+  UiMenuItemGroup groups related menu items and exposes dedicated zones for group label
+  and quantity metadata.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiMenuItemGroup
+
+related_components:
+  - UiMenuItem
+
+use_when:
+  - You need several menu items under one group heading.
+  - You need group label or quantity metadata.
+
+avoid_when:
+  - You have only one item and no group semantics.
+
+api:
+  slots:
+    - name: default
+      zone: group-body
+      creates: Main group content.
+    - name: option
+      zone: option-list
+      creates: Explicit option area for grouped items.
+    - name: label
+      zone: group-label
+      creates: Group heading area.
+    - name: quantity
+      zone: group-meta
+      creates: Group quantity or meta area.
+
+ai_notes:
+  do:
+    - Use for grouped menu structure instead of manual heading-plus-list markup.
+
+provenance:
+  implementation:
+    - src/remote/components/menu.ts
