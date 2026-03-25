@@ -1,0 +1,44 @@
+component: UiAvatar
+summary: >
+  UiAvatar renders a user or entity avatar with optional name, status, and link semantics.
+  It is meant for compact identity display rather than generic image rendering.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiAvatar
+
+use_when:
+  - You need a compact identity marker for a user or contact.
+  - You need avatar display with optional status.
+
+avoid_when:
+  - You need a generic content image.
+  - You need a large media block.
+
+api:
+  key_props:
+    - name: src
+    - name: name
+    - name: status
+    - name: size
+    - name: href
+
+behavior:
+  notes:
+    - Can render linked avatar behavior when href is provided.
+    - Name is useful as fallback identity information.
+
+ai_notes:
+  do:
+    - Use UiAvatar for identity display, not for general media.
+  avoid:
+    - Do not use it where UiImage is the better semantic fit.
+
+provenance:
+  public_types:
+    - src/common/components/avatar.ts
+  implementation:
+    - src/remote/components/avatar.ts
+  docs:
+    - storybook/stories/UiAvatar.mdx

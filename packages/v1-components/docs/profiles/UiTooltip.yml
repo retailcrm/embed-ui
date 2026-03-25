@@ -1,0 +1,39 @@
+component: UiTooltip
+summary: >
+  UiTooltip is the tooltip-specialized floating layer built on top of popper mechanics.
+  Use it for compact helper content anchored to one target.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTooltip
+
+related_components:
+  - UiPopper
+  - UiPopperConnector
+  - UiPopperTarget
+
+use_when:
+  - You need compact helper text or tooltip content.
+
+avoid_when:
+  - You need a dropdown or rich popup layout.
+
+api:
+  key_props:
+    - name: visible
+    - name: placement
+    - name: targetTriggers
+    - name: popperTriggers
+
+ai_notes:
+  do:
+    - Use UiTooltip for tooltip semantics and UiPopper for lower-level floating behavior.
+
+provenance:
+  public_types:
+    - src/common/components/popper.ts
+  implementation:
+    - src/remote/components/tooltip.ts
+  docs:
+    - storybook/stories/UiTooltip.mdx

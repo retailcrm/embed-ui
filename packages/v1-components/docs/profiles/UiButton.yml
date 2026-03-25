@@ -1,0 +1,231 @@
+component: UiButton
+summary: >
+  UiButton is the main action component in the library. It covers primary, secondary,
+  tertiary, and outlined use cases, can render as either a button or an anchor,
+  and adapts well to text-plus-icon and icon-only content.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiButton
+
+use_when:
+  - You need a primary or secondary action in a form or screen.
+  - You need an inline action in a header, modal, infobox, or toolbar-like area.
+  - You need a clickable element that follows the standard visual language.
+  - You need a link that should read visually as a button.
+
+avoid_when:
+  - You need an inline text link in copy, use UiLink instead.
+  - You need toolbar-specific semantics, use UiToolbarButton or UiToolbarLink instead.
+  - You need a toggle with its own state model, not a simple action.
+
+api:
+  key_props:
+    - name: appearance
+      values:
+        - primary
+        - secondary
+        - tertiary
+        - outlined
+      notes: Defines visual priority.
+    - name: variant
+      values:
+        - default
+        - success
+        - danger
+      notes: Defines semantic color treatment.
+    - name: size
+      values:
+        - lg
+        - md
+        - sm
+        - xs
+      notes: Affects height and paddings.
+    - name: href
+      notes: If present, the root renders as an anchor.
+    - name: disabled
+      notes: Disables interaction and enables disabled styling.
+  props:
+    - name: type
+      notes: Native button type for button shape.
+    - name: active
+      notes: Enables pressed-like visual state.
+    - name: locked
+      notes: Separate locked state distinct from disabled.
+  slots:
+    - name: default
+      zone: content
+      creates: The full inner content of the button.
+      accepts:
+        recommended:
+          - text
+          - text plus one icon
+          - icon component
+          - svg
+        avoid:
+          - block layout containers
+          - nested buttons or links
+          - long rich markup trees
+      layout_effect: Text and icon nodes are normalized into inner spans; icon-only content can produce a square button.
+      notes: Main button content, usually text plus optional icons.
+  methods:
+    - name: click
+      notes: Triggers a click programmatically.
+    - name: focus
+      notes: Focuses the button or anchor root.
+    - name: blur
+      notes: Removes focus.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    This internal DOM description is useful for reasoning, not for styling against implementation details.
+  root:
+    button_shape: button.ui-v1-button
+    link_shape: a.ui-v1-button
+  zones:
+    - .ui-v1-button__content
+    - text span
+    - icon span(s)
+  state_classes:
+    - .ui-v1-button_active
+    - .ui-v1-button_disabled
+    - .ui-v1-button_locked
+
+geometry:
+  layout: inline-block
+  notes:
+    - Size controls dimensions and internal paddings.
+    - Icon-only content leads to a square-like layout through state classes.
+    - The component fits naturally into inline rows, header actions, and compact action zones.
+
+styling:
+  notes:
+    - Props like appearance, variant, size, active, locked, and disabled are the primary styling API.
+    - Internal classes are useful for reasoning and debugging, not a guaranteed selector contract.
+    - The component uses local CSS variables internally, but no dedicated external theme variable set is documented for consumers.
+  root_classes:
+    - .ui-v1-button
+  state_classes:
+    - .ui-v1-button_primary
+    - .ui-v1-button_secondary
+    - .ui-v1-button_tertiary
+    - .ui-v1-button_outlined
+    - .ui-v1-button_success
+    - .ui-v1-button_danger
+    - .ui-v1-button_active
+    - .ui-v1-button_disabled
+    - .ui-v1-button_locked
+    - .ui-v1-button_filled
+    - .ui-v1-button_square
+    - .ui-v1-button_has-leading-icon
+    - .ui-v1-button_has-trailing-icon
+    - .ui-v1-button_lg
+    - .ui-v1-button_md
+    - .ui-v1-button_sm
+    - .ui-v1-button_xs
+  zones:
+    - .ui-v1-button__content
+    - .ui-v1-button__icon
+    - .ui-v1-button__text
+  css_variables:
+    internal_layout_variables:
+      - name: --text-color
+        effect: Current text and icon color.
+      - name: --background-color
+        effect: Current background color for appearance variants.
+      - name: --background-color-active
+        effect: Active background color for variants that use it.
+      - name: --background-color-disabled
+        effect: Disabled background color for variants that use it.
+      - name: --background-image
+        effect: Gradient background for appearances that use it.
+      - name: --border-color-active
+        effect: Active border color in tertiary mode.
+      - name: --border-color-hover
+        effect: Hover border color in tertiary mode.
+      - name: --outlined-color-main
+        effect: Main outline and hover-fill color in outlined mode.
+      - name: --outlined-color-reverse
+        effect: Text color after outlined hover or active inversion.
+  typography:
+    size_variants:
+      - name: lg
+        mixin: h4-accent
+        size: 18px
+        line_height: 28px
+        weight: 500
+      - name: md
+        mixin: text-regular-accent
+        size: 16px
+        line_height: 24px
+        weight: 500
+      - name: sm
+        mixin: text-small-accent
+        size: 14px
+        line_height: 20px
+        weight: 500
+      - name: xs
+        mixin: text-tiny-accent
+        size: 12px
+        line_height: 14px
+        weight: 500
+    notes:
+      - Primary buttons explicitly use medium-like weight.
+      - Outlined buttons raise weight further for stronger label contrast.
+
+behavior:
+  states:
+    - name: appearance
+      notes: Selects the base visual priority.
+    - name: variant
+      notes: Changes semantic color without changing component type.
+    - name: active
+      notes: Enables pressed-like styling.
+    - name: disabled
+      notes: Disables interaction and native button behavior.
+    - name: locked
+      notes: Enables the separate locked state.
+  notes:
+    - If href is present, the component becomes a link-shaped action.
+
+accessibility:
+  notes:
+    - Button shape uses native button semantics.
+    - Anchor shape uses native anchor semantics.
+    - If icons are present, text labeling should remain understandable.
+
+composition:
+  works_well_with:
+    - UiPageHeader actions
+    - UiField
+    - UiInfobox
+    - modal actions
+
+examples:
+  - title: Dangerous secondary action
+    goal: Build a secondary destructive action.
+    code: |
+      <UiButton appearance="secondary" variant="danger">
+        <IconDelete aria-hidden="true" />
+        Delete
+      </UiButton>
+
+ai_notes:
+  do:
+    - Start with appearance=primary for the main CTA.
+    - Use secondary or tertiary for neighboring actions near titles.
+  avoid:
+    - Do not replace UiButton with UiLink when the action should read as a button.
+    - Do not use UiButton for regular inline text navigation.
+
+provenance:
+  public_types:
+    - src/common/components/button.ts
+  implementation:
+    - src/host/components/button/UiButton.vue
+  styles:
+    - src/host/components/button/button.less
+  docs:
+    - storybook/stories/UiButton.mdx

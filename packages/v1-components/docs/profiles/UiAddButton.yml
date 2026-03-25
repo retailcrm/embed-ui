@@ -1,0 +1,53 @@
+component: UiAddButton
+summary: >
+  UiAddButton is an action-first button for add or create flows. It is close to UiButton,
+  but tuned for "create another item" scenarios and supports small descriptive additions.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiAddButton
+
+related_components:
+  - UiButton
+  - UiToolbarButton
+
+use_when:
+  - You need a dedicated create or add action.
+  - You need a compact add CTA with optional extra description.
+
+avoid_when:
+  - You need a regular text link.
+  - You need a generic button without add semantics.
+
+api:
+  key_props:
+    - name: color
+    - name: small
+    - name: disabled
+    - name: height
+  slots:
+    - name: icon
+      zone: leading-icon
+      creates: Leading icon area for the add action.
+    - name: description
+      zone: secondary-copy
+      creates: Optional secondary description near the main label.
+
+behavior:
+  notes:
+    - Behaves like a clickable add action with standard button focus and click semantics.
+
+ai_notes:
+  do:
+    - Use for create and add flows rather than generic submit actions.
+  avoid:
+    - Do not replace a plain UiButton unless the add semantics are intentional.
+
+provenance:
+  public_types:
+    - src/common/components/add-button.ts
+  implementation:
+    - src/remote/components/add-button.ts
+  docs:
+    - storybook/stories/UiAddButton.mdx

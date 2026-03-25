@@ -1,0 +1,116 @@
+component: UiPopperTarget
+summary: >
+  UiPopperTarget is the target-side wrapper that registers a DOM element in popper context.
+  A good mental model is "this node is the anchor", not "this is a visual layout wrapper".
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiPopperTarget
+
+related_components:
+  - UiPopper
+  - UiPopperConnector
+  - UiSelect
+  - UiTooltip
+
+use_when:
+  - You need to explicitly mark the anchor element for UiPopper or a tooltip.
+  - You need to wrap a trigger and register it as the anchor in shared popper context.
+  - You need the floating layer to anchor to only part of a larger layout.
+
+avoid_when:
+  - You need a styling-only wrapper.
+  - Target ref is already passed manually and the connector model is not used.
+  - The trigger already exposes a suitable root element through UiPopperConnector, for example UiButton.
+
+api:
+  props:
+    - name: tag
+      notes: Wrapper tag name. Default is div.
+  slots:
+    - name: default
+      zone: target content
+      creates: The explicit anchor wrapper for the floating layer.
+      accepts:
+        recommended:
+          - one trigger node
+          - one title wrapper
+          - one compact anchor area
+        avoid:
+          - large unrelated layout trees
+          - content that should not define the anchor bounds
+          - multiple disconnected anchor areas
+      layout_effect: The wrapper becomes the anchor bounds used by popper positioning.
+      notes: Put the trigger or anchor node inside this slot.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    The component renders a configurable wrapper tag and stores its element ref in popper context.
+    It does not add complex UI logic on its own.
+
+geometry:
+  notes:
+    - Layout depends on the chosen tag and its children.
+    - Its main purpose is to provide the correct anchor ref for the popper.
+
+behavior:
+  notes:
+    - On mount and update, it forwards the current element ref into popper context.
+    - It is the target-side part of the UiPopperConnector + UiPopperTarget + UiPopper pattern.
+    - It is optional, not mandatory.
+    - Use it when you need an explicit wrapper as the anchor; skip it when connector already receives the right element.
+
+accessibility:
+  notes:
+    - It does not create ARIA semantics. Those should come from the inner trigger.
+
+composition:
+  works_well_with:
+    - UiPopperConnector
+    - UiPopper
+    - UiTooltip
+  patterns:
+    - title: Dedicated anchor wrapper
+      notes: Use a separate target wrapper when the floating layer should anchor to only part of a layout.
+    - title: Not always needed
+      notes: Connector-only composition is enough when the trigger already exposes its root element.
+
+examples:
+  - title: Tooltip anchor
+    goal: Anchor a floating layer to a specific title or button wrapper.
+    code: |
+      <UiPopperConnector>
+        <UiPopperTarget tag="span">
+          <span>Title</span>
+        </UiPopperTarget>
+
+        <UiPopper :visible="open">
+          Tooltip
+        </UiPopper>
+      </UiPopperConnector>
+  - title: Explicit title-only anchor
+    goal: Bind the floating layer to a title wrapper instead of the whole row.
+    code: |
+      <UiPopperConnector>
+        <UiPopperTarget tag="span">
+          <span class="header-title">Title</span>
+        </UiPopperTarget>
+
+        <UiPopper :visible="open">
+          Tooltip
+        </UiPopper>
+      </UiPopperConnector>
+
+ai_notes:
+  do:
+    - Use UiPopperTarget when the anchor should be limited to a specific part of the layout.
+    - Use it intentionally, not by default.
+  avoid:
+    - Do not treat the wrapper as decorative only; it affects what the floating layer anchors to.
+    - Do not wrap every UiButton or similar trigger with UiPopperTarget if connector already gives the correct anchor.
+
+provenance:
+  implementation:
+    - src/host/components/popper/UiPopperTarget.vue

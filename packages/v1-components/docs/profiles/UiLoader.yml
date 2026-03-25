@@ -1,0 +1,34 @@
+component: UiLoader
+summary: >
+  UiLoader displays loading progress or waiting state. It can be used inline or as an overlay.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiLoader
+
+use_when:
+  - You need a visible loading indicator.
+  - You need inline or overlay loading state.
+
+avoid_when:
+  - You need skeleton content rather than a spinner-like loader.
+
+api:
+  key_props:
+    - name: diameter
+    - name: thickness
+    - name: fixed
+    - name: overlay
+
+ai_notes:
+  do:
+    - Use overlay or fixed only when the loader should escape normal inline flow.
+
+provenance:
+  public_types:
+    - src/common/components/loader.ts
+  implementation:
+    - src/remote/components/loader.ts
+  docs:
+    - storybook/stories/UiLoader.mdx

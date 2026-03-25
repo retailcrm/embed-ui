@@ -1,0 +1,28 @@
+component: UiError
+summary: >
+  UiError is a compact error-state component for short error messages or fallback states.
+  It is intended for concise inline error display rather than large alert copy.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiError
+
+use_when:
+  - You need a compact error block.
+  - You need inline error text with standard styling.
+
+avoid_when:
+  - You need a richer feedback block, use UiAlert or UiInfobox instead.
+
+ai_notes:
+  do:
+    - Use for compact error presentation.
+
+provenance:
+  public_types:
+    - src/common/components/error.ts
+  implementation:
+    - src/remote/components/error.ts
+  docs:
+    - storybook/stories/UiError.mdx

@@ -1,0 +1,34 @@
+component: UiRadio
+summary: >
+  UiRadio is the single-choice selection control for exclusive option sets.
+  It is the radio-style counterpart to UiCheckbox.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiRadio
+
+use_when:
+  - You need one selected value from a fixed set.
+
+avoid_when:
+  - You need multiple independent selections, use UiCheckbox instead.
+
+api:
+  key_props:
+    - name: model
+    - name: value
+    - name: required
+    - name: disabled
+  methods:
+    - name: click
+    - name: focus
+    - name: blur
+
+provenance:
+  public_types:
+    - src/common/components/radio.ts
+  implementation:
+    - src/remote/components/radio.ts
+  docs:
+    - storybook/stories/UiRadio.mdx

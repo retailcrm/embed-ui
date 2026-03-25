@@ -1,0 +1,34 @@
+component: UiDate
+summary: >
+  UiDate is a display component for formatted date or date-time output. It is for presenting
+  date values, not for editing them.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiDate
+
+use_when:
+  - You need to display a date value.
+  - You need optional time display with locale-aware formatting.
+
+avoid_when:
+  - You need editable date input.
+
+api:
+  key_props:
+    - name: date
+    - name: withTime
+    - name: locale
+
+ai_notes:
+  do:
+    - Use UiDate for formatted output and UiDatePicker for input.
+
+provenance:
+  public_types:
+    - src/common/components/date.ts
+  implementation:
+    - src/remote/components/date.ts
+  docs:
+    - storybook/stories/UiDate.mdx

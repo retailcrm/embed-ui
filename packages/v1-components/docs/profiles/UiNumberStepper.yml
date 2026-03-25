@@ -1,0 +1,48 @@
+component: UiNumberStepper
+summary: >
+  UiNumberStepper is a numeric input with increase and decrease controls. It is built for
+  constrained numeric entry where arrowing and step-based changes matter.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiNumberStepper
+
+related_components:
+  - UiTextbox
+
+use_when:
+  - You need numeric input with explicit step controls.
+  - You need range constraints and nullable numeric state.
+
+avoid_when:
+  - You need plain text or decimal input without stepper controls.
+
+api:
+  key_props:
+    - name: value
+    - name: min
+    - name: max
+    - name: step
+    - name: decimals
+    - name: clamp
+    - name: nullable
+    - name: direction
+  methods:
+    - name: focus
+    - name: blur
+    - name: increase
+    - name: decrease
+
+behavior:
+  notes:
+    - Can clamp values into range.
+    - Supports horizontal and vertical direction.
+
+provenance:
+  public_types:
+    - src/common/components/number-stepper.ts
+  implementation:
+    - src/remote/components/number-stepper.ts
+  docs:
+    - storybook/stories/UiNumberStepper.mdx

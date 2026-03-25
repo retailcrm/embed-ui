@@ -1,0 +1,21 @@
+component: UiTransition
+summary: >
+  UiTransition is a transition wrapper for animated mount, unmount, and visibility flows.
+  Use it to express motion without switching to raw transition markup.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTransition
+
+use_when:
+  - You need transition behavior around content.
+
+avoid_when:
+  - You need static content with no transition behavior.
+
+provenance:
+  public_types:
+    - src/common/components/transition.ts
+  implementation:
+    - src/remote/components/transition.ts

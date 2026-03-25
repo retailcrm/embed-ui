@@ -1,0 +1,28 @@
+component: UiToolbarLink
+summary: >
+  UiToolbarLink is a compact toolbar-oriented link. It is the link counterpart to UiToolbarButton.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiToolbarLink
+
+use_when:
+  - You need a compact link in a toolbar area.
+
+avoid_when:
+  - You need a regular inline content link.
+
+api:
+  emits:
+    - name: click
+    - name: focus
+    - name: blur
+
+provenance:
+  public_types:
+    - src/common/components/toolbar-link.ts
+  implementation:
+    - src/remote/components/toolbar-link.ts
+  docs:
+    - storybook/stories/UiToolbarLink.mdx

@@ -1,0 +1,34 @@
+component: UiSlider
+summary: >
+  UiSlider is a range-selection control for single values or ranges on a numeric track.
+  It supports single-handle and range-handle modes.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiSlider
+
+use_when:
+  - You need compact ranged numeric selection.
+  - You need one or two draggable handles on a track.
+
+avoid_when:
+  - You need precise text entry.
+
+api:
+  key_props:
+    - name: type
+    - name: value
+    - name: min
+    - name: max
+    - name: labelled
+  emits:
+    - name: update:value
+
+provenance:
+  public_types:
+    - src/common/components/slider.ts
+  implementation:
+    - src/remote/components/slider.ts
+  docs:
+    - storybook/stories/UiSlider.mdx

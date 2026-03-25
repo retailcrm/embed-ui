@@ -1,0 +1,33 @@
+component: UiSwitch
+summary: >
+  UiSwitch is a compact boolean toggle control. It is the most concise choice for on or off state
+  when checkbox semantics would feel visually heavy.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiSwitch
+
+use_when:
+  - You need a compact on or off toggle.
+
+avoid_when:
+  - You need checkbox-group semantics.
+
+api:
+  key_props:
+    - name: value
+    - name: square
+    - name: disabled
+  methods:
+    - name: click
+    - name: focus
+    - name: blur
+
+provenance:
+  public_types:
+    - src/common/components/switch.ts
+  implementation:
+    - src/remote/components/switch.ts
+  docs:
+    - storybook/stories/UiSwitch.mdx

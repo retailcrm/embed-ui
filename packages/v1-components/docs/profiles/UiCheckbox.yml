@@ -1,0 +1,49 @@
+component: UiCheckbox
+summary: >
+  UiCheckbox is a boolean or set-membership control. It supports single boolean-like usage
+  as well as model-plus-value patterns for checkbox groups.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiCheckbox
+
+use_when:
+  - You need a yes or no control.
+  - You need one value inside a checkbox group model.
+
+avoid_when:
+  - You need exclusive single choice, use UiRadio instead.
+  - You need a more compact toggle-like control, use UiSwitch instead.
+
+api:
+  key_props:
+    - name: model
+    - name: value
+    - name: indeterminate
+    - name: valueOfTruthy
+    - name: valueOfFalsy
+    - name: disabled
+  methods:
+    - name: click
+    - name: focus
+    - name: blur
+
+behavior:
+  notes:
+    - model plus value supports group-style selection.
+    - indeterminate is useful for partial selection states.
+
+ai_notes:
+  do:
+    - Use for boolean choice or checkbox-group membership.
+  avoid:
+    - Do not use for mutually exclusive options.
+
+provenance:
+  public_types:
+    - src/common/components/checkbox.ts
+  implementation:
+    - src/remote/components/checkbox.ts
+  docs:
+    - storybook/stories/UiCheckbox.mdx

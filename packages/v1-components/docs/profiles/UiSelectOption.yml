@@ -1,0 +1,37 @@
+component: UiSelectOption
+summary: >
+  UiSelectOption is the base selectable child of UiSelect. It represents one option node
+  in the select option tree.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiSelectOption
+
+related_components:
+  - UiSelect
+  - UiSelectOptionGroup
+
+use_when:
+  - You need one option inside UiSelect.
+
+avoid_when:
+  - You need free layout content inside a select dropdown.
+
+api:
+  key_props:
+    - name: value
+    - name: label
+    - name: description
+    - name: disabled
+    - name: counter
+    - name: accent
+
+ai_notes:
+  do:
+    - Use as the default child node of UiSelect.
+
+provenance:
+  implementation:
+    - src/remote/components/select/parts.ts
+    - src/remote/components/select/UiSelectOption.vue

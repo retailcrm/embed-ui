@@ -1,0 +1,36 @@
+component: UiCollapse
+summary: >
+  UiCollapse is a low-level show and hide container for expandable content. It controls
+  whether content is hidden or disposed and how the transition behaves.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiCollapse
+
+use_when:
+  - You need conditional expandable content.
+  - You need to choose between hidden and disposed collapsed states.
+
+avoid_when:
+  - You need a ready-to-use disclosure box with header UI, use UiCollapseBox instead.
+
+api:
+  key_props:
+    - name: expanded
+    - name: collapseBehaviour
+    - name: duration
+
+ai_notes:
+  do:
+    - Use UiCollapse as a primitive for expandable content regions.
+  avoid:
+    - Do not use it when a full disclosure component is the actual need.
+
+provenance:
+  public_types:
+    - src/common/components/collapse.ts
+  implementation:
+    - src/remote/components/collapse.ts
+  docs:
+    - storybook/stories/UiCollapse.mdx

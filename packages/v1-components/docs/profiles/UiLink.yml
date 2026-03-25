@@ -1,0 +1,47 @@
+component: UiLink
+summary: >
+  UiLink is the main text-link component for inline navigation and inline actions that should
+  still read as links rather than buttons.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiLink
+
+use_when:
+  - You need inline navigation or linked text.
+  - You need a compact action that should still read as a link.
+
+avoid_when:
+  - You need button semantics, use UiButton instead.
+
+api:
+  key_props:
+    - name: href
+    - name: external
+    - name: appearance
+    - name: size
+    - name: accent
+    - name: ellipsis
+  slots:
+    - name: icon
+      zone: inline-icon
+      creates: Optional icon zone inside the link.
+  emits:
+    - name: click
+    - name: focus
+    - name: blur
+
+ai_notes:
+  do:
+    - Use UiLink for real link semantics and inline navigation.
+  avoid:
+    - Do not use UiLink where the action should read as a button.
+
+provenance:
+  public_types:
+    - src/common/components/link.ts
+  implementation:
+    - src/remote/components/link.ts
+  docs:
+    - storybook/stories/UiLink.mdx

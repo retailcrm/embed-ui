@@ -1,0 +1,37 @@
+component: UiTag
+summary: >
+  UiTag is a compact label or status pill. It can be interactive, removable, pinned, or visually saturated.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTag
+
+use_when:
+  - You need a short status or label pill.
+  - You need removable or interactive tags.
+
+avoid_when:
+  - You need a full button or link.
+
+api:
+  key_props:
+    - name: size
+    - name: pinned
+    - name: removable
+    - name: interactive
+    - name: saturated
+    - name: background
+  emits:
+    - name: click
+    - name: focus
+    - name: blur
+    - name: remove
+
+provenance:
+  public_types:
+    - src/common/components/tag.ts
+  implementation:
+    - src/remote/components/tag.ts
+  docs:
+    - storybook/stories/UiTag.mdx

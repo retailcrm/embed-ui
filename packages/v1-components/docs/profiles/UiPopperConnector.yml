@@ -1,0 +1,113 @@
+component: UiPopperConnector
+summary: >
+  UiPopperConnector is a lightweight wrapper that gives target-side and popper-side parts
+  a shared target context. It has almost no UI meaning on its own, but is often required
+  for correct target-driven floating behavior.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiPopperConnector
+
+related_components:
+  - UiPopper
+  - UiPopperTarget
+  - UiSelect
+  - UiTooltip
+
+use_when:
+  - You need UiPopper and UiPopperTarget to share the same target context.
+  - You need the standard target-driven composition for a dropdown or tooltip.
+  - Your trigger already exposes its root element into connector context, for example UiButton.
+
+avoid_when:
+  - You need a generic visual wrapper without popper mechanics.
+  - Target is passed manually and the shared connector model is not used.
+
+api:
+  slots:
+    - name: default
+      zone: shared popper composition
+      creates: Shared target context for target-side and popper-side children.
+      accepts:
+        recommended:
+          - UiPopperTarget plus UiPopper
+          - implicit anchor trigger plus UiPopper
+          - tooltip-like target and floating content pairs
+        avoid:
+          - styling-only wrappers
+          - unrelated layout content
+          - children that do not participate in target or popper flow
+      layout_effect: Usually no direct layout effect; mainly establishes shared anchor context.
+      notes: Place target and popper-related children here so they share one context.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    The connector exists mainly to provide target context. It is not a styled layout primitive.
+
+geometry:
+  notes:
+    - It usually has no meaningful layout behavior on its own.
+    - Treat it as a context wrapper, not as a visual block.
+
+behavior:
+  notes:
+    - Stores or forwards the shared target element reference.
+    - Lets UiPopperTarget and UiPopper use the same anchor context.
+    - If a child component already exposes its root element into connector context, explicit UiPopperTarget may be unnecessary.
+    - UiButton is a practical example: inside UiPopperConnector it can act as the anchor without an extra UiPopperTarget wrapper.
+
+accessibility:
+  notes:
+    - Does not create ARIA semantics by itself.
+
+composition:
+  works_well_with:
+    - UiPopperTarget
+    - UiPopper
+    - UiTooltip
+    - UiSelect
+  patterns:
+    - title: Implicit anchor
+      notes: Connector alone is enough when the trigger already provides a stable root element.
+    - title: Explicit anchor
+      notes: Add UiPopperTarget only when the anchor must be limited to a specific wrapper or sub-area.
+
+examples:
+  - title: Shared target context
+    goal: Connect target and popper through one shared wrapper.
+    code: |
+      <UiPopperConnector>
+        <UiPopperTarget>
+          <button type="button">Open</button>
+        </UiPopperTarget>
+
+        <UiPopper :visible="open">
+          Content
+        </UiPopper>
+      </UiPopperConnector>
+  - title: Connector without explicit target
+    goal: Use a button as the implicit anchor.
+    code: |
+      <UiPopperConnector>
+        <UiButton appearance="secondary">
+          Open
+        </UiButton>
+
+        <UiPopper :visible="open">
+          Content
+        </UiPopper>
+      </UiPopperConnector>
+
+ai_notes:
+  do:
+    - Use UiPopperConnector when a higher-level component expects shared target context.
+    - Prefer connector-only composition when the trigger already exposes the correct root element.
+  avoid:
+    - Do not use it as a styling wrapper.
+    - Do not add UiPopperTarget automatically around every trigger.
+
+provenance:
+  implementation:
+    - src/host/components/popper/UiPopperConnector.vue

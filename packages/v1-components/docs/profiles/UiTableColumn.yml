@@ -1,0 +1,44 @@
+component: UiTableColumn
+summary: >
+  UiTableColumn declares one logical column inside UiTable. It carries label and sizing metadata
+  and defines how header labels and cells render.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableColumn
+
+related_components:
+  - UiTable
+
+use_when:
+  - You define columns for UiTable.
+
+avoid_when:
+  - You need standalone layout markup outside UiTable.
+
+api:
+  key_props:
+    - name: label
+    - name: width
+    - name: minWidth
+    - name: maxWidth
+    - name: align
+    - name: valign
+    - name: trim
+  slots:
+    - name: default
+      zone: cell
+      creates: Cell content.
+    - name: cell
+      zone: cell
+      creates: Explicit cell content.
+    - name: label
+      zone: header-label
+      creates: Header label content.
+
+provenance:
+  public_types:
+    - src/common/components/table.ts
+  implementation:
+    - src/remote/components/table/UiTableColumn.vue

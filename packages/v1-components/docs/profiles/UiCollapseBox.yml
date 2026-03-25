@@ -1,0 +1,47 @@
+component: UiCollapseBox
+summary: >
+  UiCollapseBox is a structured expandable container with built-in header, state handling,
+  and visual treatment. It is a higher-level companion to UiCollapse.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiCollapseBox
+
+related_components:
+  - UiCollapse
+  - UiCollapseGroup
+
+use_when:
+  - You need a ready-to-use collapsible box.
+  - You need grouped expandable sections with consistent visuals.
+
+avoid_when:
+  - You need a bare collapse primitive without box chrome.
+
+api:
+  key_props:
+    - name: expanded
+    - name: expandable
+    - name: collapsible
+    - name: toggleable
+    - name: disabled
+    - name: color
+
+behavior:
+  notes:
+    - Supports controlled expanded state and grouped interaction.
+
+ai_notes:
+  do:
+    - Use UiCollapseBox for structured disclosure UI.
+  avoid:
+    - Do not rebuild collapse header UI manually when this component already fits.
+
+provenance:
+  public_types:
+    - src/common/components/collapse-box.ts
+  implementation:
+    - src/remote/components/collapse-box.ts
+  docs:
+    - storybook/stories/UiCollapseBox.mdx
