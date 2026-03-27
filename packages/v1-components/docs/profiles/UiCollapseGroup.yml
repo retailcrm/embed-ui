@@ -1,0 +1,33 @@
+component: UiCollapseGroup
+summary: >
+  UiCollapseGroup coordinates several collapse boxes and tracks which box is active.
+  It is useful when multiple disclosures should behave as one grouped unit.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiCollapseGroup
+
+related_components:
+  - UiCollapseBox
+
+use_when:
+  - You need several collapse boxes to coordinate state.
+  - You need one active box pattern.
+
+avoid_when:
+  - You only have one collapsible section.
+
+api:
+  key_props:
+    - name: activeBoxId
+
+ai_notes:
+  do:
+    - Use with UiCollapseBox when grouped expansion matters.
+
+provenance:
+  public_types:
+    - src/common/components/collapse-box.ts
+  implementation:
+    - src/remote/components/collapse-box.ts

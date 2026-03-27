@@ -1,0 +1,41 @@
+component: UiInfobox
+summary: >
+  UiInfobox is a richer explanatory block for inline product, warning, or helper content.
+  It can be closable and expandable.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiInfobox
+
+use_when:
+  - You need a highlighted explanatory block.
+  - You need closable or expandable helper content.
+
+avoid_when:
+  - You need a one-line alert only.
+
+api:
+  key_props:
+    - name: title
+    - name: shown
+    - name: expanded
+    - name: expandable
+    - name: closable
+    - name: warning
+  methods:
+    - name: show
+    - name: hide
+    - name: toggle
+
+ai_notes:
+  do:
+    - Use UiInfobox for richer guidance blocks, not tiny alerts.
+
+provenance:
+  public_types:
+    - src/common/components/infobox.ts
+  implementation:
+    - src/remote/components/infobox.ts
+  docs:
+    - storybook/stories/UiInfobox.mdx

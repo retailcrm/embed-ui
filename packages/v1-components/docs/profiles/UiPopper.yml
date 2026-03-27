@@ -1,0 +1,205 @@
+component: UiPopper
+summary: >
+  UiPopper is the low-level floating layer used for tooltips, dropdowns, and popups.
+  It controls visibility, teleport container, positioning, and trigger logic, but is usually
+  consumed as part of a higher-level component rather than as a standalone content wrapper.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiPopper
+
+related_components:
+  - UiPopperConnector
+  - UiPopperTarget
+  - UiSelect
+  - UiTooltip
+
+use_when:
+  - You need a floating layer anchored to a target element.
+  - You need separate show and hide triggers for target and popper.
+  - You need a dropdown, tooltip, or contextual popup with placement control.
+
+avoid_when:
+  - You need a regular block in normal document flow.
+  - You need a high-level dropdown or tooltip and do not need low-level control.
+
+api:
+  key_props:
+    - name: visible
+      notes: Controls open state.
+    - name: target
+      notes: DOM target used for positioning.
+    - name: placement
+      notes: Controls side and alignment.
+    - name: targetTriggers
+      notes: Target-side trigger rules.
+    - name: popperTriggers
+      notes: Popper-side trigger rules.
+    - name: globalTriggers
+      notes: Global trigger rules such as outside click or escape.
+    - name: withArrow
+      notes: Adds an arrow element.
+  props:
+    - name: strategy
+      notes: Floating strategy such as absolute or fixed.
+    - name: container
+      notes: Teleport target, often body.
+    - name: disabled
+      notes: Disables floating behavior.
+    - name: delay
+      notes: Show or hide delay.
+    - name: detachTimeout
+      notes: Delay before detaching the layer.
+    - name: offset
+      notes: Floating layer offset.
+  slots:
+    - name: default
+      zone: floating content
+      creates: The floating content body rendered inside the popper layer.
+      accepts:
+        recommended:
+          - tooltip body
+          - menu or list content
+          - dropdown surface
+          - compact popup layout
+        avoid:
+          - full page layout
+          - content that relies on normal document flow
+          - unrelated anchor markup
+      layout_effect: Content is teleported into the floating layer and positioned relative to the active anchor.
+      notes: Content rendered inside the popper layer.
+  emits:
+    - name: update:visible
+      payload: boolean
+      notes: Main open-state update channel.
+    - name: show
+      payload: undefined
+      notes: Fired when the popper starts opening.
+    - name: shown
+      payload: undefined
+      notes: Fired when the popper is open.
+    - name: hide
+      payload: undefined
+      notes: Fired when the popper starts closing.
+    - name: hidden
+      payload: undefined
+      notes: Fired when the popper is closed.
+    - name: dispose
+      payload: undefined
+      notes: Fired when the layer is disposed.
+    - name: attached
+      payload: undefined
+      notes: Fired when the layer is attached to the DOM.
+
+rendered_structure:
+  descriptive_only: true
+  root: .ui-v1-popper
+  zones:
+    - .ui-v1-popper__arrow when withArrow=true
+    - .ui-v1-popper__content
+  notes: The popper is teleported into a container and lives outside the original layout tree.
+
+geometry:
+  layout: floating layer outside normal document flow
+  notes:
+    - Position is calculated relative to the target element.
+    - Container controls where the DOM node is teleported.
+    - Placement and floating options control side, alignment, and adaptation.
+
+styling:
+  notes:
+    - UiPopper is one of the main CSS-variable-driven primitives in the library.
+    - Prefer documented CSS variables over descendant selector overrides.
+    - Classes are mostly useful for debugging and understanding the floating surface structure.
+  root_classes:
+    - .ui-v1-popper
+  state_classes:
+    - .ui-v1-popper_hidden
+    - .ui-v1-popper_shown
+  zones:
+    - .ui-v1-popper__arrow
+    - .ui-v1-popper__content
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-popper-background
+        effect: Surface and arrow background color.
+      - name: --ui-v1-popper-roundings
+        effect: Surface corner radius.
+      - name: --ui-v1-popper-arrow-roundings
+        effect: Arrow corner radius.
+      - name: --ui-v1-popper-arrow-size
+        effect: Arrow square size before rotation.
+      - name: --ui-v1-popper-width
+        effect: Content width.
+      - name: --ui-v1-popper-width-min
+        effect: Minimum content width.
+      - name: --ui-v1-popper-width-max
+        effect: Maximum content width.
+      - name: --ui-v1-popper-height
+        effect: Content height.
+      - name: --ui-v1-popper-height-min
+        effect: Minimum content height.
+      - name: --ui-v1-popper-height-max
+        effect: Maximum content height.
+      - name: --ui-v1-popper-padding
+        effect: Inner content padding.
+      - name: --ui-v1-popper-z-index
+        effect: Layer stacking level.
+  typography:
+    default:
+      mixin: text-small
+      size: 14px
+      line_height: 20px
+      weight: 400
+
+behavior:
+  notes:
+    - Target-side and popper-side triggers are configured separately.
+    - The layer may remain open across hover or focus when configured that way.
+    - Outside interactions are handled through global trigger rules.
+
+accessibility:
+  notes:
+    - UiPopper itself does not define semantic role for its content.
+    - ARIA semantics should come from the higher-level component using it.
+
+composition:
+  works_well_with:
+    - UiPopperConnector
+    - UiPopperTarget
+    - UiTooltip
+    - UiSelect
+  patterns:
+    - title: Shared target context
+      notes: The target ref usually comes through UiPopperConnector and UiPopperTarget.
+
+examples:
+  - title: Mental model
+    goal: Understand the basic target plus floating content pattern.
+    code: |
+      <UiPopperConnector>
+        <UiPopperTarget>
+          <button type="button">Open</button>
+        </UiPopperTarget>
+
+        <UiPopper :visible="open">
+          Popup content
+        </UiPopper>
+      </UiPopperConnector>
+
+ai_notes:
+  do:
+    - Use UiPopper as low-level floating mechanics when higher-level components are not enough.
+    - Think in terms of target, triggers, and floating content as separate parts.
+  avoid:
+    - Do not treat UiPopper as a regular inline wrapper.
+    - Do not forget that it lives outside normal document flow.
+
+provenance:
+  public_types:
+    - src/common/components/popper.ts
+  implementation:
+    - src/host/components/popper/UiPopper.vue
+  styles:
+    - src/host/components/popper/popper.less

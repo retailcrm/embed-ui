@@ -1,0 +1,53 @@
+component: UiMenuItem
+summary: >
+  UiMenuItem is a structured menu row component with support for icons, avatar, description,
+  counters, and active or danger styling.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiMenuItem
+
+use_when:
+  - You need a menu row with structured content zones.
+  - You need icon, avatar, description, or counter inside one menu item.
+
+avoid_when:
+  - You need a plain inline link.
+
+api:
+  key_props:
+    - name: description
+    - name: counter
+    - name: active
+    - name: danger
+    - name: disabled
+    - name: size
+  slots:
+    - name: default
+      zone: main-label
+      creates: Main visible label area.
+    - name: avatar
+      zone: leading-avatar
+      creates: Leading avatar zone.
+    - name: leading-icon
+      zone: leading-icon
+      creates: Leading icon zone.
+    - name: description
+      zone: secondary-copy
+      creates: Secondary description area.
+    - name: trailing-icon
+      zone: trailing-icon
+      creates: Trailing icon zone.
+
+ai_notes:
+  do:
+    - Use structured slots instead of custom wrappers inside menu rows.
+
+provenance:
+  public_types:
+    - src/common/components/menu.ts
+  implementation:
+    - src/remote/components/menu.ts
+  docs:
+    - storybook/stories/UiMenuItem.mdx

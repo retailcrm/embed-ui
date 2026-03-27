@@ -1,0 +1,239 @@
+component: UiField
+summary: >
+  UiField is a remote-only form field wrapper. It connects a label and an inner control through
+  id and ARIA data, supports a hint tooltip near the label, and exposes an addon zone on the
+  right side of the headline.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiField
+
+related_components:
+  - UiTextbox
+  - UiSelect
+  - UiCheckbox
+  - UiDatePicker
+
+use_when:
+  - You need a labeled form control with consistent field semantics.
+  - You need to pass id, aria-labelledby, and aria-invalid into an inner control.
+  - You need a hint tooltip near the field label.
+  - You want required, invalid, disabled, or readonly state at the field level.
+
+avoid_when:
+  - You need a standalone control without label semantics.
+  - You need a generic layout container.
+  - You need to wrap several unrelated controls under one visual block.
+
+api:
+  key_props:
+    - name: id
+      required: true
+      notes: Required identifier used to connect label and control.
+    - name: label
+      notes: Field label text.
+    - name: hint
+      notes: Hint tooltip text near the label.
+    - name: invalid
+      notes: Affects label styling and slot prop ariaInvalid.
+    - name: required
+      notes: Adds an asterisk to the label and is forwarded through slot props.
+  props:
+    - name: hintAriaLabel
+      notes: aria-label for the hint trigger.
+    - name: disabled
+      notes: Visually dims the field and is forwarded through slot props.
+    - name: readonly
+      notes: Forwarded through slot props to the inner control.
+  slots:
+    - name: default
+      zone: control
+      creates: The main control area of the field.
+      provides:
+        - id
+        - required
+        - disabled
+        - readonly
+        - invalid
+        - ariaLabelledby
+        - ariaInvalid
+      accepts:
+        recommended:
+          - one form control
+          - UiTextbox
+          - UiSelect
+          - UiDatePicker
+        avoid:
+          - several unrelated controls
+          - decorative layout only
+          - raw content without using slot props
+      layout_effect: The control sits below the headline and inherits field-level semantics through slot props.
+      notes: >
+        Place the actual form control here. In most cases, slot props should be forwarded into the control.
+    - name: label
+      zone: headline-label
+      creates: The label area inside the headline row.
+      accepts:
+        recommended:
+          - plain text
+          - short inline markup
+          - span
+        avoid:
+          - nested form controls
+          - large block layout
+      layout_effect: Replaces the default text label but stays in the label position.
+      notes: Custom label content.
+    - name: hint
+      zone: hint-tooltip
+      creates: Tooltip content for the hint trigger.
+      accepts:
+        recommended:
+          - plain text
+          - short helper markup
+          - compact rich content
+        avoid:
+          - interactive forms
+          - large composite layouts
+      layout_effect: Does not change field layout; only changes tooltip body content.
+      notes: Custom tooltip content instead of plain hint text.
+    - name: addon
+      zone: headline-addon
+      creates: An inline addon area on the right side of the headline.
+      accepts:
+        recommended:
+          - short text
+          - UiLink
+          - UiButton
+          - compact status badge
+        avoid:
+          - full form groups
+          - wide content blocks
+      layout_effect: Lives in the headline row and is pushed to the right.
+      notes: Extra inline content on the right side of the headline.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    This is a debugging and reasoning model, not a public styling contract.
+  root: .ui-v1-field
+  zones:
+    - .ui-v1-field__headline
+    - .ui-v1-field__label
+    - hint trigger and tooltip
+    - .ui-v1-field__addon
+    - .ui-v1-field__control
+
+geometry:
+  layout: grid
+  width: 100%
+  min_width: 0
+  notes:
+    - Root uses grid with a 4px gap.
+    - The headline is a flex row.
+    - The addon is pushed to the right with margin-left auto.
+    - The control zone keeps min-width 0 and shrinks correctly in flex and grid layouts.
+
+styling:
+  notes:
+    - UiField styling mostly affects label, hint, and headline layout around the inner control.
+    - The inner control keeps its own styling system; UiField does not restyle it deeply.
+    - Classes are descriptive and should not be treated as a stable selector contract.
+  root_classes:
+    - .ui-v1-field
+  state_classes:
+    - .ui-v1-field_disabled
+    - .ui-v1-field_invalid
+  zones:
+    - .ui-v1-field__headline
+    - .ui-v1-field__label
+    - .ui-v1-field__required-mark
+    - .ui-v1-field__hint
+    - .ui-v1-field__hint-trigger
+    - .ui-v1-field__hint-icon
+    - .ui-v1-field__hint-tooltip
+    - .ui-v1-field__addon
+    - .ui-v1-field__control
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-popper-background
+        effect: Hint tooltip background.
+      - name: --ui-v1-popper-padding
+        effect: Hint tooltip padding.
+      - name: --ui-v1-popper-roundings
+        effect: Hint tooltip corner radius.
+  typography:
+    label:
+      mixin: text-small-accent
+      size: 14px
+      line_height: 20px
+      weight: 500
+    addon:
+      mixin: text-small
+      size: 14px
+      line_height: 20px
+      weight: 400
+
+behavior:
+  states:
+    - name: required
+      notes: Adds an asterisk to the label.
+    - name: invalid
+      notes: Tints the label and exposes ariaInvalid in slot props.
+    - name: disabled
+      notes: Visually dims the field.
+    - name: readonly
+      notes: Is forwarded to the inner control through slot props.
+  notes:
+    - If label is missing, ariaLabelledby in slot props is undefined.
+    - The hint is shown on hover and focus.
+
+accessibility:
+  notes:
+    - The component does not render a control itself, so ARIA wiring must be completed in the default slot.
+    - A common pattern is field.id -> control id and field.ariaLabelledby or field.ariaInvalid -> input attributes.
+    - The hint trigger renders with role=button and tabindex=0.
+
+composition:
+  works_well_with:
+    - UiTextbox
+    - UiSelect
+    - UiDatePicker
+    - UiTimePicker
+  patterns:
+    - title: Safe field wiring
+      notes: Use slot props for semantics, not just for visual wrapping.
+
+examples:
+  - title: Text field with propagated semantics
+    goal: Build a text field with correct ARIA wiring.
+    code: |
+      <UiField id="comment" label="Comment" hint="Visible to managers">
+        <template #default="field">
+          <UiTextbox
+            :id="field.id"
+            :input-attributes="{
+              'aria-labelledby': field.ariaLabelledby,
+              'aria-invalid': field.ariaInvalid,
+            }"
+          />
+        </template>
+      </UiField>
+
+ai_notes:
+  do:
+    - Forward slot props into the actual control in most form scenarios.
+    - Use UiField as a semantic wrapper for a single control.
+  avoid:
+    - Do not use UiField as a generic visual container without control semantics.
+    - Do not ignore id and ariaLabelledby when accessibility matters.
+
+provenance:
+  public_types:
+    - src/common/components/field.ts
+  implementation:
+    - src/remote/components/field/UiField.vue
+  styles:
+    - src/host/components/field/field.less
+  docs:
+    - storybook/stories/UiField.mdx

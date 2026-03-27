@@ -1,0 +1,158 @@
+component: UiTable
+summary: >
+  UiTable is the main data table component. It supports row rendering, grouping, expandable rows,
+  footer areas, and row-level interactions.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTable
+
+related_components:
+  - UiTableColumn
+
+use_when:
+  - You need structured tabular data.
+  - You need group headers, expandable rows, or footer sections.
+
+avoid_when:
+  - You need a simple list or card layout.
+
+api:
+  key_props:
+    - name: rows
+    - name: rowKey
+    - name: headless
+    - name: bordered
+    - name: fixed
+    - name: groupBy
+  slots:
+    - name: default
+      zone: columns
+      creates: Column declarations.
+    - name: expand
+      zone: expanded-row
+      creates: Expanded row content.
+    - name: footer
+      zone: footer
+      creates: Full footer area.
+    - name: group-head
+      zone: group-head
+      creates: Group heading content.
+    - name: empty
+      zone: empty-state
+      creates: Empty-state content.
+  emits:
+    - name: row:click
+  methods:
+    - name: resetExpanded
+    - name: expand
+    - name: collapse
+    - name: toggle
+
+rendered_structure:
+  descriptive_only: true
+  root: .ui-v1-table
+  zones:
+    - .ui-v1-table__section_head
+    - .ui-v1-table__section_body
+    - .ui-v1-table__section_foot
+    - .ui-v1-table__row
+    - .ui-v1-table__head-cell
+    - .ui-v1-table__body-cell
+  notes: >
+    Table layout is distributed across head, body, foot, and cell-level classes. Treat this as a
+    reasoning model for geometry and spacing, not as a stable selector contract.
+
+geometry:
+  layout: block-width table
+  width: 100%
+  notes:
+    - Root fills available width.
+    - fixed=true switches table-layout from auto to fixed.
+    - bordered=true adds border and corner rounding through CSS variables.
+
+styling:
+  notes:
+    - UiTable exposes a relatively rich CSS-variable surface for spacing and table chrome.
+    - Prefer table props and slot composition first, then CSS variables for spacing or background tuning.
+    - Internal classes are descriptive and mainly useful for debugging or narrow local integration.
+  root_classes:
+    - .ui-v1-table
+  state_classes:
+    - .ui-v1-table_fixed
+    - .ui-v1-table_bordered
+    - .ui-v1-table__head-cell_align-center
+    - .ui-v1-table__head-cell_align-right
+    - .ui-v1-table__body-cell_align-center
+    - .ui-v1-table__body-cell_align-right
+    - .ui-v1-table__body-cell_valign-top
+    - .ui-v1-table__body-cell_valign-bottom
+    - .ui-v1-table__body-cell_theme-group
+    - .ui-v1-table__body-cell_trim
+    - .ui-v1-table__head-cell_trim
+  zones:
+    - .ui-v1-table__head-cell
+    - .ui-v1-table__body-cell
+    - .ui-v1-table__footer-cell
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-table-border-width
+        effect: Outer border width in bordered mode.
+      - name: --ui-v1-table-rounding
+        effect: Shared corner rounding.
+      - name: --ui-v1-table-cell-padding-x
+        effect: Base inline cell padding.
+      - name: --ui-v1-table-cell-padding-y
+        effect: Base block cell padding.
+      - name: --ui-v1-table-head-background
+        effect: Header row background.
+      - name: --ui-v1-table-group-head-background
+        effect: Group heading row background.
+      - name: --ui-v1-table-padding-start
+        effect: Effective first-column start padding.
+      - name: --ui-v1-table-padding-end
+        effect: Effective last-column end padding.
+    internal_layout_variables:
+      - name: --ui-v1-table-effective-padding-start
+        effect: Start padding after bordered adjustments.
+      - name: --ui-v1-table-effective-padding-end
+        effect: End padding after bordered adjustments.
+      - name: --ui-v1-table-head-cell-padding-block-start
+        effect: Header top padding.
+      - name: --ui-v1-table-head-cell-padding-block-end
+        effect: Header bottom padding.
+      - name: --ui-v1-table-body-cell-padding-block-start
+        effect: Body top padding.
+      - name: --ui-v1-table-body-cell-padding-block-end
+        effect: Body bottom padding.
+      - name: --ui-v1-table-group-head-padding-block-start
+        effect: Group row top padding.
+      - name: --ui-v1-table-group-head-padding-block-end
+        effect: Group row bottom padding.
+  typography:
+    default:
+      mixin: text-small
+      size: 14px
+      line_height: 20px
+      weight: 400
+    head_cells:
+      mixin: text-tiny-accent
+      size: 12px
+      line_height: 14px
+      weight: 500
+    group_rows:
+      mixin: text-tiny
+      size: 12px
+      line_height: 14px
+      weight: 400
+
+provenance:
+  public_types:
+    - src/common/components/table.ts
+  implementation:
+    - src/remote/components/table/UiTable.vue
+  styles:
+    - src/host/components/table/table.less
+  docs:
+    - storybook/stories/UiTable.mdx

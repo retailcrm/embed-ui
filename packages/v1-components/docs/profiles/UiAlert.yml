@@ -1,0 +1,44 @@
+component: UiAlert
+summary: >
+  UiAlert is a compact contextual message block for status, warning, success, and danger feedback.
+  It can be shown inline in normal page flow and can be closable.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiAlert
+
+use_when:
+  - You need inline status feedback.
+  - You need dismissible page-level or section-level notice content.
+
+avoid_when:
+  - You need a blocking modal message.
+  - You need a tiny field-level validation hint.
+
+api:
+  key_props:
+    - name: variant
+    - name: text
+    - name: shown
+    - name: closable
+    - name: fluid
+
+behavior:
+  notes:
+    - shown controls visibility.
+    - closable enables user dismissal.
+
+ai_notes:
+  do:
+    - Use UiAlert for inline feedback that should stay in normal layout flow.
+  avoid:
+    - Do not use it as a replacement for modal confirmation.
+
+provenance:
+  public_types:
+    - src/common/components/alert.ts
+  implementation:
+    - src/remote/components/alert.ts
+  docs:
+    - storybook/stories/UiAlert.mdx

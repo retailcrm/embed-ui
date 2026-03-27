@@ -1,0 +1,253 @@
+component: UiPageHeader
+summary: >
+  UiPageHeader is a page or major section header with an optional inline addon next to the title
+  and an optional actions area on the right. In display state it renders the title as a semantic h1;
+  in edit state it switches to UiTextbox.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiPageHeader
+
+related_components:
+  - UiButton
+  - UiLink
+  - UiTextbox
+  - UiPopperConnector
+  - UiPopperTarget
+
+use_when:
+  - You need the main title of an extension page.
+  - You need inline title editing.
+  - You need a small inline addon near the title, such as UiLink.
+  - You need compact right-aligned actions.
+
+avoid_when:
+  - You need a regular form label.
+  - You need a small section title without page-header semantics.
+  - You need a multi-line editor rather than inline title editing.
+
+api:
+  key_props:
+    - name: value
+      notes: Main title text.
+    - name: placeholder
+      notes: Placeholder for empty editable state.
+    - name: editable
+      notes: Enables the h1 -> UiTextbox -> h1 cycle.
+    - name: invalid
+      notes: Used for error styling and the empty-title tooltip scenario.
+    - name: error
+      notes: Required for the tooltip in remote mode when invalid and empty.
+  props:
+    - name: autofocus
+      notes: Focuses edit state after mount.
+    - name: autoselect
+      notes: Selects the current value inside the textbox on focus.
+    - name: readonly
+      notes: Blocks entering edit mode.
+    - name: disabled
+      notes: Blocks interaction completely.
+  slots:
+    - name: addon
+      zone: inline sibling near title
+      creates: An inline addon area next to the title.
+      accepts:
+        recommended:
+          - UiLink
+          - short text
+          - compact inline status
+        avoid:
+          - full form layout
+          - wide content blocks
+          - content that should belong to the tooltip target
+      layout_effect: Renders as a sibling next to the title inside the main area.
+      notes: >
+        Inline content near the title, for example UiLink. This slot lives as a sibling next to the
+        title and should not be placed inside the tooltip target.
+    - name: actions
+      zone: right-side actions
+      creates: A compact right-aligned actions area.
+      accepts:
+        recommended:
+          - UiButton
+          - UiToolbarButton
+          - UiToolbarLink
+          - one or two compact actions
+        avoid:
+          - full form groups
+          - wide content blocks
+          - large multi-row layouts
+      layout_effect: Stays in the right-side action zone and should remain compact.
+      notes: Compact actions on the right, usually UiButton or toolbar-like actions.
+  emits:
+    - name: update:value
+      payload: string
+      notes: Main title update channel.
+    - name: focus
+      payload: FocusEvent
+      notes: Forwarded from the inner textbox.
+    - name: blur
+      payload: FocusEvent
+      notes: Forwarded from the inner textbox.
+    - name: change
+      payload: Event
+      notes: Forwarded from the inner textbox.
+    - name: keydown
+      payload: KeyboardEvent
+      notes: Forwarded from the inner textbox.
+  methods:
+    - name: focus
+      notes: Enters edit state and focuses the textbox.
+    - name: blur
+      notes: Blurs the textbox.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    This structure is useful for reasoning and debugging, not as a public styling API.
+  root: .ui-v1-page-header
+  zones:
+    - .ui-v1-page-header__main
+    - .ui-v1-page-header__title
+    - .ui-v1-page-header__addon
+    - .ui-v1-page-header__actions
+    - h1.ui-v1-page-header__trigger in display state
+    - UiTextbox.ui-v1-page-header__textbox in edit state
+  remote_overlay_notes:
+    - The tooltip is anchored to the title area through UiPopperConnector and UiPopperTarget.
+    - The addon renders as a sibling next to the title, not inside the tooltip target.
+
+geometry:
+  layout: flex
+  notes:
+    - Root uses justify-content space-between and can wrap.
+    - The main area contains title and optional addon.
+    - The actions area stays compact on the right.
+    - The display-state title draws an underline aligned with the underline textbox style.
+    - In edit state, the textbox uses size=xl, autofit, and outlined=false.
+
+styling:
+  notes:
+    - UiPageHeader styling is split between the page-header root and the inner UiTextbox used during edit state.
+    - Prefer editable, invalid, disabled, and slot composition before custom CSS.
+    - Classes below are descriptive hooks, not a stable public selector API.
+  root_classes:
+    - .ui-v1-page-header
+  state_classes:
+    - .ui-v1-page-header_disabled
+    - .ui-v1-page-header_invalid
+    - .ui-v1-page-header__trigger_editable
+    - .ui-v1-page-header__trigger_empty
+  zones:
+    - .ui-v1-page-header__main
+    - .ui-v1-page-header__title
+    - .ui-v1-page-header__addon
+    - .ui-v1-page-header__actions
+    - .ui-v1-page-header__trigger
+    - .ui-v1-page-header__textbox
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-page-header-danger-color
+        effect: Invalid title color and underline color.
+      - name: --ui-v1-page-header-danger-shadow-color
+        effect: Invalid shadow color for the editing textbox.
+    internal_layout_variables:
+      - name: --ui-v1-page-header-primary-color
+        effect: Derived active title color, often provided through invalid or focus flow.
+      - name: --ui-v1-page-header-primary-shadow-color
+        effect: Derived active shadow color for the editing textbox.
+      - name: --border-color
+        effect: Display-state underline color on the editable trigger.
+  typography:
+    title:
+      mixin: h2-accent
+      size: 24px
+      line_height: 32px
+      weight: 500
+    notes:
+      - The display h1 and the edit-state textbox share the same title typography.
+      - Addon and actions keep their own component typography and should not be forced into the title scale.
+
+behavior:
+  states:
+    - name: editable
+      notes: Enables the h1 -> UiTextbox -> h1 cycle.
+    - name: non-editable
+      notes: Leaves the title as a regular h1 and should not break native text selection.
+    - name: readonly
+      notes: Blocks entering edit state.
+    - name: disabled
+      notes: Blocks interaction completely.
+    - name: invalid
+      notes: Is visually meaningful only when the value is empty.
+  notes:
+    - Click, Enter, and Space enter edit state when editable is true.
+    - Enter finishes editing and returns to display state unless a blocking error state is active.
+    - Placeholder is shown when value is empty.
+    - If invalid=true, value is empty, and error is present, remote mode shows a tooltip.
+    - While invalid + empty + error is active, the component stays in edit state on blur and Enter.
+
+accessibility:
+  notes:
+    - In display state, an editable title gets role=button and tabindex=0.
+    - In display state, a non-editable title stays a plain h1.
+    - The inner textbox gets aria-label based on placeholder or current value.
+    - Keyboard completion for inline editing is centered on Enter.
+
+composition:
+  works_well_with:
+    - UiButton
+    - UiLink
+  patterns:
+    - title: Inline filter link
+      notes: Use addon for a neighboring link such as Collapse filter.
+    - title: Compact actions
+      notes: Keep only one or two compact actions on the right.
+
+examples:
+  - title: Editable header with addon and actions
+    goal: Build a page header with inline validation and a link near the title.
+    code: |
+      <UiPageHeader
+        v-model:value="title"
+        :invalid="!title"
+        :error="title ? '' : 'Title is required'"
+        editable
+        placeholder="Enter a title"
+      >
+        <template #addon>
+          <UiLink>
+            Collapse filter
+          </UiLink>
+        </template>
+
+        <template #actions>
+          <UiButton appearance="tertiary">
+            Actions
+          </UiButton>
+        </template>
+      </UiPageHeader>
+
+ai_notes:
+  do:
+    - Use UiPageHeader as a page-level title, not as a replacement for UiField.
+    - Set placeholder explicitly for editable scenarios.
+    - Pass both invalid and a clear error message if empty-title validation matters.
+    - Use addon for inline neighbors next to the title.
+  avoid:
+    - Do not assume the tooltip is anchored to the entire main area.
+    - Do not overload the actions area with full form layout.
+
+provenance:
+  public_types:
+    - src/common/components/page-header.ts
+  implementation:
+    - src/host/components/page-header/UiPageHeader.vue
+    - src/host/components/page-header/UiPageHeaderLayout.vue
+    - src/host/components/page-header/UiPageHeaderTitle.vue
+    - src/remote/components/page-header/UiPageHeader.vue
+  styles:
+    - src/host/components/page-header/page-header.less
+  docs:
+    - storybook/stories/UiPageHeader.mdx

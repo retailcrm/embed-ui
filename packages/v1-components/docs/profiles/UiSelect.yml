@@ -1,0 +1,332 @@
+component: UiSelect
+summary: >
+  UiSelect is a dropdown component for single-select and multi-select flows. It combines
+  a textbox-like trigger with a popper-based option layer. For a correct mental model,
+  read it together with UiPopper, UiPopperConnector, and UiPopperTarget.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiSelect
+    - UiSelectOption
+    - UiSelectOptionGroup
+
+related_components:
+  - UiField
+  - UiTextbox
+  - UiPopper
+  - UiPopperConnector
+  - UiPopperTarget
+
+use_when:
+  - You need to choose one value from a list.
+  - You need multi-select behavior.
+  - You need filtering over option labels or descriptions.
+  - You need grouped options.
+  - You need field semantics plus a dropdown selector.
+
+avoid_when:
+  - You need free-form text input.
+  - You need a button menu without a value model.
+  - You need a custom async-search UX outside the documented select flow.
+
+api:
+  key_props:
+    - name: value
+      notes: Selected value or array of values in multiple mode.
+    - name: placeholder
+      notes: Trigger text for empty state.
+    - name: multiple
+      notes: Switches to an array-based value model.
+    - name: filterable
+      notes: Enables typed filtering.
+    - name: clearable
+      notes: Enables a clear action for selection or filter text.
+    - name: equalsFn
+      notes: Critical for object values.
+    - name: placement
+      notes: Controls where the popper is positioned.
+    - name: popperFitTrigger
+      notes: Keeps the dropdown at least as wide as the trigger.
+    - name: expanded
+      notes: Lets the parent control open state.
+  props:
+    - name: invalid
+      notes: Enables error state on the textbox-like trigger.
+    - name: readonly
+      notes: Keeps the current value visible but blocks changes.
+    - name: disabled
+      notes: Disables both trigger and dropdown interaction.
+    - name: placeholderOnly
+      notes: Forces the trigger to show only placeholder text.
+    - name: textboxSize
+      notes: Controls the trigger size.
+    - name: targetTriggers
+      notes: Popper trigger rules on the target side.
+    - name: popperTriggers
+      notes: Popper trigger rules on the dropdown side.
+    - name: popperClass
+      notes: Extra class for the dropdown layer.
+    - name: popperOptions
+      notes: Low-level floating behavior options.
+    - name: ticker
+      notes: Technical signal for relayout or selection updates.
+  child_components:
+    - name: UiSelectOption
+      key_props:
+        - value
+        - label
+        - description
+        - disabled
+        - counter
+        - accent
+      notes: Base selectable option node.
+    - name: UiSelectOptionGroup
+      key_props:
+        - label
+      notes: Groups related options together.
+  slots:
+    - name: default
+      zone: option tree inside popper content
+      creates: The option registry and the visible option tree inside the dropdown.
+      accepts:
+        recommended:
+          - UiSelectOption
+          - UiSelectOptionGroup
+        avoid:
+          - arbitrary div wrappers
+          - form controls
+          - unrelated custom layout
+      layout_effect: Child nodes become dropdown content and participate in selection, filtering, and keyboard navigation.
+      notes: >
+        The safe path is to build the option tree from UiSelectOption and UiSelectOptionGroup.
+        Arbitrary children can break selection, keyboard navigation, and active-option flow.
+  emits:
+    - name: update:value
+      payload: unknown
+      notes: Main selection update channel.
+    - name: input
+      payload: Event
+      notes: Comes from the textbox-like trigger.
+    - name: focus
+      payload: FocusEvent
+      notes: Trigger focus.
+    - name: blur
+      payload: FocusEvent
+      notes: Trigger blur.
+    - name: clear
+      payload: undefined
+      notes: Fired when the clear action is used.
+    - name: update:expanded
+      payload: boolean
+      notes: Open-state update channel.
+    - name: keydown
+      payload: KeyboardEvent
+      notes: Main keyboard navigation channel.
+    - name: show
+      payload: undefined
+      notes: The dropdown starts opening.
+    - name: hide
+      payload: undefined
+      notes: The dropdown starts closing.
+    - name: shown
+      payload: undefined
+      notes: The dropdown is open.
+    - name: hidden
+      payload: undefined
+      notes: The dropdown is closed.
+    - name: dispose
+      payload: undefined
+      notes: The dropdown layer is disposed.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    Select is not a single DOM node in practice. Trigger and dropdown live in separate layers.
+  composition:
+    - UiPopperConnector as shared context
+    - UiSelectTrigger as textbox-like trigger
+    - UiSelectPopper as dropdown layer
+    - no-results text when filterable and no match exists
+    - default slot with the option tree
+  classes:
+    - .ui-v1-select for trigger root
+    - .ui-v1-select__popper for dropdown root
+    - .ui-v1-select-option for option root
+    - .ui-v1-select-option-group for option group
+
+geometry:
+  trigger_layout: textbox-like, fit-content, max-width 100%
+  dropdown_layout: popper layer outside normal document flow
+  notes:
+    - The trigger behaves visually like a textbox.
+    - The dropdown is rendered in a popper layer outside normal flow.
+    - The dropdown content has max-height and internal scrolling.
+    - popperFitTrigger is useful when the dropdown should not be narrower than the trigger.
+    - In multiple mode the trigger may collapse into a summary label when selected labels do not fit.
+
+styling:
+  notes:
+    - The trigger reuses the textbox visual model.
+    - The dropdown reuses popper variables for padding, radius, and floating surface geometry.
+    - Classes are descriptive implementation hooks, not a stable external styling contract.
+  root_classes:
+    - .ui-v1-select
+    - .ui-v1-select__trigger
+    - .ui-v1-select__touchstone
+    - .ui-v1-select__input
+    - .ui-v1-select__popper
+    - .ui-v1-select__content
+    - .ui-v1-select__no-results-text
+    - .ui-v1-select-option
+    - .ui-v1-select-option-group
+  state_classes:
+    - .ui-v1-select_active
+    - .ui-v1-select_filterable
+    - .ui-v1-select__content_locked
+    - .ui-v1-select-option_hidden
+    - .ui-v1-select-option-group_hidden
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-popper-padding
+        effect: Dropdown content padding.
+      - name: --ui-v1-popper-roundings
+        effect: Dropdown surface corner radius.
+    inherited_component_variables:
+      - name: --ui-v1-textbox-primary-color
+        effect: Active trigger underline and caret color.
+    internal_layout_variables:
+      - name: --border-color
+        effect: Trigger border or underline color inherited from UiTextbox.
+      - name: --active-color
+        effect: Trigger active color inherited from UiTextbox.
+  typography:
+    trigger:
+      notes:
+        - Trigger typography follows UiTextbox and therefore depends on textboxSize.
+        - The default trigger size is the textbox default size unless textboxSize changes it.
+    dropdown:
+      font_family: shared ui font family
+      notes:
+        - No-results text uses the dropdown text styling rather than heading typography.
+        - Option and group rows should be treated as compact list content, not heading-scale content.
+
+behavior:
+  states:
+    - name: multiple
+      notes: Switches the value model to an array and enables multi-selection.
+    - name: filterable
+      notes: Enables typed filtering by label or description.
+    - name: clearable
+      notes: Enables a clear action for selection or filter text.
+    - name: readonly
+      notes: Prevents changes while keeping display intact.
+    - name: disabled
+      notes: Disables both trigger and dropdown interaction.
+    - name: invalid
+      notes: Enables error styling on the trigger.
+    - name: placeholderOnly
+      notes: Forces placeholder display instead of selected labels.
+  selection_and_matching:
+    - If option values are objects, equalsFn is usually required.
+    - In single-select mode the dropdown closes after selecting an option.
+    - In multiple mode values are toggled inside the array model.
+    - Filtering matches option labels and descriptions.
+    - If nothing matches, a no-result block is shown.
+  keyboard:
+    - Arrow keys move the active highlight.
+    - Escape closes the dropdown.
+    - Tab closes the dropdown and lets focus move on.
+    - The active option is auto-scrolled into view when needed.
+
+accessibility:
+  notes:
+    - The trigger uses role=combobox.
+    - The trigger manages aria-expanded, aria-controls, aria-haspopup, and aria-activedescendant.
+    - The dropdown acts as a listbox-like layer.
+    - In multiple mode it is marked as aria-multiselectable=true.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiSelectOption
+    - UiSelectOptionGroup
+    - UiPopper
+    - UiPopperConnector
+    - UiPopperTarget
+  patterns:
+    - title: Form field select
+      notes: Put UiSelect inside UiField for labeled required choices.
+    - title: Object value selection
+      notes: Use equalsFn explicitly for object values.
+    - title: Popper mental model
+      notes: Think of UiSelect as target plus floating dropdown, not as a single inline control.
+
+examples:
+  - title: Standard select in a field
+    goal: Build a labeled select with field semantics.
+    code: |
+      <UiField id="assignee" label="Assignee">
+        <template #default="field">
+          <UiSelect
+            :id="field.id"
+            :invalid="field.invalid"
+            :placeholder="'Select assignee'"
+            v-model:value="assignee"
+          >
+            <UiSelectOption value="kyle" label="Kyle Simmons" />
+            <UiSelectOption value="eduardo" label="Eduardo Henry" />
+          </UiSelect>
+        </template>
+      </UiField>
+  - title: Grouped options
+    goal: Build a grouped option tree through the safe child components.
+    code: |
+      <UiSelect placeholder="Employee">
+        <UiSelectOptionGroup label="Sales">
+          <UiSelectOption value="kyle" label="Kyle Simmons" />
+        </UiSelectOptionGroup>
+
+        <UiSelectOptionGroup label="Support">
+          <UiSelectOption value="philip" label="Philip Williamson" />
+        </UiSelectOptionGroup>
+      </UiSelect>
+  - title: Object values with equalsFn
+    goal: Avoid object comparison by reference.
+    code: |
+      <UiSelect
+        v-model:value="selectedUser"
+        :equals-fn="(left, right) => left?.id === right?.id"
+        placeholder="Employee"
+      >
+        <UiSelectOption
+          v-for="user in users"
+          :key="user.id"
+          :value="user"
+          :label="user.name"
+        />
+      </UiSelect>
+
+ai_notes:
+  do:
+    - Set equalsFn for object values in most cases.
+    - Use only UiSelectOption and UiSelectOptionGroup in the default slot.
+    - Read this profile together with UiPopper, UiPopperConnector, and UiPopperTarget.
+  avoid:
+    - Do not place arbitrary div wrappers inside the option tree.
+    - Do not choose UiSelect when free text input is the real need.
+    - Do not assume the dropdown lives in normal document flow next to the trigger.
+
+provenance:
+  public_types:
+    - src/common/components/select.ts
+  implementation:
+    - src/remote/components/select/UiSelect.vue
+    - src/remote/components/select/UiSelectOption.vue
+    - src/remote/components/select/UiSelectOptionGroup.vue
+    - src/host/components/select/UiSelectTrigger.vue
+    - src/host/components/select/UiSelectPopper.vue
+  styles:
+    - src/host/components/select/select.less
+  docs:
+    - storybook/stories/UiSelect.mdx

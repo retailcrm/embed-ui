@@ -1,0 +1,398 @@
+component: UiTextbox
+summary: >
+  UiTextbox is the base text and numeric input component. It covers single-line input,
+  textarea mode, numeric and decimal input, plus prefix, suffix, icon zones, and a clear action.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTextbox
+
+related_components:
+  - UiField
+  - UiPageHeader
+  - UiSelect
+
+use_when:
+  - You need a standard text input.
+  - You need search, email, phone, url, or password input.
+  - You need decimal or numeric input without a separate stepper.
+  - You need a multiline control in the same visual language.
+  - You need an input that composes well with UiField and inline editing.
+
+avoid_when:
+  - You need value selection, not free-form input.
+  - You need explicit increment and decrement UX.
+  - You need advanced formatting beyond the prefix or suffix model.
+
+api:
+  key_props:
+    - name: value
+      notes: Main control value, usually via v-model:value.
+    - name: placeholder
+      notes: Placeholder for empty state.
+    - name: type
+      notes: Input type for single-line mode.
+    - name: inputmode
+      notes: >
+        High-signal prop for numeric and decimal behavior. It changes not only keyboard hints
+        but also the actual input handling rules.
+    - name: clearable
+      notes: Shows a clear button when the value is not empty.
+    - name: invalid
+      notes: Enables error state and aria-invalid.
+    - name: multiline
+      notes: Switches the component to textarea mode.
+    - name: outlined
+      notes: Enables or disables textbox chrome. Often false in embedded scenarios.
+    - name: autofit
+      notes: Shrinks or grows to content width and is useful for inline editing.
+  props:
+    - name: id
+      notes: Identifier for the actual input or textarea.
+    - name: max
+      notes: Used in numeric or decimal scenarios.
+    - name: min
+      notes: Controls whether negative values are allowed in decimal mode.
+    - name: step
+      notes: Step for ArrowUp and ArrowDown in decimal mode.
+    - name: required
+      notes: Forwarded to the native control.
+    - name: autocomplete
+      notes: Forwarded to the actual input.
+    - name: maxlength
+      notes: Limits input length.
+    - name: decimals
+      notes: Limits the number of decimal places in decimal mode.
+    - name: size
+      notes: Affects height, paddings, and typography.
+    - name: prefix
+      notes: String shortcut for the prefix zone.
+    - name: suffix
+      notes: String shortcut for the suffix zone.
+    - name: active
+      notes: Enables active-like visual styling.
+    - name: autofocus
+      notes: Focuses the control after mount.
+    - name: autoselect
+      notes: Selects the current value on focus.
+    - name: readonly
+      notes: Blocks editing while keeping the value visible.
+    - name: disabled
+      notes: Disables interaction completely.
+    - name: rows
+      notes: Used in multiline mode.
+    - name: cols
+      notes: Used in multiline mode.
+    - name: inputAttributes
+      notes: Main path for aria-* and native attributes.
+  slots:
+    - name: prefix
+      zone: before-control
+      creates: A dedicated leading zone before the control.
+      accepts:
+        recommended:
+          - plain text
+          - span
+          - svg
+          - icon component
+        avoid:
+          - div
+          - block layout container
+          - interactive controls
+      notes: >
+        In outlined mode, the prefix becomes a separate visual segment before the input.
+    - name: leading-icon
+      zone: before-control
+      creates: A dedicated icon zone before the control.
+      accepts:
+        recommended:
+          - svg
+          - icon component
+          - span
+        avoid:
+          - div
+          - large text blocks
+      notes: Intended for a single icon-like node rather than arbitrary layout.
+    - name: trailing-icon
+      zone: after-control
+      creates: A dedicated icon zone after the control.
+      accepts:
+        recommended:
+          - svg
+          - icon component
+          - span
+        avoid:
+          - div
+          - form controls
+      notes: Good for status icons or compact indicators.
+    - name: suffix
+      zone: after-control
+      creates: A dedicated trailing zone after the control.
+      accepts:
+        recommended:
+          - plain text
+          - span
+          - svg
+          - icon component
+        avoid:
+          - div
+          - block layout container
+          - nested input
+      notes: >
+        In outlined mode, the suffix becomes a separate trailing gray segment after the input.
+  emits:
+    - name: update:value
+      payload: string | number | null
+      notes: Main value update channel.
+    - name: update:focused
+      payload: boolean
+      notes: Focus state update.
+    - name: input
+      payload: Event
+      notes: Native input event.
+    - name: change
+      payload: Event
+      notes: Native change event.
+    - name: keydown
+      payload: KeyboardEvent
+      notes: Forwarded from the input or textarea.
+    - name: paste
+      payload: ClipboardEvent
+      notes: Forwarded without extra semantics.
+    - name: focus
+      payload: FocusEvent
+      notes: Fired when the actual control is focused.
+    - name: blur
+      payload: FocusEvent
+      notes: Fired when the actual control loses focus.
+    - name: clear
+      payload: undefined
+      notes: Fired when the clear action is used.
+  methods:
+    - name: focus
+      notes: Focuses the actual control.
+    - name: blur
+      notes: Removes focus from the actual control.
+    - name: select
+      notes: Selects the current value.
+    - name: clear
+      notes: Clears the current value.
+    - name: insert
+      notes: Inserts text at the current cursor position.
+    - name: getSelectionStart
+      notes: Returns the start of the current selection.
+    - name: getSelectionEnd
+      notes: Returns the end of the current selection.
+    - name: setSelectionRange
+      notes: Controls selection programmatically.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    This is a descriptive model of the current implementation for reasoning and debugging,
+    not a guaranteed DOM API. The root is span-based, so UiTextbox should be treated as
+    an inline control rather than a block wrapper.
+  root: span.ui-v1-textbox
+  zones:
+    - span.ui-v1-textbox__prefix
+    - span.ui-v1-textbox__icon.ui-v1-textbox__icon_leading
+    - input or textarea
+    - span.ui-v1-textbox__placeholder for autofit mirror
+    - button.ui-v1-textbox__eraser
+    - span.ui-v1-textbox__icon.ui-v1-textbox__icon_trailing
+    - span.ui-v1-textbox__suffix
+
+geometry:
+  layout: inline-flex
+  width: fit-content
+  max_width: 100%
+  notes:
+    - Root behaves as a span-based inline-flex group around the actual control.
+    - Size affects height, paddings, and typography.
+    - outlined=false removes the standard textbox frame and is common in embedded flows such as UiPageHeader.
+    - autofit=true adjusts width to content but still respects max-width on the root.
+    - Prefix, suffix, and icon slots affect internal layout but not the component's semantic role.
+    - Do not treat UiTextbox as a generic block container.
+    - If you need full-width behavior, provide width through layout context or explicit style.
+
+styling:
+  notes:
+    - Main visual chrome lives on the root span.
+    - Prefer props like size, outlined, invalid, active, and autofit before custom CSS.
+    - Classes below are useful for reasoning and debugging, not a stable public styling API.
+    - Block-layout behavior should come from the parent layout, not from UiTextbox itself.
+  root_classes:
+    - .ui-v1-textbox
+  state_classes:
+    - .ui-v1-textbox_invalid
+    - .ui-v1-textbox_active
+    - .ui-v1-textbox_outlined
+    - .ui-v1-textbox_xs
+    - .ui-v1-textbox_md
+    - .ui-v1-textbox_lg
+    - .ui-v1-textbox_xl
+  zones:
+    - .ui-v1-textbox__prefix
+    - .ui-v1-textbox__suffix
+    - .ui-v1-textbox__icon.ui-v1-textbox__icon_leading
+    - .ui-v1-textbox__icon.ui-v1-textbox__icon_trailing
+    - .ui-v1-textbox__eraser
+    - .ui-v1-textbox__placeholder
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-textbox-primary-color
+        effect: Active and focus border color.
+      - name: --ui-v1-textbox-primary-shadow-color
+        effect: Focus ring shadow color in outlined mode.
+      - name: --ui-v1-textbox-danger-color
+        effect: Invalid border and active color.
+      - name: --ui-v1-textbox-danger-shadow-color
+        effect: Invalid focus ring shadow color in outlined mode.
+      - name: --ui-v1-textbox-autofill-color
+        effect: Background for browser autofill state.
+      - name: --ui-v1-textbox-icon-color
+        effect: Default leading and trailing icon color.
+    internal_layout_variables:
+      - name: --height
+        effect: Control height and line box.
+      - name: --padding
+        effect: Inner inline padding in outlined mode.
+      - name: --gap
+        effect: Spacing between the control and adjacent zones.
+      - name: --icon-size
+        effect: Icon square size.
+      - name: --border-color
+        effect: Current border or underline color.
+      - name: --active-color
+        effect: Derived active color used during focus and active states.
+      - name: --shadow-color
+        effect: Derived focus ring color used in outlined mode.
+  typography:
+    default:
+      mixin: text-regular
+      size: 16px
+      line_height: 24px
+      weight: 400
+    size_variants:
+      - name: xs
+        mixin: text-small
+        size: 14px
+        line_height: 20px
+        weight: 400
+      - name: md
+        mixin: h4
+        size: 18px
+        line_height: 28px
+        weight: 400
+      - name: lg
+        mixin: h3
+        size: 20px
+        line_height: 32px
+        weight: 400
+      - name: xl
+        mixin: h2
+        size: 24px
+        line_height: 32px
+        weight: 400
+    notes:
+      - Prefix, suffix, and icon zones inherit the active size context.
+      - The inner input or textarea inherits font-family, size, weight, and line-height from the root.
+
+behavior:
+  states:
+    - name: clearable
+      notes: The clear button is shown only when String(value) is not empty.
+    - name: invalid
+      notes: Sets aria-invalid=true and enables error styling.
+    - name: readonly
+      notes: Keeps the value visible but blocks editing.
+    - name: disabled
+      notes: Disables interaction completely.
+    - name: autofocus
+      notes: Focuses after mount.
+    - name: autoselect
+      notes: Selects the whole value on focus.
+    - name: multiline
+      notes: Renders a textarea instead of an input.
+  numeric_behavior:
+    - inputmode=numeric filters input down to digits and does not behave like a full decimal model.
+    - inputmode=decimal enables decimal input, separator normalization, and decimals limiting.
+    - Negative decimal input is allowed only when min < 0.
+    - ArrowUp and ArrowDown change value by step in decimal mode.
+
+accessibility:
+  notes:
+    - The component sets aria-invalid automatically from invalid.
+    - Extra ARIA wiring is usually passed through inputAttributes.
+    - Native events such as keydown, focus, and blur are forwarded outward.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiPageHeader
+    - UiSelect trigger internals
+  patterns:
+    - title: Form field
+      notes: For standard forms, UiTextbox usually belongs inside UiField.
+    - title: Search field
+      notes: Leading icon plus clearable is a strong search pattern.
+    - title: Inline editing
+      notes: outlined=false and autofit=true fit header and inline editing scenarios.
+    - title: Inline control
+      notes: Use UiTextbox as a self-contained control, not as a wrapper for arbitrary content.
+
+examples:
+  - title: Field wiring
+    goal: Build a standard text field with correct ARIA wiring.
+    code: |
+      <UiField id="name" label="Name">
+        <template #default="field">
+          <UiTextbox
+            :id="field.id"
+            :input-attributes="{
+              'aria-labelledby': field.ariaLabelledby,
+              'aria-invalid': field.ariaInvalid,
+            }"
+            v-model:value="name"
+          />
+        </template>
+      </UiField>
+  - title: Search pattern
+    goal: Build a textbox with a leading icon and clear action.
+    code: |
+      <UiTextbox v-model:value="term" clearable>
+        <template #leading-icon>
+          <IconSearch aria-hidden="true" />
+        </template>
+      </UiTextbox>
+  - title: Prefix and suffix zones
+    goal: Show safe markup for prefix and suffix content.
+    code: |
+      <UiTextbox v-model:value="amount" inputmode="decimal" suffix="₽">
+        <template #prefix>
+          <span>Amount</span>
+        </template>
+      </UiTextbox>
+
+ai_notes:
+  do:
+    - Pair UiTextbox with UiField in most form scenarios.
+    - Use inputmode=decimal for amounts and explicitly set decimals, min, and step.
+    - Prefer span, svg, and icon components for slot content.
+    - Remember that the root is span-based and inline-flex.
+  avoid:
+    - Do not use UiTextbox as a select.
+    - Do not place div or block layout markup inside prefix, suffix, or icon zones.
+    - Do not replace multiline mode with a different component if a textarea-like control is enough.
+    - Do not rely on block-level behavior from the component root.
+
+provenance:
+  public_types:
+    - src/common/components/textbox.ts
+  implementation:
+    - src/host/components/textbox/UiTextbox.vue
+  styles:
+    - src/host/components/textbox/textbox.less
+  docs:
+    - storybook/stories/UiTextbox.mdx

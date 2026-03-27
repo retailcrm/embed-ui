@@ -1,0 +1,35 @@
+component: UiImage
+summary: >
+  UiImage is a generic image display component with optional resize and crop hints.
+  Use it for regular visual content rather than identity avatars.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiImage
+
+use_when:
+  - You need to render an image asset.
+  - You need resize or crop hints for image output.
+
+avoid_when:
+  - You need identity-focused avatar UI.
+
+api:
+  key_props:
+    - name: src
+    - name: alt
+    - name: resize
+    - name: crop
+
+ai_notes:
+  do:
+    - Use UiImage for general media and UiAvatar for people or identity.
+
+provenance:
+  public_types:
+    - src/common/components/image.ts
+  implementation:
+    - src/remote/components/image.ts
+  docs:
+    - storybook/stories/UiImage.mdx

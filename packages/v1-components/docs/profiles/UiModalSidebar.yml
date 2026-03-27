@@ -1,0 +1,42 @@
+component: UiModalSidebar
+summary: >
+  UiModalSidebar is a side-docked modal surface with open state, direction, size, and
+  scrolling control. Use it when the UI should slide from an edge instead of opening as a centered dialog.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiModalSidebar
+
+use_when:
+  - You need side-panel modal UI.
+  - You need left or right docked modal content.
+
+avoid_when:
+  - You need a centered dialog.
+
+api:
+  key_props:
+    - name: opened
+    - name: closable
+    - name: direction
+    - name: size
+    - name: scrolling
+    - name: fixed
+
+behavior:
+  notes:
+    - opened controls visibility.
+    - direction controls which side the sidebar comes from.
+
+ai_notes:
+  do:
+    - Use UiModalSidebar when page context should stay visually connected to the modal content.
+
+provenance:
+  public_types:
+    - src/common/components/modal-sidebar.ts
+  implementation:
+    - src/remote/components/modal-sidebar.ts
+  docs:
+    - storybook/stories/UiModalSidebar.mdx
