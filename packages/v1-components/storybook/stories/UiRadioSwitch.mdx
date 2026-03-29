@@ -1,0 +1,117 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiRadioSwitchStories from './UiRadioSwitch.stories'
+
+# UiRadioSwitch
+
+`UiRadioSwitch` - переключатель одного значения из набора, собранный поверх remote/host-схемы `embed-ui`.
+Компонент можно использовать в двух режимах: через `options` для простого набора вкладок и через `UiRadioSwitchOption` для карточек с описанием, иконками и несерилизуемыми значениями.
+
+## Когда использовать
+
+* Нужно выбрать один режим, статус или представление из небольшого фиксированного набора.
+* Нужен более выразительный single-choice, чем обычный `UiRadio`.
+* Значения опций могут быть объектами, и сравнение нужно делать через `equalFn`.
+* Для `section`-режима нужны карточки, которые переносятся на новую строку, если не хватает ширины.
+
+## Примеры
+
+### 1. Базовый переключатель
+
+```vue
+<template>
+  <UiRadioSwitch
+    v-model:value="mode"
+    :options="options"
+  />
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { UiRadioSwitch } from '@retailcrm/embed-ui-v1-components/remote'
+
+const mode = ref({ key: 'auto' })
+
+const options = [
+  { label: 'Авто', value: { key: 'auto' } },
+  { label: 'Ручной', value: { key: 'manual' } },
+]
+</script>
+```
+
+<Story of={UiRadioSwitchStories.Default} />
+
+### 2. Карточки с описанием
+
+Для расширенного контента используйте `UiRadioSwitchOption` вместо `options`.
+
+```vue
+<template>
+  <UiRadioSwitch
+    v-model:value="mode"
+    appearance="section"
+    rubber
+    :equal-fn="equalFn"
+  >
+    <UiRadioSwitchOption
+      label="Авто"
+      :value="{ key: 'auto' }"
+      description="Автоматический режим"
+    />
+
+    <UiRadioSwitchOption
+      label="Ручной"
+      :value="{ key: 'manual' }"
+      description="Ручная настройка"
+    />
+  </UiRadioSwitch>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import {
+  UiRadioSwitch,
+  UiRadioSwitchOption,
+} from '@retailcrm/embed-ui-v1-components/remote'
+
+const mode = ref({ key: 'auto' })
+const equalFn = (a?: { key: string }, b?: { key: string }) => a?.key === b?.key
+</script>
+```
+
+<Story of={UiRadioSwitchStories.StandaloneCards} />
+
+## Поведение
+
+* `UiRadioSwitch` всегда работает как single-select и эмитит `change` и `update:value`.
+* В `default` режиме компонент выглядит как компактный segmented control.
+* В `section` режиме каждая опция становится самостоятельной карточкой с описанием и иконкой выбранного состояния.
+* В `section` режиме карточки могут переноситься на следующую строку.
+* Если `value` у опций - объекты или другие сложные значения, задайте `equalFn`.
+
+## Важные свойства
+
+* `value` - текущее выбранное значение.
+* `options` - простой способ описать набор опций через массив `{ label, value, disabled }`.
+* `equalFn` - функция сравнения для не-примитивных значений.
+* `appearance` - `default` или `section`.
+* `size` - размер переключателя (`sm`, `md`, `lg`).
+* `rubber` - разрешает контейнеру ужиматься/растягиваться по контенту.
+
+## Слоты
+
+* `default` - ручная композиция опций через `UiRadioSwitchOption`.
+* `icon` у `UiRadioSwitch` - общая иконка для опций, когда используется режим `options`.
+* `default`, `icon`, `label`, `description`, `checkmark` у `UiRadioSwitchOption` - кастомизация отдельной опции.
+
+## A11y
+
+* Компонент рендерится как `radiogroup`, а опции - как `radio`.
+* В группе используется один tab-stop: фокус попадает на выбранную опцию, либо на первую доступную.
+* `ArrowLeft`, `ArrowRight`, `ArrowUp`, `ArrowDown` перемещают фокус и выбор между доступными опциями.
+* `Home` и `End` переводят к первой и последней доступной опции.
+* `Space` и `Enter` подтверждают выбор текущей опции.
+* Disabled-опции исключаются из клавиатурной навигации.
+
+## API
+
+<ArgTypes />

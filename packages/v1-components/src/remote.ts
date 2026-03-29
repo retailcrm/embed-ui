@@ -21,6 +21,7 @@ export * from '@/remote/components/number-stepper'
 export * from '@/remote/components/page-header'
 export * from '@/remote/components/popper'
 export * from '@/remote/components/radio'
+export * from '@/remote/components/radio-switch'
 export * from '@/remote/components/scroll-box'
 export * from '@/remote/components/slider'
 export * from '@/remote/components/switch'
@@ -40,6 +41,7 @@ export * from '@/remote/endpoint'
 export { usePreview } from '@/common/preview'
 
 export { ImageWorkersKey } from '@/common/preview'
+export * from '@/common/components/radio-switch'
 export * from '@/common/components/table'
 
 export {

@@ -43,6 +43,8 @@ const createRoot = async (channel: Channel) => {
       'UiPageHeaderTitle',
       'UiPopperConnector',
       'UiPopperTarget',
+      'UiRadioSwitchOptionShell',
+      'UiRadioSwitchRoot',
       'UiSelectPopper',
       'UiSelectTrigger',
       'UiTableBodyCell',

@@ -1,0 +1,299 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/motion.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-radio-switch {
+  display: flex;
+  border: 1px solid @grey-600;
+
+  &_borderless {
+    border: none;
+    flex-wrap: wrap;
+    gap: @spacing-s;
+  }
+
+  &_rubber {
+    display: inline-flex;
+    max-width: 100%;
+  }
+
+  &_sm {
+    border-radius: @border-radius-sm;
+  }
+
+  &_md {
+    border-radius: @border-radius-sm;
+  }
+
+  &_lg {
+    border-radius: @border-radius-lg;
+  }
+}
+
+.ui-v1-radio-switch-option {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  background: transparent;
+  color: @blue-600;
+  fill: @grey-700;
+  cursor: pointer;
+  transition: background-color @transition, color @transition, border @transition;
+  position: relative;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px @blue-translucent;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    position: relative;
+  }
+
+  &_sm {
+    height: 36px;
+    border-radius: @border-radius-sm;
+  }
+
+  &_md {
+    height: 54px;
+    border-radius: @border-radius-md;
+  }
+
+  &_lg {
+    flex-direction: column;
+    height: 88px;
+    border-radius: @border-radius-lg;
+  }
+
+  &_lg &__head {
+    flex-direction: column;
+  }
+
+  &_standalone {
+    min-width: 296px;
+    padding: @spacing-s @spacing-l;
+    background-color: @grey-200;
+    border: 2px solid transparent;
+    border-radius: @border-radius-lg;
+    color: @black-500;
+    fill: @black-500;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    text-align: center;
+    transition: @transition;
+    margin-right: 0;
+    position: relative;
+
+    .h4-accent();
+
+    &::before {
+      content: '';
+      border: 1px solid @blue-500;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity @transition;
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+    }
+
+    svg {
+      transition: none;
+    }
+
+  }
+
+  &_standalone&_active&_disabled {
+    background-color: #fff;
+    border-color: @green-200;
+    color: @green-200;
+  }
+
+  &_standalone&_active:not(&_disabled) {
+    background-color: #fff;
+    border-color: @green-500;
+    color: @green-600;
+    fill: @green-600;
+  }
+
+  &_standalone:hover:not(&_disabled):not(&_active) {
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &_default {
+    flex: 1 1 auto;
+    align-items: center;
+    border: 1px solid transparent;
+    margin: -1px -1px -1px 0;
+    padding: 0 @spacing-s;
+
+    .text-regular();
+
+    &:first-child {
+      margin-left: -1px;
+    }
+
+    &:focus {
+      border-color: @blue-500;
+    }
+  }
+
+  &_disabled {
+    fill: @grey-800;
+    color: @grey-800;
+    pointer-events: none;
+
+    &::before {
+      content: '';
+      border-radius: inherit;
+      position: absolute;
+      z-index: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: @grey-300;
+    }
+  }
+
+  &_default&_disabled {
+    & + & {
+      margin-left: 0 !important;
+    }
+
+    &:first-child {
+      margin-right: 0;
+    }
+
+    &:last-child {
+      margin-left: 1px;
+    }
+
+    &:not(&:first-child):not(&:last-child) {
+      margin-left: 1px;
+      margin-right: 0;
+    }
+  }
+
+  &_default&_active&_disabled {
+    color: @blue-300;
+    border-color: rgba(0, 104, 255, 0.16);
+    z-index: 1;
+
+    &::before {
+      background-color: rgba(0, 104, 255, 0.04);
+    }
+  }
+
+  &_default&_active:not(&_disabled) {
+    background-color: @blue-translucent;
+    border-color: @blue-500;
+    color: @blue-600;
+    z-index: 1;
+  }
+
+  &_default:hover:not(&_disabled):not(&_active) {
+    fill: @grey-800;
+    border-color: @blue-500;
+  }
+
+  &__icon {
+    --size: 24px;
+
+    display: block;
+    flex-shrink: 0;
+    width: var(--size);
+    height: var(--size);
+    color: @grey-700;
+    margin-right: @spacing-xxs;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      fill: inherit;
+    }
+  }
+
+  &_sm &__icon {
+    --size: 20px;
+  }
+
+  &_md &__icon {
+    --size: 32px;
+    margin-right: @spacing-xs;
+  }
+
+  &_lg &__icon {
+    --size: 32px;
+    margin-right: 0;
+  }
+
+  &_standalone &__icon {
+    color: inherit;
+  }
+
+  &_default&_active&_disabled &__icon {
+    color: @blue-300;
+  }
+
+  &_default&_active:not(&_disabled) &__icon {
+    color: @blue-500;
+  }
+
+  &_default:hover:not(&_disabled):not(&_active) &__icon {
+    color: @grey-800;
+  }
+
+  &__description {
+    width: 100%;
+    color: @grey-800;
+    text-align: center;
+    margin-top: @spacing-xs + 2;
+
+    .text-regular();
+  }
+
+  &_active:not(&_disabled) &__description {
+    color: @black-500;
+  }
+
+  &__label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__done {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      color: @green-500;
+      fill: @green-500;
+    }
+  }
+
+  &_disabled &__done svg {
+    color: @green-200;
+    fill: @green-200;
+  }
+}

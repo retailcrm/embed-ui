@@ -35,6 +35,8 @@ export const createEndpointRoot = async (
     'UiPopperConnector',
     'UiPopperTarget',
     'UiRadio',
+    'UiRadioSwitchOptionShell',
+    'UiRadioSwitchRoot',
     'UiScrollBox',
     'UiSlider',
     'UiSwitch',
