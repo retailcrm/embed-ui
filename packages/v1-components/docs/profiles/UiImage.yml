@@ -25,11 +25,3 @@ api:
 ai_notes:
   do:
     - Use UiImage for general media and UiAvatar for people or identity.
-
-provenance:
-  public_types:
-    - src/common/components/image.ts
-  implementation:
-    - src/remote/components/image.ts
-  docs:
-    - storybook/stories/UiImage.mdx

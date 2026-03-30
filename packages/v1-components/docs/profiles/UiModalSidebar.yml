@@ -32,11 +32,3 @@ behavior:
 ai_notes:
   do:
     - Use UiModalSidebar when page context should stay visually connected to the modal content.
-
-provenance:
-  public_types:
-    - src/common/components/modal-sidebar.ts
-  implementation:
-    - src/remote/components/modal-sidebar.ts
-  docs:
-    - storybook/stories/UiModalSidebar.mdx

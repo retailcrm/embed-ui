@@ -219,13 +219,3 @@ ai_notes:
   avoid:
     - Do not replace UiButton with UiLink when the action should read as a button.
     - Do not use UiButton for regular inline text navigation.
-
-provenance:
-  public_types:
-    - src/common/components/button.ts
-  implementation:
-    - src/host/components/button/UiButton.vue
-  styles:
-    - src/host/components/button/button.less
-  docs:
-    - storybook/stories/UiButton.mdx

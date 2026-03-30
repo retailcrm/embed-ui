@@ -107,7 +107,3 @@ ai_notes:
   avoid:
     - Do not use it as a styling wrapper.
     - Do not add UiPopperTarget automatically around every trigger.
-
-provenance:
-  implementation:
-    - src/host/components/popper/UiPopperConnector.vue

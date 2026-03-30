@@ -24,11 +24,3 @@ api:
     - name: labelled
   emits:
     - name: update:value
-
-provenance:
-  public_types:
-    - src/common/components/slider.ts
-  implementation:
-    - src/remote/components/slider.ts
-  docs:
-    - storybook/stories/UiSlider.mdx

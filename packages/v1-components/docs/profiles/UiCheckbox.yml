@@ -39,11 +39,3 @@ ai_notes:
     - Use for boolean choice or checkbox-group membership.
   avoid:
     - Do not use for mutually exclusive options.
-
-provenance:
-  public_types:
-    - src/common/components/checkbox.ts
-  implementation:
-    - src/remote/components/checkbox.ts
-  docs:
-    - storybook/stories/UiCheckbox.mdx

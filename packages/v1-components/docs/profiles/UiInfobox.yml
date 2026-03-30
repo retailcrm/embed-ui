@@ -31,11 +31,3 @@ api:
 ai_notes:
   do:
     - Use UiInfobox for richer guidance blocks, not tiny alerts.
-
-provenance:
-  public_types:
-    - src/common/components/infobox.ts
-  implementation:
-    - src/remote/components/infobox.ts
-  docs:
-    - storybook/stories/UiInfobox.mdx

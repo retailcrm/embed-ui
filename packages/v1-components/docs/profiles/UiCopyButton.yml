@@ -38,11 +38,3 @@ api:
 ai_notes:
   do:
     - Use for copy-specific flows instead of recreating copy state manually.
-
-provenance:
-  public_types:
-    - src/common/components/copy-button.ts
-  implementation:
-    - src/remote/components/copy-button.ts
-  docs:
-    - storybook/stories/UiCopyButton.mdx

@@ -30,8 +30,3 @@ api:
 ai_notes:
   do:
     - Use as the default child node of UiSelect.
-
-provenance:
-  implementation:
-    - src/remote/components/select/parts.ts
-    - src/remote/components/select/UiSelectOption.vue

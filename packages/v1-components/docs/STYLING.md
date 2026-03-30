@@ -39,11 +39,10 @@ Use this map when a profile references shared tokens or mixins:
 
 ## Component-Local Stylesheets
 
-Some components also have local `variables.less` files next to the component styles, for example:
+Some components also have local `variables.less` files next to the component styles.
+Those files live in the source repository and are not part of the published package.
 
-- [`button/variables.less`](../src/host/components/button/variables.less)
-- [`link/variables.less`](../src/host/components/link/variables.less)
-- [`modal/variables.less`](../src/host/components/modal/variables.less)
+Typical examples include button, link, and modal component tokens.
 
 These files usually define component-scale dimensions, icon sizes, or z-index-like local tokens.
 
@@ -147,7 +146,7 @@ A good `styling` section should answer:
 
 Do not try to mirror every imported token from LESS files. Keep only decision-making signal.
 
-## Provenance
+## Reference Surface
 
 - `assets/stylesheets/typography.less`
 - `assets/stylesheets/palette.less`
@@ -155,4 +154,3 @@ Do not try to mirror every imported token from LESS files. Keep only decision-ma
 - `assets/stylesheets/variables.less`
 - `assets/stylesheets/layout.less`
 - `assets/stylesheets/motion.less`
-- host-side component `.less` files referenced from each profile

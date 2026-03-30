@@ -25,9 +25,3 @@ api:
 ai_notes:
   do:
     - Use with UiCollapseBox when grouped expansion matters.
-
-provenance:
-  public_types:
-    - src/common/components/collapse-box.ts
-  implementation:
-    - src/remote/components/collapse-box.ts

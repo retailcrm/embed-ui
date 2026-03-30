@@ -18,11 +18,3 @@ avoid_when:
 ai_notes:
   do:
     - Use for compact error presentation.
-
-provenance:
-  public_types:
-    - src/common/components/error.ts
-  implementation:
-    - src/remote/components/error.ts
-  docs:
-    - storybook/stories/UiError.mdx

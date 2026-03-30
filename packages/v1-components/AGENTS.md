@@ -21,7 +21,7 @@ This package exposes declarative UI primitives that are rendered by RetailCRM ho
 
 - For extension UI code, import from `@retailcrm/embed-ui-v1-components/remote`.
 - For icons and static assets, import from `@retailcrm/embed-ui-v1-components/assets/...`.
-- Do not import from `src/*`, `dist/*`, or internal workspace files when writing extension code.
+- Do not import from package-internal files such as `dist/*` or internal workspace files when writing extension code.
 - Do not recommend `@retailcrm/embed-ui-v1-components/host` unless the task is explicitly about CRM host internals.
 
 ## Mental Model
@@ -117,10 +117,10 @@ const save = () => {}
 ## If You Need More Context
 
 - Package README:
-  [`/packages/v1-components/README.md`](/Users/knigor/Desktop/Work/Embed-UI/embed-ui/packages/v1-components/README.md)
+  [`./README.md`](./README.md)
 - Human-oriented package docs:
-  [`/packages/v1-components/docs/README.md`](/Users/knigor/Desktop/Work/Embed-UI/embed-ui/packages/v1-components/docs/README.md)
+  [`./docs/README.md`](./docs/README.md)
 - Machine-oriented package summary:
-  [`/packages/v1-components/docs/AI.md`](/Users/knigor/Desktop/Work/Embed-UI/embed-ui/packages/v1-components/docs/AI.md)
+  [`./docs/AI.md`](./docs/AI.md)
 - Component profiles:
-  [`/packages/v1-components/docs/PROFILES.md`](/Users/knigor/Desktop/Work/Embed-UI/embed-ui/packages/v1-components/docs/PROFILES.md)
+  [`./docs/PROFILES.md`](./docs/PROFILES.md)

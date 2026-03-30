@@ -146,13 +146,3 @@ styling:
       size: 12px
       line_height: 14px
       weight: 400
-
-provenance:
-  public_types:
-    - src/common/components/table.ts
-  implementation:
-    - src/remote/components/table/UiTable.vue
-  styles:
-    - src/host/components/table/table.less
-  docs:
-    - storybook/stories/UiTable.mdx

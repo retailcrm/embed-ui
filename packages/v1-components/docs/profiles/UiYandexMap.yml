@@ -1,7 +1,7 @@
 component: UiYandexMap
 summary: >
   UiYandexMap is the Yandex map component for map display and related location scenarios.
-  Use it when the screen actually needs a map surface.
+  Treat it as unstable for now and avoid it unless the screen explicitly requires a map surface.
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -13,12 +13,5 @@ use_when:
   - You need location display inside extension UI.
 
 avoid_when:
+  - You can solve the task without an embedded map and do not want to depend on an unstable component.
   - You only need text address output.
-
-provenance:
-  public_types:
-    - src/common/components/yandex-map.ts
-  implementation:
-    - src/remote/components/yandex-map.ts
-  docs:
-    - storybook/stories/UiYandexMap.mdx

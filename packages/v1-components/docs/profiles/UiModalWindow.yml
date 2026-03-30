@@ -30,11 +30,3 @@ api:
   methods:
     - name: open
     - name: close
-
-provenance:
-  public_types:
-    - src/common/components/modal-window.ts
-  implementation:
-    - src/remote/components/modal-window.ts
-  docs:
-    - storybook/stories/UiModalWindow.mdx

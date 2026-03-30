@@ -1,0 +1,32 @@
+component: UiTableHeadCell
+summary: >
+  UiTableHeadCell is the low-level table header cell primitive used inside UiTable head rows.
+  Use it only when you build custom table structure from public table parts.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableHeadCell
+
+related_components:
+  - UiTable
+  - UiTableSorter
+
+use_when:
+  - You compose a custom table head with public table primitives.
+  - You need header-cell alignment or trim control outside UiTableColumn defaults.
+
+avoid_when:
+  - UiTableColumn already covers the header rendering you need.
+  - You are not building custom table markup.
+
+api:
+  key_props:
+    - name: align
+    - name: trim
+
+ai_notes:
+  do:
+    - Prefer UiTableColumn first for regular table headers.
+  avoid:
+    - Do not use it as a generic container outside table head rows.

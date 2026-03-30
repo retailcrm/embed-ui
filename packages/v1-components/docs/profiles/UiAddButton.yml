@@ -43,11 +43,3 @@ ai_notes:
     - Use for create and add flows rather than generic submit actions.
   avoid:
     - Do not replace a plain UiButton unless the add semantics are intentional.
-
-provenance:
-  public_types:
-    - src/common/components/add-button.ts
-  implementation:
-    - src/remote/components/add-button.ts
-  docs:
-    - storybook/stories/UiAddButton.mdx

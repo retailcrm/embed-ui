@@ -17,11 +17,3 @@ avoid_when:
 
 api:
   key_props: []
-
-provenance:
-  public_types:
-    - src/common/components/scroll-box.ts
-  implementation:
-    - src/remote/components/scroll-box.ts
-  docs:
-    - storybook/stories/UiScrollBox.mdx

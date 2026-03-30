@@ -26,11 +26,3 @@ ai_notes:
     - Use UiCollapse as a primitive for expandable content regions.
   avoid:
     - Do not use it when a full disclosure component is the actual need.
-
-provenance:
-  public_types:
-    - src/common/components/collapse.ts
-  implementation:
-    - src/remote/components/collapse.ts
-  docs:
-    - storybook/stories/UiCollapse.mdx

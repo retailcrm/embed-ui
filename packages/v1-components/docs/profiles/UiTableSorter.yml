@@ -1,0 +1,33 @@
+component: UiTableSorter
+summary: >
+  UiTableSorter is a compact sort control primitive for custom table head content.
+  Use it when header rendering is composed manually and sorting state must be shown explicitly.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableSorter
+
+related_components:
+  - UiTable
+  - UiTableHeadCell
+
+use_when:
+  - You build a custom sortable header with table primitives.
+  - You need to show asc or desc state explicitly in header content.
+
+avoid_when:
+  - Sorting is not part of the table interaction.
+  - UiTableColumn label rendering is enough.
+
+api:
+  key_props:
+    - name: direction
+  emits:
+    - name: click
+
+ai_notes:
+  do:
+    - Pair it with explicit sort state in screen logic.
+  avoid:
+    - Do not use it as a generic icon-only control outside table headers.

@@ -38,11 +38,3 @@ behavior:
   notes:
     - Can clamp values into range.
     - Supports horizontal and vertical direction.
-
-provenance:
-  public_types:
-    - src/common/components/number-stepper.ts
-  implementation:
-    - src/remote/components/number-stepper.ts
-  docs:
-    - storybook/stories/UiNumberStepper.mdx

@@ -238,16 +238,3 @@ ai_notes:
   avoid:
     - Do not assume the tooltip is anchored to the entire main area.
     - Do not overload the actions area with full form layout.
-
-provenance:
-  public_types:
-    - src/common/components/page-header.ts
-  implementation:
-    - src/host/components/page-header/UiPageHeader.vue
-    - src/host/components/page-header/UiPageHeaderLayout.vue
-    - src/host/components/page-header/UiPageHeaderTitle.vue
-    - src/remote/components/page-header/UiPageHeader.vue
-  styles:
-    - src/host/components/page-header/page-header.less
-  docs:
-    - storybook/stories/UiPageHeader.mdx

@@ -1,6 +1,6 @@
 # AI-Friendly Component Profile Format
 
-This document defines the YAML component profile format that Codex and other AI assistants can use
+This document defines the YAML component profile format that AI assistants can use
 to work with `v1-components` confidently.
 
 The format is optimized for code generation, code review, and safe API selection rather than for marketing copy.
@@ -219,17 +219,6 @@ A short list of rules specifically for code generation:
 - what not to do;
 - where it is better to admit the docs are missing than to guess.
 
-## 13. `provenance`
-
-At the end of a profile, it is useful to list information sources:
-
-- public types;
-- Storybook docs and examples;
-- host or remote implementation;
-- styles.
-
-This helps separate facts from inference.
-
 ## Writing Rules
 
 - Use short, concrete statements instead of vague praise.
@@ -256,4 +245,4 @@ These sections almost always need manual writing:
 - which anti-patterns are most dangerous for AI;
 - which part of the DOM or CSS shape is only a descriptive model.
 
-That split is described in more detail in [`AUTOMATION.md`](./AUTOMATION.md).
+That split should stay documented in maintainer-only repository notes, not in the published package docs.

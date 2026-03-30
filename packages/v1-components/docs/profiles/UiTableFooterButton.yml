@@ -1,0 +1,32 @@
+component: UiTableFooterButton
+summary: >
+  UiTableFooterButton is a footer-scoped action control for custom table footer layouts.
+  It behaves like a table-specific button primitive rather than a full replacement for UiButton.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableFooterButton
+
+related_components:
+  - UiTable
+  - UiTableFooterSection
+
+use_when:
+  - You need an action inside a custom table footer area.
+
+avoid_when:
+  - UiButton is enough outside table footer composition.
+  - You are not building custom footer structure.
+
+api:
+  key_props:
+    - name: type
+  emits:
+    - name: click
+
+ai_notes:
+  do:
+    - Keep it in table footer usage.
+  avoid:
+    - Do not substitute it for general page-level actions.

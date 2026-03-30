@@ -10,6 +10,7 @@ Only the public package contract is described below, without depending on the re
 - Package name: `@retailcrm/embed-ui-v1-components`
 - Purpose: UI components and UI helpers for RetailCRM JS extensions
 - Framework: Vue 3
+- Published Storybook: `https://retailcrm.github.io/embed-ui/v1-components/0.9.14/`
 - Primary public entrypoints:
   - `@retailcrm/embed-ui-v1-components/remote`
   - `@retailcrm/embed-ui-v1-components/host`
@@ -18,7 +19,7 @@ Only the public package contract is described below, without depending on the re
 ## Safe Usage Rules
 
 - Import only from documented public entrypoints.
-- Do not import from `src/*`, `dist/*`, or repository-internal files.
+- Do not import from package-internal files such as `dist/*` or repository-only paths.
 - Treat `remote` as the default public surface for extension authors.
 - Treat `host` as a specialized public surface for runtime-side integrations.
 - If a requested capability is not present in public exports, say that directly instead of suggesting internal imports.
@@ -31,7 +32,7 @@ When generating UI code, use this order:
 2. open a detailed profile from [`PROFILES.md`](./PROFILES.md) if one exists;
 3. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
 4. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
-5. if no profile exists yet, fall back to Storybook docs and public type declarations, and state any inference explicitly.
+5. if no profile exists yet, fall back to [Storybook](https://retailcrm.github.io/embed-ui/v1-components/0.9.14/) docs and public type declarations, and state any inference explicitly.
 
 ## Default Recommendation For Common Forms
 
@@ -54,9 +55,9 @@ Typical compositions:
 - `UiPageHeader` + `UiButton`
 - `UiSelect` + `UiSelectOption`
 
-## What Codex Needs In A Good Component Profile
+## What AI Needs In A Good Component Profile
 
-The most useful format for Codex is a component profile that explicitly answers:
+The most useful format for AI is a component profile that explicitly answers:
 
 - when to use the component and when not to use it;
 - which imports are public and safe;
@@ -99,5 +100,4 @@ The preferred styling signal is:
 - [`COMPONENTS.md`](./COMPONENTS.md)
 - [`FORMAT.md`](./FORMAT.md)
 - [`STYLING.md`](./STYLING.md)
-- [`AUTOMATION.md`](./AUTOMATION.md)
 - [`../AGENTS.md`](../AGENTS.md)

@@ -16,11 +16,9 @@ These docs are optimized for two main scenarios:
 - [`COMPONENTS.md`](./COMPONENTS.md)
   a catalog of public components and helpers with links to detailed component profiles.
 - [`FORMAT.md`](./FORMAT.md)
-  the target component profile format for Codex and other AI assistants.
+  the target component profile format for AI assistants.
 - [`STYLING.md`](./STYLING.md)
   shared guidance for reading classes, CSS variables, and typography in profiles.
-- [`AUTOMATION.md`](./AUTOMATION.md)
-  what can be extracted automatically from source code and Storybook, and what should remain manual.
 - [`PROFILES.md`](./PROFILES.md)
   the index of YAML component profiles.
 
@@ -64,5 +62,4 @@ If you are extending the docs:
 
 1. [`FORMAT.md`](./FORMAT.md)
 2. [`STYLING.md`](./STYLING.md)
-3. [`AUTOMATION.md`](./AUTOMATION.md)
-4. the existing profiles in [`PROFILES.md`](./PROFILES.md)
+3. the existing profiles in [`PROFILES.md`](./PROFILES.md)

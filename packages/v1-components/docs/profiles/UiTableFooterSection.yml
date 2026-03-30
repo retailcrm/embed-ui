@@ -1,0 +1,26 @@
+component: UiTableFooterSection
+summary: >
+  UiTableFooterSection is the low-level footer container for custom table footer layouts.
+  It is mainly useful when UiTable footer slots are not enough on their own.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableFooterSection
+
+related_components:
+  - UiTable
+  - UiTableFooterButton
+
+use_when:
+  - You compose custom footer content from public table primitives.
+
+avoid_when:
+  - UiTable footer slots already solve the layout.
+  - You do not need explicit footer structure.
+
+ai_notes:
+  do:
+    - Use it only as part of custom table footer composition.
+  avoid:
+    - Do not treat it as a standalone layout section.

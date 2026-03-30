@@ -37,11 +37,3 @@ ai_notes:
     - Use UiLink for real link semantics and inline navigation.
   avoid:
     - Do not use UiLink where the action should read as a button.
-
-provenance:
-  public_types:
-    - src/common/components/link.ts
-  implementation:
-    - src/remote/components/link.ts
-  docs:
-    - storybook/stories/UiLink.mdx

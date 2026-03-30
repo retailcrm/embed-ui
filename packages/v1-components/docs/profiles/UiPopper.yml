@@ -195,11 +195,3 @@ ai_notes:
   avoid:
     - Do not treat UiPopper as a regular inline wrapper.
     - Do not forget that it lives outside normal document flow.
-
-provenance:
-  public_types:
-    - src/common/components/popper.ts
-  implementation:
-    - src/host/components/popper/UiPopper.vue
-  styles:
-    - src/host/components/popper/popper.less

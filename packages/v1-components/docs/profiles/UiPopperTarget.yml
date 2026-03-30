@@ -110,7 +110,3 @@ ai_notes:
   avoid:
     - Do not treat the wrapper as decorative only; it affects what the floating layer anchors to.
     - Do not wrap every UiButton or similar trigger with UiPopperTarget if connector already gives the correct anchor.
-
-provenance:
-  implementation:
-    - src/host/components/popper/UiPopperTarget.vue
