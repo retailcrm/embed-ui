@@ -28,9 +28,3 @@ ai_notes:
     - Use for compact grouped identity display.
   avoid:
     - Do not use it as a replacement for a full people list.
-
-provenance:
-  public_types:
-    - src/common/components/avatar.ts
-  implementation:
-    - src/remote/components/avatar.ts

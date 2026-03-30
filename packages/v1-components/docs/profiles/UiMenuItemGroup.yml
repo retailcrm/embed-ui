@@ -36,7 +36,3 @@ api:
 ai_notes:
   do:
     - Use for grouped menu structure instead of manual heading-plus-list markup.
-
-provenance:
-  implementation:
-    - src/remote/components/menu.ts

@@ -34,11 +34,3 @@ ai_notes:
     - Use UiAlert for inline feedback that should stay in normal layout flow.
   avoid:
     - Do not use it as a replacement for modal confirmation.
-
-provenance:
-  public_types:
-    - src/common/components/alert.ts
-  implementation:
-    - src/remote/components/alert.ts
-  docs:
-    - storybook/stories/UiAlert.mdx

@@ -37,11 +37,3 @@ ai_notes:
     - Use UiCollapseBox for structured disclosure UI.
   avoid:
     - Do not rebuild collapse header UI manually when this component already fits.
-
-provenance:
-  public_types:
-    - src/common/components/collapse-box.ts
-  implementation:
-    - src/remote/components/collapse-box.ts
-  docs:
-    - storybook/stories/UiCollapseBox.mdx

@@ -34,11 +34,3 @@ ai_notes:
     - Use UiAvatar for identity display, not for general media.
   avoid:
     - Do not use it where UiImage is the better semantic fit.
-
-provenance:
-  public_types:
-    - src/common/components/avatar.ts
-  implementation:
-    - src/remote/components/avatar.ts
-  docs:
-    - storybook/stories/UiAvatar.mdx

@@ -51,4 +51,3 @@ import { UiButton } from '@retailcrm/embed-ui-v1-components/remote'
 - [`docs/AI.md`](./docs/AI.md) — контекст для ИИ и автоматизаций.
 - [`docs/PROFILES.md`](./docs/PROFILES.md) — AI-friendly YAML-профили компонентов.
 - [`docs/FORMAT.md`](./docs/FORMAT.md) — формат описания компонента для AI-агентов.
-- [`docs/AUTOMATION.md`](./docs/AUTOMATION.md) — план автоматизации и полуавтоматизации документации.

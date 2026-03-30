@@ -36,9 +36,3 @@ api:
     - name: label
       zone: header-label
       creates: Header label content.
-
-provenance:
-  public_types:
-    - src/common/components/table.ts
-  implementation:
-    - src/remote/components/table/UiTableColumn.vue

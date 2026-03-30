@@ -24,7 +24,3 @@ api:
 ai_notes:
   do:
     - Use to structure large option lists inside UiSelect.
-
-provenance:
-  implementation:
-    - src/remote/components/select/UiSelectOptionGroup.vue

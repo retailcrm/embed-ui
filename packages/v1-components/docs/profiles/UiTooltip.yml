@@ -29,11 +29,3 @@ api:
 ai_notes:
   do:
     - Use UiTooltip for tooltip semantics and UiPopper for lower-level floating behavior.
-
-provenance:
-  public_types:
-    - src/common/components/popper.ts
-  implementation:
-    - src/remote/components/tooltip.ts
-  docs:
-    - storybook/stories/UiTooltip.mdx

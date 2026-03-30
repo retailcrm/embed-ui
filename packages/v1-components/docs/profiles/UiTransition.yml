@@ -13,9 +13,3 @@ use_when:
 
 avoid_when:
   - You need static content with no transition behavior.
-
-provenance:
-  public_types:
-    - src/common/components/transition.ts
-  implementation:
-    - src/remote/components/transition.ts

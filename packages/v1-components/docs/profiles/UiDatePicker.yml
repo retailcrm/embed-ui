@@ -45,11 +45,3 @@ ai_notes:
     - Prefer UiDatePicker for typed or popup date input.
   avoid:
     - Do not use UiCalendar directly if a textbox trigger is expected.
-
-provenance:
-  public_types:
-    - src/common/components/date-picker.ts
-  implementation:
-    - src/remote/components/date-picker.ts
-  docs:
-    - storybook/stories/UiDatePicker.mdx

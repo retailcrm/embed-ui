@@ -24,11 +24,3 @@ api:
 ai_notes:
   do:
     - Use UiDate for formatted output and UiDatePicker for input.
-
-provenance:
-  public_types:
-    - src/common/components/date.ts
-  implementation:
-    - src/remote/components/date.ts
-  docs:
-    - storybook/stories/UiDate.mdx

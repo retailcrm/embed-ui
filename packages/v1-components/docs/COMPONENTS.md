@@ -19,7 +19,6 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 - [`UiSelect`](./profiles/UiSelect.yml): select container for single or multiple choice
 - [`UiSelectOption`](./profiles/UiSelectOption.yml): select option
 - [`UiSelectOptionGroup`](./profiles/UiSelectOptionGroup.yml): grouped options
-- [`UiSelectOptionGroupHeader`](./profiles/UiSelectOptionGroupHeader.yml): option group header
 - [`UiDatePicker`](./profiles/UiDatePicker.yml): date or date-range selection
 - [`UiTimePicker`](./profiles/UiTimePicker.yml): time selection
 - [`UiCalendar`](./profiles/UiCalendar.yml): calendar primitive
@@ -71,6 +70,11 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 - [`UiImage`](./profiles/UiImage.yml): image display
 - [`UiTable`](./profiles/UiTable.yml): table root
 - [`UiTableColumn`](./profiles/UiTableColumn.yml): table column declaration
+- [`UiTableHeadCell`](./profiles/UiTableHeadCell.yml): table head cell primitive
+- [`UiTableBodyCell`](./profiles/UiTableBodyCell.yml): table body cell primitive
+- [`UiTableFooterSection`](./profiles/UiTableFooterSection.yml): table footer section container
+- [`UiTableFooterButton`](./profiles/UiTableFooterButton.yml): table footer action button
+- [`UiTableSorter`](./profiles/UiTableSorter.yml): table sort control primitive
 - [`UiYandexMap`](./profiles/UiYandexMap.yml): Yandex map component
 
 ## Helpers

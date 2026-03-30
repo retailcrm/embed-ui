@@ -27,9 +27,3 @@ api:
     - name: responsive
     - name: scrolling
     - name: role
-
-provenance:
-  public_types:
-    - src/common/components/modal-window.ts
-  implementation:
-    - src/remote/components/modal-window-surface.ts

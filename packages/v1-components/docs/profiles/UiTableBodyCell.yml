@@ -1,0 +1,35 @@
+component: UiTableBodyCell
+summary: >
+  UiTableBodyCell is the low-level body cell primitive used inside UiTable rows.
+  Use it only for custom table layouts built from public table parts.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableBodyCell
+
+related_components:
+  - UiTable
+
+use_when:
+  - You compose custom body rows with public table primitives.
+  - You need explicit align, valign, colspan, rowspan, or grouped-cell theme control.
+
+avoid_when:
+  - UiTableColumn already covers the body-cell rendering you need.
+  - You are not inside table row structure.
+
+api:
+  key_props:
+    - name: align
+    - name: valign
+    - name: colspan
+    - name: rowspan
+    - name: trim
+    - name: theme
+
+ai_notes:
+  do:
+    - Keep it inside UiTable row composition.
+  avoid:
+    - Do not use it as a generic box or layout wrapper.

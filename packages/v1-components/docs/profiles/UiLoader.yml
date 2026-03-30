@@ -24,11 +24,3 @@ api:
 ai_notes:
   do:
     - Use overlay or fixed only when the loader should escape normal inline flow.
-
-provenance:
-  public_types:
-    - src/common/components/loader.ts
-  implementation:
-    - src/remote/components/loader.ts
-  docs:
-    - storybook/stories/UiLoader.mdx
