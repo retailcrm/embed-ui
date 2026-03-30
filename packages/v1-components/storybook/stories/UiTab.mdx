@@ -1,0 +1,183 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiTabStories from './UiTab.stories'
+
+# UiTab
+
+`UiTab` - набор навигационных вкладок, собранный поверх remote/host-схемы `embed-ui`.
+Активная вкладка определяется строковым `id`, а если ширины не хватает, лишние элементы убираются в inline dropdown. Для slot-based сценариев `UiTab` также может содержать `content`, который будет отрисован как активная `tabpanel`.
+
+## Когда использовать
+
+* Нужен компактный row из вкладок для переключения раздела или представления.
+* Для активного состояния достаточно строкового `id`, без object-value и кастомного сравнения.
+* Нужно выбрать внешний вид вкладок: классический `text` или более собранный `filled`.
+* Нужно сохранить вкладки в одну строку и переносить лишние элементы в выпадающее меню.
+* Нужна ручная композиция вкладок с иконками и кастомным `label` или `counter`.
+
+## Что входит в текущий scope
+
+* `UiTabGroup` управляет header-частью вкладок и активной панелью контента.
+* Для простых сценариев используйте `items`.
+* Для иконок, кастомного содержимого и panel-content используйте `UiTab` во `default` slot.
+* `appearance="filled"` уже поддержан, включая inline overflow-trigger без порталов.
+
+## Примеры
+
+### 1. Вкладки через `items`
+
+```vue
+<template>
+  <UiTabGroup
+    v-model:active-id="activeId"
+    :items="items"
+    overflowing
+  />
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { UiTabGroup } from '@retailcrm/embed-ui-v1-components/remote'
+
+const activeId = ref('overview')
+
+const items = [
+  { id: 'overview', label: 'Обзор', counter: '8' },
+  { id: 'orders', label: 'Заказы', counter: '12' },
+  { id: 'files', label: 'Файлы', counter: '3' },
+]
+</script>
+```
+
+<Story of={UiTabStories.BasicTabs} />
+
+### 2. Вкладки через `UiTab`, slot-иконки и panel content
+
+Если нужен richer UI, собирайте вкладки вручную через `UiTab`.
+
+```vue
+<template>
+  <UiTabGroup
+    v-model:active-id="activeId"
+    overflowing
+  >
+    <UiTab
+      v-for="item in items"
+      :key="item.id"
+      :id="item.id"
+      :label="item.label"
+      :counter="item.counter"
+      :disabled="item.disabled"
+    >
+      <template #icon>
+        <IconStar />
+      </template>
+
+      <template #content>
+        <section>
+          <h4>{{ item.label }}</h4>
+          <p>Контент активной панели для вкладки {{ item.label }}</p>
+        </section>
+      </template>
+    </UiTab>
+  </UiTabGroup>
+</template>
+
+<script lang="ts" setup>
+import { ref } from 'vue'
+import IconStar from '~assets/sprites/actions/star.svg'
+import {
+  UiTab,
+  UiTabGroup,
+} from '@retailcrm/embed-ui-v1-components/remote'
+
+const activeId = ref('overview')
+
+const items = [
+  { id: 'overview', label: 'Обзор', counter: '8' },
+  { id: 'orders', label: 'Заказы', counter: '12' },
+  { id: 'files', label: 'Файлы', counter: '3' },
+]
+</script>
+```
+
+<Story of={UiTabStories.IconTabs} />
+
+### 3. Filled-вкладки
+
+`appearance="filled"` подходит для более собранного, сегментированного вида.
+
+```vue
+<template>
+  <UiTabGroup
+    v-model:active-id="activeId"
+    appearance="filled"
+  >
+    <UiTab
+      v-for="item in items"
+      :key="item.id"
+      :id="item.id"
+      :label="item.label"
+      :counter="item.counter"
+    >
+      <template #icon>
+        <IconStar />
+      </template>
+    </UiTab>
+  </UiTabGroup>
+</template>
+```
+
+<Story of={UiTabStories.FilledTabs} />
+
+### 4. Overflow-меню
+
+Если места недостаточно, лишние элементы попадают в inline dropdown.
+
+```vue
+<template>
+  <div style="width: 320px;">
+    <UiTabGroup
+      v-model:active-id="activeId"
+      :items="items"
+      overflowing
+    />
+  </div>
+</template>
+```
+
+<Story of={UiTabStories.OverflowMenu} />
+
+## Поведение
+
+* `UiTabGroup` эмитит `change` и `update:activeId`.
+* Если `overflowing` выключен, все вкладки остаются в одной строке без меню.
+* Если `overflowing` включен, а ширины не хватает, неактивные вкладки переносятся в меню.
+* Активная вкладка старается оставаться в head-части, а не прятаться в меню.
+* Disabled-вкладки остаются неинтерактивными и не участвуют в клавиатурной навигации.
+
+## Важные свойства
+
+* `activeId` - `id` активной вкладки.
+* `items` - быстрый способ передать вкладки как массив `{ id, label, counter?, disabled? }`.
+* `size` - размер вкладок (`sm`, `md`, `lg`).
+* `appearance` - внешний вид вкладок (`text`, `filled`).
+* `overflowing` - включает перенос лишних вкладок в выпадающее меню.
+
+## Слоты
+
+* `default` у `UiTabGroup` - ручная композиция вкладок через `UiTab`.
+* `icon`, `label`, `counter`, `content` у `UiTab` - кастомизация заголовка вкладки и активной панели.
+
+## A11y
+
+* Head-часть рендерится как `tablist`, а сами вкладки - как `tab`.
+* Если у активной вкладки есть `content`, он рендерится как `tabpanel` и связывается с кнопкой через `aria-controls` и `aria-labelledby`.
+* В группе используется один tab-stop: фокус ставится на активную вкладку, либо на первую доступную.
+* `ArrowLeft`, `ArrowRight`, `ArrowUp`, `ArrowDown` перемещают фокус и активную вкладку между доступными элементами.
+* `Home` и `End` переводят к первой и последней доступной вкладке.
+* `Enter` и `Space` выбирают текущую вкладку.
+* Пункты overflow-меню рендерятся как `menuitemradio`.
+
+## API
+
+<ArgTypes />

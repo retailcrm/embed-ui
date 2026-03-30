@@ -7,6 +7,10 @@
 <script lang="ts" setup>
 import { useElementRef } from '@/host/composables'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 defineProps({
   tag: {
     type: String,

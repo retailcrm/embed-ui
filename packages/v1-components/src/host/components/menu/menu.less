@@ -36,7 +36,8 @@
       align-items: center;
     }
 
-    &:not(&_disabled):hover {
+    .ui-v1-menu-item:not(.ui-v1-menu-item_disabled) &:hover,
+    .ui-v1-menu-item:not(.ui-v1-menu-item_disabled) &:focus-visible {
       background: var(--ui-v1-menu-item-background-color);
     }
   }
@@ -51,21 +52,21 @@
     color: @blue-500;
   }
 
-  &:active &__inner,
-  &_active &__inner {
+  &:not(&_disabled):active &__inner,
+  &_active:not(&_disabled) &__inner {
     background: var(--ui-v1-menu-item-background-color);
     border: 1px solid var(--ui-v1-menu-item-main-color);
   }
 
-  &__inner:not(&__inner_disabled):hover &__icon_leading {
+  &:not(&_disabled) &__inner:hover &__icon_leading {
     color: var(--ui-v1-menu-item-main-color);
   }
 
-  &__inner:not(&__inner_disabled):hover &__icon_leading svg {
+  &:not(&_disabled) &__inner:hover &__icon_leading svg {
     fill: var(--ui-v1-menu-item-main-color);
   }
 
-  &__inner:not(&__inner_disabled):hover &__ticker {
+  &:not(&_disabled) &__inner:hover &__ticker {
     animation: ui-v1-menu-item-ticker 2s linear 0.1s infinite alternate;
     overflow: visible;
   }

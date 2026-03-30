@@ -40,6 +40,8 @@ export const createEndpointRoot = async (
     'UiScrollBox',
     'UiSlider',
     'UiSwitch',
+    'UiTab',
+    'UiTabGroup',
     'UiSelectPopper',
     'UiSelectTrigger',
     'UiTableBodyCell',
