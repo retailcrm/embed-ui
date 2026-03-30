@@ -10,6 +10,7 @@ import { chromium } from 'playwright'
 type CliOptions = {
   baseUrl: string;
   output: string;
+  selector?: string;
   settleMs: number;
   storyPath: string;
   timeoutMs: number;
@@ -72,6 +73,11 @@ const parseArgs = (argv: string[]): CliOptions => {
 
     if (argument === '--settle-ms') {
       options.settleMs = parseInteger(readValue(argument), argument)
+      continue
+    }
+
+    if (argument === '--selector') {
+      options.selector = readValue(argument)
       continue
     }
 
@@ -253,10 +259,19 @@ const run = async () => {
     await page.waitForTimeout(250)
 
     await mkdir(dirname(outputPath), { recursive: true })
-    await page.screenshot({
-      fullPage: true,
-      path: outputPath,
-    })
+    if (options.selector) {
+      const locator = page.locator(options.selector).last()
+
+      await locator.scrollIntoViewIfNeeded()
+      await locator.screenshot({
+        path: outputPath,
+      })
+    } else {
+      await page.screenshot({
+        fullPage: true,
+        path: outputPath,
+      })
+    }
 
     console.log(outputPath)
   } finally {

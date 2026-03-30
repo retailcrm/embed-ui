@@ -45,11 +45,12 @@ storybook.serve: .require-compose ## [Build][docker] Runs Storybook for v1-compo
 storybook.shot: .require-compose ## [Research][docker] Captures a Storybook screenshot for v1-components docs/story page
 	$(TARGET_HEADER)
 	@$(COMPOSE) up -d v1-components
-	@UID=$$(id -u) GID=$$(id -g) $(COMPOSE) run --rm playwright \
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
 		yarn workspace @retailcrm/embed-ui-v1-components run storybook:shot \
 			--base-url http://v1-components:6006 \
 			--path "$(if $(story_path),$(story_path),/iframe.html?viewMode=docs&id=components-uitable--docs)" \
 			--output "$(if $(output),$(output),artifacts/storybook/UiTable.docs.png)" \
+			$(if $(selector),--selector "$(selector)",) \
 			--wait-for-selector "$(if $(wait_for),$(wait_for),#storybook-docs)" \
 			--settle-ms "$(if $(settle_ms),$(settle_ms),2500)" \
 			--timeout-ms "$(if $(timeout_ms),$(timeout_ms),60000)" \
