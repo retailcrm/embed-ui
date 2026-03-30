@@ -38,6 +38,8 @@ const createRoot = async (channel: Channel) => {
       'UiButton',
       'UiCheckbox',
       'UiLink',
+      'UiLogicTreeRoot',
+      'UiLogicTreeRow',
       'UiMenuItem',
       'UiMenuItemGroup',
       'UiPageHeaderTitle',
