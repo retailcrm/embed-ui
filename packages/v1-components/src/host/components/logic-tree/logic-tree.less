@@ -1,0 +1,433 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-logic-tree {
+  .reset-box-sizing();
+
+  width: 100%;
+  color: @black-500;
+  background: #fff;
+
+  &_surface {
+    padding: @spacing-xs;
+    background: #fff;
+    border-radius: @border-radius-md;
+    box-shadow: inset 0 0 0 1px @grey-300;
+  }
+
+  &__row {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+
+    & + & {
+      margin-top: @spacing-xs;
+    }
+  }
+
+  &__row-main {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    overflow: visible;
+  }
+
+  &__connectors {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-auto-columns: 32px;
+    grid-auto-flow: column;
+    flex: none;
+    width: max-content;
+    min-width: max-content;
+    overflow: visible;
+  }
+
+  &__relation-badge {
+    .text-tiny-accent();
+
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    padding: 0 6px;
+    color: #fff;
+    border-radius: 999px;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+
+    &_and {
+      min-width: 26px;
+    }
+
+    &_or {
+      min-width: 42px;
+    }
+
+    &_blue {
+      background: @blue-300;
+    }
+
+    &_green {
+      background: @green-400;
+    }
+
+    &_grey {
+      background: @grey-800;
+    }
+
+    &_red {
+      background: @red-500;
+    }
+
+    &_yellow {
+      background: @yellow-400;
+    }
+  }
+
+  &__connector {
+    position: relative;
+    min-height: 36px;
+    opacity: 0;
+    overflow: visible;
+
+    &_visible {
+      opacity: 1;
+    }
+
+    &_branch .ui-v1-logic-tree__connector-stroke_top {
+      display: block;
+    }
+
+    &:not(&_branch) .ui-v1-logic-tree__connector-stroke_top {
+      height: calc(100% + 8px);
+    }
+
+    &:not(&_branch) .ui-v1-logic-tree__connector-stroke_middle {
+      display: none;
+    }
+
+    &_blue { color: @blue-300; }
+    &_green { color: @green-400; }
+    &_grey { color: @grey-700; }
+    &_red { color: @red-500; }
+    &_yellow { color: @yellow-400; }
+  }
+
+  &__connector-stroke {
+    position: absolute;
+    left: 8px;
+    width: 2px;
+    background: currentColor;
+    border-radius: 999px;
+
+    &_top {
+      top: 0;
+      height: calc(50% + 1px);
+    }
+
+    &_bottom {
+      top: 50%;
+      height: calc(50% + 8px);
+    }
+
+    &_middle {
+      top: 50%;
+      left: 8px;
+      width: 20px;
+      height: 2px;
+      transform: translateY(-50%);
+    }
+  }
+
+  &__surface-row {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: @spacing-xs;
+    min-width: 0;
+    min-height: 36px;
+    padding: @spacing-xs;
+    background: #fff;
+    border-radius: @border-radius-sm;
+    box-shadow: inset 0 0 0 1px @grey-300;
+    transition: box-shadow @transition, background @transition, opacity @transition;
+
+    &:hover {
+      background: @blue-transparent;
+    }
+
+    &_editor,
+    &_actions {
+      min-height: 52px;
+    }
+
+    &_editor {
+      align-items: center;
+    }
+
+    &_actions {
+      background: #fff;
+    }
+
+    &_dragging {
+      opacity: 0.56;
+    }
+
+    &_drop-before {
+      box-shadow:
+        inset 0 2px 0 @blue-500,
+        inset 0 0 0 1px @blue-500;
+    }
+
+    &_drop-inside {
+      background: @blue-transparent;
+      box-shadow: inset 0 0 0 1px @blue-500;
+    }
+
+    &_highlighted {
+      background: @blue-transparent;
+    }
+
+    &_selected {
+      background: @blue-transparent;
+      box-shadow: inset 0 0 0 1px @blue-500;
+    }
+
+    &_plain {
+      min-height: 32px;
+      padding: 6px 0;
+      background: transparent;
+      box-shadow: none;
+
+      &:hover {
+        background: @blue-transparent;
+        box-shadow: none;
+      }
+    }
+
+    &_plain.ui-v1-logic-tree__surface-row_editor,
+    &_plain.ui-v1-logic-tree__surface-row_actions {
+      min-height: 36px;
+      padding: 0;
+    }
+
+    &_plain.ui-v1-logic-tree__surface-row_selected {
+      padding: @spacing-xs;
+      box-shadow: inset 0 0 0 1px @blue-500;
+    }
+  }
+
+  &__folder,
+  &__handle,
+  &__icon-button,
+  &__toggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    color: @black-500;
+    background: transparent;
+    border: 0;
+  }
+
+  &__folder svg,
+  &__handle svg,
+  &__icon-button svg,
+  &__toggle svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &__folder {
+    color: @black-500;
+  }
+
+  &__handle {
+    color: @grey-700;
+    cursor: grab;
+  }
+
+  &__toggle {
+    width: 24px;
+    height: 24px;
+    color: @black-500;
+    cursor: pointer;
+  }
+
+  &__toggle-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform @transition;
+
+    &_collapsed {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: @spacing-xs;
+    min-width: 0;
+  }
+
+  &__title {
+    .text-regular-accent();
+
+    color: @black-500;
+  }
+
+  &__inline {
+    .text-regular();
+
+    color: @black-500;
+
+    &_muted {
+      color: @grey-800;
+    }
+
+    &_separated {
+      position: relative;
+      padding-left: 12px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 4px;
+        height: 4px;
+        background: currentColor;
+        border-radius: 50%;
+        transform: translateY(-50%);
+      }
+    }
+
+    &_semibold {
+      font-weight: 500;
+    }
+
+    &_blue { color: @blue-300; }
+    &_green { color: @green-400; }
+    &_grey { color: @grey-800; }
+    &_red { color: @red-500; }
+    &_yellow { color: @yellow-400; }
+  }
+
+  &__controls {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: @spacing-xs;
+    min-width: 0;
+  }
+
+  &__control {
+    flex: none;
+    min-width: 36px;
+
+    &_icon {
+      width: 36px;
+      min-width: 36px;
+    }
+  }
+
+  &__control_select.ui-v1-select,
+  &__control_input.ui-v1-textbox {
+    flex: none;
+    max-width: 100%;
+  }
+
+  &__control_icon.ui-v1-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: @border-radius-md;
+  }
+
+  &__control-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+  }
+
+  &__icon-button {
+    width: 36px;
+    height: 36px;
+    border-radius: @border-radius-md;
+    color: @grey-700;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity @transition, color @transition, background @transition;
+
+    &_remove:hover {
+      color: @red-500;
+      background: @red-transparent;
+    }
+  }
+
+  &__toggle.ui-v1-button,
+  &__icon-button.ui-v1-button,
+  &__action-button.ui-v1-button {
+    flex: none;
+  }
+
+  &__toggle.ui-v1-button,
+  &__icon-button.ui-v1-button {
+    padding: 0;
+    border-radius: @border-radius-md;
+  }
+
+  &__toggle.ui-v1-button {
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+  }
+
+  &__icon-button.ui-v1-button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  &__action-button.ui-v1-button {
+    min-width: 96px;
+    min-height: 36px;
+    padding: 8px 12px;
+    color: @blue-500;
+    border-radius: @border-radius-md;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__surface-row:hover &__icon-button,
+  &__surface-row_editor &__icon-button,
+  &__surface-row_selected &__icon-button,
+  &__surface-row_dragging &__icon-button {
+    opacity: 1;
+  }
+}
