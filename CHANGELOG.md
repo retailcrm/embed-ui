@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [0.9.15](https://github.com/retailcrm/embed-ui/compare/v0.9.14...v0.9.15) (2026-03-31)
+
+### Features
+
+* **v1-components:** AI agents scaffold for consumers added ([989e5ca](https://github.com/retailcrm/embed-ui/commit/989e5cafe4d439c83231c4f16f4c1886ccdf1e8a))
+* **v1-components:** UiPageHeader component was added ([fb6db88](https://github.com/retailcrm/embed-ui/commit/fb6db881ddff4be3c94b9f12093a14f1ffb5bff8))
+* **v1-components:** UiRadioSwitch component was added ([1f4a06c](https://github.com/retailcrm/embed-ui/commit/1f4a06cb54a260661d4079f7cdb84cd11aaee617))
+* **v1-components:** UiTab navigation component added ([fdd3f7e](https://github.com/retailcrm/embed-ui/commit/fdd3f7e238af9665ee7f52d75e34d4e3191ec51e))
+
+### Bug Fixes
+
+* **v1-components:** Yarn lock metadata for CLI was updated ([57a5d8c](https://github.com/retailcrm/embed-ui/commit/57a5d8cefe064a82152410cc68cdb271d7e7f7c9))
 ## [0.9.14](https://github.com/retailcrm/embed-ui/compare/v0.9.13...v0.9.14) (2026-03-23)
 
 ### Bug Fixes
