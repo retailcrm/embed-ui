@@ -51,3 +51,17 @@ import { UiButton } from '@retailcrm/embed-ui-v1-components/remote'
 - [`docs/AI.md`](./docs/AI.md) — контекст для ИИ и автоматизаций.
 - [`docs/PROFILES.md`](./docs/PROFILES.md) — AI-friendly YAML-профили компонентов.
 - [`docs/FORMAT.md`](./docs/FORMAT.md) — формат описания компонента для AI-агентов.
+
+## AI и инициализация `AGENTS.md`
+
+После установки пакет показывает подсказку, что внутри есть AI-заметки и YAML-профили компонентов.
+
+Если в целевом проекте еще нет `AGENTS.md`, можно сгенерировать стартовый файл командой:
+
+```bash
+npx @retailcrm/embed-ui-v1-components init-agents
+```
+
+Если `AGENTS.md` уже существует, команда допишет в конец инструкции для
+`@retailcrm/embed-ui-v1-components`, если такого блока там еще нет. С `--force`
+можно обновить уже существующий блок пакета.

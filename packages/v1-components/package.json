@@ -1,5 +1,6 @@
 {
   "name": "@retailcrm/embed-ui-v1-components",
+  "bin": "./bin/embed-ui-v1-components.mjs",
   "type": "module",
   "version": "0.9.14",
   "license": "MIT",
@@ -39,6 +40,7 @@
   "files": [
     "AGENTS.md",
     "assets",
+    "bin",
     "dist",
     "docs",
     "index.cjs",
@@ -49,6 +51,7 @@
     "build": "yarn build:host && yarn build:remote",
     "build:host": "vite build -c ./vite.config.host.ts",
     "build:remote": "vite build -c ./vite.config.remote.ts && sh -c 'cp dist/remote/* dist/ && rm -rf dist/remote'",
+    "postinstall": "node ./bin/postinstall.mjs",
     "test:e2e": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
     "test:playwright": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
     "storybook:build": "storybook build -c storybook -o ./storybook/dist",
