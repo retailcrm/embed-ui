@@ -1250,6 +1250,8 @@ __metadata:
     vue3-perfect-scrollbar: "npm:^1.6.0"
   peerDependencies:
     vue: ^3.5
+  bin:
+    embed-ui-v1-components: ./bin/embed-ui-v1-components.mjs
   languageName: unknown
   linkType: soft
 
