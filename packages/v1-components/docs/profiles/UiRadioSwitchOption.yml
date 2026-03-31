@@ -1,0 +1,113 @@
+component: UiRadioSwitchOption
+summary: >
+  UiRadioSwitchOption is the declarative option child of UiRadioSwitch. It is the
+  richer alternative to the plain options array and is used when one option needs
+  custom icon, label, description, or selected-state checkmark content.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiRadioSwitchOption
+    - UiRadioSwitch
+
+related_components:
+  - UiRadioSwitch
+
+use_when:
+  - You need one manually declared option inside UiRadioSwitch.
+  - One option needs description or custom slot content.
+  - You need per-option icon or custom selected-state mark.
+
+avoid_when:
+  - A simple options array on UiRadioSwitch is enough.
+  - You need standalone radio semantics outside UiRadioSwitch.
+
+api:
+  key_props:
+    - name: value
+      notes: Required option value.
+    - name: label
+      notes: Plain-text fallback label.
+    - name: description
+      notes: Secondary copy for section appearance.
+    - name: disabled
+      notes: Marks this option as non-interactive.
+  props:
+    - name: id
+      notes: Optional explicit id, otherwise generated automatically.
+    - name: value
+      notes: Required and passed back through UiRadioSwitch selection updates.
+    - name: label
+      notes: Optional when label slot is used.
+    - name: description
+      notes: Primarily useful for appearance=section.
+    - name: disabled
+      notes: Excluded from selection and keyboard navigation.
+  slots:
+    - name: default
+      zone: full option body
+      notes: Replaces the whole internal option layout.
+    - name: icon
+      zone: leading icon
+      notes: Custom leading icon for the option header.
+    - name: label
+      zone: main label
+      notes: Overrides the plain label prop.
+    - name: description
+      zone: secondary description
+      notes: Used mainly in section mode.
+    - name: checkmark
+      zone: selected-state indicator
+      notes: Replaces the default selected-state icon in section mode.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    UiRadioSwitchOption does not own the whole selection model. It is rendered inside
+    UiRadioSwitch and becomes one radio node within the parent radiogroup.
+
+behavior:
+  states:
+    - name: disabled
+      notes: Cannot be selected and is skipped by keyboard navigation.
+    - name: checked
+      notes: Managed by the parent UiRadioSwitch.
+    - name: appearance=section
+      notes: Can show description and selected-state checkmark.
+  notes:
+    - Click selects the option through the parent group.
+    - Space and Enter select the focused option.
+    - Arrow keys delegate focus and selection movement through the parent group.
+
+accessibility:
+  notes:
+    - The parent group applies radio semantics to the option shell.
+    - The current implementation participates in roving tabindex managed by UiRadioSwitch.
+
+composition:
+  works_well_with:
+    - UiRadioSwitch
+  patterns:
+    - title: Rich switch option
+      notes: Use when one option needs icon, label, description, and custom selected state.
+
+examples:
+  - title: Section option
+    goal: Define one rich option inside a radio switch.
+    code: |
+      <UiRadioSwitchOption
+        label="Manual"
+        :value="{ key: 'manual' }"
+        description="Manual setup"
+      >
+        <template #icon>
+          <IconStar />
+        </template>
+      </UiRadioSwitchOption>
+
+ai_notes:
+  do:
+    - Use inside UiRadioSwitch when one option needs richer content than the options array allows.
+    - Prefer label and description props for simple content and slots for richer custom markup.
+  avoid:
+    - Do not use it as a standalone control outside UiRadioSwitch.

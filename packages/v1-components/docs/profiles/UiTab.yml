@@ -1,0 +1,114 @@
+component: UiTab
+summary: >
+  UiTab is a declarative child node for UiTabGroup. It does not render meaningful
+  standalone UI by itself; instead, UiTabGroup consumes its props and slots to build
+  tab buttons, overflow menu items, and optional tab panel content.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTab
+    - UiTabGroup
+
+related_components:
+  - UiTabGroup
+
+use_when:
+  - You need custom icon, label, counter, or content inside UiTabGroup.
+  - You want each tab declaration to keep its header and panel content together.
+
+avoid_when:
+  - You need a standalone button or link.
+  - A plain items array on UiTabGroup is enough for the screen.
+  - You need non-string tab identity, because UiTabGroup uses string id.
+
+api:
+  key_props:
+    - name: id
+      notes: Required string identifier used by UiTabGroup as activeId.
+    - name: label
+      notes: Fallback plain-text header label.
+    - name: counter
+      notes: Optional badge-like counter.
+    - name: disabled
+      notes: Marks the tab as non-interactive.
+  props:
+    - name: id
+      notes: Must be unique within one UiTabGroup.
+    - name: label
+      notes: Optional when label slot is used.
+    - name: counter
+      notes: Optional when counter slot is used.
+    - name: disabled
+      notes: Excluded from selection and keyboard navigation.
+  slots:
+    - name: icon
+      zone: tab leading icon
+      notes: Used both in the visible tab button and in the overflow menu item.
+    - name: label
+      zone: tab label
+      notes: Overrides plain label prop for the header.
+    - name: counter
+      zone: tab counter
+      notes: Overrides plain counter prop for the header.
+    - name: content
+      zone: active tab panel
+      notes: Rendered only for the active tab by UiTabGroup.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    UiTab is a structural declaration rather than a standalone DOM component. The
+    parent UiTabGroup resolves UiTab children and renders the actual tab buttons,
+    menu items, and optional tabpanel.
+
+geometry:
+  layout: no standalone layout, interpreted by UiTabGroup
+  notes:
+    - UiTab itself should not be used outside UiTabGroup.
+    - Icon-only tabs are inferred when icon exists but label and counter do not.
+
+behavior:
+  states:
+    - name: disabled
+      notes: The parent group keeps it visible but non-interactive.
+  notes:
+    - content slot is mounted only for the active tab.
+    - icon, label, and counter are also used when the tab moves into overflow menu.
+
+accessibility:
+  notes:
+    - UiTab does not create tab semantics by itself.
+    - UiTabGroup applies role=tab, aria-selected, aria-controls, and tabpanel relationships.
+
+composition:
+  works_well_with:
+    - UiTabGroup
+  patterns:
+    - title: Rich tab declaration
+      notes: Keep icon, counter, and content close to the tab declaration inside UiTabGroup.
+
+examples:
+  - title: Rich tab child
+    goal: Declare one tab with custom icon and panel content.
+    code: |
+      <UiTab id="overview" label="Overview" counter="8">
+        <template #icon>
+          <IconStar />
+        </template>
+
+        <template #content>
+          <section>
+            <h4>Overview</h4>
+            <p>Panel content for the active tab.</p>
+          </section>
+        </template>
+      </UiTab>
+
+ai_notes:
+  do:
+    - Use UiTab only inside UiTabGroup.
+    - Prefer label and counter props for simple cases, and slots for richer markup.
+  avoid:
+    - Do not expect UiTab to render useful DOM outside a group.
+    - Do not rely on an undocumented default slot for header rendering.

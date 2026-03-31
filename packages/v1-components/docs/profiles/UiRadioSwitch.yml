@@ -1,0 +1,224 @@
+component: UiRadioSwitch
+summary: >
+  UiRadioSwitch is a single-choice segmented control with two practical modes:
+  a compact inline switch and a richer section-card layout. It is useful when the
+  choice set is small and always visible. For richer per-option content, compose it
+  with UiRadioSwitchOption instead of relying only on the options array.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiRadioSwitch
+    - UiRadioSwitchOption
+
+related_components:
+  - UiRadio
+  - UiField
+  - UiRadioSwitchOption
+
+use_when:
+  - You need one selected value from a small fixed set.
+  - You want a segmented control instead of classic radio circles.
+  - You need a card-like section switch with descriptions.
+  - You need object values and must compare them through equalFn.
+
+avoid_when:
+  - You need multiple independent selections.
+  - You need dozens of options or searchable choice, use UiSelect instead.
+  - You need free-form content unrelated to a single-choice switch.
+
+api:
+  key_props:
+    - name: value
+      notes: Current selected value.
+    - name: options
+      notes: Quick array-based way to declare simple options.
+    - name: equalFn
+      notes: Important when option values are objects or other non-primitives.
+    - name: appearance
+      notes: Switches between default inline mode and section card mode.
+    - name: size
+      notes: Controls option height and icon sizing in default mode.
+    - name: rubber
+      notes: Makes the root behave like inline-flex instead of stretching full width.
+  props:
+    - name: value
+      notes: Works as the single selected model value.
+    - name: options
+      notes: Expects array items shaped as { label, value, disabled }.
+    - name: equalFn
+      notes: Defaults to strict equality.
+    - name: appearance
+      notes: Supports default and section.
+    - name: size
+      notes: Supports sm, md, lg.
+    - name: rubber
+      notes: Useful when the switch should size to content.
+  child_components:
+    - name: UiRadioSwitchOption
+      key_props:
+        - value
+        - label
+        - description
+        - disabled
+      notes: >
+        Use it when an option needs description, custom icon, custom label, or
+        custom checkmark content.
+  slots:
+    - name: default
+      zone: option tree
+      creates: Replaces array-based options with manually declared UiRadioSwitchOption nodes.
+      accepts:
+        recommended:
+          - UiRadioSwitchOption
+        avoid:
+          - arbitrary interactive controls
+          - unrelated wrappers
+      notes: >
+        The simplest path is options for plain labels, and default slot for richer
+        option markup.
+    - name: icon
+      zone: shared option icon in options mode
+      notes: >
+        Used only when options array mode renders generated options. For per-option
+        rich composition, use UiRadioSwitchOption slots instead.
+  emits:
+    - name: change
+      payload: unknown
+      notes: Fired when the selected value changes.
+    - name: update:value
+      payload: unknown
+      notes: Main v-model channel.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    The component renders as one radiogroup root and a list of option shells with
+    radio semantics. This section is for mental modeling and debugging, not as a
+    stable styling contract.
+  composition:
+    - UiRadioSwitch root with role=radiogroup
+    - UiRadioSwitchOption shells with role=radio
+    - section mode can add description and selected-state checkmark
+  classes:
+    - .ui-v1-radio-switch
+    - .ui-v1-radio-switch_borderless
+    - .ui-v1-radio-switch_rubber
+    - .ui-v1-radio-switch-option
+    - .ui-v1-radio-switch-option_default
+    - .ui-v1-radio-switch-option_standalone
+    - .ui-v1-radio-switch-option_active
+    - .ui-v1-radio-switch-option_disabled
+
+geometry:
+  layout: flex row for default mode, wrapping card row for section mode
+  notes:
+    - Default appearance behaves like a segmented control with adjacent options.
+    - Section appearance removes the outer border and lets cards wrap to a new line.
+    - rubber makes the root inline-sized instead of full-width.
+    - In section mode each option has a large minimum width and card-like padding.
+
+styling:
+  notes:
+    - Current classes describe host DOM structure and states.
+    - Prefer appearance, size, and rubber over selector-level customization.
+  root_classes:
+    - .ui-v1-radio-switch
+    - .ui-v1-radio-switch-option
+  state_classes:
+    - .ui-v1-radio-switch_borderless
+    - .ui-v1-radio-switch_rubber
+    - .ui-v1-radio-switch-option_default
+    - .ui-v1-radio-switch-option_standalone
+    - .ui-v1-radio-switch-option_active
+    - .ui-v1-radio-switch-option_disabled
+  zones:
+    - .ui-v1-radio-switch-option__head
+    - .ui-v1-radio-switch-option__icon
+    - .ui-v1-radio-switch-option__label
+    - .ui-v1-radio-switch-option__description
+    - .ui-v1-radio-switch-option__done
+  typography:
+    default:
+      notes:
+        - Default mode uses regular text sizing.
+        - Section mode uses accent heading-like styling for the main label.
+
+behavior:
+  states:
+    - name: appearance=default
+      notes: Renders a compact segmented control.
+    - name: appearance=section
+      notes: Renders standalone cards with optional description and selected checkmark.
+    - name: disabled
+      notes: Disabled options cannot be selected or focused by keyboard navigation.
+    - name: rubber
+      notes: Keeps the root content-sized.
+  selection_and_matching:
+    - The component is always single-select.
+    - update:value and change are emitted together on selection change.
+    - equalFn should usually be provided when values are objects.
+    - In options mode the component generates UiRadioSwitchOption nodes internally.
+  keyboard:
+    - One tab stop is used for the whole group.
+    - ArrowLeft, ArrowRight, ArrowUp, and ArrowDown move focus and selection across enabled options.
+    - Home and End jump to the first or last enabled option.
+    - Space and Enter select the currently focused option.
+
+accessibility:
+  notes:
+    - The root acts as radiogroup.
+    - Each option acts as radio and exposes aria-checked and aria-disabled.
+    - The current implementation uses roving tabindex so only one option is tabbable.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiRadioSwitchOption
+  patterns:
+    - title: Simple mode switch
+      notes: Use options for a small plain-text set such as view or status mode.
+    - title: Section cards
+      notes: Use UiRadioSwitchOption when each choice needs icon, description, or custom checkmark.
+
+examples:
+  - title: Simple options array
+    goal: Build a compact single-choice segmented control.
+    code: |
+      <UiRadioSwitch
+        v-model:value="mode"
+        :options="[
+          { label: 'Auto', value: 'auto' },
+          { label: 'Manual', value: 'manual' },
+        ]"
+      />
+  - title: Rich card options
+    goal: Render section cards with object values and descriptions.
+    code: |
+      <UiRadioSwitch
+        v-model:value="mode"
+        appearance="section"
+        rubber
+        :equal-fn="(a, b) => a?.key === b?.key"
+      >
+        <UiRadioSwitchOption
+          label="Auto"
+          :value="{ key: 'auto' }"
+          description="Automatic mode"
+        />
+
+        <UiRadioSwitchOption
+          label="Manual"
+          :value="{ key: 'manual' }"
+          description="Manual setup"
+        />
+      </UiRadioSwitch>
+
+ai_notes:
+  do:
+    - Use options for simple text-only cases.
+    - Switch to UiRadioSwitchOption when a choice needs richer content.
+    - Provide equalFn for object values instead of relying on reference equality.
+  avoid:
+    - Do not use it for multi-select flows.
+    - Do not treat internal .ui-v1-* classes as a stable extension styling API.

@@ -14,6 +14,8 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 - [`UiTextbox`](./profiles/UiTextbox.yml): text or numeric input with prefix, suffix, clear action, and multiline mode
 - [`UiCheckbox`](./profiles/UiCheckbox.yml): boolean choice
 - [`UiRadio`](./profiles/UiRadio.yml): single choice
+- [`UiRadioSwitch`](./profiles/UiRadioSwitch.yml): segmented single-choice switch with inline or section-card appearance
+- [`UiRadioSwitchOption`](./profiles/UiRadioSwitchOption.yml): rich option child for UiRadioSwitch
 - [`UiSwitch`](./profiles/UiSwitch.yml): state toggle
 - [`UiSlider`](./profiles/UiSlider.yml): ranged value selection
 - [`UiSelect`](./profiles/UiSelect.yml): select container for single or multiple choice
@@ -34,6 +36,8 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 - [`UiLink`](./profiles/UiLink.yml): text link
 - [`UiMenuItem`](./profiles/UiMenuItem.yml): menu item
 - [`UiMenuItemGroup`](./profiles/UiMenuItemGroup.yml): menu item group
+- [`UiTabGroup`](./profiles/UiTabGroup.yml): tab navigation group with overflow handling and optional active panel
+- [`UiTab`](./profiles/UiTab.yml): declarative tab child for UiTabGroup
 
 ## Layout And Structure
 

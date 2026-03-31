@@ -1,0 +1,233 @@
+component: UiTabGroup
+summary: >
+  UiTabGroup is the navigation container for UiTab children or simple tab items.
+  It manages active tab selection by string id, keyboard navigation, optional overflow
+  into a dropdown menu, and optional tabpanel rendering from the active UiTab content slot.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTabGroup
+    - UiTab
+
+related_components:
+  - UiTab
+  - UiButton
+  - UiMenuItem
+
+use_when:
+  - You need horizontal navigation between a small or medium number of sections.
+  - Active state can be represented by a string id.
+  - You need overflow handling that moves extra tabs into a dropdown.
+  - You want optional panel content rendered from the active UiTab.
+
+avoid_when:
+  - You need free-form router navigation that should not behave like a tablist.
+  - You need non-string identity with custom equality logic.
+  - You need many options better served by a menu or select.
+
+api:
+  key_props:
+    - name: activeId
+      notes: Main selected-tab model by string id.
+    - name: items
+      notes: Simple array-based alternative to slot-declared UiTab children.
+    - name: appearance
+      notes: Supports text and filled visual styles.
+    - name: size
+      notes: Supports sm, md, lg.
+    - name: overflowing
+      notes: Enables overflow resolution into a dropdown menu.
+    - name: menuExpanded
+      notes: Optional controlled state for the overflow menu.
+    - name: focusableId
+      notes: Optional controlled state for roving focus.
+  props:
+    - name: activeId
+      notes: Usually used through v-model:active-id.
+    - name: items
+      notes: Expects array items shaped as { id, label?, counter?, disabled?, iconOnly? }.
+    - name: focusableId
+      notes: Advanced control hook; usually let the component manage it.
+    - name: menuExpanded
+      notes: Advanced control hook; usually let the component manage it.
+    - name: size
+      notes: Changes typography, icon size, and spacing.
+    - name: appearance
+      notes: text is classic tabs, filled is segmented-tab styling.
+    - name: overflowing
+      notes: When false, all tabs stay in the header row without overflow menu.
+  child_components:
+    - name: UiTab
+      key_props:
+        - id
+        - label
+        - counter
+        - disabled
+      notes: Use it when a tab needs icon, custom label, custom counter, or content slot.
+  slots:
+    - name: default
+      zone: tab declarations
+      creates: Slot-based tab registry via UiTab children.
+      accepts:
+        recommended:
+          - UiTab
+        avoid:
+          - arbitrary buttons
+          - unrelated layout wrappers
+      notes: >
+        Use items for simple data-driven tabs, and default slot with UiTab for richer
+        headers or tabpanel content.
+  emits:
+    - name: change
+      payload: string
+      notes: Fired when the active tab changes.
+    - name: update:activeId
+      payload: string
+      notes: Main v-model channel.
+    - name: update:focusableId
+      payload: string | null
+      notes: Optional roving-focus control channel.
+    - name: update:menuExpanded
+      payload: boolean
+      notes: Optional overflow-menu visibility control channel.
+    - name: layout
+      payload: "{ headIds: string[]; menuIds: string[] }"
+      notes: Emits the current overflow split between visible tabs and menu tabs.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    UiTabGroup renders a header row, a visible tablist region, an optional overflow
+    trigger with popper menu, and an optional tabpanel for the active UiTab content.
+    Class names are useful for debugging, not as a guaranteed public styling API.
+  composition:
+    - .ui-v1-tab-group root
+    - .ui-v1-tab-group__head with role=tablist region
+    - .ui-v1-tab-group__content for visible tabs
+    - .ui-v1-tab-group__measure hidden sizing layer
+    - .ui-v1-tab-group__trigger for overflow button
+    - .ui-v1-tab-group__menu inside UiPopper
+    - .ui-v1-tab-group__panel for active tabpanel content
+  classes:
+    - .ui-v1-tab-group
+    - .ui-v1-tab-group_text
+    - .ui-v1-tab-group_filled
+    - .ui-v1-tab
+    - .ui-v1-tab_active
+    - .ui-v1-tab_disabled
+
+geometry:
+  layout: block-level group with full-width header and optional content panel
+  notes:
+    - The group itself stretches to width 100%.
+    - The visible header keeps tabs on one row.
+    - overflowing lets extra tabs move into a dropdown instead of wrapping.
+    - The active panel sits below the tab header.
+
+styling:
+  notes:
+    - Prefer appearance and size props over selector overrides.
+    - Current classes help explain state and overflow structure.
+  root_classes:
+    - .ui-v1-tab-group
+    - .ui-v1-tab
+  state_classes:
+    - .ui-v1-tab-group_text
+    - .ui-v1-tab-group_filled
+    - .ui-v1-tab_active
+    - .ui-v1-tab_disabled
+    - .ui-v1-tab_icon-without-text
+  zones:
+    - .ui-v1-tab-group__head
+    - .ui-v1-tab-group__content
+    - .ui-v1-tab-group__measure
+    - .ui-v1-tab-group__trigger
+    - .ui-v1-tab-group__menu
+    - .ui-v1-tab-group__panel
+    - .ui-v1-tab__icon
+    - .ui-v1-tab__label
+    - .ui-v1-tab__counter
+  typography:
+    default:
+      notes:
+        - text appearance uses tab-specific typography that depends on size.
+        - lg uses heading-scale typography and larger icon sizing.
+
+behavior:
+  states:
+    - name: overflowing
+      notes: Enables moving extra tabs into a dropdown menu.
+    - name: appearance=text
+      notes: Classic underline tabs.
+    - name: appearance=filled
+      notes: Filled segmented-tab look with zero gap between tabs.
+    - name: disabled tab
+      notes: Visible but not interactive and excluded from keyboard navigation.
+  selection_and_layout:
+    - activeId is resolved only against existing tab ids.
+    - When overflowing is enabled, the active tab tries to remain in the visible header.
+    - layout reports which ids stay in the header and which move into the menu.
+    - menuExpanded and focusableId can be controlled from outside but usually do not need to be.
+  keyboard:
+    - One tab stop is used for the whole visible tablist.
+    - Arrow keys move focus and selection across enabled visible tabs.
+    - Home and End jump to the first or last enabled visible tab.
+    - Space and Enter activate the focused tab.
+    - Overflow menu items use menuitemradio semantics and activate on click, Enter, or Space.
+
+accessibility:
+  notes:
+    - The visible header uses tablist and tab roles.
+    - The active tab can be linked to its content through aria-controls and aria-labelledby.
+    - The content container uses role=tabpanel when active UiTab provides content slot.
+    - Overflow menu items use role=menuitemradio and aria-checked.
+
+composition:
+  works_well_with:
+    - UiTab
+  patterns:
+    - title: Simple tabs from items
+      notes: Use items when tabs are data-only and do not need per-tab content slots.
+    - title: Rich tabs from UiTab
+      notes: Use UiTab children when tabs need icon, custom label, counter, or tabpanel content.
+
+examples:
+  - title: Data-driven tabs
+    goal: Render a compact tab header from plain items.
+    code: |
+      <UiTabGroup
+        v-model:active-id="activeId"
+        :items="[
+          { id: 'overview', label: 'Overview', counter: '8' },
+          { id: 'orders', label: 'Orders', counter: '12' },
+        ]"
+        overflowing
+      />
+  - title: Tabs with panel content
+    goal: Render active tabpanel content from UiTab child declarations.
+    code: |
+      <UiTabGroup
+        v-model:active-id="activeId"
+        overflowing
+      >
+        <UiTab id="overview" label="Overview">
+          <template #content>
+            <section>
+              <h4>Overview</h4>
+              <p>Visible only when this tab is active.</p>
+            </section>
+          </template>
+        </UiTab>
+
+        <UiTab id="orders" label="Orders" />
+      </UiTabGroup>
+
+ai_notes:
+  do:
+    - Use v-model:active-id with string ids.
+    - Prefer items for simple tabs and UiTab children for rich composition.
+    - Treat menuExpanded and focusableId as advanced controlled props, not default requirements.
+  avoid:
+    - Do not pass object values or expect equalsFn-like behavior.
+    - Do not rely on internal overflow DOM structure as a stable extension contract.
