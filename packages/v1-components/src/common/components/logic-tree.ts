@@ -1,58 +1,50 @@
-export const UI_LOGIC_TREE_ACTION_KIND = {
-  CONDITION: 'condition',
-  GROUP: 'group',
-} as const
+export enum LogicTreeActionKind {
+  CONDITION = 'condition',
+  GROUP = 'group',
+}
 
-export const UI_LOGIC_TREE_CONTROL_KIND = {
-  ICON: 'icon',
-  INPUT: 'input',
-  SELECT: 'select',
-} as const
+export enum LogicTreeControlKind {
+  ICON = 'icon',
+  INPUT = 'input',
+  SELECT = 'select',
+}
 
-export const UI_LOGIC_TREE_ICON = {
-  ADD: 'add',
-  MORE: 'more',
-} as const
+export enum LogicTreeIcon {
+  ADD = 'add',
+  MORE = 'more',
+}
 
-export const UI_LOGIC_TREE_NODE_KIND = {
-  CONDITION: 'condition',
-  GROUP: 'group',
-} as const
+export enum LogicTreeNodeKind {
+  CONDITION = 'condition',
+  GROUP = 'group',
+}
 
-export const UI_LOGIC_TREE_RELATION = {
-  AND: 'И',
-  OR: 'ИЛИ',
-} as const
+export enum LogicTreeConjunction {
+  AND = 'and',
+  OR = 'or',
+}
 
-export const UI_LOGIC_TREE_ROW_KIND = {
-  ACTIONS: 'actions',
-  EDITOR: 'editor',
-  SUMMARY: 'summary',
-} as const
+export enum LogicTreeRowKind {
+  ACTIONS = 'actions',
+  EDITOR = 'editor',
+  SUMMARY = 'summary',
+}
 
-export const UI_LOGIC_TREE_TONE = {
-  BLUE: 'blue',
-  GREEN: 'green',
-  GREY: 'grey',
-  RED: 'red',
-  YELLOW: 'yellow',
-} as const
-
-export type UiLogicTreeActionKind = typeof UI_LOGIC_TREE_ACTION_KIND[keyof typeof UI_LOGIC_TREE_ACTION_KIND]
-export type UiLogicTreeControlKind = typeof UI_LOGIC_TREE_CONTROL_KIND[keyof typeof UI_LOGIC_TREE_CONTROL_KIND]
-export type UiLogicTreeIcon = typeof UI_LOGIC_TREE_ICON[keyof typeof UI_LOGIC_TREE_ICON]
-export type UiLogicTreeNodeKind = typeof UI_LOGIC_TREE_NODE_KIND[keyof typeof UI_LOGIC_TREE_NODE_KIND]
-export type UiLogicTreeRelation = typeof UI_LOGIC_TREE_RELATION[keyof typeof UI_LOGIC_TREE_RELATION]
-export type UiLogicTreeRowKind = typeof UI_LOGIC_TREE_ROW_KIND[keyof typeof UI_LOGIC_TREE_ROW_KIND]
-export type UiLogicTreeTone = typeof UI_LOGIC_TREE_TONE[keyof typeof UI_LOGIC_TREE_TONE]
+export enum LogicTreeTone {
+  BLUE = 'blue',
+  GREEN = 'green',
+  GREY = 'grey',
+  RED = 'red',
+  YELLOW = 'yellow',
+}
 
 export type UiLogicTreeControl = {
   clearable?: boolean;
   disabled?: boolean;
   id: string;
-  icon?: UiLogicTreeIcon;
+  icon?: LogicTreeIcon;
   invalid?: boolean;
-  kind: UiLogicTreeControlKind;
+  kind: LogicTreeControlKind;
   label: string;
   options?: UiLogicTreeOption[];
   placeholder?: string;
@@ -63,13 +55,13 @@ export type UiLogicTreeControl = {
 
 export type UiLogicTreeAction = {
   id: string;
-  kind?: UiLogicTreeActionKind;
+  kind?: LogicTreeActionKind;
   label: string;
 }
 
 export type UiLogicTreeConnector = {
   continues: boolean;
-  tone: UiLogicTreeTone;
+  tone: LogicTreeTone;
   visible: boolean;
 }
 
@@ -83,13 +75,15 @@ export type UiLogicTreeInlineText = {
   id: string;
   separated?: boolean;
   text: string;
-  tone?: UiLogicTreeTone | 'default' | 'muted';
+  tone?: LogicTreeTone | 'default' | 'muted';
   weight?: 'regular' | 'semibold';
 }
 
 export type UiLogicTreeNode = {
   actions?: UiLogicTreeAction[];
   children?: UiLogicTreeNode[];
+  childrenGrouped?: boolean;
+  conjunction?: LogicTreeConjunction | string;
   collapsible?: boolean;
   controls?: UiLogicTreeControl[];
   draggable?: boolean;
@@ -97,20 +91,18 @@ export type UiLogicTreeNode = {
   highlighted?: boolean;
   id: string;
   inline?: UiLogicTreeInlineText[];
-  kind?: UiLogicTreeNodeKind;
+  kind?: LogicTreeNodeKind;
   meta?: string;
-  relation?: UiLogicTreeRelation | string;
   removable?: boolean;
-  rowKind?: UiLogicTreeRowKind;
+  rowKind?: LogicTreeRowKind;
   selected?: boolean;
   surface?: boolean;
   subtitle?: string;
   title: string;
-  tone?: UiLogicTreeTone;
+  tone?: LogicTreeTone;
 }
 
 export type UiLogicTreeProperties = {
-  /** Включает интерактивное редактирование дерева, drag&drop, удаление и строки действий */
   editable?: boolean;
   items?: UiLogicTreeNode[];
   surface?: boolean;
@@ -121,13 +113,18 @@ export type UiLogicTreeRootProperties = {
 }
 
 export type UiLogicTreeRowProperties = {
+  conjunction?: string;
+  conjunctionLabel?: string;
+  conjunctionTone?: LogicTreeTone;
   connectors?: UiLogicTreeConnector[];
   draggable?: boolean;
+  editing?: boolean;
+  grouped?: boolean;
+  groupedPosition?: 'end' | 'middle' | 'single' | 'start';
   highlighted?: boolean;
+  nodeKind?: LogicTreeNodeKind;
   pathKey?: string;
-  relation?: string;
-  relationTone?: UiLogicTreeTone;
-  rowKind?: UiLogicTreeRowKind;
+  rowKind?: LogicTreeRowKind;
   selected?: boolean;
   surface?: boolean;
 }
