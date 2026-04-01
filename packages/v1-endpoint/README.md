@@ -35,9 +35,10 @@ runEndpoint(runner)
 
 Подробная документация по методам находится в каталоге [`docs/`](./docs/README.md):
 
-- [`defineRunner`](./docs/define-runner.md)
-- [`definePageRunner`](./docs/define-page-runner.md)
-- [`defineWidgetRunner`](./docs/define-widget-runner.md)
-- [`createEndpoint`](./docs/create-endpoint.md)
-- [`runEndpoint`](./docs/run-endpoint.md)
-- [`targets` и `defineTarget`](./docs/targets.md)
+- [`defineRunner`](./docs/define-runner.md) — как объединить page и widget runners в один endpoint runner.
+- [`definePageRunner`](./docs/define-page-runner.md) — как запускать remote-страницы по `code`.
+- [`defineWidgetRunner`](./docs/define-widget-runner.md) — как запускать remote-виджеты по `target`.
+- [`createEndpoint`](./docs/create-endpoint.md) — как вручную создать endpoint с transport и messenger.
+- [`runEndpoint`](./docs/run-endpoint.md) — как поднять endpoint в worker entry одной строкой.
+- [`targets` и `defineTarget`](./docs/targets.md) — как типизировать цели виджетов и маршрутизировать их по target.
+- [`layout`](./docs/layout.md) — как выбирать layout-паттерны страниц, `modal sidebar` и `modal window`, и из каких `v1-components` их собирать.
