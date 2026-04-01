@@ -220,7 +220,7 @@ export const localize = <
     },
   })
 
-export const fallback = 'en-GB' as const
+export const fallback = 'ru-RU' as const
 
 export const define = (
   options: Options | undefined = undefined,

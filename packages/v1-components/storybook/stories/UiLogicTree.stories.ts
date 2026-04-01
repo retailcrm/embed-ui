@@ -15,15 +15,16 @@ import UiPopperConnector from '@/host/components/popper/UiPopperConnector.vue'
 import UiSelectPopper from '@/host/components/select/UiSelectPopper.vue'
 import UiSelectTrigger from '@/host/components/select/UiSelectTrigger.vue'
 import UiTextbox from '@/host/components/textbox/UiTextbox.vue'
+import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
 
 import {
-  UI_LOGIC_TREE_ACTION_KIND,
-  UI_LOGIC_TREE_CONTROL_KIND,
-  UI_LOGIC_TREE_ICON,
-  UI_LOGIC_TREE_NODE_KIND,
-  UI_LOGIC_TREE_RELATION,
-  UI_LOGIC_TREE_ROW_KIND,
-  UI_LOGIC_TREE_TONE,
+  LogicTreeActionKind,
+  LogicTreeConjunction,
+  LogicTreeControlKind,
+  LogicTreeIcon,
+  LogicTreeNodeKind,
+  LogicTreeRowKind,
+  LogicTreeTone,
 } from '@/common/components/logic-tree'
 
 import { UiLogicTree } from '../../src/remote/components/logic-tree'
@@ -41,6 +42,7 @@ const provider = createProvider({
   UiSelectPopper,
   UiSelectTrigger,
   UiTextbox,
+  UiTooltip,
 })
 
 const inlineText = (
@@ -61,7 +63,7 @@ const selectControl = (
   options: string[]
 ) => ({
   id,
-  kind: UI_LOGIC_TREE_CONTROL_KIND.SELECT,
+  kind: LogicTreeControlKind.SELECT,
   label,
   options: options.map((option, index) => ({
     id: `${id}-${index + 1}`,
@@ -79,7 +81,7 @@ const inputControl = (
   width: number
 ) => ({
   id,
-  kind: UI_LOGIC_TREE_CONTROL_KIND.INPUT,
+  kind: LogicTreeControlKind.INPUT,
   label,
   value,
   width,
@@ -89,13 +91,13 @@ const rowsTree: UiLogicTreeNode[] = [
   {
     id: 'rows-root',
     inline: [
-      inlineText('rows-root-mode', 'Последовательное применение', { tone: UI_LOGIC_TREE_TONE.GREEN }),
+      inlineText('rows-root-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
       inlineText('rows-root-meta', 'До 5 000 ₽ скидки', { separated: true, tone: 'muted' }),
     ],
-    kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+    kind: LogicTreeNodeKind.GROUP,
     surface: true,
     title: 'Корневая группа',
-    tone: UI_LOGIC_TREE_TONE.GREEN,
+    tone: LogicTreeTone.GREEN,
     children: [
       {
         children: [
@@ -113,20 +115,20 @@ const rowsTree: UiLogicTreeNode[] = [
             actions: [
               {
                 id: 'rows-action-condition',
-                kind: UI_LOGIC_TREE_ACTION_KIND.CONDITION,
+                kind: LogicTreeActionKind.CONDITION,
                 label: 'Условие',
               },
               {
                 id: 'rows-action-group',
-                kind: UI_LOGIC_TREE_ACTION_KIND.GROUP,
+                kind: LogicTreeActionKind.GROUP,
                 label: 'Группа',
               },
             ],
             id: 'rows-actions',
-            rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
+            rowKind: LogicTreeRowKind.ACTIONS,
             surface: true,
             title: 'Добавить в ветку',
-            tone: UI_LOGIC_TREE_TONE.BLUE,
+            tone: LogicTreeTone.BLUE,
           },
           {
             controls: [
@@ -153,12 +155,12 @@ const rowsTree: UiLogicTreeNode[] = [
               ),
             ],
             id: 'rows-delivery-condition',
-            relation: UI_LOGIC_TREE_RELATION.AND,
+            conjunction: LogicTreeConjunction.AND,
             removable: true,
-            rowKind: UI_LOGIC_TREE_ROW_KIND.EDITOR,
+            rowKind: LogicTreeRowKind.EDITOR,
             surface: true,
             title: 'Тип доставки',
-            tone: UI_LOGIC_TREE_TONE.BLUE,
+            tone: LogicTreeTone.BLUE,
           },
           {
             controls: [
@@ -171,18 +173,18 @@ const rowsTree: UiLogicTreeNode[] = [
                 ['Есть такие', 'Нет таких']
               ),
               {
-                icon: UI_LOGIC_TREE_ICON.ADD,
+                icon: LogicTreeIcon.ADD,
                 id: 'rows-order-extra',
-                kind: UI_LOGIC_TREE_CONTROL_KIND.ICON,
+                kind: LogicTreeControlKind.ICON,
                 label: 'Дополнительное действие',
               },
             ],
             id: 'rows-order-condition',
             removable: true,
-            rowKind: UI_LOGIC_TREE_ROW_KIND.EDITOR,
+            rowKind: LogicTreeRowKind.EDITOR,
             surface: true,
             title: 'Заказ клиента',
-            tone: UI_LOGIC_TREE_TONE.BLUE,
+            tone: LogicTreeTone.BLUE,
           },
         ],
         collapsible: true,
@@ -199,13 +201,13 @@ const connectorsTree: UiLogicTreeNode[] = [
   {
     id: 'connectors-root',
     inline: [
-      inlineText('connectors-root-mode', 'Последовательное применение', { tone: UI_LOGIC_TREE_TONE.GREEN }),
+      inlineText('connectors-root-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
       inlineText('connectors-root-meta', 'До 5 000 ₽ скидки', { separated: true, tone: 'muted' }),
     ],
-    kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+    kind: LogicTreeNodeKind.GROUP,
     surface: false,
     title: 'Корневая группа',
-    tone: UI_LOGIC_TREE_TONE.GREEN,
+    tone: LogicTreeTone.GREEN,
     children: [
       {
         children: [
@@ -214,26 +216,26 @@ const connectorsTree: UiLogicTreeNode[] = [
               {
                 id: 'connectors-group-2',
                 inline: [
-                  inlineText('connectors-group-2-mode', 'Последовательное применение', { tone: UI_LOGIC_TREE_TONE.GREEN }),
+                  inlineText('connectors-group-2-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
                   inlineText('connectors-group-2-meta', 'До 5 000 оплата бонусами', {
                     separated: true,
                     tone: 'muted',
                   }),
                 ],
-                kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+                kind: LogicTreeNodeKind.GROUP,
                 surface: false,
                 title: 'Название группы #2',
-                tone: UI_LOGIC_TREE_TONE.GREEN,
+                tone: LogicTreeTone.GREEN,
               },
             ],
             id: 'connectors-group-1',
             inline: [
-              inlineText('connectors-group-1-mode', 'Максимальная выгода', { tone: UI_LOGIC_TREE_TONE.BLUE }),
+              inlineText('connectors-group-1-mode', 'Максимальная выгода', { tone: LogicTreeTone.BLUE }),
             ],
-            kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+            kind: LogicTreeNodeKind.GROUP,
             surface: false,
             title: 'Название группы #1',
-            tone: UI_LOGIC_TREE_TONE.BLUE,
+            tone: LogicTreeTone.BLUE,
           },
           {
             children: [
@@ -243,21 +245,21 @@ const connectorsTree: UiLogicTreeNode[] = [
                     actions: [
                       {
                         id: 'connectors-group-action',
-                        kind: UI_LOGIC_TREE_ACTION_KIND.GROUP,
+                        kind: LogicTreeActionKind.GROUP,
                         label: 'Группа',
                       },
                     ],
                     id: 'connectors-group-action-row',
-                    rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
+                    rowKind: LogicTreeRowKind.ACTIONS,
                     surface: false,
                     title: 'Добавить группу',
-                    tone: UI_LOGIC_TREE_TONE.GREEN,
+                    tone: LogicTreeTone.GREEN,
                   },
                 ],
                 id: 'connectors-group-2-count',
                 surface: false,
                 title: '12 акций',
-                tone: UI_LOGIC_TREE_TONE.GREEN,
+                tone: LogicTreeTone.GREEN,
               },
               {
                 children: [
@@ -265,24 +267,24 @@ const connectorsTree: UiLogicTreeNode[] = [
                     id: 'connectors-conflict-count',
                     surface: false,
                     title: '5 акций',
-                    tone: UI_LOGIC_TREE_TONE.RED,
+                    tone: LogicTreeTone.RED,
                   },
                 ],
                 id: 'connectors-group-3',
                 inline: [
-                  inlineText('connectors-group-3-mode', 'Несовместимость', { tone: UI_LOGIC_TREE_TONE.RED }),
+                  inlineText('connectors-group-3-mode', 'Несовместимость', { tone: LogicTreeTone.RED }),
                 ],
-                kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
-                relation: UI_LOGIC_TREE_RELATION.OR,
+                kind: LogicTreeNodeKind.GROUP,
+
                 surface: false,
                 title: 'Название группы #3',
-                tone: UI_LOGIC_TREE_TONE.RED,
+                tone: LogicTreeTone.RED,
               },
             ],
             id: 'connectors-inner-count',
             surface: false,
             title: '10 акций',
-            tone: UI_LOGIC_TREE_TONE.BLUE,
+            tone: LogicTreeTone.BLUE,
           },
         ],
         id: 'connectors-count',
@@ -296,10 +298,10 @@ const connectorsTree: UiLogicTreeNode[] = [
 const interactionTree: UiLogicTreeNode[] = [
   {
     id: 'interaction-root',
-    kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+    kind: LogicTreeNodeKind.GROUP,
     surface: true,
     title: 'Взаимодействие',
-    tone: UI_LOGIC_TREE_TONE.BLUE,
+    tone: LogicTreeTone.BLUE,
     children: [
       {
         highlighted: true,
@@ -322,37 +324,83 @@ const interactionTree: UiLogicTreeNode[] = [
         title: 'Способ оформления',
       },
       {
+        controls: [
+          selectControl(
+            'interaction-edit-type',
+            'Тип доставки',
+            'Тип доставки',
+            260,
+            ['Тип доставки', 'Самовывоз', 'Курьер']
+          ),
+          selectControl(
+            'interaction-edit-operator',
+            'Равно',
+            'Равно',
+            140,
+            ['Равно', 'Не равно']
+          ),
+          selectControl(
+            'interaction-edit-value',
+            'SDEK',
+            'SDEK',
+            260,
+            ['SDEK', 'Boxberry']
+          ),
+        ],
+        id: 'interaction-edit-on-click',
+        inline: [
+          inlineText('interaction-edit-on-click-meta', 'Равно SDEK'),
+        ],
+        removable: true,
+        surface: true,
+        title: 'Тип доставки',
+      },
+      {
         children: [
           {
-            draggable: true,
-            id: 'interaction-drag-1',
-            inline: [
-              inlineText('interaction-drag-1-meta', 'Бонусы', { tone: 'muted' }),
+            children: [
+              {
+                draggable: true,
+                id: 'interaction-drag-1',
+                inline: [
+                  inlineText('interaction-drag-1-meta', 'Бонусы', { tone: 'muted' }),
+                ],
+                removable: true,
+                surface: true,
+                title: '1. Название акции #1',
+              },
+              {
+                draggable: true,
+                highlighted: true,
+                id: 'interaction-drag-2',
+                inline: [
+                  inlineText('interaction-drag-2-meta', 'Бонусы', { tone: 'muted' }),
+                ],
+                removable: true,
+                surface: true,
+                title: '2. Название акции #2',
+              },
+              {
+                draggable: true,
+                id: 'interaction-drag-3',
+                inline: [
+                  inlineText('interaction-drag-3-meta', 'Бонусы', { tone: 'muted' }),
+                ],
+                removable: true,
+                surface: true,
+                title: '3. Название акции #3',
+              },
             ],
-            removable: true,
-            surface: true,
-            title: '1. Название акции #1',
-          },
-          {
-            draggable: true,
-            highlighted: true,
-            id: 'interaction-drag-2',
+            collapsible: true,
+            childrenGrouped: true,
+            expanded: true,
+            id: 'interaction-drag-group',
             inline: [
-              inlineText('interaction-drag-2-meta', 'Бонусы', { tone: 'muted' }),
+              inlineText('interaction-drag-group-meta', '3 строки', { tone: 'muted' }),
             ],
-            removable: true,
+            kind: LogicTreeNodeKind.GROUP,
             surface: true,
-            title: '2. Название акции #2',
-          },
-          {
-            draggable: true,
-            id: 'interaction-drag-3',
-            inline: [
-              inlineText('interaction-drag-3-meta', 'Бонусы', { tone: 'muted' }),
-            ],
-            removable: true,
-            surface: true,
-            title: '3. Название акции #3',
+            title: 'Группа акций',
           },
           {
             controls: [
@@ -380,12 +428,14 @@ const interactionTree: UiLogicTreeNode[] = [
             ],
             id: 'interaction-editor',
             removable: true,
-            rowKind: UI_LOGIC_TREE_ROW_KIND.EDITOR,
+            rowKind: LogicTreeRowKind.EDITOR,
             surface: true,
             title: 'Тип доставки',
           },
         ],
+        draggable: true,
         id: 'interaction-drag-list',
+        kind: LogicTreeNodeKind.GROUP,
         surface: true,
         title: 'Список действий',
       },
@@ -403,34 +453,34 @@ const relationsDebugTree: UiLogicTreeNode[] = [
         ],
         surface: false,
         title: 'Способ оформления',
-        tone: UI_LOGIC_TREE_TONE.BLUE,
+        tone: LogicTreeTone.BLUE,
       },
       {
         id: 'relations-debug-rule-2',
         inline: [
           inlineText('relations-debug-rule-2-meta', 'Есть'),
         ],
-        relation: UI_LOGIC_TREE_RELATION.OR,
+        conjunction: LogicTreeConjunction.OR,
         surface: false,
         title: 'Телефон',
-        tone: UI_LOGIC_TREE_TONE.BLUE,
+        tone: LogicTreeTone.BLUE,
       },
       {
         id: 'relations-debug-rule-3',
         inline: [
           inlineText('relations-debug-rule-3-meta', 'Равно retailcrm'),
         ],
-        relation: UI_LOGIC_TREE_RELATION.AND,
+        conjunction: LogicTreeConjunction.AND,
         surface: false,
         title: 'Источник',
-        tone: UI_LOGIC_TREE_TONE.BLUE,
+        tone: LogicTreeTone.BLUE,
       },
     ],
     id: 'relations-debug-root',
-    kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+    kind: LogicTreeNodeKind.GROUP,
     surface: false,
     title: 'Отладка связей',
-    tone: UI_LOGIC_TREE_TONE.BLUE,
+    tone: LogicTreeTone.BLUE,
   },
 ]
 
@@ -444,7 +494,7 @@ const segmentsTree: UiLogicTreeNode[] = [
         ],
         surface: false,
         title: 'Клиенты',
-        tone: UI_LOGIC_TREE_TONE.GREY,
+        tone: LogicTreeTone.GREY,
         children: [
           {
             children: [
@@ -453,29 +503,29 @@ const segmentsTree: UiLogicTreeNode[] = [
                 inline: [
                   inlineText('segments-format-summary-meta', 'Равно Мессенджер'),
                 ],
-                relation: UI_LOGIC_TREE_RELATION.AND,
+                conjunction: LogicTreeConjunction.AND,
                 surface: false,
                 title: 'Способ оформления',
-                tone: UI_LOGIC_TREE_TONE.BLUE,
+                tone: LogicTreeTone.BLUE,
               },
               {
                 actions: [
                   {
                     id: 'segments-phone-condition',
-                    kind: UI_LOGIC_TREE_ACTION_KIND.CONDITION,
+                    kind: LogicTreeActionKind.CONDITION,
                     label: 'Условие',
                   },
                   {
                     id: 'segments-phone-group',
-                    kind: UI_LOGIC_TREE_ACTION_KIND.GROUP,
+                    kind: LogicTreeActionKind.GROUP,
                     label: 'Группа',
                   },
                 ],
                 id: 'segments-phone-actions',
-                rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
+                rowKind: LogicTreeRowKind.ACTIONS,
                 surface: false,
                 title: 'Добавить в группу',
-                tone: UI_LOGIC_TREE_TONE.BLUE,
+                tone: LogicTreeTone.BLUE,
               },
               {
                 controls: [
@@ -502,31 +552,31 @@ const segmentsTree: UiLogicTreeNode[] = [
                   ),
                 ],
                 id: 'segments-format-editor',
-                relation: UI_LOGIC_TREE_RELATION.OR,
+                conjunction: LogicTreeConjunction.OR,
                 removable: true,
-                rowKind: UI_LOGIC_TREE_ROW_KIND.EDITOR,
+                rowKind: LogicTreeRowKind.EDITOR,
                 surface: true,
                 title: 'Способ оформления',
-                tone: UI_LOGIC_TREE_TONE.BLUE,
+                tone: LogicTreeTone.BLUE,
               },
               {
                 actions: [
                   {
                     id: 'segments-root-condition',
-                    kind: UI_LOGIC_TREE_ACTION_KIND.CONDITION,
+                    kind: LogicTreeActionKind.CONDITION,
                     label: 'Условие',
                   },
                   {
                     id: 'segments-root-group',
-                    kind: UI_LOGIC_TREE_ACTION_KIND.GROUP,
+                    kind: LogicTreeActionKind.GROUP,
                     label: 'Группа',
                   },
                 ],
                 id: 'segments-root-actions',
-                rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
+                rowKind: LogicTreeRowKind.ACTIONS,
                 surface: false,
                 title: 'Добавить в сегмент',
-                tone: UI_LOGIC_TREE_TONE.BLUE,
+                tone: LogicTreeTone.BLUE,
               },
             ],
             id: 'segments-order',
@@ -535,17 +585,17 @@ const segmentsTree: UiLogicTreeNode[] = [
             ],
             surface: false,
             title: 'Заказ клиента',
-            tone: UI_LOGIC_TREE_TONE.GREY,
+            tone: LogicTreeTone.GREY,
           },
         ],
       },
     ],
     id: 'segments-root',
-    kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
-    rowKind: UI_LOGIC_TREE_ROW_KIND.SUMMARY,
+    kind: LogicTreeNodeKind.GROUP,
+    rowKind: LogicTreeRowKind.SUMMARY,
     surface: false,
     title: 'Сегменты и редактирование',
-    tone: UI_LOGIC_TREE_TONE.GREY,
+    tone: LogicTreeTone.GREY,
   },
 ]
 
@@ -553,188 +603,204 @@ const campaignTree: UiLogicTreeNode[] = [
   {
     id: 'campaign-root',
     inline: [
-      inlineText('campaign-root-mode', 'Последовательное применение', { tone: UI_LOGIC_TREE_TONE.GREEN }),
+      inlineText('campaign-root-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
       inlineText('campaign-root-meta', 'До 5 000 ₽ скидки', { separated: true, tone: 'muted' }),
     ],
-    kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+    kind: LogicTreeNodeKind.GROUP,
     surface: false,
     title: 'Корневая группа',
-    tone: UI_LOGIC_TREE_TONE.GREEN,
+    tone: LogicTreeTone.GREEN,
+    conjunction: LogicTreeConjunction.AND,
     children: [
       {
+        collapsible: true,
+        expanded: true,
+        id: 'campaign-count',
+        surface: false,
+        title: '8 акций',
+        tone: LogicTreeTone.GREEN,
+        conjunction: LogicTreeConjunction.AND,
         children: [
           {
             id: 'campaign-group-1',
-            inline: [
-              inlineText('campaign-group-1-mode', 'Максимальная выгода', { tone: UI_LOGIC_TREE_TONE.BLUE }),
-            ],
-            kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
-            surface: false,
             title: 'Название группы #1',
-            tone: UI_LOGIC_TREE_TONE.BLUE,
-          },
-          {
+            inline: [
+              inlineText('campaign-group-1-mode', 'Максимальная выгода', { tone: LogicTreeTone.BLUE }),
+            ],
+            kind: LogicTreeNodeKind.GROUP,
+            controls: [
+              selectControl('group-1-mode', 'Режим', 'Максимальная выгода', 220, ['Максимальная выгода', 'Последовательное применение']),
+              inputControl('group-1-meta', 'Описание', 'До 5 000 ₽ скидки', 260),
+            ],
+            removable: true,
+            surface: false,
+            tone: LogicTreeTone.BLUE,
             children: [
               {
-                children: [
-                  {
-                    id: 'campaign-group-2-count',
-                    surface: false,
-                    title: '12 акций',
-                    tone: UI_LOGIC_TREE_TONE.GREEN,
-                  },
-                  {
-                    actions: [
-                      {
-                        id: 'campaign-group-2-add',
-                        kind: UI_LOGIC_TREE_ACTION_KIND.GROUP,
-                        label: 'Группа',
-                      },
-                    ],
-                    id: 'campaign-group-2-action',
-                    rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
-                    surface: false,
-                    title: 'Добавить группу',
-                    tone: UI_LOGIC_TREE_TONE.GREEN,
-                  },
-                ],
-                id: 'campaign-group-2',
-                inline: [
-                  inlineText('campaign-group-2-mode', 'Последовательное применение', { tone: UI_LOGIC_TREE_TONE.GREEN }),
-                  inlineText('campaign-group-2-meta', 'До 5 000 оплата бонусами', {
-                    separated: true,
-                    tone: 'muted',
-                  }),
-                ],
-                kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
+                collapsible: true,
+                id: 'campaign-inner-count',
                 surface: false,
-                title: 'Название группы #2',
-                tone: UI_LOGIC_TREE_TONE.GREEN,
-              },
-              {
+                title: '10 акций',
+                tone: LogicTreeTone.BLUE,
                 children: [
                   {
                     children: [
                       {
-                        draggable: true,
-                        id: 'campaign-1',
-                        inline: [
-                          inlineText('campaign-1-meta', 'Бонусы', { tone: 'muted' }),
-                        ],
-                        removable: true,
-                        surface: true,
-                        title: '1. Название акции #1',
-                      },
-                      {
-                        draggable: true,
-                        id: 'campaign-2',
-                        inline: [
-                          inlineText('campaign-2-meta', 'Бонусы', { tone: 'muted' }),
-                        ],
-                        removable: true,
-                        surface: true,
-                        title: '2. Название акции #2',
-                      },
-                      {
-                        draggable: true,
-                        id: 'campaign-3',
-                        inline: [
-                          inlineText('campaign-3-meta', 'Бонусы', { tone: 'muted' }),
-                        ],
-                        removable: true,
-                        surface: true,
-                        title: '3. Название акции #3',
-                      },
-                      {
-                        draggable: true,
-                        id: 'campaign-4',
-                        inline: [
-                          inlineText('campaign-4-meta', 'Бонусы', { tone: 'muted' }),
-                        ],
-                        removable: true,
-                        surface: true,
-                        title: '4. Название акции #4',
-                      },
-                      {
-                        draggable: true,
-                        id: 'campaign-5',
-                        inline: [
-                          inlineText('campaign-5-meta', 'Бонусы', { tone: 'muted' }),
-                        ],
-                        removable: true,
-                        surface: true,
-                        title: '5. Название акции #5',
+                        id: 'campaign-group-2-count',
+                        surface: false,
+                        title: '12 акций',
+                        tone: LogicTreeTone.GREEN,
                       },
                       {
                         actions: [
                           {
-                            id: 'campaign-add-action',
-                            kind: UI_LOGIC_TREE_ACTION_KIND.CONDITION,
-                            label: 'Добавить акцию в группу',
+                            id: 'campaign-group-2-add',
+                            kind: LogicTreeActionKind.GROUP,
+                            label: 'Группа',
                           },
                         ],
-                        id: 'campaign-actions',
-                        rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
+                        id: 'campaign-group-2-action',
+                        rowKind: LogicTreeRowKind.ACTIONS,
                         surface: false,
-                        title: 'Добавить акцию',
-                        tone: UI_LOGIC_TREE_TONE.BLUE,
+                        title: 'Добавить группу',
+                        tone: LogicTreeTone.GREEN,
                       },
                     ],
-                    id: 'campaign-incompatible-count',
+                    id: 'campaign-group-2',
+                    inline: [
+                      inlineText('campaign-group-2-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
+                      inlineText('campaign-group-2-meta', 'До 5 000 оплата бонусами', {
+                        separated: true,
+                        tone: 'muted',
+                      }),
+                    ],
+                    kind: LogicTreeNodeKind.GROUP,
                     surface: false,
-                    title: '5 акций',
-                    tone: UI_LOGIC_TREE_TONE.RED,
+                    title: 'Название группы #2',
+                    tone: LogicTreeTone.GREEN,
                   },
                   {
-                    actions: [
+                    id: 'campaign-group-3',
+                    inline: [
+                      inlineText('campaign-group-3-mode', 'Несовместимость', { tone: LogicTreeTone.RED }),
+                    ],
+                    kind: LogicTreeNodeKind.GROUP,
+                    surface: false,
+                    title: 'Название группы #3',
+                    tone: LogicTreeTone.RED,
+                    conjunction: LogicTreeConjunction.OR,
+                    children: [
                       {
-                        id: 'campaign-conflict-group',
-                        kind: UI_LOGIC_TREE_ACTION_KIND.GROUP,
-                        label: 'Группа',
+                        id: 'campaign-incompatible-count',
+                        title: '5 акций',
+                        childrenGrouped: true,
+                        collapsible: true,
+                        expanded: true,
+                        surface: false,
+                        conjunction: LogicTreeConjunction.AND,
+                        tone: LogicTreeTone.GREY,
+                        children: [
+                          {
+                            draggable: true,
+                            id: 'campaign-1',
+                            inline: [
+                              inlineText('campaign-1-meta', 'Бонусы', { tone: 'muted' }),
+                            ],
+                            removable: true,
+                            surface: true,
+                            title: '1. Название акции #1',
+                          },
+                          {
+                            draggable: true,
+                            id: 'campaign-2',
+                            inline: [
+                              inlineText('campaign-2-meta', 'Бонусы', { tone: 'muted' }),
+                            ],
+                            removable: true,
+                            surface: true,
+                            title: '2. Название акции #2',
+                          },
+                          {
+                            draggable: true,
+                            id: 'campaign-3',
+                            inline: [
+                              inlineText('campaign-3-meta', 'Бонусы', { tone: 'muted' }),
+                            ],
+                            removable: true,
+                            surface: true,
+                            title: '3. Название акции #3',
+                          },
+                          {
+                            draggable: true,
+                            id: 'campaign-4',
+                            inline: [
+                              inlineText('campaign-4-meta', 'Бонусы', { tone: 'muted' }),
+                            ],
+                            removable: true,
+                            surface: true,
+                            title: '4. Название акции #4',
+                          },
+                          {
+                            draggable: true,
+                            id: 'campaign-5',
+                            inline: [
+                              inlineText('campaign-5-meta', 'Бонусы', { tone: 'muted' }),
+                            ],
+                            removable: true,
+                            surface: true,
+                            title: '5. Название акции #5',
+                          },
+                          {
+                            actions: [
+                              {
+                                id: 'campaign-add-action',
+                                kind: LogicTreeActionKind.CONDITION,
+                                label: 'Добавить акцию в группу',
+                              },
+                            ],
+                            id: 'campaign-actions',
+                            rowKind: LogicTreeRowKind.ACTIONS,
+                            surface: false,
+                            title: 'Добавить акцию',
+                            tone: LogicTreeTone.BLUE,
+                          },
+                        ],
+                      },
+                      {
+                        actions: [
+                          {
+                            id: 'campaign-conflict-group',
+                            kind: LogicTreeActionKind.GROUP,
+                            label: 'Группа',
+                          },
+                        ],
+                        id: 'campaign-conflict-actions',
+                        rowKind: LogicTreeRowKind.ACTIONS,
+                        surface: false,
+                        title: 'Добавить группу',
+                        tone: LogicTreeTone.RED,
                       },
                     ],
-                    id: 'campaign-conflict-actions',
-                    rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
-                    surface: false,
-                    title: 'Добавить группу',
-                    tone: UI_LOGIC_TREE_TONE.RED,
                   },
                 ],
-                id: 'campaign-group-3',
-                inline: [
-                  inlineText('campaign-group-3-mode', 'Несовместимость', { tone: UI_LOGIC_TREE_TONE.RED }),
-                ],
-                kind: UI_LOGIC_TREE_NODE_KIND.GROUP,
-                relation: UI_LOGIC_TREE_RELATION.OR,
-                surface: false,
-                title: 'Название группы #3',
-                tone: UI_LOGIC_TREE_TONE.RED,
               },
             ],
-            id: 'campaign-inner-count',
-            surface: false,
-            title: '10 акций',
-            tone: UI_LOGIC_TREE_TONE.BLUE,
           },
           {
             actions: [
               {
                 id: 'campaign-root-group',
-                kind: UI_LOGIC_TREE_ACTION_KIND.GROUP,
+                kind: LogicTreeActionKind.GROUP,
                 label: 'Группа',
               },
             ],
             id: 'campaign-root-action',
-            rowKind: UI_LOGIC_TREE_ROW_KIND.ACTIONS,
+            rowKind: LogicTreeRowKind.ACTIONS,
             surface: false,
             title: 'Добавить группу',
-            tone: UI_LOGIC_TREE_TONE.GREEN,
+            tone: LogicTreeTone.GREEN,
           },
         ],
-        id: 'campaign-count',
-        surface: false,
-        title: '8 акций',
-        tone: UI_LOGIC_TREE_TONE.GREEN,
       },
     ],
   },
@@ -773,7 +839,7 @@ const meta = {
   rowKind?: 'summary' | 'editor' | 'actions'
   kind?: 'condition' | 'group'
   tone?: 'blue' | 'green' | 'grey' | 'red' | 'yellow'
-  relation?: 'И' | 'ИЛИ' | string
+  conjunction?: 'and' | 'or' | string
   inline?: UiLogicTreeInlineText[]
   controls?: UiLogicTreeControl[]
   actions?: UiLogicTreeAction[]
@@ -803,6 +869,11 @@ const meta = {
   }),
 
   parameters: {
+    docs: {
+      description: {
+        component: 'UiLogicTree сам управляет деревом, связями, состояниями строк и стандартным рендером summary/editor/actions-кейсов. Storybook worker только прокидывает данные в компонент.',
+      },
+    },
     layout: 'padded',
   },
 } satisfies Meta<typeof UiLogicTree>

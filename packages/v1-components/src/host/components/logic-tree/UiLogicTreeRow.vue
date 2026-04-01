@@ -1,5 +1,14 @@
 <template>
-    <div class="ui-v1-logic-tree__row">
+    <div
+        :class="{
+            'ui-v1-logic-tree__row': true,
+            'ui-v1-logic-tree__row_grouped': grouped,
+            'ui-v1-logic-tree__row_grouped-start': grouped && groupedPosition === 'start',
+            'ui-v1-logic-tree__row_grouped-middle': grouped && groupedPosition === 'middle',
+            'ui-v1-logic-tree__row_grouped-end': grouped && groupedPosition === 'end',
+            'ui-v1-logic-tree__row_grouped-single': grouped && groupedPosition === 'single',
+        }"
+    >
         <div class="ui-v1-logic-tree__row-main">
             <div
                 v-if="connectors.length > 0"
@@ -26,47 +35,98 @@
                     />
 
                     <span
-                        v-if="relation && index === connectors.length - 1"
+                        v-if="conjunction && index === connectors.length - 1"
                         :class="{
                             'ui-v1-logic-tree__relation-badge': true,
-                            'ui-v1-logic-tree__relation-badge_or': relationKind === 'or',
-                            'ui-v1-logic-tree__relation-badge_and': relationKind === 'and',
-                            [`ui-v1-logic-tree__relation-badge_${relationTone}`]: true,
+                            'ui-v1-logic-tree__relation-badge_or': conjunctionKind === 'or',
+                            'ui-v1-logic-tree__relation-badge_and': conjunctionKind === 'and',
+                            [`ui-v1-logic-tree__relation-badge_${conjunctionTone}`]: true,
                         }"
                     >
-                        {{ relation }}
+                        {{ conjunctionLabel || conjunction }}
                     </span>
                 </span>
             </div>
 
             <div
-                ref="surfaceRow"
                 :class="{
                     'ui-v1-logic-tree__surface-row': true,
-                    'ui-v1-logic-tree__surface-row_actions': rowKind === UI_LOGIC_TREE_ROW_KIND.ACTIONS,
-                    'ui-v1-logic-tree__surface-row_editor': rowKind === UI_LOGIC_TREE_ROW_KIND.EDITOR,
-                    'ui-v1-logic-tree__surface-row_highlighted': highlighted || isDragging,
-                    'ui-v1-logic-tree__surface-row_plain': !surface,
-                    'ui-v1-logic-tree__surface-row_selected': selected,
+                    'ui-v1-logic-tree__surface-row_offset-ghost': isOffsetGhostDragging,
                 }"
                 :data-path-key="pathKey"
-                :tabindex="rowKind !== UI_LOGIC_TREE_ROW_KIND.ACTIONS ? 0 : undefined"
+                :style="surfaceRowContainerStyle"
                 v-bind="$attrs"
-                @click="onClick"
             >
-                <slot />
+                <div
+                    :class="{
+                        'ui-v1-logic-tree__grouped-block': grouped,
+                        'ui-v1-logic-tree__grouped-block_start': grouped && groupedPosition === 'start',
+                        'ui-v1-logic-tree__grouped-block_middle': grouped && groupedPosition === 'middle',
+                        'ui-v1-logic-tree__grouped-block_end': grouped && groupedPosition === 'end',
+                        'ui-v1-logic-tree__grouped-block_single': grouped && groupedPosition === 'single',
+                    }"
+                >
+                    <div
+                        v-if="rowKind === LogicTreeRowKind.ACTIONS"
+                        ref="surfaceRow"
+                        class="ui-v1-logic-tree__actions-row"
+                        :style="surfaceRowStyle"
+                    >
+                        <div class="ui-v1-logic-tree__row-prefix">
+                            <slot name="prefix" />
+                        </div>
+
+                        <div class="ui-v1-logic-tree__actions-row-content">
+                            <slot name="content" />
+                        </div>
+
+                        <div class="ui-v1-logic-tree__row-trailing">
+                            <slot name="trailing" />
+                        </div>
+                    </div>
+
+                    <div
+                        v-else
+                        ref="surfaceRow"
+                        :class="{
+                            'ui-v1-logic-tree__surface-row-content': true,
+                            'ui-v1-logic-tree__surface-row-content_active': selected,
+                            'ui-v1-logic-tree__surface-row-content_editing': editing,
+                            'ui-v1-logic-tree__surface-row-content_editor': rowKind === LogicTreeRowKind.EDITOR,
+                            'ui-v1-logic-tree__surface-row-content_highlighted': highlighted || isDragging,
+                            'ui-v1-logic-tree__surface-row-content_simple': !surface,
+                        }"
+                        :style="surfaceRowStyle"
+                        tabindex="0"
+                        @click="onClick"
+                    >
+                        <div class="ui-v1-logic-tree__surface-row-content__main">
+                            <div class="ui-v1-logic-tree__row-prefix">
+                                <slot name="prefix" />
+                            </div>
+
+                            <div class="ui-v1-logic-tree__row-content">
+                                <slot name="content" />
+                            </div>
+                        </div>
+
+                        <div class="ui-v1-logic-tree__row-trailing">
+                            <slot name="trailing" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import type { PropType } from 'vue'
+import type { CSSProperties, PropType } from 'vue'
 
 import type {
+  LogicTreeTone,
   UiLogicTreeConnector,
-  UiLogicTreeRowKind,
-  UiLogicTreeTone,
+  UiLogicTreeRowProperties,
 } from '@/common/components/logic-tree'
 
 import { useDraggable } from '@vueuse/core'
@@ -74,14 +134,16 @@ import { useDraggable } from '@vueuse/core'
 import {
   computed,
   nextTick,
+  onBeforeUnmount,
   onMounted,
   ref,
   watch,
 } from 'vue'
 
 import {
-  UI_LOGIC_TREE_RELATION,
-  UI_LOGIC_TREE_ROW_KIND,
+  LogicTreeConjunction,
+  LogicTreeNodeKind,
+  LogicTreeRowKind,
 } from '@/common/components/logic-tree'
 
 defineOptions({
@@ -108,10 +170,34 @@ const props = defineProps({
     default: false,
   },
 
+  /** Переводит строку в режим редактирования и удерживает активные действия видимыми */
+  editing: {
+    type: Boolean,
+    default: false,
+  },
+
+  /** Включает отдельный grouped-блок вокруг контентной зоны строки */
+  grouped: {
+    type: Boolean,
+    default: false,
+  },
+
+  /** Позиция строки внутри grouped-блока */
+  groupedPosition: {
+    type: String as PropType<UiLogicTreeRowProperties['groupedPosition']>,
+    default: undefined,
+  },
+
   /** Подсвечивает строку как наведённую или активную */
   highlighted: {
     type: Boolean,
     default: false,
+  },
+
+  /** Логический тип узла, нужен для специальных сценариев drag&drop у групп */
+  nodeKind: {
+    type: String as PropType<LogicTreeNodeKind>,
+    default: undefined,
   },
 
   /** Уникальный путь строки внутри дерева, используется для клика и drag&drop */
@@ -120,22 +206,28 @@ const props = defineProps({
     default: '',
   },
 
-  /** Текст логической связи перед строкой, например И или ИЛИ */
-  relation: {
+  /** Значение конъюнкции перед строкой, например AND или OR */
+  conjunction: {
     type: String,
     default: '',
   },
 
-  /** Цветовая схема бейджа связи и примыкающей ветки */
-  relationTone: {
-    type: String as PropType<UiLogicTreeTone>,
+  /** Локализованный текст бейджа конъюнкции, например AND/OR или И/ИЛИ */
+  conjunctionLabel: {
+    type: String,
+    default: '',
+  },
+
+  /** Цветовая схема бейджа конъюнкции и примыкающей ветки */
+  conjunctionTone: {
+    type: String as PropType<LogicTreeTone>,
     default: undefined,
   },
 
   /** Состояние строки: просмотр с текстом/иконками или редактирование с инпутами и селектами */
   rowKind: {
-    type: String as PropType<UiLogicTreeRowKind>,
-    default: UI_LOGIC_TREE_ROW_KIND.SUMMARY,
+    type: String as PropType<LogicTreeRowKind>,
+    default: LogicTreeRowKind.SUMMARY,
   },
 
   /** Выделяет строку как выбранную */
@@ -160,17 +252,24 @@ const emit = defineEmits<{
 
 const surfaceRow = ref<HTMLElement | null>(null)
 const handle = ref<HTMLElement | null>(null)
+const dragRect = ref<DOMRect | null>(null)
+const dragPointer = ref({
+  x: 0,
+  y: 0,
+})
 
 const syncHandle = () => {
   handle.value = surfaceRow.value?.querySelector('.ui-v1-logic-tree__handle') as HTMLElement | null
 }
 
 const resolveDragPayload = (event: PointerEvent): UiLogicTreeRowDragEvent => {
-  const targetPathKey = document
-    .elementFromPoint(event.clientX, event.clientY)
-    ?.closest<HTMLElement>('[data-path-key]')
-    ?.dataset.pathKey
-    ?? ''
+  const targetPathKey = typeof document === 'undefined'
+    ? ''
+    : document
+      .elementFromPoint(event.clientX, event.clientY)
+      ?.closest<HTMLElement>('[data-path-key]')
+      ?.dataset.pathKey
+      ?? ''
 
   return {
     clientX: event.clientX,
@@ -194,17 +293,22 @@ const onClick = (event: MouseEvent) => {
   emit('row-click', props.pathKey)
 }
 
-const relationKind = computed(() => {
-  if (props.relation === UI_LOGIC_TREE_RELATION.OR) {
+const conjunctionKind = computed(() => {
+  if (props.conjunction === LogicTreeConjunction.OR) {
     return 'or'
   }
 
-  if (props.relation === UI_LOGIC_TREE_RELATION.AND) {
+  if (props.conjunction === LogicTreeConjunction.AND) {
     return 'and'
   }
 
   return ''
 })
+
+const isOffsetGhostDragging = computed(() => (
+  isDragging.value
+  && (props.grouped || props.nodeKind === LogicTreeNodeKind.GROUP)
+))
 
 const { isDragging } = useDraggable(surfaceRow, {
   disabled: computed(() => !props.draggable),
@@ -212,14 +316,51 @@ const { isDragging } = useDraggable(surfaceRow, {
   preventDefault: true,
   stopPropagation: true,
   onEnd: (_, event) => {
+    dragRect.value = null
+    dragPointer.value = { x: 0, y: 0 }
     emit('row-drag-end', resolveDragPayload(event))
   },
   onMove: (_, event) => {
+    dragPointer.value = {
+      x: event.clientX,
+      y: event.clientY,
+    }
     emit('row-drag-move', resolveDragPayload(event))
   },
   onStart: (_, event) => {
+    dragRect.value = surfaceRow.value?.getBoundingClientRect() ?? null
+    dragPointer.value = {
+      x: event.clientX,
+      y: event.clientY,
+    }
     emit('row-drag-start', resolveDragPayload(event))
   },
+})
+
+const surfaceRowContainerStyle = computed<CSSProperties | undefined>(() => {
+  if (!isOffsetGhostDragging.value || !dragRect.value) {
+    return undefined
+  }
+
+  return {
+    minHeight: `${dragRect.value.height}px`,
+  }
+})
+
+const surfaceRowStyle = computed<CSSProperties | undefined>(() => {
+  if (!isOffsetGhostDragging.value || !dragRect.value) {
+    return undefined
+  }
+
+  return {
+    left: '0',
+    pointerEvents: 'none',
+    position: 'fixed',
+    top: '0',
+    transform: `translate3d(${dragPointer.value.x + 24}px, ${dragPointer.value.y - 28}px, 0)`,
+    width: `${dragRect.value.width}px`,
+    zIndex: '20',
+  }
 })
 
 watch(() => [props.draggable, props.rowKind], async () => {
@@ -229,6 +370,11 @@ watch(() => [props.draggable, props.rowKind], async () => {
 
 onMounted(() => {
   void nextTick(syncHandle)
+})
+
+onBeforeUnmount(() => {
+  dragRect.value = null
+  dragPointer.value = { x: 0, y: 0 }
 })
 </script>
 

@@ -27,6 +27,14 @@
     }
   }
 
+  &__children-group {
+    width: 100%;
+
+    & + & {
+      margin-top: @spacing-xs;
+    }
+  }
+
   &__row-main {
     display: flex;
     align-items: stretch;
@@ -71,25 +79,11 @@
       min-width: 42px;
     }
 
-    &_blue {
-      background: @blue-300;
-    }
-
-    &_green {
-      background: @green-400;
-    }
-
-    &_grey {
-      background: @grey-800;
-    }
-
-    &_red {
-      background: @red-500;
-    }
-
-    &_yellow {
-      background: @yellow-400;
-    }
+    &_blue { background: @blue-300; }
+    &_green { background: @green-400; }
+    &_grey { background: @grey-800; }
+    &_red { background: @red-500; }
+    &_yellow { background: @yellow-400; }
   }
 
   &__connector {
@@ -107,7 +101,7 @@
     }
 
     &:not(&_branch) .ui-v1-logic-tree__connector-stroke_top {
-      height: calc(100% + 8px);
+      height: calc(100% + 14px);
     }
 
     &:not(&_branch) .ui-v1-logic-tree__connector-stroke_middle {
@@ -126,16 +120,17 @@
     left: 8px;
     width: 2px;
     background: currentColor;
-    border-radius: 999px;
 
     &_top {
       top: 0;
       height: calc(50% + 1px);
+      border-radius: 0;
     }
 
     &_bottom {
-      top: 50%;
-      height: calc(50% + 8px);
+      top: calc(50% - 1px);
+      height: calc(50% + 15px);
+      border-radius: 0;
     }
 
     &_middle {
@@ -143,6 +138,7 @@
       left: 8px;
       width: 20px;
       height: 2px;
+      border-radius: 999px;
       transform: translateY(-50%);
     }
   }
@@ -150,98 +146,193 @@
   &__surface-row {
     position: relative;
     z-index: 0;
-    display: flex;
     flex: 1;
+    min-width: 0;
+    right: @spacing-xxs;
+  }
+
+  &__row_grouped {
+    & + .ui-v1-logic-tree__row_grouped {
+      margin-top: 0;
+    }
+  }
+
+  &__grouped-block {
+    background: @grey-200;
+    border-radius: @border-radius-md;
+  }
+
+  &__grouped-block_start {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  &__grouped-block_middle {
+    border-radius: 0;
+  }
+
+  &__grouped-block_end {
+    padding-bottom: @spacing-xs;
+    padding-left: @spacing-xs;
+    border-top-right-radius: 0;
+    border-top-left-radius: 4px;
+  }
+
+  &__row_grouped &__surface-row-content,
+  &__row_grouped &__actions-row {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  &__row_grouped &__surface-row {
+    background: transparent;
+  }
+
+  &__row_grouped &__surface-row-content:hover,
+  &__row_grouped &__surface-row-content_active,
+  &__row_grouped &__surface-row-content_editing,
+  &__row_grouped &__surface-row-content_highlighted {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  &__actions-row {
+    display: flex;
     align-items: center;
-    gap: @spacing-xs;
     min-width: 0;
     min-height: 36px;
-    padding: @spacing-xs;
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+
+  &__surface-row-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    min-height: 36px;
+    padding: 6px 8px;
     background: #fff;
+    border: 1px solid @grey-300;
     border-radius: @border-radius-sm;
-    box-shadow: inset 0 0 0 1px @grey-300;
-    transition: box-shadow @transition, background @transition, opacity @transition;
+    cursor: pointer;
+    transition: @transition;
 
     &:hover {
       background: @blue-transparent;
     }
 
-    &_editor,
-    &_actions {
-      min-height: 52px;
+    &:active {
+      border: 1px solid @blue-500;
     }
 
     &_editor {
+      min-height: 52px;
+    }
+
+    &__main {
+      display: flex;
       align-items: center;
+      gap: @spacing-xs;
+      min-width: 0;
     }
 
-    &_actions {
-      background: #fff;
-    }
-
-    &_dragging {
-      opacity: 0.56;
-    }
-
-    &_drop-before {
-      box-shadow:
-        inset 0 2px 0 @blue-500,
-        inset 0 0 0 1px @blue-500;
-    }
-
-    &_drop-inside {
-      background: @blue-transparent;
-      box-shadow: inset 0 0 0 1px @blue-500;
-    }
-
+    &_active,
+    &_editing,
     &_highlighted {
       background: @blue-transparent;
+      border-color: @blue-500;
     }
 
-    &_selected {
-      background: @blue-transparent;
-      box-shadow: inset 0 0 0 1px @blue-500;
-    }
-
-    &_plain {
+    &_simple {
       min-height: 32px;
-      padding: 6px 0;
       background: transparent;
-      box-shadow: none;
+      border-color: transparent;
 
       &:hover {
         background: @blue-transparent;
-        box-shadow: none;
       }
     }
 
-    &_plain.ui-v1-logic-tree__surface-row_editor,
-    &_plain.ui-v1-logic-tree__surface-row_actions {
+    &_simple.ui-v1-logic-tree__surface-row-content_editor {
       min-height: 36px;
-      padding: 0;
-    }
-
-    &_plain.ui-v1-logic-tree__surface-row_selected {
-      padding: @spacing-xs;
-      box-shadow: inset 0 0 0 1px @blue-500;
     }
   }
 
-  &__folder,
-  &__handle,
-  &__icon-button,
-  &__toggle {
-    display: inline-flex;
-    flex: none;
+  &__row-content,
+  &__actions-row-content {
+    display: flex;
+    flex: 1;
     align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    padding: 0;
-    margin: 0;
+    min-width: 0;
+  }
+
+  &__actions-row-content {
+    gap: @spacing-xs;
+  }
+
+  &__surface-row_drop-before &__surface-row-content {
+    box-shadow: inset 0 2px 0 @blue-500;
+    border-color: @blue-500;
+  }
+
+  &__surface-row_drop-inside &__surface-row-content {
+    background: @blue-transparent;
+    border-color: @blue-500;
+  }
+
+  &__surface-row_offset-ghost {
+    z-index: 5;
+  }
+
+  &__surface-row_offset-ghost &__surface-row-content {
+    background: #fff;
+    border-color: @grey-200;
+    border-radius: @border-radius-md;
+    box-shadow:
+      0 16px 32px rgb(30 34 72 / 16%),
+      0 4px 12px rgb(30 34 72 / 14%);
+    cursor: grabbing;
+    opacity: 1;
+  }
+
+  &__surface-row_offset-ghost &__handle {
+    cursor: grabbing;
+  }
+
+  &__surface-row_offset-ghost &__actions-row {
+    background: #fff;
+    border-color: @grey-200;
+    border-radius: @border-radius-md;
+    box-shadow:
+      0 16px 32px rgb(30 34 72 / 16%),
+      0 4px 12px rgb(30 34 72 / 14%);
+  }
+
+  &__surface-row_offset-ghost &__delete,
+  &__surface-row_offset-ghost &__icon-button {
+    opacity: 1;
+    pointer-events: none;
+  }
+
+  &__folder,
+  &__icon-button {
+    display: flex;
+    align-items: center;
     color: @black-500;
-    background: transparent;
-    border: 0;
+  }
+
+  &__delete {
+    color: @grey-700;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity @transition, color @transition;
+  }
+
+  &__delete:hover {
+    color: @red-600;
   }
 
   &__folder svg,
@@ -259,19 +350,15 @@
   &__handle {
     color: @grey-700;
     cursor: grab;
-  }
-
-  &__toggle {
-    width: 24px;
-    height: 24px;
-    color: @black-500;
-    cursor: pointer;
+    display: flex;
+    align-items: center;
   }
 
   &__toggle-icon {
     width: 20px;
     height: 20px;
     transition: transform @transition;
+    color: @black-500;
 
     &_collapsed {
       transform: rotate(-90deg);
@@ -284,6 +371,13 @@
     flex-wrap: wrap;
     align-items: center;
     gap: @spacing-xs;
+    min-width: 0;
+  }
+
+  &__headline {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     min-width: 0;
   }
 
@@ -380,11 +474,6 @@
     opacity: 0;
     cursor: pointer;
     transition: opacity @transition, color @transition, background @transition;
-
-    &_remove:hover {
-      color: @red-500;
-      background: @red-transparent;
-    }
   }
 
   &__toggle.ui-v1-button,
@@ -424,10 +513,28 @@
     }
   }
 
-  &__surface-row:hover &__icon-button,
-  &__surface-row_editor &__icon-button,
-  &__surface-row_selected &__icon-button,
-  &__surface-row_dragging &__icon-button {
+  &__surface-row-content:hover &__icon-button,
+  &__surface-row-content_editor &__icon-button,
+  &__surface-row-content_active &__icon-button,
+  &__surface-row-content_editing &__icon-button,
+  &__surface-row-content_highlighted &__icon-button,
+  &__surface-row-content:hover &__delete,
+  &__surface-row-content_editor &__delete,
+  &__surface-row-content_active &__delete,
+  &__surface-row-content_editing &__delete,
+  &__surface-row-content_highlighted &__delete,
+  &__surface-row-content:focus-within &__delete,
+  &__row_grouped &__delete {
     opacity: 1;
+  }
+
+  &__surface-row-content:hover &__delete,
+  &__surface-row-content_editor &__delete,
+  &__surface-row-content_active &__delete,
+  &__surface-row-content_editing &__delete,
+  &__surface-row-content_highlighted &__delete,
+  &__surface-row-content:focus-within &__delete,
+  &__row_grouped &__delete {
+    pointer-events: auto;
   }
 }
