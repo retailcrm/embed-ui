@@ -28,9 +28,6 @@ export const UiLogicTreeRowType = 'UiLogicTreeRow' as SchemaType<
 export const UiLogicTreeRow = defineRemoteComponent(UiLogicTreeRowType, {
   emits: {
     'row-click': () => true,
-    'row-drag-end': () => true,
-    'row-drag-move': () => true,
-    'row-drag-start': () => true,
   },
   slots: ['prefix', 'content', 'trailing'],
 })

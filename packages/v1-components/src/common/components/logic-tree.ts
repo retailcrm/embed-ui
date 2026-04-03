@@ -11,12 +11,19 @@ export enum LogicTreeControlKind {
 
 export enum LogicTreeIcon {
   ADD = 'add',
+  FOLDER = 'folder',
   MORE = 'more',
 }
 
 export enum LogicTreeNodeKind {
+  BRANCH = 'branch',
   CONDITION = 'condition',
   GROUP = 'group',
+}
+
+export enum LogicTreeChildrenView {
+  GROUPED = 'grouped',
+  PLAIN = 'plain',
 }
 
 export enum LogicTreeConjunction {
@@ -24,7 +31,7 @@ export enum LogicTreeConjunction {
   OR = 'or',
 }
 
-export enum LogicTreeRowKind {
+export enum LogicTreeRowView {
   ACTIONS = 'actions',
   EDITOR = 'editor',
   SUMMARY = 'summary',
@@ -39,18 +46,18 @@ export enum LogicTreeTone {
 }
 
 export type UiLogicTreeControl = {
-  clearable?: boolean;
-  disabled?: boolean;
   id: string;
-  icon?: LogicTreeIcon;
-  invalid?: boolean;
   kind: LogicTreeControlKind;
   label: string;
+  icon?: LogicTreeIcon;
   options?: UiLogicTreeOption[];
-  placeholder?: string;
-  readonly?: boolean;
   value?: string | number | null;
+  placeholder?: string;
   width?: number | string;
+  clearable?: boolean;
+  readonly?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
 }
 
 export type UiLogicTreeAction = {
@@ -61,6 +68,7 @@ export type UiLogicTreeAction = {
 
 export type UiLogicTreeConnector = {
   continues: boolean;
+  placeholder?: boolean;
   tone: LogicTreeTone;
   visible: boolean;
 }
@@ -73,33 +81,36 @@ export type UiLogicTreeOption = {
 
 export type UiLogicTreeInlineText = {
   id: string;
-  separated?: boolean;
   text: string;
   tone?: LogicTreeTone | 'default' | 'muted';
   weight?: 'regular' | 'semibold';
+  separated?: boolean;
+}
+
+export type UiLogicTreeRow = {
+  view: LogicTreeRowView;
+  title: string;
+  icon?: LogicTreeIcon;
+  inline?: UiLogicTreeInlineText[];
+  controls?: UiLogicTreeControl[];
+  actions?: UiLogicTreeAction[];
+  draggable?: boolean;
+  removable?: boolean;
+  selected?: boolean;
+  highlighted?: boolean;
+  surface?: boolean;
 }
 
 export type UiLogicTreeNode = {
-  actions?: UiLogicTreeAction[];
-  children?: UiLogicTreeNode[];
-  childrenGrouped?: boolean;
+  id: string;
+  kind: LogicTreeNodeKind;
+  tone?: LogicTreeTone;
   conjunction?: LogicTreeConjunction | string;
   collapsible?: boolean;
-  controls?: UiLogicTreeControl[];
-  draggable?: boolean;
   expanded?: boolean;
-  highlighted?: boolean;
-  id: string;
-  inline?: UiLogicTreeInlineText[];
-  kind?: LogicTreeNodeKind;
-  meta?: string;
-  removable?: boolean;
-  rowKind?: LogicTreeRowKind;
-  selected?: boolean;
-  surface?: boolean;
-  subtitle?: string;
-  title: string;
-  tone?: LogicTreeTone;
+  childrenView?: LogicTreeChildrenView;
+  children?: UiLogicTreeNode[];
+  row: UiLogicTreeRow;
 }
 
 export type UiLogicTreeProperties = {
@@ -108,23 +119,32 @@ export type UiLogicTreeProperties = {
   surface?: boolean;
 }
 
+export type UiLogicTreeDropPayload = {
+  itemId: string;
+  sourceContainerId: string;
+  targetContainerId: string;
+  targetIndex: number | null;
+  targetItemId: string | null;
+  placement: 'after' | 'before';
+  payload?: unknown;
+}
+
 export type UiLogicTreeRootProperties = {
   surface?: boolean;
 }
 
 export type UiLogicTreeRowProperties = {
+  pathKey?: string;
+  rowView?: LogicTreeRowView;
+  connectors?: UiLogicTreeConnector[];
   conjunction?: string;
   conjunctionLabel?: string;
   conjunctionTone?: LogicTreeTone;
-  connectors?: UiLogicTreeConnector[];
-  draggable?: boolean;
-  editing?: boolean;
+  groupedHeader?: boolean;
   grouped?: boolean;
   groupedPosition?: 'end' | 'middle' | 'single' | 'start';
+  editing?: boolean;
   highlighted?: boolean;
-  nodeKind?: LogicTreeNodeKind;
-  pathKey?: string;
-  rowKind?: LogicTreeRowKind;
   selected?: boolean;
   surface?: boolean;
 }

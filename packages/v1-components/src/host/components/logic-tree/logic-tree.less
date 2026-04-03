@@ -18,9 +18,9 @@
   }
 
   &__row {
-    position: relative;
     width: 100%;
     overflow: visible;
+    position: relative;
 
     & + & {
       margin-top: @spacing-xs;
@@ -43,8 +43,6 @@
   }
 
   &__connectors {
-    position: relative;
-    z-index: 1;
     display: grid;
     grid-auto-columns: 32px;
     grid-auto-flow: column;
@@ -52,15 +50,13 @@
     width: max-content;
     min-width: max-content;
     overflow: visible;
+    position: relative;
+    z-index: 1;
   }
 
   &__relation-badge {
     .text-tiny-accent();
 
-    position: absolute;
-    top: 50%;
-    left: 8px;
-    z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -70,6 +66,10 @@
     border-radius: 999px;
     transform: translate(-50%, -50%);
     white-space: nowrap;
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    z-index: 2;
 
     &_and {
       min-width: 26px;
@@ -87,24 +87,28 @@
   }
 
   &__connector {
-    position: relative;
     min-height: 36px;
     opacity: 0;
     overflow: visible;
+    position: relative;
 
     &_visible {
       opacity: 1;
     }
 
-    &_branch .ui-v1-logic-tree__connector-stroke_top {
+    &_placeholder {
+      opacity: 1;
+    }
+
+    &_branch &-stroke_top {
       display: block;
     }
 
-    &:not(&_branch) .ui-v1-logic-tree__connector-stroke_top {
+    &:not(&_branch) &-stroke_top {
       height: calc(100% + 14px);
     }
 
-    &:not(&_branch) .ui-v1-logic-tree__connector-stroke_middle {
+    &:not(&_branch) &-stroke_middle {
       display: none;
     }
 
@@ -116,10 +120,10 @@
   }
 
   &__connector-stroke {
-    position: absolute;
-    left: 8px;
     width: 2px;
     background: currentColor;
+    position: absolute;
+    left: 8px;
 
     &_top {
       top: 0;
@@ -144,11 +148,11 @@
   }
 
   &__surface-row {
-    position: relative;
-    z-index: 0;
     flex: 1;
     min-width: 0;
     right: @spacing-xxs;
+    position: relative;
+    z-index: 0;
   }
 
   &__row_grouped {
@@ -195,6 +199,10 @@
   &__row_grouped &__surface-row-content_highlighted {
     background: transparent;
     border-color: transparent;
+  }
+
+  &__row_grouped-header &__surface-row-content_simple {
+    padding-left: 0;
   }
 
   &__actions-row {
@@ -271,50 +279,16 @@
 
   &__actions-row-content {
     gap: @spacing-xs;
+    padding: @spacing-xxs;
   }
 
-  &__surface-row_drop-before &__surface-row-content {
-    box-shadow: inset 0 2px 0 @blue-500;
-    border-color: @blue-500;
+  &__grouped-sortable,
+  &__grouped-sortable-item {
+    width: 100%;
   }
 
-  &__surface-row_drop-inside &__surface-row-content {
-    background: @blue-transparent;
-    border-color: @blue-500;
-  }
-
-  &__surface-row_offset-ghost {
-    z-index: 5;
-  }
-
-  &__surface-row_offset-ghost &__surface-row-content {
-    background: #fff;
-    border-color: @grey-200;
-    border-radius: @border-radius-md;
-    box-shadow:
-      0 16px 32px rgb(30 34 72 / 16%),
-      0 4px 12px rgb(30 34 72 / 14%);
-    cursor: grabbing;
-    opacity: 1;
-  }
-
-  &__surface-row_offset-ghost &__handle {
-    cursor: grabbing;
-  }
-
-  &__surface-row_offset-ghost &__actions-row {
-    background: #fff;
-    border-color: @grey-200;
-    border-radius: @border-radius-md;
-    box-shadow:
-      0 16px 32px rgb(30 34 72 / 16%),
-      0 4px 12px rgb(30 34 72 / 14%);
-  }
-
-  &__surface-row_offset-ghost &__delete,
-  &__surface-row_offset-ghost &__icon-button {
-    opacity: 1;
-    pointer-events: none;
+  &__grouped-sortable-item {
+    transition: none;
   }
 
   &__folder,
@@ -352,6 +326,68 @@
     cursor: grab;
     display: flex;
     align-items: center;
+  }
+
+  [data-dnd-dragging='true'] &__handle {
+    cursor: grabbing;
+  }
+
+  [data-dnd-dragging='true'] {
+    pointer-events: none;
+  }
+
+  [data-dnd-dragging='true'] &__surface-row-content,
+  [data-dnd-dragging='true'] &__actions-row {
+    background: transparent;
+    box-shadow: none;
+    outline: 0;
+    transition: none;
+  }
+
+  [data-dnd-dragging='true'] &__surface-row-content__main,
+  [data-dnd-dragging='true'] &__actions-row-content,
+  [data-dnd-dragging='true'] &__row-trailing {
+    visibility: hidden;
+  }
+
+  [data-dnd-placeholder='true'] {
+    pointer-events: none;
+  }
+
+  [data-dnd-placeholder='true'] &__surface-row-content,
+  [data-dnd-placeholder='true'] &__actions-row {
+    background: transparent;
+    box-shadow: none;
+    outline: 2px dashed @blue-500;
+    outline-offset: -2px;
+    transition: none;
+  }
+
+  [data-dnd-placeholder='true'] &__surface-row-content__main,
+  [data-dnd-placeholder='true'] &__actions-row-content,
+  [data-dnd-placeholder='true'] &__row-trailing {
+    visibility: hidden;
+  }
+
+  [data-dnd-overlay='true'] &__surface-row-content,
+  [data-dnd-overlay='true'] &__actions-row {
+    background: #fff;
+    border-color: @grey-200;
+    border-radius: @border-radius-md;
+    box-shadow:
+      0 16px 32px rgb(30 34 72 / 16%),
+      0 4px 12px rgb(30 34 72 / 14%);
+    cursor: grabbing;
+  }
+
+  [data-dnd-overlay='true'] &__grouped-block {
+    background: transparent;
+  }
+
+  [data-dnd-overlay='true'] &__delete,
+  [data-dnd-overlay='true'] &__icon-button {
+    opacity: 0;
+    pointer-events: none;
   }
 
   &__toggle-icon {
@@ -397,19 +433,19 @@
     }
 
     &_separated {
-      position: relative;
       padding-left: 12px;
+      position: relative;
 
       &::before {
         content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
         width: 4px;
         height: 4px;
         background: currentColor;
         border-radius: 50%;
         transform: translateY(-50%);
+        position: absolute;
+        top: 50%;
+        left: 0;
       }
     }
 
@@ -537,4 +573,52 @@
   &__row_grouped &__delete {
     pointer-events: auto;
   }
+}
+
+[data-dnd-overlay='true'] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  width: var(--dnd-overlay-width, auto);
+  pointer-events: none;
+}
+
+[data-dnd-overlay='true'] .ui-v1-logic-tree__surface-row-content,
+[data-dnd-overlay='true'] .ui-v1-logic-tree__actions-row {
+  background: #fff;
+  border-color: @grey-200;
+  border-radius: @border-radius-md;
+  box-shadow:
+    0 16px 32px rgb(30 34 72 / 16%),
+    0 4px 12px rgb(30 34 72 / 14%);
+  cursor: grabbing;
+  transition: none;
+}
+
+[data-dnd-overlay='true'] .ui-v1-logic-tree__connectors {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+[data-dnd-overlay='true'] .ui-v1-logic-tree__grouped-block {
+  background: transparent;
+}
+
+[data-dnd-overlay='true'] .ui-v1-logic-tree__delete,
+[data-dnd-overlay='true'] .ui-v1-logic-tree__icon-button {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-dnd-target='true'][data-dnd-drop-forbidden='true'] .ui-v1-logic-tree__surface-row-content,
+[data-dnd-target='true'][data-dnd-drop-forbidden='true'] .ui-v1-logic-tree__actions-row {
+  outline: 0;
+}
+
+[data-dnd-dragging='true'],
+[data-dnd-placeholder='true'],
+[data-dnd-target='true'],
+[data-dnd-overlay='true'] {
+  animation: none;
 }
