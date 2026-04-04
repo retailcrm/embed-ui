@@ -15,11 +15,13 @@ const meta = {
   args: {
     apiKey: 'dd51f938-0693-457d-ae62-6d50fa668d0a',
     address: '',
+    plugins: [],
   },
 
   argTypes: {
     apiKey: { control: false },
     address: { control: false },
+    plugins: { control: false },
   },
 
   render: (args: UiYandexMapProperties) => ({
@@ -28,11 +30,12 @@ const meta = {
     },
 
     setup () {
-      const { apiKey, address } = args
+      const { apiKey, address, plugins } = args
 
       return {
         apiKey,
         address: ref(address),
+        plugins,
       }
     },
 
@@ -41,6 +44,7 @@ const meta = {
             <UiYandexMap
                 v-model:address="address"
                 :api-key="apiKey"
+                :plugins="plugins"
             />
         </div>
 

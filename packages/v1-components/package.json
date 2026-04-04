@@ -83,7 +83,7 @@
     "@vitest/browser-playwright": "4.0.15",
     "@vue/compiler-sfc": "^3.5.25",
     "@vue/test-utils": "^2.4.6",
-    "@yandex/ymaps3-types": "^0.0.21",
+    "@yandex/ymaps3-types": "^1.0.19072130",
     "highlight.js": "^11.11.1",
     "less": "^4.4.2",
     "playwright": "1.58.2",

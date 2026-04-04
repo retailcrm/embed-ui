@@ -1,3 +1,5 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+
 .ui-v1-yandex-map {
   display: flex;
   width: 100%;
@@ -9,5 +11,43 @@
     height: 100%;
     border: none;
     position: absolute;
+    inset: 0;
+  }
+
+  &__control-group {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+
+    &_left {
+      left: 16px;
+    }
+
+    &_right {
+      right: 16px;
+      flex-direction: column-reverse;
+    }
+  }
+
+  &__control-button svg {
+    .square(20px);
+  }
+
+  &__control-group_right &__control-button {
+    border-radius: 0;
+  }
+
+  &__control-group_right &__control-button + &__control-button {
+    margin-bottom: -1px;
+  }
+
+  &__control-group_right &__control-button:first-child {
+    .border-radius-bottom(@border-radius-md);
+  }
+
+  &__control-group_right &__control-button:last-child {
+    .border-radius-top(@border-radius-md);
   }
 }

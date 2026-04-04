@@ -1228,7 +1228,7 @@ __metadata:
     "@vitest/browser-playwright": "npm:4.0.15"
     "@vue/compiler-sfc": "npm:^3.5.25"
     "@vue/test-utils": "npm:^2.4.6"
-    "@yandex/ymaps3-types": "npm:^0.0.21"
+    "@yandex/ymaps3-types": "npm:^1.0.19072130"
     date-fns: "npm:^4.1.0"
     highlight.js: "npm:^11.11.1"
     less: "npm:^4.4.2"
@@ -2737,12 +2737,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yandex/ymaps3-types@npm:^0.0.21":
-  version: 0.0.21
-  resolution: "@yandex/ymaps3-types@npm:0.0.21"
+"@yandex/ymaps3-types@npm:^1.0.19072130":
+  version: 1.0.19072130
+  resolution: "@yandex/ymaps3-types@npm:1.0.19072130"
   peerDependencies:
-    "@types/react": "*"
-    "@types/react-dom": "*"
+    "@types/react": ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    "@types/react-dom": ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     "@vue/runtime-core": 3
   peerDependenciesMeta:
     "@types/react":
@@ -2751,7 +2751,7 @@ __metadata:
       optional: true
     "@vue/runtime-core":
       optional: true
-  checksum: 10/32a7dbf40f7dea0ddec00602c4b0fc8f73c280ddef3f83969326a9eb937ecc59b5668e4450a619c7d79ed6696c3100e0635b764759a01cc696fe673cb9cecdcd
+  checksum: 10/ab60a2e0a83002cb2f65c605cbf7740eaabf2cad999ab45c27920899c2782c9831d661cbcbc8e9630d2b03418aac9bbcd8ab2ddd1faf7b05aca02d232fc3e386
   languageName: node
   linkType: hard
 
