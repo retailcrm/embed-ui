@@ -65,7 +65,7 @@ import type {
   YandexMapPlugin,
 } from '@/common/components/yandex-map'
 import type {
-  YMapCenterLocation,
+  YMapCenterZoomLocation,
   YMapDefaultFeaturesLayerProps,
   YMapLocationRequest,
 } from '@yandex/ymaps3-types'
@@ -92,7 +92,7 @@ import { load as loadScript } from './loadScript'
 
 type YMapNamespace = typeof ymaps3
 type YMapRuntime = InstanceType<YMapNamespace['YMap']>
-type YMapLocationState = YMapCenterLocation
+type YMapLocationState = YMapCenterZoomLocation
 type YMapMarkerEntity = InstanceType<YMapNamespace['YMapMarker']>
 type YMapMarkerRuntime = {
   entity: YMapMarkerEntity,
@@ -197,7 +197,7 @@ const emit = defineEmits([
 
 const i18nBus = inject(I18nInjectKey, null)
 
-const LOCATION: YMapLocationRequest = {
+const LOCATION: YMapLocationState = {
   center: [37.64, 55.76],
   zoom: 10,
 }
@@ -273,18 +273,19 @@ const cancelMapRuntime = () => {
   disposeMapRuntime()
 }
 
-const updateMapLocation = (location: Partial<YMapLocationRequest>) => {
-  mapLocation.value = {
-    ...mapLocation.value,
-    ...(location.center ? { center: [...location.center] as YMapLocationState['center'] } : {}),
-    ...(typeof location.zoom === 'number' ? { zoom: location.zoom } : {}),
+const updateMapLocation = (location: Partial<YMapLocationState>) => {
+  const nextLocation: YMapLocationState = {
+    center: location.center ? [...location.center] as YMapLocationState['center'] : mapLocation.value.center,
+    zoom: typeof location.zoom === 'number' ? location.zoom : mapLocation.value.zoom,
   }
 
+  mapLocation.value = nextLocation
+
   map.value?.setLocation({
-    ...location,
+    ...nextLocation,
     duration: 200,
     easing: 'ease-in-out',
-  })
+  } satisfies YMapLocationRequest)
 }
 
 const zoomIn = () => {
@@ -556,14 +557,14 @@ const loadApi = async () => {
     const markerRuntime = createMarkerRuntime(
       _ymaps3,
       iframeDocument,
-      (LOCATION as YMapCenterLocation).center,
+      LOCATION.center,
       onDragMoveHandler,
       onDragEndHandler
     )
     marker.value = markerRuntime
 
     mapLocation.value = {
-      center: [...(LOCATION as YMapCenterLocation).center],
+      center: [...LOCATION.center],
       zoom: LOCATION.zoom,
     }
 

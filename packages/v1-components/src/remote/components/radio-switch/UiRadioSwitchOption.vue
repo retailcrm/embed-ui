@@ -21,12 +21,12 @@
     >
         <slot>
             <div class="ui-v1-radio-switch-option__head">
-                <span v-if="'icon' in slots" class="ui-v1-radio-switch-option__icon">
+                <span v-if="$slots.icon" class="ui-v1-radio-switch-option__icon">
                     <!-- @slot Иконка опции -->
                     <slot name="icon" />
                 </span>
 
-                <div v-if="'label' in slots || label" class="ui-v1-radio-switch-option__label">
+                <div v-if="$slots.label || label" class="ui-v1-radio-switch-option__label">
                     <!-- @slot Заголовок опции -->
                     <slot name="label">
                         {{ label }}
@@ -35,7 +35,7 @@
             </div>
 
             <template v-if="appearance === APPEARANCE.SECTION">
-                <div v-if="'description' in slots || description" class="ui-v1-radio-switch-option__description">
+                <div v-if="$slots.description || description" class="ui-v1-radio-switch-option__description">
                     <!-- @slot Дополнительное описание опции -->
                     <slot name="description">
                         {{ description }}
@@ -71,7 +71,6 @@ import {
   onBeforeMount,
   onBeforeUnmount,
   ref,
-  useSlots,
   useTemplateRef,
 } from 'vue'
 
@@ -127,7 +126,18 @@ const props = defineProps({
   },
 })
 
-const slots = useSlots()
+defineSlots<{
+  /** Полный пользовательский шаблон опции */
+  default?: () => VNodeChild;
+  /** Иконка опции */
+  icon?: () => VNodeChild;
+  /** Заголовок опции */
+  label?: () => VNodeChild;
+  /** Дополнительное описание опции */
+  description?: () => VNodeChild;
+  /** Иконка выбранного состояния */
+  checkmark?: () => VNodeChild;
+}>()
 
 const appearance = useAppearance()
 const focusableId = useFocusableId()
@@ -144,19 +154,6 @@ const tabIndex = computed(() => {
     ? 0
     : -1
 })
-
-defineSlots<{
-  /** Полный пользовательский шаблон опции */
-  default?: () => VNodeChild;
-  /** Иконка опции */
-  icon?: () => VNodeChild;
-  /** Заголовок опции */
-  label?: () => VNodeChild;
-  /** Дополнительное описание опции */
-  description?: () => VNodeChild;
-  /** Иконка выбранного состояния */
-  checkmark?: () => VNodeChild;
-}>()
 
 const onClick = () => {
   if (!props.disabled) {

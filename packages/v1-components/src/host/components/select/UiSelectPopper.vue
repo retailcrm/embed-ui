@@ -198,7 +198,9 @@ const scrollableStyle = computed((): CSSProperties => {
 defineExpose({
   autoScroll,
   updateWidth,
-  adjust: () => popper.value?.adjust(),
+  adjust: async () => {
+    await popper.value?.adjust()
+  },
   dispose: () => popper.value?.dispose(),
   show: () => popper.value?.show(),
   hide: () => popper.value?.hide(),
