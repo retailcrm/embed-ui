@@ -1,0 +1,105 @@
+component: UiToggleGroupOption
+summary: >
+  UiToggleGroupOption is the declarative option child of UiToggleGroup. It is the
+  richer alternative to the plain options array and is used when one segment needs
+  custom icon, custom label markup, or a non-trivial value.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiToggleGroupOption
+    - UiToggleGroup
+
+related_components:
+  - UiToggleGroup
+  - UiToggleButton
+
+use_when:
+  - You need one manually declared option inside UiToggleGroup.
+  - One option needs icon slot or custom label markup.
+  - You need explicit per-option disabled state or rich values.
+
+avoid_when:
+  - A simple options array on UiToggleGroup is enough.
+  - You need a standalone checkbox-like control outside UiToggleGroup.
+
+api:
+  key_props:
+    - name: value
+      notes: Required option value.
+    - name: label
+      notes: Plain-text fallback label.
+    - name: disabled
+      notes: Marks this option as non-interactive.
+  props:
+    - name: id
+      notes: Optional explicit id, otherwise generated automatically.
+    - name: value
+      notes: Required and toggled in the parent group model.
+    - name: label
+      notes: Optional when label slot is used.
+    - name: disabled
+      notes: Excluded from toggling and keyboard navigation.
+  slots:
+    - name: default
+      zone: full option content
+      notes: Replaces the default icon plus label composition.
+    - name: icon
+      zone: leading icon
+      notes: Adds a custom icon before the label.
+    - name: label
+      zone: main label
+      notes: Overrides the plain label prop.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    UiToggleGroupOption does not own the selection model. It is rendered inside
+    UiToggleGroup and becomes one grouped UiToggleButton with checkbox-like semantics.
+
+behavior:
+  states:
+    - name: disabled
+      notes: Cannot be toggled and is skipped by keyboard navigation.
+    - name: checked
+      notes: Managed by the parent UiToggleGroup.
+    - name: focused
+      notes: Managed through the parent roving tabindex logic.
+  notes:
+    - Click toggles the option through the parent group.
+    - Space and Enter toggle the focused option.
+    - Arrow keys, Home, and End delegate focus movement through the parent group.
+
+accessibility:
+  notes:
+    - The rendered option uses a native button root.
+    - The parent composition applies role=checkbox together with aria-checked and aria-disabled.
+    - The current implementation participates in roving tabindex managed by UiToggleGroup.
+
+composition:
+  works_well_with:
+    - UiToggleGroup
+  patterns:
+    - title: Icon segment
+      notes: Use icon slot when one segment needs an icon before the label.
+    - title: Custom label content
+      notes: Use label or default slot when the option needs richer inline markup.
+
+examples:
+  - title: Icon option inside a group
+    goal: Define one rich segmented option with icon content.
+    code: |
+      <UiToggleGroup v-model:model="filters" aria-label="Filters">
+        <UiToggleGroupOption label="Files" value="files">
+          <template #icon>
+            <IconFile />
+          </template>
+        </UiToggleGroupOption>
+      </UiToggleGroup>
+
+ai_notes:
+  do:
+    - Use inside UiToggleGroup when one option needs richer content than the options array allows.
+    - Prefer label prop for plain text and slots for richer content.
+  avoid:
+    - Do not use it as a standalone control outside UiToggleGroup.

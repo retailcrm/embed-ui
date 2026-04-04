@@ -1,0 +1,206 @@
+component: UiToggleButton
+summary: >
+  UiToggleButton is a stateful button primitive for toggle-like interactions. It keeps
+  native button shape and methods, but the pressed state is controlled externally and
+  can be used either for a standalone toggle or as the visual basis of segmented groups
+  such as UiToggleGroup.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiToggleButton
+
+related_components:
+  - UiToggleGroup
+  - UiCheckbox
+  - UiSwitch
+
+use_when:
+  - You need a button-looking control with externally managed pressed state.
+  - You need a primitive for segmented controls or compact filter chips.
+  - You need button methods like focus, blur, and click together with toggle styling.
+
+avoid_when:
+  - You need checkbox or radio semantics without custom composition.
+  - You need a plain action button without persistent state, use UiButton instead.
+  - You need a ready multi-select segmented group, use UiToggleGroup instead.
+
+api:
+  key_props:
+    - name: pressed
+      notes: Enables the selected visual state.
+    - name: size
+      values:
+        - lg
+        - md
+        - sm
+        - xs
+      notes: Controls height, horizontal padding, icon size, and radius.
+    - name: disabled
+      notes: Disables native interaction and applies disabled styling.
+    - name: grouped
+      notes: Enables segmented-group geometry for adjacent toggle buttons.
+  props:
+    - name: id
+      notes: Optional id passed to the native button root.
+    - name: type
+      notes: Native button type, defaults to button.
+    - name: focused
+      notes: Forces the focus-ring styling; used internally by keyboard-managed groups.
+  slots:
+    - name: default
+      zone: button content
+      creates: Inner content layout for label and optional icons.
+      accepts:
+        recommended:
+          - text
+          - text plus icon
+          - icon component
+          - svg
+        avoid:
+          - nested interactive elements
+          - large block layout wrappers
+      layout_effect: Text and icon nodes are normalized into separate inner spans.
+      notes: Main content slot for standalone or grouped toggles.
+  methods:
+    - name: click
+      notes: Triggers a click programmatically.
+    - name: focus
+      notes: Focuses the native button root.
+    - name: blur
+      notes: Removes focus from the native button root.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    UiToggleButton currently renders one native button root with normalized inner content.
+    This structure is useful for reasoning and debugging, not as a stable styling API.
+  root:
+    shape: button.ui-v1-toggle-button
+  zones:
+    - .ui-v1-toggle-button__content
+    - .ui-v1-toggle-button__icon
+    - .ui-v1-toggle-button__text
+  state_classes:
+    - .ui-v1-toggle-button_pressed
+    - .ui-v1-toggle-button_disabled
+    - .ui-v1-toggle-button_focused
+    - .ui-v1-toggle-button_grouped
+
+geometry:
+  layout: inline-flex button root
+  notes:
+    - Size controls height, min-width, horizontal padding, content gap, and radius.
+    - grouped removes standalone radii and lets adjacent buttons visually merge into a segmented row.
+    - The component stays content-sized by default and fits naturally into inline rows and compact filter areas.
+
+styling:
+  notes:
+    - Props like pressed, disabled, grouped, and size are the main styling API.
+    - Internal classes and CSS variables describe the current implementation and are most useful for debugging.
+  root_classes:
+    - .ui-v1-toggle-button
+  state_classes:
+    - .ui-v1-toggle-button_pressed
+    - .ui-v1-toggle-button_disabled
+    - .ui-v1-toggle-button_focused
+    - .ui-v1-toggle-button_grouped
+    - .ui-v1-toggle-button_lg
+    - .ui-v1-toggle-button_md
+    - .ui-v1-toggle-button_sm
+    - .ui-v1-toggle-button_xs
+  zones:
+    - .ui-v1-toggle-button__content
+    - .ui-v1-toggle-button__icon
+    - .ui-v1-toggle-button__text
+  css_variables:
+    internal_layout_variables:
+      - name: --ui-v1-toggle-button-height
+        effect: Current control height for the selected size.
+      - name: --ui-v1-toggle-button-min-width
+        effect: Minimum width for the current size.
+      - name: --ui-v1-toggle-button-padding-x
+        effect: Horizontal padding of the button content.
+      - name: --ui-v1-toggle-button-radius
+        effect: Border radius for standalone and grouped edge segments.
+      - name: --ui-v1-toggle-button-icon-size
+        effect: Size of normalized icon nodes.
+      - name: --ui-v1-toggle-button-content-gap
+        effect: Gap between icon and text.
+      - name: --ui-v1-toggle-button-focus-color
+        effect: Color of the box-shadow based focus ring.
+  typography:
+    size_variants:
+      - name: lg
+        mixin: h4-accent
+        size: 18px
+        line_height: 28px
+        weight: 500
+      - name: md
+        mixin: text-regular-accent
+        size: 16px
+        line_height: 24px
+        weight: 500
+      - name: sm
+        mixin: text-small-accent
+        size: 14px
+        line_height: 20px
+        weight: 500
+      - name: xs
+        mixin: text-tiny-accent
+        size: 12px
+        line_height: 14px
+        weight: 500
+
+behavior:
+  states:
+    - name: pressed
+      notes: Changes only the visual selected state; external code owns the actual model.
+    - name: disabled
+      notes: Disables interaction and applies disabled styling.
+    - name: grouped
+      notes: Enables segmented adjacency behavior for use in button rows and groups.
+    - name: focused
+      notes: Forces focus-ring styling for keyboard-managed composition scenarios.
+  notes:
+    - The component does not manage its own on or off state.
+    - Click handling and value updates are owned by the parent screen or group component.
+
+accessibility:
+  notes:
+    - The root is a native button.
+    - The component does not add toggle ARIA semantics automatically.
+    - For standalone toggle usage, the caller should provide the appropriate state attribute such as aria-pressed.
+    - In grouped multi-select composition, the caller may apply group-specific role and checked semantics.
+
+composition:
+  works_well_with:
+    - UiToggleGroup
+    - UiField
+    - compact filter bars
+  patterns:
+    - title: Standalone filter toggle
+      notes: Use one button with external pressed state for compact show or hide controls.
+    - title: Segmented multi-select primitive
+      notes: Use grouped buttons when composing a custom segmented row or when extending UiToggleGroup behavior.
+
+examples:
+  - title: Standalone pressed state
+    goal: Build a toggleable filter button.
+    code: |
+      <UiToggleButton
+        :pressed="filtersOpened"
+        :aria-pressed="filtersOpened"
+        @click="filtersOpened = !filtersOpened"
+      >
+        Filters
+      </UiToggleButton>
+
+ai_notes:
+  do:
+    - Treat pressed as a controlled visual state.
+    - Prefer UiToggleGroup when the task is multi-select segmented choice rather than a single primitive.
+    - Add explicit ARIA state when the button represents a semantic toggle.
+  avoid:
+    - Do not assume pressed updates automatically on click.
+    - Do not use UiToggleButton instead of UiButton for ordinary stateless actions.

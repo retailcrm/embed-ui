@@ -1,0 +1,48 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../toggle-button/variables.less';
+
+.ui-v1-toggle-group {
+  display: flex;
+  align-items: stretch;
+  max-width: 100%;
+
+  &_rubber {
+    display: inline-flex;
+  }
+
+  &_lg {
+    --ui-v1-toggle-button-height: @toggle-button-size-lg;
+    --ui-v1-toggle-button-min-width: @toggle-button-min-width-lg;
+    --ui-v1-toggle-button-padding-x: @toggle-button-padding-x-lg;
+    --ui-v1-toggle-button-radius: @border-radius-lg;
+    --ui-v1-toggle-button-icon-size: @toggle-button-icon-size-lg;
+    --ui-v1-toggle-button-content-gap: @toggle-button-content-gap-lg;
+  }
+
+  &_md {
+    --ui-v1-toggle-button-height: @toggle-button-size-md;
+    --ui-v1-toggle-button-min-width: @toggle-button-min-width-md;
+    --ui-v1-toggle-button-padding-x: @toggle-button-padding-x-md;
+    --ui-v1-toggle-button-radius: @border-radius-lg;
+    --ui-v1-toggle-button-icon-size: @toggle-button-icon-size-md;
+    --ui-v1-toggle-button-content-gap: @toggle-button-content-gap-md;
+  }
+
+  &_sm {
+    --ui-v1-toggle-button-height: @toggle-button-size-sm;
+    --ui-v1-toggle-button-min-width: @toggle-button-min-width-sm;
+    --ui-v1-toggle-button-padding-x: @toggle-button-padding-x-sm;
+    --ui-v1-toggle-button-radius: @border-radius-md;
+    --ui-v1-toggle-button-icon-size: @toggle-button-icon-size-sm;
+    --ui-v1-toggle-button-content-gap: @toggle-button-content-gap-sm;
+  }
+
+  &_xs {
+    --ui-v1-toggle-button-height: @toggle-button-size-xs;
+    --ui-v1-toggle-button-min-width: @toggle-button-min-width-xs;
+    --ui-v1-toggle-button-padding-x: @toggle-button-padding-x-xs;
+    --ui-v1-toggle-button-radius: @border-radius-sm;
+    --ui-v1-toggle-button-icon-size: @toggle-button-icon-size-xs;
+    --ui-v1-toggle-button-content-gap: @toggle-button-content-gap-xs;
+  }
+}

@@ -30,6 +30,8 @@ export * from '@/remote/components/table'
 export * from '@/remote/components/tag'
 export * from '@/remote/components/textbox'
 export * from '@/remote/components/time-picker'
+export * from '@/remote/components/toggle-button'
+export * from '@/remote/components/toggle-group'
 export * from '@/remote/components/toolbar-button'
 export * from '@/remote/components/toolbar-link'
 export * from '@/remote/components/tooltip'
@@ -45,6 +47,8 @@ export { ImageWorkersKey } from '@/common/preview'
 export * from '@/common/components/radio-switch'
 export * from '@/common/components/tab'
 export * from '@/common/components/table'
+export * from '@/common/components/toggle-button'
+export * from '@/common/components/toggle-group'
 
 export {
   formatDate,

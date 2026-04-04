@@ -61,6 +61,8 @@ const createRoot = async (channel: Channel) => {
       'UiTag',
       'UiTextbox',
       'UiTooltip',
+      'UiToggleButton',
+      'UiToggleGroupRoot',
     ],
   })
 

@@ -1,0 +1,203 @@
+component: UiToggleGroup
+summary: >
+  UiToggleGroup is a segmented multi-select control built from toggle buttons. It is
+  designed for short always-visible choice sets such as weekdays, filters, or compact
+  mode flags where classic checkboxes would feel visually heavy. For richer option
+  markup, compose it with UiToggleGroupOption instead of relying only on the options array.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiToggleGroup
+    - UiToggleGroupOption
+
+related_components:
+  - UiToggleButton
+  - UiCheckbox
+  - UiRadioSwitch
+
+use_when:
+  - You need multiple independent selections from a short fixed set.
+  - You want checkbox-like semantics with segmented button visuals.
+  - You need a compact weekday picker, filter strip, or channel selector.
+  - You need object values and must compare them through equalFn.
+
+avoid_when:
+  - You need exactly one selected value, use UiRadioSwitch or UiRadio instead.
+  - You need long lists, search, or popper-based selection, use UiSelect instead.
+  - You need classic visible checkbox affordances rather than segmented buttons.
+
+api:
+  key_props:
+    - name: model
+      notes: Array of selected values.
+    - name: options
+      notes: Quick array-based declaration for simple label and value pairs.
+    - name: equalFn
+      notes: Important when option values are objects or other non-primitives.
+    - name: size
+      values:
+        - lg
+        - md
+        - sm
+        - xs
+      notes: Controls segment geometry through UiToggleButton sizing.
+    - name: rubber
+      notes: Keeps the root content-sized instead of stretching.
+    - name: disabled
+      notes: Disables the whole group.
+  props:
+    - name: ariaLabel
+      notes: Accessible name for the group root.
+    - name: ariaLabelledby
+      notes: External label reference for the group root.
+    - name: ariaDescribedby
+      notes: External description reference for the group root.
+    - name: ariaOrientation
+      values:
+        - horizontal
+        - vertical
+      notes: Orientation hint exposed on the root, defaults to horizontal.
+  child_components:
+    - name: UiToggleGroupOption
+      key_props:
+        - value
+        - label
+        - disabled
+      notes: Use it for manual option declaration, per-option slots, or richer values.
+  slots:
+    - name: default
+      zone: option tree
+      creates: Replaces array-based options with manually declared UiToggleGroupOption nodes.
+      accepts:
+        recommended:
+          - UiToggleGroupOption
+        avoid:
+          - arbitrary interactive descendants
+          - unrelated wrappers
+      notes: Use for richer per-option composition than the plain options array allows.
+    - name: icon
+      zone: shared option icon in options mode
+      notes: Used only when the options array mode renders generated options.
+  emits:
+    - name: change
+      payload: unknown[]
+      notes: Fired when the selected model changes.
+    - name: update:model
+      payload: unknown[]
+      notes: Main v-model channel for selected values.
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    UiToggleGroup currently renders one span root and a list of button-based option
+    shells. This section is for reasoning and debugging, not as a stable selector contract.
+  composition:
+    - span.ui-v1-toggle-group with role=toolbar by default
+    - UiToggleGroupOption children rendered as button roots with grouped toggle-button styling
+    - each option exposes checkbox-like role and checked state
+  classes:
+    - .ui-v1-toggle-group
+    - .ui-v1-toggle-group_rubber
+    - .ui-v1-toggle-group_disabled
+    - .ui-v1-toggle-group_lg
+    - .ui-v1-toggle-group_md
+    - .ui-v1-toggle-group_sm
+    - .ui-v1-toggle-group_xs
+
+geometry:
+  layout: inline-flex capable segmented row
+  notes:
+    - The root is flex-based and keeps adjacent segments visually merged.
+    - rubber keeps the group content-sized.
+    - Without rubber, the root behaves like a stretchable flex container.
+    - Size is shared across all segments through root-level CSS variables.
+
+styling:
+  notes:
+    - Prefer size, rubber, disabled, and option-level props over selector overrides.
+    - The group root mainly controls shared sizing variables; per-segment visuals live in UiToggleButton.
+  root_classes:
+    - .ui-v1-toggle-group
+  state_classes:
+    - .ui-v1-toggle-group_rubber
+    - .ui-v1-toggle-group_disabled
+    - .ui-v1-toggle-group_lg
+    - .ui-v1-toggle-group_md
+    - .ui-v1-toggle-group_sm
+    - .ui-v1-toggle-group_xs
+  css_variables:
+    shared_segment_variables:
+      - name: --ui-v1-toggle-button-height
+        effect: Shared segment height for the selected group size.
+      - name: --ui-v1-toggle-button-min-width
+        effect: Shared segment minimum width.
+      - name: --ui-v1-toggle-button-padding-x
+        effect: Shared horizontal padding of each segment.
+      - name: --ui-v1-toggle-button-radius
+        effect: Shared edge radius for the grouped row.
+      - name: --ui-v1-toggle-button-icon-size
+        effect: Shared icon size of group options.
+      - name: --ui-v1-toggle-button-content-gap
+        effect: Shared gap between option icon and label.
+
+behavior:
+  states:
+    - name: disabled
+      notes: Disables the whole group and all options.
+    - name: rubber
+      notes: Keeps the group sized to content.
+    - name: option disabled
+      notes: Individual disabled options stay visible but are not interactive.
+  selection_and_matching:
+    - The component is always multi-select.
+    - Clicking an enabled option toggles its presence in model.
+    - update:model and change are emitted together on every toggle.
+    - equalFn should usually be provided when values are objects.
+    - In options mode the component generates UiToggleGroupOption nodes internally.
+  keyboard:
+    - One tab stop is used for the whole group through roving tabindex.
+    - ArrowLeft, ArrowRight, ArrowUp, and ArrowDown move focus across enabled options.
+    - Home and End jump to the first or last enabled option.
+    - Space and Enter toggle the currently focused option.
+    - Disabled options are skipped by keyboard navigation.
+
+accessibility:
+  notes:
+    - The root exposes role=toolbar by default and supports aria-label, aria-labelledby, aria-describedby, and aria-orientation.
+    - Each option exposes role=checkbox together with aria-checked and aria-disabled.
+    - The current implementation uses roving tabindex so only one option is tabbable at a time.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiToggleGroupOption
+    - compact filter rows
+  patterns:
+    - title: Weekday picker
+      notes: Use a short visible set of seven options with multi-select model.
+    - title: Filter chips with icon
+      notes: Use manual option composition or the shared icon slot for compact filters.
+
+examples:
+  - title: Weekday selection
+    goal: Build a segmented multi-select weekday picker.
+    code: |
+      <UiToggleGroup
+        v-model:model="days"
+        aria-label="Weekdays"
+        rubber
+      >
+        <UiToggleGroupOption label="Mon" value="monday" />
+        <UiToggleGroupOption label="Tue" value="tuesday" />
+        <UiToggleGroupOption label="Wed" value="wednesday" />
+      </UiToggleGroup>
+
+ai_notes:
+  do:
+    - Prefer options for simple text-only sets.
+    - Switch to UiToggleGroupOption when an option needs icon, custom label, or richer value handling.
+    - Add an accessible name through ariaLabel or ariaLabelledby.
+  avoid:
+    - Do not use UiToggleGroup for single-select flows.
+    - Do not treat internal .ui-v1-* classes as a stable extension styling API.

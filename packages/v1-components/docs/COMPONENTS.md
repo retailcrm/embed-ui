@@ -16,6 +16,8 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 - [`UiRadio`](./profiles/UiRadio.yml): single choice
 - [`UiRadioSwitch`](./profiles/UiRadioSwitch.yml): segmented single-choice switch with inline or section-card appearance
 - [`UiRadioSwitchOption`](./profiles/UiRadioSwitchOption.yml): rich option child for UiRadioSwitch
+- [`UiToggleGroup`](./profiles/UiToggleGroup.yml): segmented multi-select group built from toggle buttons
+- [`UiToggleGroupOption`](./profiles/UiToggleGroupOption.yml): rich option child for UiToggleGroup
 - [`UiSwitch`](./profiles/UiSwitch.yml): state toggle
 - [`UiSlider`](./profiles/UiSlider.yml): ranged value selection
 - [`UiSelect`](./profiles/UiSelect.yml): select container for single or multiple choice
@@ -29,6 +31,7 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 ## Actions And Navigation
 
 - [`UiButton`](./profiles/UiButton.yml): main action button that can render as a button or anchor
+- [`UiToggleButton`](./profiles/UiToggleButton.yml): stateful toggle button primitive for standalone or grouped use
 - [`UiAddButton`](./profiles/UiAddButton.yml): add action button
 - [`UiCopyButton`](./profiles/UiCopyButton.yml): copy value action
 - [`UiToolbarButton`](./profiles/UiToolbarButton.yml): toolbar button

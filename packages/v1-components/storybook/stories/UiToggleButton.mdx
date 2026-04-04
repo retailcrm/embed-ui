@@ -1,0 +1,59 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiToggleButtonStories from './UiToggleButton.stories'
+
+# UiToggleButton
+
+`UiToggleButton` - базовая переключаемая кнопка для сценариев, где элемент визуально выглядит как button, но хранит состояние `pressed`.
+
+## Когда использовать
+
+* для одиночных toggle-действий вроде “показывать фильтры” или “включить режим”;
+* как примитив для составных segmented controls;
+* когда нужно состояние `pressed`, но не нужен отдельный checkbox/radio-инпут.
+
+## Поведение
+
+* Компонент рендерится как `button`.
+* По умолчанию пробрасывает `aria-pressed`.
+* Если внешний код уже задаёт `aria-pressed` или `aria-checked`, компонент не перетирает этот атрибут.
+* Режим `grouped` нужен для склейки соседних кнопок в сегментированную группу.
+
+## Примеры
+
+### 1. Одиночный toggle
+
+```vue
+<template>
+  <UiToggleButton :pressed="opened" @click="opened = !opened">
+    Фильтры
+  </UiToggleButton>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { UiToggleButton } from '@retailcrm/embed-ui-v1-components/remote'
+
+const opened = ref(false)
+</script>
+```
+
+### 2. Сегментированная группа на примитиве
+
+Если нужно вручную собрать несколько сегментов без `UiToggleGroup`, используйте `grouped`.
+
+<Story of={UiToggleButtonStories.Sandbox} />
+
+## Размеры
+
+Поддерживаются размеры `lg`, `md`, `sm` и `xs`.
+Размер влияет на высоту, горизонтальные отступы, размер контента и радиусы, но хранится локально в toggle-слое и не импортируется из `UiButton`.
+
+## A11y
+
+* Для одиночного toggle используйте состояние `pressed`.
+* Если кнопка участвует в кастомной группе с multi-select семантикой, допускается явное `aria-checked`.
+* Не используйте `UiToggleButton` как radio-подобный single-select без дополнительной групповой логики.
+
+## API
+
+<ArgTypes />

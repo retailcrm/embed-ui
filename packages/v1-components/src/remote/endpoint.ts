@@ -56,6 +56,8 @@ export const createEndpointRoot = async (
     'UiTag',
     'UiTextbox',
     'UiTimePicker',
+    'UiToggleButton',
+    'UiToggleGroupRoot',
     'UiToolbarButton',
     'UiToolbarLink',
     'UiTooltip',

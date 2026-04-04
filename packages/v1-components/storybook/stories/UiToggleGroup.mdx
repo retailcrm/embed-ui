@@ -1,0 +1,87 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiToggleGroupStories from './UiToggleGroup.stories'
+
+# UiToggleGroup
+
+`UiToggleGroup` - группа переключаемых сегментов для множественного выбора. По смыслу это multi-select control, визуально оформленный как segmented group.
+
+## Когда использовать
+
+* для выбора нескольких значений из короткого фиксированного набора;
+* когда обычные чекбоксы визуально слишком шумные для компактной панели;
+* для сценариев вроде выбора дней недели, каналов, типов контента или быстрых фильтров.
+
+## Когда не использовать
+
+* если нужен выбор ровно одного значения - тогда лучше `UiRadioSwitch` или `UiRadio`;
+* если набор значений длинный и требует переноса строк, описаний или сложной иерархии;
+* если пользователь должен видеть нативные checkbox-индикаторы как часть интерфейса.
+
+## Примеры
+
+### 1. Выбор дней недели
+
+```vue
+<template>
+  <UiToggleGroup v-model:model="days" rubber>
+    <UiToggleGroupOption label="Пн" value="monday" />
+    <UiToggleGroupOption label="Вт" value="tuesday" />
+    <UiToggleGroupOption label="Ср" value="wednesday" />
+    <UiToggleGroupOption label="Чт" value="thursday" />
+    <UiToggleGroupOption label="Пт" value="friday" />
+    <UiToggleGroupOption label="Сб" value="saturday" />
+    <UiToggleGroupOption label="Вс" value="sunday" />
+  </UiToggleGroup>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  UiToggleGroup,
+  UiToggleGroupOption,
+} from '@retailcrm/embed-ui-v1-components/remote'
+
+const days = ref(['monday', 'wednesday', 'friday'])
+</script>
+```
+
+<Story of={UiToggleGroupStories.Weekdays} />
+
+### 2. Через `options`
+
+Для простого набора значений можно передать массив `options`, не раскладывая опции вручную.
+
+### 3. Через `UiToggleGroupOption`
+
+Ручная композиция удобна, когда нужны слоты, иконки или не-примитивные значения вместе с `equalFn`.
+
+<Story of={UiToggleGroupStories.WithIcons} />
+
+## Поведение
+
+* `UiToggleGroup` работает как multi-select и эмитит `change` и `update:model`.
+* В модели хранится массив выбранных значений.
+* Если значение уже выбрано, повторное нажатие удаляет его из массива.
+* Для объектных значений можно передать `equalFn`.
+* `rubber` позволяет группе занимать ширину по содержимому, что полезно для компактных segmented controls.
+
+## Клавиатура и A11y
+
+* Группа рендерится как `toolbar`, а каждый сегмент - как `button` с состоянием `aria-pressed`.
+* Внутри группы используется roving tabindex: в tab-order присутствует только один сегмент.
+* `ArrowLeft`, `ArrowRight`, `ArrowUp`, `ArrowDown` перемещают фокус между доступными сегментами.
+* `Home` и `End` переводят фокус к первому и последнему доступному сегменту.
+* `Space` и `Enter` переключают текущее значение.
+* Disabled-элементы исключаются из клавиатурной навигации.
+
+## Важные свойства
+
+* `model` - массив выбранных значений.
+* `options` - быстрый способ передать набор сегментов.
+* `equalFn` - функция сравнения для не-примитивных значений.
+* `size` - размер сегментов (`lg`, `md`, `sm`, `xs`).
+* `rubber` - разрешает группе не растягиваться на всю ширину контейнера.
+
+## API
+
+<ArgTypes />
