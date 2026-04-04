@@ -43,10 +43,16 @@ api:
 
 rendered_structure:
   descriptive_only: true
+  root:
+    shape: no persistent DOM root
+    tag: none
   notes: >
     The connector exists mainly to provide target context. It is not a styled layout primitive.
 
 geometry:
+  layout: no standalone layout of its own
+  root_display: none
+  width_behavior: defined by slotted children
   notes:
     - It usually has no meaningful layout behavior on its own.
     - Treat it as a context wrapper, not as a visual block.

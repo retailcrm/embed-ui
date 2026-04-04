@@ -106,7 +106,9 @@ rendered_structure:
   descriptive_only: true
   notes: >
     This structure is useful for reasoning and debugging, not as a public styling API.
-  root: .ui-v1-page-header
+  root:
+    shape: div.ui-v1-page-header
+    tag: div
   zones:
     - .ui-v1-page-header__main
     - .ui-v1-page-header__title
@@ -120,6 +122,8 @@ rendered_structure:
 
 geometry:
   layout: flex
+  root_display: flex
+  width_behavior: stretches to container width by default
   notes:
     - Root uses justify-content space-between and can wrap.
     - The main area contains title and optional addon.

@@ -13,3 +13,15 @@ use_when:
 
 avoid_when:
   - You need static content with no transition behavior.
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: no persistent DOM root
+    tag: none
+  notes: The component is a thin wrapper around the native Vue transition and forwards its slot content.
+
+geometry:
+  layout: no standalone layout of its own
+  root_display: none
+  width_behavior: defined entirely by the transitioned child

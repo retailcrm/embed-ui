@@ -33,6 +33,18 @@ api:
       zone: group-meta
       creates: Group quantity or meta area.
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-menu-item-group
+    tag: div
+  notes: The root wraps the group head and the nested option content.
+
+geometry:
+  layout: block-like menu group wrapper
+  root_display: block
+  width_behavior: stretches to available menu width
+
 ai_notes:
   do:
     - Use for grouped menu structure instead of manual heading-plus-list markup.

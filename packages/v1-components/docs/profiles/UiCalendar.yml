@@ -24,6 +24,18 @@ api:
     - name: maxDate
     - name: locale
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-calendar
+    tag: div
+  notes: The root contains header controls, weekday labels, and the date grid.
+
+geometry:
+  layout: block-like calendar panel
+  root_display: flex
+  width_behavior: stretches to container width by default
+
 behavior:
   notes:
     - Supports single and range selection.

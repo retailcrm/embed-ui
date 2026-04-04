@@ -22,6 +22,18 @@ api:
   key_props:
     - name: activeBoxId
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div
+    tag: div
+  notes: Current implementation is an unstyled wrapper that coordinates child UiCollapseBox nodes.
+
+geometry:
+  layout: block wrapper for stacked collapse boxes
+  root_display: block
+  width_behavior: stretches to container width by default
+
 ai_notes:
   do:
     - Use with UiCollapseBox when grouped expansion matters.

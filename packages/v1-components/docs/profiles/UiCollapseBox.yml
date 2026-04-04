@@ -28,6 +28,18 @@ api:
     - name: disabled
     - name: color
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: section.ui-v1-collapse-box
+    tag: section
+  notes: Renders one section root with a header button and a collapsible body region.
+
+geometry:
+  layout: block-like collapsible section
+  root_display: flex
+  width_behavior: stretches to container width by default
+
 behavior:
   notes:
     - Supports controlled expanded state and grouped interaction.

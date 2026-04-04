@@ -21,6 +21,18 @@ api:
     - name: fixed
     - name: overlay
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-loader
+    tag: div
+  notes: The loader body may be wrapped in UiTransition, but the visible loader itself is one div root.
+
+geometry:
+  layout: loader surface or overlay
+  root_display: block
+  width_behavior: content-sized by default, viewport-covering in fixed or overlay modes
+
 ai_notes:
   do:
     - Use overlay or fixed only when the loader should escape normal inline flow.

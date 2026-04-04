@@ -35,6 +35,18 @@ api:
       zone: tooltip
       creates: Tooltip content after copy succeeds.
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-copy-button
+    tag: div
+  notes: The root wraps the trigger, tooltip, and fallback input for clipboard support.
+
+geometry:
+  layout: inline trigger wrapper
+  root_display: inline-block
+  width_behavior: content-sized by default
+
 ai_notes:
   do:
     - Use for copy-specific flows instead of recreating copy state manually.

@@ -18,3 +18,15 @@ api:
     - name: click
     - name: focus
     - name: blur
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: a.ui-v1-link via UiLink
+    tag: a
+  notes: The component delegates its actual root element and layout behavior to UiLink.
+
+geometry:
+  layout: compact toolbar link
+  root_display: inline-flex
+  width_behavior: content-sized by default

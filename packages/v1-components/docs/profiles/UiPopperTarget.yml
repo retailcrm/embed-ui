@@ -46,11 +46,17 @@ api:
 
 rendered_structure:
   descriptive_only: true
+  root:
+    shape: configurable wrapper tag
+    tag: configurable, div by default
   notes: >
     The component renders a configurable wrapper tag and stores its element ref in popper context.
     It does not add complex UI logic on its own.
 
 geometry:
+  layout: wrapper defined by the chosen tag
+  root_display: depends on the chosen tag
+  width_behavior: follows the chosen tag and its children
   notes:
     - Layout depends on the chosen tag and its children.
     - Its main purpose is to provide the correct anchor ref for the popper.

@@ -22,6 +22,18 @@ api:
     - name: resize
     - name: crop
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: img
+    tag: img
+  notes: The component renders a single image element.
+
+geometry:
+  layout: replaced media element
+  root_display: inline-block
+  width_behavior: intrinsic by image source or explicit dimensions
+
 ai_notes:
   do:
     - Use UiImage for general media and UiAvatar for people or identity.

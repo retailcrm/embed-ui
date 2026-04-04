@@ -94,7 +94,9 @@ api:
 
 rendered_structure:
   descriptive_only: true
-  root: .ui-v1-popper
+  root:
+    shape: div.ui-v1-popper
+    tag: div
   zones:
     - .ui-v1-popper__arrow when withArrow=true
     - .ui-v1-popper__content
@@ -102,6 +104,8 @@ rendered_structure:
 
 geometry:
   layout: floating layer outside normal document flow
+  root_display: block
+  width_behavior: content-sized by floating content
   notes:
     - Position is calculated relative to the target element.
     - Container controls where the DOM node is teleported.

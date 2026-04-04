@@ -23,3 +23,15 @@ api:
     - name: click
     - name: focus
     - name: blur
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: button.ui-v1-button or a.ui-v1-button via UiButton
+    tag: button or a
+  notes: The component delegates its actual root element and layout behavior to UiButton.
+
+geometry:
+  layout: compact toolbar action
+  root_display: inline-block
+  width_behavior: content-sized by default

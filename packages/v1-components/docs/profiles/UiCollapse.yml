@@ -21,6 +21,18 @@ api:
     - name: collapseBehaviour
     - name: duration
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-collapse
+    tag: div
+  notes: The animated container is wrapped in a native transition and exists only while shown or expanded.
+
+geometry:
+  layout: block-like animated container
+  root_display: block
+  width_behavior: stretches to container width by default
+
 ai_notes:
   do:
     - Use UiCollapse as a primitive for expandable content regions.

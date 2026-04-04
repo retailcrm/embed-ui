@@ -23,3 +23,15 @@ api:
     - name: click
     - name: focus
     - name: blur
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: span.ui-v1-switch
+    tag: span
+  notes: The root is one compact inline switch control.
+
+geometry:
+  layout: inline switch control
+  root_display: inline-block
+  width_behavior: content-sized by default

@@ -23,6 +23,18 @@ api:
     - name: avatars
     - name: size
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-avatar-list
+    tag: div
+  notes: Renders one wrapper around a compact row of avatars.
+
+geometry:
+  layout: inline avatar row
+  root_display: flex
+  width_behavior: content-sized by default
+
 ai_notes:
   do:
     - Use for compact grouped identity display.

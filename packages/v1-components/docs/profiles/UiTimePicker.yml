@@ -32,3 +32,15 @@ api:
     - name: open
     - name: close
     - name: focus
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-time-picker
+    tag: div
+  notes: The root is a combobox wrapper around the textbox-like trigger and the popper-based listbox.
+
+geometry:
+  layout: combobox wrapper with floating menu
+  root_display: block
+  width_behavior: follows normal block flow for the wrapper, with a floating dropdown layer

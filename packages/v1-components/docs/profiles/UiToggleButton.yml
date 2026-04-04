@@ -77,6 +77,7 @@ rendered_structure:
     This structure is useful for reasoning and debugging, not as a stable styling API.
   root:
     shape: button.ui-v1-toggle-button
+    tag: button
   zones:
     - .ui-v1-toggle-button__content
     - .ui-v1-toggle-button__icon
@@ -89,7 +90,11 @@ rendered_structure:
 
 geometry:
   layout: inline-flex button root
+  root_display: inline-flex
+  width_behavior: content-sized by default
   notes:
+    - Fits into inline rows and compact filter bars without forcing a new line.
+    - grouped keeps each button inline-sized while allowing adjacent segments to merge visually.
     - Size controls height, min-width, horizontal padding, content gap, and radius.
     - grouped removes standalone radii and lets adjacent buttons visually merge into a segmented row.
     - The component stays content-sized by default and fits naturally into inline rows and compact filter areas.

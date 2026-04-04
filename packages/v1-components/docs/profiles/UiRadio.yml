@@ -24,3 +24,15 @@ api:
     - name: click
     - name: focus
     - name: blur
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: span.ui-v1-radio
+    tag: span
+  notes: One inline wrapper around the visual radio control and label content.
+
+geometry:
+  layout: inline radio control
+  root_display: inline-flex
+  width_behavior: content-sized by default

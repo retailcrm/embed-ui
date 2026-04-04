@@ -96,6 +96,9 @@ rendered_structure:
     - span.ui-v1-toggle-group with role=toolbar by default
     - UiToggleGroupOption children rendered as button roots with grouped toggle-button styling
     - each option exposes checkbox-like role and checked state
+  root:
+    shape: span.ui-v1-toggle-group
+    tag: span
   classes:
     - .ui-v1-toggle-group
     - .ui-v1-toggle-group_rubber
@@ -107,7 +110,12 @@ rendered_structure:
 
 geometry:
   layout: inline-flex capable segmented row
+  root_display:
+    default: flex
+    rubber: inline-flex
+  width_behavior: stretches by default, content-sized with rubber
   notes:
+    - The root uses a span tag, but its computed layout is flex-based rather than text-like.
     - The root is flex-based and keeps adjacent segments visually merged.
     - rubber keeps the group content-sized.
     - Without rubber, the root behaves like a stretchable flex container.

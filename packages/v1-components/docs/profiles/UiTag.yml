@@ -27,3 +27,15 @@ api:
     - name: focus
     - name: blur
     - name: remove
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-tag-wrapper
+    tag: div
+  notes: The public root is a wrapper div; the visible pill itself is the nested .ui-v1-tag node.
+
+geometry:
+  layout: wrapper around a content-sized tag pill
+  root_display: block
+  width_behavior: root follows normal block flow, inner tag stays content-sized

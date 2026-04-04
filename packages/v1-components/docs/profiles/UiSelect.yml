@@ -143,6 +143,11 @@ rendered_structure:
   descriptive_only: true
   notes: >
     Select is not a single DOM node in practice. Trigger and dropdown live in separate layers.
+  root:
+    trigger_shape: div.ui-v1-select
+    trigger_tag: div
+    dropdown_shape: div.ui-v1-select__popper via UiPopper
+    dropdown_tag: div
   composition:
     - UiPopperConnector as shared context
     - UiSelectTrigger as textbox-like trigger
@@ -158,6 +163,10 @@ rendered_structure:
 geometry:
   trigger_layout: textbox-like, fit-content, max-width 100%
   dropdown_layout: popper layer outside normal document flow
+  root_display:
+    trigger: block
+    dropdown: block in a floating layer
+  width_behavior: trigger is content-sized with max-width 100%, dropdown follows content and popperFitTrigger rules
   notes:
     - The trigger behaves visually like a textbox.
     - The dropdown is rendered in a popper layer outside normal flow.

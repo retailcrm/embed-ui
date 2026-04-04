@@ -21,6 +21,18 @@ api:
     - name: withTime
     - name: locale
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: time
+    tag: time
+  notes: Renders one semantic time element with formatted date text.
+
+geometry:
+  layout: inline date text
+  root_display: inline
+  width_behavior: content-sized by content
+
 ai_notes:
   do:
     - Use UiDate for formatted output and UiDatePicker for input.

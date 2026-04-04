@@ -35,6 +35,18 @@ api:
     - name: close
     - name: toggle
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: span.ui-v1-date-picker
+    tag: span
+  notes: The visible trigger behaves like an inline date control that opens a floating calendar.
+
+geometry:
+  layout: inline date input trigger
+  root_display: inline-block
+  width_behavior: content-sized by default
+
 behavior:
   notes:
     - Supports single-date and range flows.

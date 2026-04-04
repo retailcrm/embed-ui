@@ -40,6 +40,18 @@ api:
       zone: trailing-icon
       creates: Trailing icon zone.
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-menu-item
+    tag: div
+  notes: The root is one menu row container with leading, main, and trailing content zones.
+
+geometry:
+  layout: menu row
+  root_display: flex
+  width_behavior: stretches to available menu width
+
 ai_notes:
   do:
     - Use structured slots instead of custom wrappers inside menu rows.

@@ -17,3 +17,15 @@ avoid_when:
 
 api:
   key_props: []
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: configurable wrapper tag or PerfectScrollbar root
+    tag: configurable, div by default
+  notes: The root depends on native mode and tag prop, but behaves as a scroll container rather than a visual primitive.
+
+geometry:
+  layout: scroll container
+  root_display: block
+  width_behavior: stretches to the size of its layout context

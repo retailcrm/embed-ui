@@ -24,3 +24,15 @@ api:
     - name: labelled
   emits:
     - name: update:value
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-slider
+    tag: div
+  notes: The root contains labels, track, filler, and draggable handle nodes.
+
+geometry:
+  layout: horizontal slider track
+  root_display: flex
+  width_behavior: stretches to container width by default

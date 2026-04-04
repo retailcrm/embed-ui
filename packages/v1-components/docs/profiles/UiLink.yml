@@ -32,6 +32,18 @@ api:
     - name: focus
     - name: blur
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: a.ui-v1-link
+    tag: a
+  notes: The root is one anchor element with inline icon and text zones.
+
+geometry:
+  layout: inline link root
+  root_display: inline-flex
+  width_behavior: content-sized by default
+
 ai_notes:
   do:
     - Use UiLink for real link semantics and inline navigation.

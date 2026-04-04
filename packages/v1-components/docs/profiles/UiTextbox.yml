@@ -193,7 +193,9 @@ rendered_structure:
     This is a descriptive model of the current implementation for reasoning and debugging,
     not a guaranteed DOM API. The root is span-based, so UiTextbox should be treated as
     an inline control rather than a block wrapper.
-  root: span.ui-v1-textbox
+  root:
+    shape: span.ui-v1-textbox
+    tag: span
   zones:
     - span.ui-v1-textbox__prefix
     - span.ui-v1-textbox__icon.ui-v1-textbox__icon_leading
@@ -205,7 +207,9 @@ rendered_structure:
 
 geometry:
   layout: inline-flex
+  root_display: inline-flex
   width: fit-content
+  width_behavior: content-sized with max-width 100%
   max_width: 100%
   notes:
     - Root behaves as a span-based inline-flex group around the actual control.

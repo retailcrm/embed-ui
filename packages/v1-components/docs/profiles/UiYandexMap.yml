@@ -15,3 +15,15 @@ use_when:
 avoid_when:
   - You can solve the task without an embedded map and do not want to depend on an unstable component.
   - You only need text address output.
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-yandex-map
+    tag: div
+  notes: The root is one map container that hosts the Yandex map instance.
+
+geometry:
+  layout: block-like map container
+  root_display: flex
+  width_behavior: stretches to container width by default

@@ -36,3 +36,15 @@ api:
     - name: label
       zone: header-label
       creates: Header label content.
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: col
+    tag: col
+  notes: The component renders one structural table column node.
+
+geometry:
+  layout: structural table column
+  root_display: table-column
+  width_behavior: controlled by table layout and width props on the parent table

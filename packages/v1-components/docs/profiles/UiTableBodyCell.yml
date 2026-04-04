@@ -28,6 +28,18 @@ api:
     - name: trim
     - name: theme
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: td.ui-v1-table__body-cell
+    tag: td
+  notes: The component renders one table body cell.
+
+geometry:
+  layout: table cell
+  root_display: table-cell
+  width_behavior: controlled by table layout and column sizing
+
 ai_notes:
   do:
     - Keep it inside UiTable row composition.

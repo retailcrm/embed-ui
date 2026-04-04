@@ -21,6 +21,18 @@ api:
   key_props:
     - name: label
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-select-option-group
+    tag: div
+  notes: Renders one structural group wrapper around a heading area and nested option content.
+
+geometry:
+  layout: block-like option group wrapper
+  root_display: block
+  width_behavior: stretches to available dropdown width
+
 ai_notes:
   do:
     - Use to structure large option lists inside UiSelect.

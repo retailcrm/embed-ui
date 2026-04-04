@@ -116,7 +116,9 @@ rendered_structure:
   descriptive_only: true
   notes: >
     This is a debugging and reasoning model, not a public styling contract.
-  root: .ui-v1-field
+  root:
+    shape: div.ui-v1-field
+    tag: div
   zones:
     - .ui-v1-field__headline
     - .ui-v1-field__label
@@ -126,8 +128,10 @@ rendered_structure:
 
 geometry:
   layout: grid
+  root_display: grid
   width: 100%
   min_width: 0
+  width_behavior: stretches to container width by default
   notes:
     - Root uses grid with a 4px gap.
     - The headline is a flex row.

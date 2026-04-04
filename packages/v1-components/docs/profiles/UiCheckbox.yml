@@ -29,6 +29,18 @@ api:
     - name: focus
     - name: blur
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: span.ui-v1-checkbox
+    tag: span
+  notes: One inline wrapper around the visual checkbox control and label content.
+
+geometry:
+  layout: inline checkbox control
+  root_display: inline-flex
+  width_behavior: content-sized by default
+
 behavior:
   notes:
     - model plus value supports group-style selection.

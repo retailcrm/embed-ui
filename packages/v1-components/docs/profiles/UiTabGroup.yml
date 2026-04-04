@@ -101,6 +101,9 @@ rendered_structure:
     UiTabGroup renders a header row, a visible tablist region, an optional overflow
     trigger with popper menu, and an optional tabpanel for the active UiTab content.
     Class names are useful for debugging, not as a guaranteed public styling API.
+  root:
+    shape: div.ui-v1-tab-group
+    tag: div
   composition:
     - .ui-v1-tab-group root
     - .ui-v1-tab-group__head with role=tablist region
@@ -119,6 +122,8 @@ rendered_structure:
 
 geometry:
   layout: block-level group with full-width header and optional content panel
+  root_display: block
+  width_behavior: stretches to container width by default
   notes:
     - The group itself stretches to width 100%.
     - The visible header keeps tabs on one row.

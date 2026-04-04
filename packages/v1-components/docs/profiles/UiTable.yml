@@ -52,7 +52,9 @@ api:
 
 rendered_structure:
   descriptive_only: true
-  root: .ui-v1-table
+  root:
+    shape: table.ui-v1-table
+    tag: table
   zones:
     - .ui-v1-table__section_head
     - .ui-v1-table__section_body
@@ -66,7 +68,9 @@ rendered_structure:
 
 geometry:
   layout: block-width table
+  root_display: table
   width: 100%
+  width_behavior: stretches to container width by default
   notes:
     - Root fills available width.
     - fixed=true switches table-layout from auto to fixed.

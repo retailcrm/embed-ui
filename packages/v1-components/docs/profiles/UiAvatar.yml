@@ -24,6 +24,18 @@ api:
     - name: size
     - name: href
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-avatar or a.ui-v1-avatar
+    tag: div or a
+  notes: The root switches to anchor when href is provided.
+
+geometry:
+  layout: avatar frame
+  root_display: inline-block
+  width_behavior: content-sized by size
+
 behavior:
   notes:
     - Can render linked avatar behavior when href is provided.

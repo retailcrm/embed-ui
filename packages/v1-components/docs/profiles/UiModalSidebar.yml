@@ -24,6 +24,18 @@ api:
     - name: scrolling
     - name: fixed
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-modal-sidebar-overlay
+    tag: div
+  notes: The component is teleported; the overlay div contains the actual aside.ui-v1-modal-sidebar panel.
+
+geometry:
+  layout: teleported overlay with side panel
+  root_display: flex
+  width_behavior: viewport-covering overlay with fixed-width sidebar surface
+
 behavior:
   notes:
     - opened controls visibility.

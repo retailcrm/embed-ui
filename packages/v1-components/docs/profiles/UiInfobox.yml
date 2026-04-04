@@ -28,6 +28,18 @@ api:
     - name: hide
     - name: toggle
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-infobox
+    tag: div
+  notes: The visible infobox body is wrapped in UiTransition and uses one flex row for media, content, and optional closer.
+
+geometry:
+  layout: block-like message panel
+  root_display: flex
+  width_behavior: stretches to container width by default
+
 ai_notes:
   do:
     - Use UiInfobox for richer guidance blocks, not tiny alerts.

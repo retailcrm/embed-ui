@@ -15,6 +15,18 @@ use_when:
 avoid_when:
   - You need a richer feedback block, use UiAlert or UiInfobox instead.
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-error
+    tag: div
+  notes: Renders one text container for error content.
+
+geometry:
+  layout: block-like error text container
+  root_display: block
+  width_behavior: stretches to container width by default
+
 ai_notes:
   do:
     - Use for compact error presentation.

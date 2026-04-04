@@ -62,9 +62,17 @@ api:
 
 rendered_structure:
   descriptive_only: true
+  root:
+    shape: div.ui-v1-radio-switch-option
+    tag: div
   notes: >
     UiRadioSwitchOption does not own the whole selection model. It is rendered inside
     UiRadioSwitch and becomes one radio node within the parent radiogroup.
+
+geometry:
+  layout: segmented option shell or card-like option
+  root_display: flex
+  width_behavior: flexible within the parent group layout
 
 behavior:
   states:

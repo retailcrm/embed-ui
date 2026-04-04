@@ -19,6 +19,18 @@ avoid_when:
   - UiTable footer slots already solve the layout.
   - You do not need explicit footer structure.
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-table__footer-section
+    tag: div
+  notes: Renders one footer section wrapper inside the table footer controls area.
+
+geometry:
+  layout: footer meta or control section
+  root_display: block
+  width_behavior: content-sized within the footer flex row
+
 ai_notes:
   do:
     - Use it only as part of custom table footer composition.

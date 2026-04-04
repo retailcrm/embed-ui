@@ -56,6 +56,17 @@ rendered_structure:
   notes: >
     UiToggleGroupOption does not own the selection model. It is rendered inside
     UiToggleGroup and becomes one grouped UiToggleButton with checkbox-like semantics.
+  root:
+    shape: button.ui-v1-toggle-button.ui-v1-toggle-button_grouped
+    tag: button
+
+geometry:
+  layout: inline-flex grouped segment inside a flex row
+  root_display: inline-flex
+  width_behavior: flexible within the parent group row
+  notes:
+    - The option is not intended as a standalone layout primitive.
+    - Final width and edge radii are defined by the parent group composition.
 
 behavior:
   states:

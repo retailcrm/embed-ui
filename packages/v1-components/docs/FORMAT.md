@@ -52,6 +52,17 @@ api:
     - name: update:value
       payload: unknown
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-component
+    tag: div
+
+geometry:
+  layout: block-like root
+  root_display: block
+  width_behavior: stretches to container width by default
+
 styling:
   root_classes:
     - .ui-v1-component
@@ -140,6 +151,7 @@ Inside `api`, it is useful to distinguish:
 Describe the actual rendered shape:
 
 - the root container;
+- the actual root tag or tags when they matter, for example `button`, `a`, `div`, or `span`;
 - the main internal zones;
 - where label, control, action area, icon area, popper content, and similar parts live;
 - current root classes and state classes, if they help reasoning.
@@ -155,9 +167,16 @@ Important:
 Capture:
 
 - whether the component is block-like or inline-like;
+- what the root behaves like in layout terms, for example `block`, `inline-block`, `inline-flex`, or `flex`;
 - what stretches to `width: 100%` and what stays content-sized;
 - how the component behaves in a row, grid, header, or popper;
 - which props affect dimensions: `size`, `multiline`, `autofit`, `popperFitTrigger`, and so on.
+
+Useful optional fields:
+
+- `root_display` for the root display mode or the common display modes when the root changes by props;
+- `width_behavior` for whether the component stretches, shrinks to content, or switches between those modes;
+- `notes` for short practical remarks about how the root behaves in layout and composition.
 
 ## 8. `styling`
 

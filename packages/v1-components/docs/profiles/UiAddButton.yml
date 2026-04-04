@@ -34,6 +34,18 @@ api:
       zone: secondary-copy
       creates: Optional secondary description near the main label.
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: button.ui-v1-add-button
+    tag: button
+  notes: Current root is a single action button with optional icon and description zones.
+
+geometry:
+  layout: button-like action root
+  root_display: flex
+  width_behavior: content-sized by default
+
 behavior:
   notes:
     - Behaves like a clickable add action with standard button focus and click semantics.

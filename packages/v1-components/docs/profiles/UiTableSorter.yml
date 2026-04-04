@@ -26,6 +26,18 @@ api:
   emits:
     - name: click
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: button.ui-v1-table__sorter
+    tag: button
+  notes: The root contains the label and sort icon as one inline control.
+
+geometry:
+  layout: inline sorting control
+  root_display: inline-flex
+  width_behavior: content-sized by label and icon
+
 ai_notes:
   do:
     - Pair it with explicit sort state in screen logic.

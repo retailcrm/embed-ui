@@ -34,6 +34,18 @@ api:
     - name: increase
     - name: decrease
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-number-stepper
+    tag: div
+  notes: One inline control root wraps the text input and increment or decrement actions.
+
+geometry:
+  layout: inline numeric control
+  root_display: inline-flex
+  width_behavior: content-sized by default
+
 behavior:
   notes:
     - Can clamp values into range.

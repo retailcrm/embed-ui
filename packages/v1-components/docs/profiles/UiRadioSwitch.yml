@@ -96,6 +96,9 @@ rendered_structure:
     The component renders as one radiogroup root and a list of option shells with
     radio semantics. This section is for mental modeling and debugging, not as a
     stable styling contract.
+  root:
+    shape: div.ui-v1-radio-switch
+    tag: div
   composition:
     - UiRadioSwitch root with role=radiogroup
     - UiRadioSwitchOption shells with role=radio
@@ -112,6 +115,10 @@ rendered_structure:
 
 geometry:
   layout: flex row for default mode, wrapping card row for section mode
+  root_display:
+    default: flex
+    rubber: inline-flex
+  width_behavior: stretches by default, content-sized with rubber
   notes:
     - Default appearance behaves like a segmented control with adjacent options.
     - Section appearance removes the outer border and lets cards wrap to a new line.

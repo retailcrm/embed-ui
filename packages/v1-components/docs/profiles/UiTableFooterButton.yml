@@ -25,6 +25,18 @@ api:
   emits:
     - name: click
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: button.ui-v1-table__footer-button
+    tag: button
+  notes: The visible label is wrapped in an inner inline-flex content span.
+
+geometry:
+  layout: inline footer action
+  root_display: inline-block
+  width_behavior: content-sized by label content
+
 ai_notes:
   do:
     - Keep it in table footer usage.

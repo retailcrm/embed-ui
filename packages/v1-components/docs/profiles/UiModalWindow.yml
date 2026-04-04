@@ -30,3 +30,15 @@ api:
   methods:
     - name: open
     - name: close
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-modal-window via UiModalWindowSurface
+    tag: div
+  notes: The component delegates the actual teleported modal root to UiModalWindowSurface and renders header, content, and footer inside it.
+
+geometry:
+  layout: teleported modal layer with centered surface
+  root_display: flex
+  width_behavior: viewport-covering overlay with content-sized or responsive surface

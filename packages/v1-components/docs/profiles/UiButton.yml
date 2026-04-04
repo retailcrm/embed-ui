@@ -83,7 +83,9 @@ rendered_structure:
     This internal DOM description is useful for reasoning, not for styling against implementation details.
   root:
     button_shape: button.ui-v1-button
+    button_tag: button
     link_shape: a.ui-v1-button
+    link_tag: a
   zones:
     - .ui-v1-button__content
     - text span
@@ -95,7 +97,13 @@ rendered_structure:
 
 geometry:
   layout: inline-block
+  root_display:
+    default_button: inline-block
+    default_link: inline-block
+  width_behavior: content-sized by default
   notes:
+    - Fits naturally into inline rows and action strips.
+    - Does not behave like a full-width block unless constrained by the parent layout.
     - Size controls dimensions and internal paddings.
     - Icon-only content leads to a square-like layout through state classes.
     - The component fits naturally into inline rows, header actions, and compact action zones.

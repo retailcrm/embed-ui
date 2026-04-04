@@ -57,6 +57,9 @@ api:
 
 rendered_structure:
   descriptive_only: true
+  root:
+    shape: no standalone DOM root
+    tag: none
   notes: >
     UiTab is a structural declaration rather than a standalone DOM component. The
     parent UiTabGroup resolves UiTab children and renders the actual tab buttons,
@@ -64,6 +67,8 @@ rendered_structure:
 
 geometry:
   layout: no standalone layout, interpreted by UiTabGroup
+  root_display: none
+  width_behavior: no standalone width behavior of its own
   notes:
     - UiTab itself should not be used outside UiTabGroup.
     - Icon-only tabs are inferred when icon exists but label and counter do not.

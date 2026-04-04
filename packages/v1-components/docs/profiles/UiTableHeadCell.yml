@@ -25,6 +25,18 @@ api:
     - name: align
     - name: trim
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: th.ui-v1-table__head-cell
+    tag: th
+  notes: The component renders one table head cell.
+
+geometry:
+  layout: table header cell
+  root_display: table-cell
+  width_behavior: controlled by table layout and column sizing
+
 ai_notes:
   do:
     - Prefer UiTableColumn first for regular table headers.

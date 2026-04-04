@@ -26,6 +26,18 @@ api:
     - name: targetTriggers
     - name: popperTriggers
 
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-popper via UiPopper
+    tag: div
+  notes: The component delegates the actual floating root to UiPopper and renders its content inside the popper body.
+
+geometry:
+  layout: floating tooltip layer outside normal document flow
+  root_display: block
+  width_behavior: content-sized by tooltip content
+
 ai_notes:
   do:
     - Use UiTooltip for tooltip semantics and UiPopper for lower-level floating behavior.
