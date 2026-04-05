@@ -13,6 +13,7 @@ import { omit } from '@/common/utils'
 import { INPUTMODE } from '@/common/components/textbox'
 import { SIZE } from '@/common/components/textbox'
 import { TYPE } from '@/common/components/textbox'
+import { WIDTH } from '@/common/components/width'
 
 import page from './UiTextbox.mdx'
 
@@ -27,6 +28,7 @@ const meta = {
     value: '',
     placeholder: 'Enter text',
     size: SIZE.SM,
+    width: WIDTH.FIT,
     prefix: 'https://',
     suffix: '₽',
     active: false,
@@ -44,6 +46,7 @@ const meta = {
     },
 
     value: { control: 'text' },
+    width: { control: 'text' },
 
     size: {
       control: 'select',

@@ -5,8 +5,11 @@
             'ui-v1-select': true,
             'ui-v1-select_active': expanded,
             'ui-v1-select_disabled': disabled,
+            'ui-v1-select_fit': width === WIDTH.FIT,
             'ui-v1-select_filterable': filterable,
+            'ui-v1-select_fluid': width === WIDTH.FLUID,
         }"
+        :style="style"
         @click="onClick"
     >
         <div
@@ -53,10 +56,12 @@
 </template>
 
 <script lang="ts" setup>
+import type { CSSProperties } from 'vue'
 import type { I18nLocalized } from '@/host/i18n'
 import type { Option } from '@/host/components/select/injection'
 import type { PropType } from 'vue'
 import type { UiSelectTriggerMethods } from '@/common/components/select'
+import type { WidthValue } from '@/common/components/width'
 
 import {
   computed,
@@ -73,9 +78,12 @@ import UiTextbox from '@/host/components/textbox/UiTextbox.vue'
 
 import _i18n from '@/host/components/select/i18n'
 
-import { SIZE } from '@/common/components/textbox'
+import { isWidth, isWidthExact, normalizeWidth } from '@/common/components/width'
 
 import { I18nInjectKey } from '@/host/i18n/plugin'
+
+import { SIZE } from '@/common/components/textbox'
+import { WIDTH } from '@/common/components/width'
 
 const props = defineProps({
   /** Атрибут id корневого элемента выпадающего списка. Должен быть уникальным на странице */
@@ -151,6 +159,13 @@ const props = defineProps({
     default: SIZE.SM,
   },
 
+  /** Ширина. fit — по содержимому, fluid — на всю ширину контейнера */
+  width: {
+    type: [Number, String] as PropType<WidthValue>,
+    validator: isWidth,
+    default: WIDTH.FIT,
+  },
+
   /** Состояние открытия выпадающего списка */
   expanded: {
     type: Boolean,
@@ -188,6 +203,13 @@ const emit = defineEmits([
 ])
 
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
+const style = computed<CSSProperties>(() => {
+  const width = normalizeWidth(props.width)
+
+  return isWidthExact(props.width) && width
+    ? { width }
+    : {}
+})
 
 const input = ref<HTMLInputElement | null>(null)
 const inputReadonly = computed(() => props.readonly || !props.filterable)

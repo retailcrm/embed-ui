@@ -12,6 +12,7 @@ import { mount } from '@vue/test-utils'
 import UiTextbox from '@/host/components/textbox/UiTextbox.vue'
 
 import { INPUTMODE, TYPE } from '@/common/components/textbox'
+import { WIDTH } from '@/common/components/width'
 
 describe('host/components/textbox', () => {
   let wrapper: VueWrapper | null = null
@@ -162,5 +163,27 @@ describe('host/components/textbox', () => {
 
     expect(input?.attributes('aria-controls')).toBe('target-id')
     expect(input?.attributes('data-test')).toBe('textbox-input')
+  })
+
+  test('supports fluid width token', () => {
+    createComponent({
+      width: WIDTH.FLUID,
+    })
+
+    const root = wrapper?.find('.ui-v1-textbox')
+
+    expect(root?.classes()).toContain('ui-v1-textbox_fluid')
+    expect(root?.attributes('style')).toBeUndefined()
+  })
+
+  test('supports exact width values', () => {
+    createComponent({
+      width: '18rem',
+    })
+
+    const root = wrapper?.find('.ui-v1-textbox')
+
+    expect(root?.classes()).not.toContain('ui-v1-textbox_exact')
+    expect(root?.attributes('style')).toContain('width: 18rem;')
   })
 })

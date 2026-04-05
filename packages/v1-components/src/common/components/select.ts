@@ -4,6 +4,9 @@ import type { Side } from '@floating-ui/dom'
 import type { Trigger } from '@/common/components/popper'
 import type { TriggerSchema } from '@/common/components/popper'
 import type { UiPopperProperties } from '@/common/components/popper'
+import type { WidthValue } from '@/common/components/width'
+
+export { WIDTH } from '@/common/components/width'
 
 export enum SIZE {
   XS = 'xs',
@@ -46,6 +49,7 @@ export type UiSelectTriggerProperties = {
   readonly?: boolean;
   disabled?: boolean;
   textboxSize?: SIZE | `${SIZE}`;
+  width?: WidthValue;
 }
 
 export type UiSelectTriggerMethods = {

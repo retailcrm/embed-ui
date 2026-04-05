@@ -45,6 +45,7 @@ const meta = {
     disabled: { control: 'boolean' },
     multiple: { control: 'boolean' },
     ticker: { control: 'boolean' },
+    width: { control: 'text' },
 
     textboxSize: {
       options: Object.values(SIZE),
@@ -84,6 +85,7 @@ export const Sandbox: Story = {
     disabled: false,
     multiple: false,
     filterable: false,
+    width: 'fit',
   },
 }
 

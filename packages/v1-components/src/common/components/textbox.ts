@@ -1,3 +1,7 @@
+import type { WidthValue } from '@/common/components/width'
+
+export { WIDTH } from '@/common/components/width'
+
 export enum TYPE {
   EMAIL = 'email',
   PASSWORD = 'password',
@@ -42,6 +46,7 @@ export type UiTextboxProperties = {
   /** Максимальное количество знаков после запятой (для inputmode="decimal"). '*' — без ограничений */
   decimals?: number | `${number}` | '*';
   size?: SIZE | `${SIZE}`;
+  width?: WidthValue;
   placeholder?: string;
   prefix?: string;
   suffix?: string;

@@ -12,6 +12,8 @@ import { mount } from '@vue/test-utils'
 
 import UiSelectTrigger from '@/host/components/select/UiSelectTrigger.vue'
 
+import { WIDTH } from '@/common/components/width'
+
 describe('host/components/select-trigger', () => {
   let wrapper: VueWrapper | null = null
 
@@ -85,5 +87,25 @@ describe('host/components/select-trigger', () => {
     methods.onClear()
     expect(wrapper?.emitted('update:value')?.at(-1)).toEqual([null])
     expect(wrapper?.emitted('clear')?.at(-1)).toEqual([undefined])
+  })
+
+  test('supports fluid and exact width modes', async () => {
+    createComponent({
+      width: WIDTH.FLUID,
+    })
+
+    let root = wrapper?.find('.ui-v1-select')
+
+    expect(root?.classes()).toContain('ui-v1-select_fluid')
+    expect(root?.attributes('style')).toBeUndefined()
+
+    await wrapper?.setProps({
+      width: '240',
+    })
+
+    root = wrapper?.find('.ui-v1-select')
+
+    expect(root?.classes()).not.toContain('ui-v1-select_exact')
+    expect(root?.attributes('style')).toContain('width: 240px;')
   })
 })

@@ -15,6 +15,7 @@
             :placeholder-only="placeholderOnly"
             :placeholder="placeholder"
             :textbox-size="textboxSize"
+            :width="width"
             :active-descendant="activeOptionId"
             v-bind="$attrs"
             @input="onInput"
@@ -61,6 +62,7 @@ import type { SerializedKeyboardEvent } from '@omnicajs/vue-remote/types/events'
 import type { Trigger } from '@/common/components/popper'
 import type { TriggerSchema } from '@/common/components/popper'
 import type { UiSelectPopperProperties } from '@/common/components/select'
+import type { WidthValue } from '@/common/components/width'
 
 type A<T> = T extends unknown[] ? T : T[]
 
@@ -77,9 +79,11 @@ import { UiPopperConnector } from '@/remote/components/popper'
 
 import _18n from '@/host/components/select/i18n'
 
+import { isWidth } from '@/common/components/width'
 import { PLACEMENT } from '@/common/components/select'
 import { SIZE } from '@/common/components/textbox'
 import { uid } from '@/common/components/select'
+import { WIDTH } from '@/common/components/width'
 
 import {
   ActiveOptionIdKey,
@@ -208,6 +212,13 @@ const props = defineProps({
     type: String as unknown as PropType<SIZE | `${SIZE}`>,
     validator: (size: string) => Object.values(SIZE).includes(size as SIZE),
     default: SIZE.SM,
+  },
+
+  /** Ширина селекта. fit — по содержимому, fluid — на всю ширину контейнера */
+  width: {
+    type: [Number, String] as PropType<WidthValue>,
+    validator: isWidth,
+    default: WIDTH.FIT,
   },
 
   /** Наличие множественного выбора среди элементов выпадающего списка */

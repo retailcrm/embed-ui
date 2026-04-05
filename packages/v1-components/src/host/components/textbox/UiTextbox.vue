@@ -6,6 +6,8 @@
             'ui-v1-textbox': true,
             'ui-v1-textbox_active': active,
             'ui-v1-textbox_autofit': autofit,
+            'ui-v1-textbox_fit': width === WIDTH.FIT,
+            'ui-v1-textbox_fluid': width === WIDTH.FLUID,
             'ui-v1-textbox_invalid': invalid,
             'ui-v1-textbox_outlined': outlined,
             'ui-v1-textbox_xs': size === SIZE.XS,
@@ -13,6 +15,7 @@
             'ui-v1-textbox_lg': size === SIZE.LG,
             'ui-v1-textbox_xl': size === SIZE.XL,
         }"
+        :style="style"
         v-bind="$attrs"
     >
         <span
@@ -120,12 +123,14 @@
 </template>
 
 <script lang="ts" setup>
+import type { CSSProperties } from 'vue'
 import type { I18nLocalized } from '@/host/i18n'
 import type { PropType } from 'vue'
 import type {
   UiTextboxInputAttributes,
   UiTextboxMethods,
 } from '@/common/components/textbox'
+import type { WidthValue } from '@/common/components/width'
 
 import { computed } from 'vue'
 import { inject } from 'vue'
@@ -139,6 +144,9 @@ import IconClearCircle from '../../../../assets/sprites/actions/clear-circle.svg
 
 import { decimalsOf } from '@/common/components/textbox'
 import { isMaxDecimalsExceeded } from '@/common/components/textbox'
+import { isWidth } from '@/common/components/width'
+import { isWidthExact } from '@/common/components/width'
+import { normalizeWidth } from '@/common/components/width'
 import { sanitizeDecimal } from '@/common/components/textbox'
 import { sanitizeNumeric } from '@/common/components/textbox'
 import { useElementRef } from '@/host/composables'
@@ -148,6 +156,7 @@ import { I18nInjectKey } from '@/host/i18n/plugin'
 import { INPUTMODE } from '@/common/components/textbox'
 import { SIZE } from '@/common/components/textbox'
 import { TYPE } from '@/common/components/textbox'
+import { WIDTH } from '@/common/components/width'
 
 import _i18n from './i18n'
 
@@ -228,6 +237,13 @@ const props = defineProps({
   size: {
     type: String as PropType<SIZE | `${SIZE}`>,
     default: SIZE.SM,
+  },
+
+  /** Ширина поля. fit — по содержимому, fluid — на всю ширину контейнера */
+  width: {
+    type: [Number, String] as PropType<WidthValue>,
+    validator: isWidth,
+    default: WIDTH.FIT,
   },
 
   /** Нативный атрибут input|textarea */
@@ -358,6 +374,13 @@ const emit = defineEmits<{
 
 const uid = useId()
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
+const style = computed<CSSProperties>(() => {
+  const width = normalizeWidth(props.width)
+
+  return isWidthExact(props.width) && width
+    ? { width }
+    : {}
+})
 
 const decimalsParsed = computed<number | '*'>(() => {
   if (props.decimals === '*' || props.decimals === undefined) return '*'
