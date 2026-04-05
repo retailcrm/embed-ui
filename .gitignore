@@ -13,6 +13,7 @@ node_modules
 coverage
 artifacts/
 
+.codex
 .npmrc
 .pnp.cjs
 .pnp.loader.mjs
