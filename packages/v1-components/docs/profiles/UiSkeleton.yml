@@ -1,0 +1,41 @@
+component: UiSkeleton
+summary: >
+  UiSkeleton displays a placeholder block for loading content. It supports text,
+  rectangle and circle appearances with pulse or shimmer animation.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiSkeleton
+
+use_when:
+  - You need a content placeholder before actual data is loaded.
+  - You need line, card or avatar-like loading placeholders.
+
+avoid_when:
+  - You need a spinner-like indicator instead of a content-shaped placeholder.
+
+api:
+  key_props:
+    - name: appearance
+    - name: size
+    - name: animation
+    - name: width
+    - name: height
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-skeleton
+    tag: div
+
+geometry:
+  layout: inline block or block placeholder
+  root_display: inline-block
+  width_behavior: preset width by appearance and size, overridable via width prop
+
+ai_notes:
+  do:
+    - Use text appearance for line placeholders.
+    - Use circle appearance for avatar placeholders.
+    - Override width or height only when the preset size is not enough.

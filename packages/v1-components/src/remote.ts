@@ -23,6 +23,7 @@ export * from '@/remote/components/popper'
 export * from '@/remote/components/radio'
 export * from '@/remote/components/radio-switch'
 export * from '@/remote/components/scroll-box'
+export * from '@/remote/components/skeleton'
 export * from '@/remote/components/slider'
 export * from '@/remote/components/switch'
 export * from '@/remote/components/tab'
@@ -47,6 +48,13 @@ export { ImageWorkersKey } from '@/common/preview'
 export * from '@/common/components/table'
 export * from '@/common/components/toggle-button'
 export * from '@/common/components/toggle-group'
+export {
+  ANIMATION as SKELETON_ANIMATION,
+  APPEARANCE as SKELETON_APPEARANCE,
+  guessDimensionStyleValue as guessSkeletonDimensionStyleValue,
+  SIZE as SKELETON_SIZE,
+  type UiSkeletonProperties,
+} from '@/common/components/skeleton'
 export {
   APPEARANCE as RADIO_SWITCH_APPEARANCE,
   SIZE as RADIO_SWITCH_SIZE,

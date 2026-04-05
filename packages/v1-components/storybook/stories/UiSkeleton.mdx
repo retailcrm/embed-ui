@@ -1,0 +1,55 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiSkeletonStories from './UiSkeleton.stories'
+
+# UiSkeleton
+
+`UiSkeleton` показывает placeholder-контент до загрузки реальных данных.
+
+## Когда использовать
+
+* для текстовых строк, карточек и аватаров в состоянии загрузки;
+* когда важно сохранить будущую геометрию интерфейса;
+* когда спиннер недостаточно информативен.
+
+## Импорт
+
+```ts
+import { UiSkeleton } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовое использование
+
+```vue
+<UiSkeleton />
+```
+
+<Story of={UiSkeletonStories.Sandbox} />
+
+## Формы
+
+Поддерживаются формы:
+
+* `rectangle`
+* `text`
+* `circle`
+
+Для `circle` удобно явно задавать `width` и `height`, если нужен размер вне пресетов.
+
+## Анимация
+
+Поддерживаются варианты:
+
+* `shimmer`
+* `pulse`
+
+## Размеры
+
+Поддерживаются размеры:
+
+* `sm`
+* `md`
+* `lg`
+
+## API
+
+<ArgTypes />

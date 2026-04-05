@@ -4,6 +4,13 @@ export * from '@/host/components'
 export * from '@/host/provider'
 export * from '@/common/components/table'
 export {
+  ANIMATION as SKELETON_ANIMATION,
+  APPEARANCE as SKELETON_APPEARANCE,
+  guessDimensionStyleValue as guessSkeletonDimensionStyleValue,
+  SIZE as SKELETON_SIZE,
+  type UiSkeletonProperties,
+} from '@/common/components/skeleton'
+export {
   APPEARANCE as RADIO_SWITCH_APPEARANCE,
   SIZE as RADIO_SWITCH_SIZE,
   type EqualPredicate,

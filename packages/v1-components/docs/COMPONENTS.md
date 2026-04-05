@@ -57,6 +57,7 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 - [`UiInfobox`](./profiles/UiInfobox.yml): highlighted explanatory block
 - [`UiError`](./profiles/UiError.yml): compact error state
 - [`UiLoader`](./profiles/UiLoader.yml): loading indicator
+- [`UiSkeleton`](./profiles/UiSkeleton.yml): content placeholder for loading state
 - [`UiTag`](./profiles/UiTag.yml): labels and statuses
 
 ## Overlays And Modal Patterns

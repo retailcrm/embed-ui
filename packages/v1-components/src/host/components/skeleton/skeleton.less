@@ -1,0 +1,72 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+
+.ui-v1-skeleton {
+  display: inline-block;
+  width: 100%;
+  height: 24px;
+  max-width: 100%;
+  background: @grey-500;
+  border-radius: @border-radius-sm;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle;
+
+  &_rectangle {
+    display: block;
+  }
+
+  &_rectangle&_sm { width: 30%; }
+  &_rectangle&_md { width: 60%; }
+  &_rectangle&_lg { width: 100%; }
+
+  &_circle {
+    border-radius: 50%;
+  }
+
+  &_circle&_sm { .square(36px); }
+  &_circle&_md,
+  &_circle&_lg { .square(52px); }
+
+  &_text {
+    display: block;
+  }
+
+  &_text&_sm { height: 17px; }
+  &_text&_md { height: 21px; }
+  &_text&_lg { height: 28px; }
+
+  &_pulse {
+    animation: ui-v1-skeleton-pulse 700ms linear infinite alternate;
+    will-change: opacity;
+  }
+
+  &_shimmer {
+    background-size: 400% 100%;
+  }
+
+  &_shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(#FFFFFF, 0) 0,
+      rgba(#FFFFFF, 0.2) 20%,
+      rgba(#FFFFFF, 0.5) 60%,
+      rgba(#FFFFFF, 0) 100%
+    );
+    animation: ui-v1-skeleton-shimmer 1.6s ease infinite;
+    will-change: transform;
+  }
+}
+
+@keyframes ui-v1-skeleton-pulse {
+  0% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+@keyframes ui-v1-skeleton-shimmer {
+  100% { transform: translateX(100%); }
+}
