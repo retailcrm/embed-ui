@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.9.16](https://github.com/retailcrm/embed-ui/compare/v0.9.15...v0.9.16) (2026-04-05)
+
+### Features
+
+* **v1-components:** Toggle button and group components added ([852312c](https://github.com/retailcrm/embed-ui/commit/852312c8029b3e77063068379e991ac4cfeb043e))
+
+### Bug Fixes
+
+* **v1-components:** Build issues after Yandex map type update resolved ([a93b874](https://github.com/retailcrm/embed-ui/commit/a93b874694db41b4d9ff1d109e18b67b4b56141a))
 ## [0.9.15](https://github.com/retailcrm/embed-ui/compare/v0.9.14...v0.9.15) (2026-03-31)
 
 ### Features
