@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.18](https://github.com/retailcrm/embed-ui/compare/v0.9.17...v0.9.18) (2026-04-06)
+
+### Bug Fixes
+
+* **v1-components:** Remote root component registry synchronized ([71f89d4](https://github.com/retailcrm/embed-ui/commit/71f89d4bff091c7ef4c9cfff3330d21fe340e45d))
 ## [0.9.17](https://github.com/retailcrm/embed-ui/compare/v0.9.16...v0.9.17) (2026-04-06)
 
 ### Features
