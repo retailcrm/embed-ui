@@ -1,0 +1,101 @@
+{
+  "name": "@retailcrm/embed-ui-v1-sandbox",
+  "type": "module",
+  "version": "0.9.17",
+  "description": "Sandbox host emulator for previewing and testing RetailCRM UI extensions",
+  "license": "MIT",
+  "author": "RetailDriverLLC <integration@retailcrm.ru>",
+  "repository": "git@github.com:retailcrm/embed-ui.git",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./bridge": {
+      "types": "./dist/bridge.d.ts",
+      "import": "./dist/bridge.js",
+      "require": "./dist/bridge.cjs",
+      "default": "./dist/bridge.js"
+    },
+    "./controller": {
+      "types": "./dist/controller.d.ts",
+      "import": "./dist/controller.js",
+      "require": "./dist/controller.cjs",
+      "default": "./dist/controller.js"
+    },
+    "./host": {
+      "types": "./dist/host.d.ts",
+      "import": "./dist/host.js",
+      "require": "./dist/host.cjs",
+      "default": "./dist/host.js"
+    },
+    "./rpc": {
+      "types": "./dist/rpc.d.ts",
+      "import": "./dist/rpc.js",
+      "require": "./dist/rpc.cjs",
+      "default": "./dist/rpc.js"
+    },
+    "./state": {
+      "types": "./dist/state.d.ts",
+      "import": "./dist/state.js",
+      "require": "./dist/state.cjs",
+      "default": "./dist/state.js"
+    },
+    "./dist/*": "./dist/*",
+    "./*": "./*"
+  },
+  "typesVersions": {
+    "*": {
+      "bridge": [
+        "./dist/bridge.d.ts"
+      ],
+      "controller": [
+        "./dist/controller.d.ts"
+      ],
+      "host": [
+        "./dist/host.d.ts"
+      ],
+      "rpc": [
+        "./dist/rpc.d.ts"
+      ],
+      "state": [
+        "./dist/state.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "yarn build:code",
+    "build:code": "vite build -c ./vite.config.ts",
+    "test": "vitest --run"
+  },
+  "peerDependencies": {
+    "@omnicajs/vue-remote": "^0.2.23",
+    "@remote-ui/rpc": "^1.4",
+    "pinia": "^2.2",
+    "vue": "^3.5"
+  },
+  "dependencies": {
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.17",
+    "@retailcrm/embed-ui-v1-testing": "^0.9.17",
+    "@retailcrm/embed-ui-v1-types": "^0.9.17"
+  },
+  "devDependencies": {
+    "@omnicajs/vue-remote": "^0.2.23",
+    "@remote-ui/rpc": "^1.4.7",
+    "pinia": "^2.2.8",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.15",
+    "vue": "^3.5.25"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
