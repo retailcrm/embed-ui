@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.19](https://github.com/retailcrm/embed-ui/compare/v0.9.18...v0.9.19) (2026-04-06)
+
+### Bug Fixes
+
+* **v1-components:** UiSelect value update events re-emitted ([baf63f7](https://github.com/retailcrm/embed-ui/commit/baf63f7b334cdec8999ecb30f1ca9b31f9fe9fa3))
 ## [0.9.18](https://github.com/retailcrm/embed-ui/compare/v0.9.17...v0.9.18) (2026-04-06)
 
 ### Bug Fixes
