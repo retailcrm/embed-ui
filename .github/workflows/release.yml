@@ -50,7 +50,7 @@ jobs:
 
       - name: Run release [${{ inputs.prerelease }}]
         if: ${{ inputs.prerelease != 'none' }}
-        run: yes | npx tsx scripts/release.ts -p ${{ inputs.prerelease }}
+        run: npx tsx scripts/release.ts -p ${{ inputs.prerelease }}
 
       - name: Ensure stable release is running from master
         if: ${{ inputs.prerelease == 'none' }}
@@ -64,7 +64,7 @@ jobs:
         if: ${{ inputs.prerelease == 'none' }}
         run: |
           echo "YARN_ENABLE_IMMUTABLE_INSTALLS=false" >> "$GITHUB_ENV"
-          yes | npx tsx scripts/release.ts
+          npx tsx scripts/release.ts
 
       - name: Push current branch with tags
         env:
