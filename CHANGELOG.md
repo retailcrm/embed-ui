@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.9.17](https://github.com/retailcrm/embed-ui/compare/v0.9.16...v0.9.17) (2026-04-06)
+
+### Features
+
+* **v1-components:** UiSkeleton loading placeholder added ([635e331](https://github.com/retailcrm/embed-ui/commit/635e331833aa7a4a385553068bfc1d16060f1d3d))
+* **v1-components:** Width modes for UiTextbox and UiSelect added ([895e1fe](https://github.com/retailcrm/embed-ui/commit/895e1febe6bc43329834897f94f57adcfceabd04))
 ## [0.9.16](https://github.com/retailcrm/embed-ui/compare/v0.9.15...v0.9.16) (2026-04-05)
 
 ### Features
