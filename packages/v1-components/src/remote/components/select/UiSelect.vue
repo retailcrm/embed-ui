@@ -128,7 +128,7 @@ const props = defineProps({
   /** Атрибут placeholder нативного поля ввода input */
   placeholder: {
     type: String,
-    default: 'test',
+    default: '',
   },
 
   /** Отображает иконку сброса введённого или выбранного значения в виде крестика */
