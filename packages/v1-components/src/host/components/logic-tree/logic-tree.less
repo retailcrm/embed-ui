@@ -152,7 +152,7 @@
     min-width: 0;
     right: @spacing-xxs;
     position: relative;
-    z-index: 0;
+    z-index: 3;
   }
 
   &__row_grouped {
@@ -161,9 +161,21 @@
     }
   }
 
+  &__row_grouped-end,
+  &__row_grouped-single {
+    margin-bottom: @spacing-xs;
+  }
+
+  &__row_grouped-start,
+  &__row_grouped-single {
+    margin-top: @spacing-xs;
+  }
+
   &__grouped-block {
     background: @grey-200;
     border-radius: @border-radius-md;
+    position: relative;
+    right: @spacing-l;
   }
 
   &__grouped-block_start {
@@ -187,6 +199,7 @@
     background: transparent;
     border-color: transparent;
     box-shadow: none;
+    padding: 12px;
   }
 
   &__row_grouped &__surface-row {
@@ -197,8 +210,11 @@
   &__row_grouped &__surface-row-content_active,
   &__row_grouped &__surface-row-content_editing,
   &__row_grouped &__surface-row-content_highlighted {
-    background: transparent;
-    border-color: transparent;
+    background: @blue-transparent;
+  }
+
+  &__row_grouped &__surface-row-content_active {
+    border: 1px solid @blue-500;
   }
 
   &__row_grouped-header &__surface-row-content_simple {
@@ -223,7 +239,7 @@
     min-height: 36px;
     padding: 6px 8px;
     background: #fff;
-    border: 1px solid @grey-300;
+    border: 1px solid transparent;
     border-radius: @border-radius-sm;
     cursor: pointer;
     transition: @transition;
@@ -238,6 +254,12 @@
 
     &_editor {
       min-height: 52px;
+    }
+
+    &_editing,
+    &_editor {
+      justify-content: flex-start;
+      gap: 8px;
     }
 
     &__main {
@@ -255,13 +277,20 @@
     }
 
     &_simple {
-      min-height: 32px;
+      max-height: 36px;
       background: transparent;
       border-color: transparent;
 
       &:hover {
         background: @blue-transparent;
       }
+    }
+
+    &_simple.ui-v1-logic-tree__surface-row-content_editing,
+    &_simple.ui-v1-logic-tree__surface-row-content_editor {
+      background: transparent;
+      border-color: transparent;
+      min-height: 38px;
     }
 
     &_simple.ui-v1-logic-tree__surface-row-content_editor {
@@ -274,12 +303,43 @@
     display: flex;
     flex: 1;
     align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
     min-width: 0;
+    overflow: hidden;
   }
 
   &__actions-row-content {
-    gap: @spacing-xs;
-    padding: @spacing-xxs;
+    gap: 8px;
+  }
+
+  &__surface-row-content_editing &__row-trailing,
+  &__surface-row-content_editor &__row-trailing {
+    margin-left: 8px;
+  }
+
+  &__slot-placeholder {
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    background: fade(@blue-500, 4%);
+    border: 1px dashed fade(@blue-500, 55%);
+    border-radius: @border-radius-sm;
+
+    &_actions {
+      min-height: 36px;
+    }
+
+    &_editor {
+      min-height: 36px;
+    }
+  }
+
+  &__slot-content {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
   }
 
   &__grouped-sortable,
@@ -404,10 +464,11 @@
   &__content {
     display: flex;
     flex: 1;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: @spacing-xs;
     min-width: 0;
+    overflow: hidden;
   }
 
   &__headline {
@@ -421,12 +482,14 @@
     .text-regular-accent();
 
     color: @black-500;
+    white-space: nowrap;
   }
 
   &__inline {
     .text-regular();
 
     color: @black-500;
+    white-space: nowrap;
 
     &_muted {
       color: @grey-800;
@@ -463,10 +526,11 @@
   &__controls {
     display: flex;
     flex: 1;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: @spacing-xs;
+    gap: 8px;
     min-width: 0;
+    overflow: hidden;
   }
 
   &__control {
@@ -560,7 +624,8 @@
   &__surface-row-content_editing &__delete,
   &__surface-row-content_highlighted &__delete,
   &__surface-row-content:focus-within &__delete,
-  &__row_grouped &__delete {
+  &__actions-row:hover &__delete,
+  &__actions-row:focus-within &__delete {
     opacity: 1;
   }
 
@@ -570,7 +635,8 @@
   &__surface-row-content_editing &__delete,
   &__surface-row-content_highlighted &__delete,
   &__surface-row-content:focus-within &__delete,
-  &__row_grouped &__delete {
+  &__actions-row:hover &__delete,
+  &__actions-row:focus-within &__delete {
     pointer-events: auto;
   }
 }

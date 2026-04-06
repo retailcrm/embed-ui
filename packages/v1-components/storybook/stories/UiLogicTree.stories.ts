@@ -93,6 +93,7 @@ const summaryRow = (
   title: string,
   config: Omit<UiLogicTreeRowData, 'title' | 'view'> = {}
 ): UiLogicTreeRowData => ({
+  editable: false,
   title,
   view: LogicTreeRowView.SUMMARY,
   ...config,
@@ -104,8 +105,9 @@ const editorRow = (
   config: Omit<UiLogicTreeRowData, 'controls' | 'title' | 'view'> = {}
 ): UiLogicTreeRowData => ({
   controls,
+  editable: false,
   title,
-  view: LogicTreeRowView.EDITOR,
+  view: LogicTreeRowView.SUMMARY,
   ...config,
 })
 
@@ -115,6 +117,7 @@ const actionsRow = (
   config: Omit<UiLogicTreeRowData, 'actions' | 'title' | 'view'> = {}
 ): UiLogicTreeRowData => ({
   actions,
+  editable: false,
   title,
   view: LogicTreeRowView.ACTIONS,
   ...config,
@@ -160,7 +163,6 @@ const rowsTree: UiLogicTreeNode[] = [
       inlineText('rows-root-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
       inlineText('rows-root-meta', 'До 5 000 ₽ скидки', { separated: true, tone: 'muted' }),
     ],
-    surface: true,
   }), {
     tone: LogicTreeTone.GREEN,
     children: [
@@ -174,7 +176,6 @@ const rowsTree: UiLogicTreeNode[] = [
               inlineText('rows-campaign-1-meta', 'Бонусы', { tone: 'muted' }),
             ],
             removable: true,
-            surface: true,
           })),
           conditionNode('rows-actions', actionsRow('Добавить в ветку', [
             {
@@ -214,7 +215,6 @@ const rowsTree: UiLogicTreeNode[] = [
             ),
           ], {
             removable: true,
-            surface: true,
           }), {
             conjunction: LogicTreeConjunction.AND,
             tone: LogicTreeTone.BLUE,
@@ -236,7 +236,6 @@ const rowsTree: UiLogicTreeNode[] = [
             },
           ], {
             removable: true,
-            surface: true,
           }), {
             tone: LogicTreeTone.BLUE,
           }),
@@ -253,7 +252,6 @@ const connectorsTree: UiLogicTreeNode[] = [
       inlineText('connectors-root-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
       inlineText('connectors-root-meta', 'До 5 000 ₽ скидки', { separated: true, tone: 'muted' }),
     ],
-    surface: false,
   }), {
     tone: LogicTreeTone.GREEN,
     children: [
@@ -264,7 +262,6 @@ const connectorsTree: UiLogicTreeNode[] = [
             inline: [
               inlineText('connectors-group-1-mode', 'Максимальная выгода', { tone: LogicTreeTone.BLUE }),
             ],
-            surface: false,
           }), {
             tone: LogicTreeTone.BLUE,
             children: [
@@ -280,7 +277,6 @@ const connectorsTree: UiLogicTreeNode[] = [
                         tone: 'muted',
                       }),
                     ],
-                    surface: false,
                   }), {
                     tone: LogicTreeTone.GREEN,
                     children: [
@@ -305,7 +301,6 @@ const connectorsTree: UiLogicTreeNode[] = [
                     inline: [
                       inlineText('connectors-group-3-mode', 'Несовместимость', { tone: LogicTreeTone.RED }),
                     ],
-                    surface: false,
                   }), {
                     tone: LogicTreeTone.RED,
                     children: [
@@ -327,7 +322,6 @@ const connectorsTree: UiLogicTreeNode[] = [
 const interactionTree: UiLogicTreeNode[] = [
   groupNode('interaction-root', summaryRow('Взаимодействие', {
     icon: LogicTreeIcon.FOLDER,
-    surface: true,
   }), {
     tone: LogicTreeTone.BLUE,
     children: [
@@ -337,7 +331,6 @@ const interactionTree: UiLogicTreeNode[] = [
           inlineText('interaction-hover-meta', 'Равно Мессенджер'),
         ],
         removable: true,
-        surface: true,
       })),
       conditionNode('interaction-selected', summaryRow('Способ оформления', {
         inline: [
@@ -345,7 +338,6 @@ const interactionTree: UiLogicTreeNode[] = [
         ],
         removable: true,
         selected: true,
-        surface: true,
       })),
       conditionNode('interaction-edit-on-click', summaryRow('Тип доставки', {
         controls: [
@@ -375,19 +367,16 @@ const interactionTree: UiLogicTreeNode[] = [
           inlineText('interaction-edit-on-click-meta', 'Равно SDEK'),
         ],
         removable: true,
-        surface: true,
       })),
       groupNode('interaction-drag-list', summaryRow('Список действий', {
         icon: LogicTreeIcon.FOLDER,
         draggable: true,
-        surface: true,
       }), {
         children: [
           branchNode('interaction-drag-group', summaryRow('Группа акций', {
             inline: [
               inlineText('interaction-drag-group-meta', '3 строки', { tone: 'muted' }),
             ],
-            surface: true,
           }), {
             childrenView: LogicTreeChildrenView.GROUPED,
             collapsible: true,
@@ -399,7 +388,6 @@ const interactionTree: UiLogicTreeNode[] = [
                   inlineText('interaction-drag-1-meta', 'Бонусы', { tone: 'muted' }),
                 ],
                 removable: true,
-                surface: true,
               })),
               conditionNode('interaction-drag-2', summaryRow('2. Название акции #2', {
                 draggable: true,
@@ -408,7 +396,6 @@ const interactionTree: UiLogicTreeNode[] = [
                   inlineText('interaction-drag-2-meta', 'Бонусы', { tone: 'muted' }),
                 ],
                 removable: true,
-                surface: true,
               })),
               conditionNode('interaction-drag-3', summaryRow('3. Название акции #3', {
                 draggable: true,
@@ -416,7 +403,6 @@ const interactionTree: UiLogicTreeNode[] = [
                   inlineText('interaction-drag-3-meta', 'Бонусы', { tone: 'muted' }),
                 ],
                 removable: true,
-                surface: true,
               })),
             ],
           }),
@@ -444,7 +430,6 @@ const interactionTree: UiLogicTreeNode[] = [
             ),
           ], {
             removable: true,
-            surface: true,
           })),
         ],
       }),
@@ -455,7 +440,6 @@ const interactionTree: UiLogicTreeNode[] = [
 const relationsDebugTree: UiLogicTreeNode[] = [
   groupNode('relations-debug-root', summaryRow('Отладка связей', {
     icon: LogicTreeIcon.FOLDER,
-    surface: false,
   }), {
     tone: LogicTreeTone.BLUE,
     children: [
@@ -463,7 +447,6 @@ const relationsDebugTree: UiLogicTreeNode[] = [
         inline: [
           inlineText('relations-debug-rule-1-meta', 'Равно Сайт'),
         ],
-        surface: false,
       }), {
         tone: LogicTreeTone.BLUE,
       }),
@@ -471,7 +454,6 @@ const relationsDebugTree: UiLogicTreeNode[] = [
         inline: [
           inlineText('relations-debug-rule-2-meta', 'Есть'),
         ],
-        surface: false,
       }), {
         conjunction: LogicTreeConjunction.OR,
         tone: LogicTreeTone.BLUE,
@@ -480,7 +462,6 @@ const relationsDebugTree: UiLogicTreeNode[] = [
         inline: [
           inlineText('relations-debug-rule-3-meta', 'Равно retailcrm'),
         ],
-        surface: false,
       }), {
         conjunction: LogicTreeConjunction.AND,
         tone: LogicTreeTone.BLUE,
@@ -492,7 +473,6 @@ const relationsDebugTree: UiLogicTreeNode[] = [
 const segmentsTree: UiLogicTreeNode[] = [
   groupNode('segments-root', summaryRow('Сегменты и редактирование', {
     icon: LogicTreeIcon.FOLDER,
-    surface: false,
   }), {
     tone: LogicTreeTone.GREY,
     children: [
@@ -501,7 +481,6 @@ const segmentsTree: UiLogicTreeNode[] = [
         inline: [
           inlineText('segments-clients-meta', 'Есть такие'),
         ],
-        surface: false,
       }), {
         tone: LogicTreeTone.GREY,
         children: [
@@ -510,7 +489,6 @@ const segmentsTree: UiLogicTreeNode[] = [
             inline: [
               inlineText('segments-order-meta', 'Есть такие'),
             ],
-            surface: false,
           }), {
             tone: LogicTreeTone.GREY,
             children: [
@@ -518,7 +496,6 @@ const segmentsTree: UiLogicTreeNode[] = [
                 inline: [
                   inlineText('segments-format-summary-meta', 'Равно Мессенджер'),
                 ],
-                surface: false,
               }), {
                 conjunction: LogicTreeConjunction.AND,
                 tone: LogicTreeTone.BLUE,
@@ -535,7 +512,6 @@ const segmentsTree: UiLogicTreeNode[] = [
                   label: 'Группа',
                 },
               ], {
-                surface: false,
               }), {
                 tone: LogicTreeTone.BLUE,
               }),
@@ -563,7 +539,6 @@ const segmentsTree: UiLogicTreeNode[] = [
                 ),
               ], {
                 removable: true,
-                surface: true,
               }), {
                 conjunction: LogicTreeConjunction.OR,
                 tone: LogicTreeTone.BLUE,
@@ -580,7 +555,6 @@ const segmentsTree: UiLogicTreeNode[] = [
                   label: 'Группа',
                 },
               ], {
-                surface: false,
               }), {
                 tone: LogicTreeTone.BLUE,
               }),
@@ -599,11 +573,10 @@ const campaignTree: UiLogicTreeNode[] = [
       inlineText('campaign-root-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
       inlineText('campaign-root-meta', 'До 5 000 ₽ скидки', { separated: true, tone: 'muted' }),
     ],
-    surface: false,
   }), {
     tone: LogicTreeTone.GREEN,
     children: [
-      groupNode('campaign-count', summaryRow('8 акций', { surface: false, removable: true }), {
+      groupNode('campaign-count', summaryRow('8 акций', { removable: true }), {
         childrenView: LogicTreeChildrenView.GROUPED,
         collapsible: true,
         expanded: true,
@@ -614,7 +587,6 @@ const campaignTree: UiLogicTreeNode[] = [
               inlineText('campaign-count-item-1-meta', 'Бонусы', { tone: 'muted' }),
             ],
             removable: true,
-            surface: true,
           })),
           conditionNode('campaign-count-item-2', summaryRow('2. Название акции #2', {
             draggable: true,
@@ -622,7 +594,6 @@ const campaignTree: UiLogicTreeNode[] = [
               inlineText('campaign-count-item-2-meta', 'Бонусы', { tone: 'muted' }),
             ],
             removable: true,
-            surface: true,
           })),
           conditionNode('campaign-count-item-3', summaryRow('3. Название акции #3', {
             draggable: true,
@@ -630,7 +601,6 @@ const campaignTree: UiLogicTreeNode[] = [
               inlineText('campaign-count-item-3-meta', 'Бонусы', { tone: 'muted' }),
             ],
             removable: true,
-            surface: true,
           }), {
             conjunction: LogicTreeConjunction.AND,
             tone: LogicTreeTone.BLUE,
@@ -642,7 +612,6 @@ const campaignTree: UiLogicTreeNode[] = [
               label: 'Добавить акцию в группу',
             },
           ], {
-            surface: false,
           }), {
             tone: LogicTreeTone.BLUE,
           }),
@@ -658,7 +627,6 @@ const campaignTree: UiLogicTreeNode[] = [
           inlineText('campaign-group-1-mode', 'Максимальная выгода', { tone: LogicTreeTone.BLUE }),
         ],
         removable: true,
-        surface: false,
       }), {
         tone: LogicTreeTone.BLUE,
         children: [
@@ -674,7 +642,6 @@ const campaignTree: UiLogicTreeNode[] = [
                   label: 'Добавить акцию в группу',
                 },
               ], {
-                surface: false,
               })),
             ],
           }),
@@ -686,7 +653,6 @@ const campaignTree: UiLogicTreeNode[] = [
               inlineText('campaign-group-2-meta', 'До 5 000 ₽ оплата бонусами', { separated: true, tone: 'muted' }),
             ],
             removable: true,
-            surface: false,
           }), {
             tone: LogicTreeTone.GREEN,
             children: [
@@ -702,7 +668,6 @@ const campaignTree: UiLogicTreeNode[] = [
                       label: 'Добавить акцию в группу',
                     },
                   ], {
-                    surface: false,
                   })),
                 ],
               }),
@@ -714,7 +679,6 @@ const campaignTree: UiLogicTreeNode[] = [
                   label: 'Группа',
                 },
               ], {
-                surface: false,
               }), {
                 tone: LogicTreeTone.GREEN,
               }),
@@ -727,7 +691,6 @@ const campaignTree: UiLogicTreeNode[] = [
               inlineText('campaign-group-3-mode', 'Несовместимость', { tone: LogicTreeTone.RED }),
             ],
             removable: true,
-            surface: false,
           }), {
             tone: LogicTreeTone.RED,
             children: [
@@ -742,7 +705,6 @@ const campaignTree: UiLogicTreeNode[] = [
                       inlineText('campaign-group-3-item-1-meta', 'Бонусы', { tone: 'muted' }),
                     ],
                     removable: true,
-                    surface: true,
                   })),
 
                   conditionNode('campaign-group-3-item-2', summaryRow('2. Название акции #2', {
@@ -751,7 +713,6 @@ const campaignTree: UiLogicTreeNode[] = [
                       inlineText('campaign-group-3-item-2-meta', 'Бонусы', { tone: 'muted' }),
                     ],
                     removable: true,
-                    surface: true,
                   })),
 
                   conditionNode('campaign-group-3-item-3', summaryRow('3. Название акции #3', {
@@ -760,7 +721,6 @@ const campaignTree: UiLogicTreeNode[] = [
                       inlineText('campaign-group-3-item-3-meta', 'Бонусы', { tone: 'muted' }),
                     ],
                     removable: true,
-                    surface: true,
                   })),
 
                   conditionNode('campaign-group-3-actions', actionsRow('Добавить акцию', [
@@ -770,7 +730,6 @@ const campaignTree: UiLogicTreeNode[] = [
                       label: 'Добавить акцию в группу',
                     },
                   ], {
-                    surface: false,
                   })),
                 ],
               }),
@@ -782,7 +741,6 @@ const campaignTree: UiLogicTreeNode[] = [
                   label: 'Группа',
                 },
               ], {
-                surface: false,
               }), {
                 tone: LogicTreeTone.GREEN,
               }),
@@ -796,7 +754,6 @@ const campaignTree: UiLogicTreeNode[] = [
               label: 'Группа',
             },
           ], {
-            surface: false,
           }), {
             tone: LogicTreeTone.GREEN,
           }),
@@ -809,7 +766,6 @@ const campaignTree: UiLogicTreeNode[] = [
           label: 'Группа',
         },
       ], {
-        surface: false,
       }), {
         tone: LogicTreeTone.GREEN,
       }),
@@ -823,24 +779,13 @@ const meta = {
   component: UiLogicTree,
 
   args: {
-    editable: true,
     items: rowsTree,
-    surface: true,
   },
 
   argTypes: {
-    editable: {
-      control: 'boolean',
-      description: 'Включает интерактивное редактирование дерева. В read-only режиме editor-строки отображаются как просмотр, drag/remove/actions скрываются.',
-      table: {
-        type: {
-          summary: 'boolean',
-        },
-      },
-    },
     items: {
       control: false,
-      description: 'Набор корневых узлов дерева. Структура дерева живёт на уровне узла, а данные и режим отображения строки находятся в объекте row.',
+      description: 'Набор корневых узлов древа. Структура древа живёт на уровне узла, а данные и режим отображения строки находятся в объекте row.',
       table: {
         type: {
           summary: 'UiLogicTreeNode[]',
@@ -854,8 +799,10 @@ const meta = {
   childrenView?: 'plain' | 'grouped'
   children?: UiLogicTreeNode[]
   row: {
-    view: 'summary' | 'editor' | 'actions'
+    view: 'summary' | 'actions'
     title: string
+    editable: boolean
+    contentSlot?: boolean
     inline?: UiLogicTreeInlineText[]
     controls?: UiLogicTreeControl[]
     actions?: UiLogicTreeAction[]
@@ -863,15 +810,40 @@ const meta = {
     removable?: boolean
     highlighted?: boolean
     selected?: boolean
-    surface?: boolean
   }
 }`,
         },
       },
     },
-    surface: {
-      control: 'boolean',
-      description: 'Оборачивает дерево в общий контейнер-карточку с рамкой и внутренними отступами.',
+    'row:add': {
+      control: false,
+      description: 'Публичное семантическое событие добавления строки. Эмитится после локальной мутации древа.',
+      table: {
+        category: 'events',
+        type: {
+          summary: 'UiLogicTreeRowAddPayload',
+        },
+      },
+    },
+    'row:edit': {
+      control: false,
+      description: 'Публичное семантическое событие изменения значения контрола в строке.',
+      table: {
+        category: 'events',
+        type: {
+          summary: 'UiLogicTreeRowEditPayload',
+        },
+      },
+    },
+    'row:remove': {
+      control: false,
+      description: 'Публичное семантическое событие удаления строки. Эмитится после локальной мутации древа.',
+      table: {
+        category: 'events',
+        type: {
+          summary: 'UiLogicTreeRowRemovePayload',
+        },
+      },
     },
   },
 
@@ -883,7 +855,21 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: 'UiLogicTree сам управляет деревом, связями, состояниями строк и стандартным рендером summary/editor/actions-кейсов. Storybook worker только прокидывает данные в компонент.',
+        component: `UiLogicTree сам управляет древом, связями, состояниями строк и стандартным рендером summary/editor/actions-кейсов. Storybook worker только прокидывает данные в компонент.
+
+Публичный props API:
+- items — единственный внешний prop компонента
+
+Публичный slot API:
+- row-content — внешний слот для content-зоны строки
+- row.contentSlot — флаг в данных строки, который включает переход на slot-рендер content-зоны вместо внутреннего дефолтного содержимого
+
+Публичные бизнес-события:
+- row:add — добавление новой строки после локальной мутации древа
+- row:edit — изменение значения контрола в строке
+- row:remove — удаление строки после локальной мутации древа
+
+В сторях события дополнительно логируются в browser console, чтобы их можно было проверить через DevTools и Playwright.`,
       },
     },
     layout: 'padded',
@@ -898,56 +884,36 @@ export const Sandbox: Story = {}
 
 export const Rows: Story = {
   args: {
-    editable: true,
     items: rowsTree,
-    surface: true,
   },
 }
 
 export const Connectors: Story = {
   args: {
-    editable: true,
     items: connectorsTree,
-    surface: false,
   },
 }
 
 export const TreeInteractions: Story = {
   args: {
-    editable: true,
     items: interactionTree,
-    surface: true,
   },
 }
 
 export const RelationsDebug: Story = {
   args: {
-    editable: true,
     items: relationsDebugTree,
-    surface: false,
   },
 }
 
 export const SegmentsEditing: Story = {
   args: {
-    editable: true,
     items: segmentsTree,
-    surface: false,
   },
 }
 
 export const CampaignArbitrage: Story = {
   args: {
-    editable: true,
     items: campaignTree,
-    surface: false,
-  },
-}
-
-export const ReadOnly: Story = {
-  args: {
-    editable: false,
-    items: rowsTree,
-    surface: true,
   },
 }

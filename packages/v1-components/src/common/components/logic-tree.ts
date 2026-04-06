@@ -33,7 +33,6 @@ export enum LogicTreeConjunction {
 
 export enum LogicTreeRowView {
   ACTIONS = 'actions',
-  EDITOR = 'editor',
   SUMMARY = 'summary',
 }
 
@@ -90,6 +89,8 @@ export type UiLogicTreeInlineText = {
 export type UiLogicTreeRow = {
   view: LogicTreeRowView;
   title: string;
+  editable: boolean;
+  contentSlot?: boolean;
   icon?: LogicTreeIcon;
   inline?: UiLogicTreeInlineText[];
   controls?: UiLogicTreeControl[];
@@ -98,7 +99,6 @@ export type UiLogicTreeRow = {
   removable?: boolean;
   selected?: boolean;
   highlighted?: boolean;
-  surface?: boolean;
 }
 
 export type UiLogicTreeNode = {
@@ -114,9 +114,7 @@ export type UiLogicTreeNode = {
 }
 
 export type UiLogicTreeProperties = {
-  editable?: boolean;
   items?: UiLogicTreeNode[];
-  surface?: boolean;
 }
 
 export type UiLogicTreeDropPayload = {
@@ -127,6 +125,54 @@ export type UiLogicTreeDropPayload = {
   targetItemId: string | null;
   placement: 'after' | 'before';
   payload?: unknown;
+}
+
+export type UiLogicTreeRowAddPayload = {
+  actionId: string;
+  item: UiLogicTreeNode;
+  kind: Exclude<UiLogicTreeNode['kind'], LogicTreeNodeKind.BRANCH>;
+  nodeId: string;
+  parentNodeId: string | null;
+  parentPathKey: string | null;
+  pathKey: string;
+  triggerNodeId: string;
+}
+
+export type UiLogicTreeRowEditPayload = {
+  controlId: string;
+  item: UiLogicTreeNode;
+  nodeId: string;
+  pathKey: string;
+  previousValue: string | number | null;
+  value: string | number | null;
+}
+
+export type UiLogicTreeRowRemovePayload = {
+  index: number;
+  item: UiLogicTreeNode;
+  nodeId: string;
+  parentNodeId: string | null;
+  parentPathKey: string | null;
+  pathKey: string;
+}
+
+export type UiLogicTreeRowSlotProps = {
+  editing: boolean;
+  expanded: boolean;
+  grouped: boolean;
+  groupedHeader: boolean;
+  groupedPosition?: UiLogicTreeRowProperties['groupedPosition'];
+  hasChildren: boolean;
+  highlighted: boolean;
+  node: UiLogicTreeNode;
+  path: number[];
+  pathKey: string;
+  rowView: LogicTreeRowView;
+  selected: boolean;
+  onAction: (action: UiLogicTreeAction) => void;
+  onControlUpdate: (controlId: string, value: string | number) => void;
+  onRemove: () => void;
+  onToggle: () => void;
 }
 
 export type UiLogicTreeRootProperties = {
@@ -143,8 +189,7 @@ export type UiLogicTreeRowProperties = {
   groupedHeader?: boolean;
   grouped?: boolean;
   groupedPosition?: 'end' | 'middle' | 'single' | 'start';
-  editing?: boolean;
+  editable?: boolean;
   highlighted?: boolean;
   selected?: boolean;
-  surface?: boolean;
 }

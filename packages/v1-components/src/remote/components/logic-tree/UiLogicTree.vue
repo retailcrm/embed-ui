@@ -1,5 +1,5 @@
 <template>
-    <UiLogicTreeRoot :surface="surface" @outside-click="onOutsideClick">
+    <UiLogicTreeRoot :surface="false" @outside-click="onOutsideClick">
         <template
             v-for="entry in renderEntries"
             :key="entry.id"
@@ -10,7 +10,6 @@
                 class="ui-v1-logic-tree__grouped-sortable"
                 :accepts="[entry.containerId]"
                 :container-id="entry.containerId"
-                :disabled="!props.editable"
                 :on-drop="onGroupedDrop"
             >
                 <RemoteSortableItem
@@ -27,7 +26,7 @@
                 >
                     <UiLogicTreeRow
                         :connectors="row.connectors"
-                        :editing="isRowEditing(row)"
+                        :editable="row.node.row.editable"
                         :grouped="Boolean(row.sectionKey)"
                         :grouped-position="row.groupedPosition || undefined"
                         :highlighted="Boolean(row.node.row.highlighted)"
@@ -38,8 +37,8 @@
                         :grouped-header="row.node.childrenView === LogicTreeChildrenView.GROUPED"
                         :row-view="resolveRowView(row)"
                         :selected="isRowSelected(row)"
-                        :surface="resolveRowSurface(row.node)"
                         @row-click="onRowClick(row)"
+                        @row-edit="setRowEditable(row, $event)"
                     >
                         <template #prefix>
                             <RemoteDragHandle
@@ -64,7 +63,28 @@
                         </template>
 
                         <template #content>
-                            <template v-if="resolveRowView(row) === LogicTreeRowView.EDITOR">
+                            <template v-if="row.node.row.contentSlot">
+                                <div
+                                    class="ui-v1-logic-tree__slot-content"
+                                    @click="onSlotRowClick(row, $event)"
+                                >
+                                    <slot
+                                        name="row-content"
+                                        v-bind="resolveRowSlotProps(row)"
+                                    >
+                                        <div
+                                            :class="{
+                                                'ui-v1-logic-tree__slot-placeholder': true,
+                                                'ui-v1-logic-tree__slot-placeholder_actions': resolveRowView(row) === LogicTreeRowView.ACTIONS,
+                                                'ui-v1-logic-tree__slot-placeholder_editor': isRowEditing(row),
+                                            }"
+                                            data-ui-logic-tree-slot="content"
+                                        />
+                                    </slot>
+                                </div>
+                            </template>
+
+                            <template v-else-if="isRowEditing(row) && (Boolean(row.node.row.controls?.length) || Boolean(row.node.row.contentSlot))">
                                 <div class="ui-v1-logic-tree__controls">
                                     <template
                                         v-for="control in row.node.row.controls ?? []"
@@ -111,7 +131,7 @@
 
                                         <UiButton
                                             v-else
-                                            appearance="tertiary"
+                                            appearance="secondary"
                                             :class="[
                                                 'ui-v1-logic-tree__control',
                                                 'ui-v1-logic-tree__control_icon',
@@ -191,11 +211,11 @@
 
                             <UiPopperConnector>
                                 <UiButton
-                                    v-if="props.editable && row.node.row.removable"
+                                    v-if="row.node.row.removable"
                                     :aria-label="deleteText"
+                                    :size="row.node.row.editable ? 'sm' : 'xs'"
                                     class="ui-v1-logic-tree__delete"
                                     appearance="tertiary"
-                                    size="sm"
                                     variant="danger"
                                     @click="onRemove(row.path, row.node.id)"
                                 >
@@ -219,7 +239,7 @@
                     v-for="row in entry.footerRows"
                     :key="row.node.id"
                     :connectors="row.connectors"
-                    :editing="isRowEditing(row)"
+                    :editable="row.node.row.editable"
                     :grouped="Boolean(row.sectionKey)"
                     :grouped-position="row.groupedPosition || undefined"
                     :highlighted="Boolean(row.node.row.highlighted)"
@@ -230,32 +250,51 @@
                     :grouped-header="row.node.childrenView === LogicTreeChildrenView.GROUPED"
                     :row-view="resolveRowView(row)"
                     :selected="isRowSelected(row)"
-                    :surface="resolveRowSurface(row.node)"
                     @row-click="onRowClick(row)"
+                    @row-edit="setRowEditable(row, $event)"
                 >
                     <template #content>
-                        <UiButton
-                            v-for="action in row.node.row.actions ?? []"
-                            :key="action.id"
-                            appearance="tertiary"
-                            class="ui-v1-logic-tree__action-button"
-                            size="sm"
-                            @click="onAction(row, action)"
-                        >
-                            <IconAdd aria-hidden="true" />
+                        <template v-if="row.node.row.contentSlot">
+                            <div
+                                class="ui-v1-logic-tree__slot-content"
+                                @click="onSlotRowClick(row, $event)"
+                            >
+                                <slot
+                                    name="row-content"
+                                    v-bind="resolveRowSlotProps(row)"
+                                >
+                                    <div
+                                        class="ui-v1-logic-tree__slot-placeholder ui-v1-logic-tree__slot-placeholder_actions"
+                                        data-ui-logic-tree-slot="content"
+                                    />
+                                </slot>
+                            </div>
+                        </template>
 
-                            {{ action.label }}
-                        </UiButton>
+                        <template v-else>
+                            <UiButton
+                                v-for="action in row.node.row.actions ?? []"
+                                :key="action.id"
+                                appearance="tertiary"
+                                class="ui-v1-logic-tree__action-button"
+                                size="sm"
+                                @click="onAction(row, action)"
+                            >
+                                <IconAdd aria-hidden="true" />
+
+                                {{ action.label }}
+                            </UiButton>
+                        </template>
                     </template>
 
                     <template #trailing>
                         <UiPopperConnector>
                             <UiButton
-                                v-if="props.editable && row.node.row.removable"
+                                v-if="row.node.row.removable"
                                 :aria-label="deleteText"
                                 class="ui-v1-logic-tree__delete"
                                 appearance="tertiary"
-                                size="sm"
+                                :size="row.node.row.editable ? 'sm' : 'xs'"
                                 variant="danger"
                                 @click="onRemove(row.path, row.node.id)"
                             >
@@ -278,7 +317,7 @@
             <UiLogicTreeRow
                 v-else
                 :connectors="entry.row.connectors"
-                :editing="isRowEditing(entry.row)"
+                :editable="entry.row.node.row.editable"
                 :grouped="Boolean(entry.row.sectionKey)"
                 :grouped-position="entry.row.groupedPosition || undefined"
                 :highlighted="Boolean(entry.row.node.row.highlighted)"
@@ -289,8 +328,8 @@
                 :grouped-header="entry.row.node.childrenView === LogicTreeChildrenView.GROUPED"
                 :row-view="resolveRowView(entry.row)"
                 :selected="isRowSelected(entry.row)"
-                :surface="resolveRowSurface(entry.row.node)"
                 @row-click="onRowClick(entry.row)"
+                @row-edit="setRowEditable(entry.row, $event)"
             >
                 <template #prefix>
                     <span
@@ -305,7 +344,28 @@
                 </template>
 
                 <template #content>
-                    <template v-if="resolveRowView(entry.row) === LogicTreeRowView.ACTIONS">
+                    <template v-if="entry.row.node.row.contentSlot">
+                        <div
+                            class="ui-v1-logic-tree__slot-content"
+                            @click="onSlotRowClick(entry.row, $event)"
+                        >
+                            <slot
+                                name="row-content"
+                                v-bind="resolveRowSlotProps(entry.row)"
+                            >
+                                <div
+                                    :class="{
+                                        'ui-v1-logic-tree__slot-placeholder': true,
+                                        'ui-v1-logic-tree__slot-placeholder_actions': resolveRowView(entry.row) === LogicTreeRowView.ACTIONS,
+                                        'ui-v1-logic-tree__slot-placeholder_editor': isRowEditing(entry.row),
+                                    }"
+                                    data-ui-logic-tree-slot="content"
+                                />
+                            </slot>
+                        </div>
+                    </template>
+
+                    <template v-else-if="resolveRowView(entry.row) === LogicTreeRowView.ACTIONS">
                         <UiButton
                             v-for="action in entry.row.node.row.actions ?? []"
                             :key="action.id"
@@ -320,7 +380,7 @@
                         </UiButton>
                     </template>
 
-                    <template v-else-if="resolveRowView(entry.row) === LogicTreeRowView.EDITOR">
+                    <template v-else-if="isRowEditing(entry.row) && (Boolean(entry.row.node.row.controls?.length) || Boolean(entry.row.node.row.contentSlot))">
                         <div class="ui-v1-logic-tree__controls">
                             <template
                                 v-for="control in entry.row.node.row.controls ?? []"
@@ -447,11 +507,11 @@
 
                     <UiPopperConnector>
                         <UiButton
-                            v-if="props.editable && entry.row.node.row.removable"
+                            v-if="entry.row.node.row.removable"
                             :aria-label="deleteText"
                             class="ui-v1-logic-tree__delete"
                             appearance="tertiary"
-                            size="sm"
+                            :size="entry.row.node.row.editable ? 'sm' : 'xs'"
                             variant="danger"
                             @click="onRemove(entry.row.path, entry.row.node.id)"
                         >
@@ -486,24 +546,27 @@ import type {
   UiLogicTreeNode,
   UiLogicTreeOption,
   UiLogicTreeProperties,
+  UiLogicTreeRowAddPayload,
+  UiLogicTreeRowEditPayload,
+  UiLogicTreeRowRemovePayload,
+  UiLogicTreeRowSlotProps,
 } from '@/common/components/logic-tree'
-
-import { inject } from 'vue'
 
 import {
   computed,
+  inject,
   onBeforeUnmount,
   ref,
-  watch,
 } from 'vue'
-
 import {
   RemoteDragHandle,
   RemoteSortableContainer,
   RemoteSortableItem,
 } from '@omnicajs/vue-remote/remote'
+import { watch } from 'vue'
 
 import IconAdd from '~assets/sprites/actions/add.svg'
+import IconAddSquareOutlined from '~assets/sprites/actions/add-square-outlined.svg'
 import IconCaretDown from '~assets/sprites/arrows/caret-down.svg'
 import IconDeleteOutlined from '~assets/sprites/ui/delete-outlined.svg'
 import IconDrag from '~assets/sprites/actions/drag.svg'
@@ -558,24 +621,16 @@ type RenderEntry = {
 }
 
 const props = defineProps({
-  /** Разрешает интерактивное редактирование дерева: editor-строки, drag&drop, удаление и строки действий */
-  editable: {
-    type: Boolean,
-    default: true,
-  },
-
-  /** Набор корневых узлов логического дерева */
+  /** Набор корневых узлов логического древа */
   items: {
     type: Array as PropType<UiLogicTreeProperties['items']>,
     default: () => [],
   },
-
-  /** Оборачивает дерево в карточку с рамкой и внутренними отступами */
-  surface: {
-    type: Boolean,
-    default: true,
-  },
 })
+
+defineSlots<{
+  'row-content'?: (props: UiLogicTreeRowSlotProps) => unknown;
+}>()
 
 const emit = defineEmits<{
   'action': [payload: { actionId: string; nodeId: string }];
@@ -583,6 +638,9 @@ const emit = defineEmits<{
   'control:update': [payload: { controlId: string; nodeId: string; value: string | number | null }];
   'drop': [payload: UiLogicTreeDropPayload];
   'remove': [nodeId: string];
+  'row:add': [payload: UiLogicTreeRowAddPayload];
+  'row:edit': [payload: UiLogicTreeRowEditPayload];
+  'row:remove': [payload: UiLogicTreeRowRemovePayload];
   'toggle': [payload: { expanded: boolean; nodeId: string }];
   'update:items': [items: UiLogicTreeNode[]];
 }>()
@@ -604,7 +662,6 @@ const resolveConjunctionLabel = (conjunction: UiLogicTreeNode['conjunction']): s
 }
 const itemsState = ref<UiLogicTreeNode[]>([])
 const activePathKey = ref('')
-const editingPathKey = ref('')
 
 let uid = 0
 let controlUpdateTimer: ReturnType<typeof setTimeout> | null = null
@@ -647,6 +704,8 @@ const cloneNodes = (nodes: UiLogicTreeNode[]): UiLogicTreeNode[] => nodes.map((n
   },
 }))
 
+const cloneNode = (node: UiLogicTreeNode): UiLogicTreeNode => cloneNodes([node])[0]
+
 const resolveConfiguredRowView = (node: UiLogicTreeNode): LogicTreeRowView => (
   node.row.view
 )
@@ -656,30 +715,21 @@ const isConjunctionContentNode = (node: UiLogicTreeNode): boolean => (
   && node.kind !== LogicTreeNodeKind.BRANCH
 )
 
-const canEditRow = (node: UiLogicTreeNode): boolean => (
-  props.editable
-  && Boolean(node.row.controls?.length)
-  && resolveConfiguredRowView(node) !== LogicTreeRowView.ACTIONS
+const isRowEditing = (row: FlattenedRow): boolean => (
+  Boolean(row.node.row.editable)
 )
 
-const isRowEditing = (row: FlattenedRow): boolean => (
-  canEditRow(row.node)
-  && editingPathKey.value === pathToKey(row.path)
-)
+const setRowEditable = (row: FlattenedRow, value: boolean) => {
+  withItemsMutation((nextItems) => {
+    setEditableState(nextItems, value ? row.path : null)
+  })
+}
 
 const resolveRowView = (row: FlattenedRow): LogicTreeRowView => {
   const configuredRowView = resolveConfiguredRowView(row.node)
 
-  if (!props.editable && configuredRowView === LogicTreeRowView.EDITOR) {
-    return LogicTreeRowView.SUMMARY
-  }
-
-  if (configuredRowView === LogicTreeRowView.ACTIONS || configuredRowView === LogicTreeRowView.EDITOR) {
+  if (configuredRowView === LogicTreeRowView.ACTIONS) {
     return configuredRowView
-  }
-
-  if (isRowEditing(row)) {
-    return LogicTreeRowView.EDITOR
   }
 
   return configuredRowView
@@ -715,7 +765,7 @@ const nextId = (prefix: string): string => {
   return `${prefix}-${uid}`
 }
 
-const createActionRow = (tone: LogicTreeTone): UiLogicTreeNode => ({
+const createActionRow = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeNode => ({
   id: nextId('actions'),
   kind: LogicTreeNodeKind.CONDITION,
   row: {
@@ -731,13 +781,15 @@ const createActionRow = (tone: LogicTreeTone): UiLogicTreeNode => ({
         label: 'Группа',
       },
     ],
+    contentSlot,
+    editable: false,
     title: 'Добавить в ветку',
     view: LogicTreeRowView.ACTIONS,
   },
   tone,
 })
 
-const createConditionNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
+const createConditionNode = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeNode => ({
   id: nextId('condition'),
   kind: LogicTreeNodeKind.CONDITION,
   row: {
@@ -781,17 +833,19 @@ const createConditionNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
         label: 'Дополнительно',
       },
     ],
+    contentSlot,
     draggable: true,
+    editable: false,
     removable: true,
     title: 'Новое условие',
-    view: LogicTreeRowView.EDITOR,
+    view: LogicTreeRowView.SUMMARY,
   },
   tone,
 })
 
-const createGroupNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
+const createGroupNode = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeNode => ({
   children: [
-    createActionRow(tone),
+    createActionRow(tone, contentSlot),
   ],
   collapsible: true,
   expanded: true,
@@ -799,6 +853,7 @@ const createGroupNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
   kind: LogicTreeNodeKind.GROUP,
   row: {
     draggable: true,
+    editable: false,
     inline: [
       {
         id: nextId('group-subtitle'),
@@ -856,6 +911,39 @@ const getNodeAtPath = (nodes: UiLogicTreeNode[], path: number[]): UiLogicTreeNod
   }
 
   return branch?.[index] ?? null
+}
+
+const setEditableState = (
+  nodes: UiLogicTreeNode[],
+  editablePath: number[] | null = null
+) => {
+  const editablePathKey = editablePath ? pathToKey(editablePath) : ''
+
+  const walk = (branch: UiLogicTreeNode[], parentPath: number[] = []) => {
+    branch.forEach((node, index) => {
+      const path = [...parentPath, index]
+      node.row.editable = editablePathKey !== '' && pathToKey(path) === editablePathKey
+
+      if (node.children?.length) {
+        walk(node.children, path)
+      }
+    })
+  }
+
+  walk(nodes)
+}
+
+const resolveParentMeta = (nodes: UiLogicTreeNode[], path: number[]) => {
+  const parentPath = path.slice(0, -1)
+  const parentNode = parentPath.length > 0
+    ? getNodeAtPath(nodes, parentPath)
+    : null
+
+  return {
+    parentNode,
+    parentPath,
+    parentPathKey: parentPath.length > 0 ? pathToKey(parentPath) : null,
+  }
 }
 
 const removeNodeAtPath = (nodes: UiLogicTreeNode[], path: number[]): UiLogicTreeNode | null => {
@@ -948,9 +1036,7 @@ const flatten = (
   return rows
 })
 
-const rows = computed(() => flatten(itemsState.value).filter((row) => {
-  return props.editable || resolveConfiguredRowView(row.node) !== LogicTreeRowView.ACTIONS
-}))
+const rows = computed(() => flatten(itemsState.value))
 
 const rowsWithGrouping = computed<FlattenedRow[]>(() => rows.value.map((row, index, source) => {
   if (!row.sectionKey) {
@@ -1056,7 +1142,7 @@ const resolveIcon = (icon?: LogicTreeIcon) => {
     return IconMoreHorizontal
   }
 
-  return IconAdd
+  return IconAddSquareOutlined
 }
 
 const resolveRowIcon = (icon?: LogicTreeIcon) => {
@@ -1071,43 +1157,12 @@ const resolveInlineContent = (node: UiLogicTreeNode): UiLogicTreeInlineText[] =>
   return node.row.inline ?? []
 }
 
-const resolveControlDisplayValue = (control: UiLogicTreeControl): string => {
-  const value = resolveControlValue(control)
-
-  if (value === null || value === undefined || value === '') {
-    return control.placeholder ?? control.label
-  }
-
-  return String(value)
-}
-
-const resolveReadonlyInlineContent = (node: UiLogicTreeNode): UiLogicTreeInlineText[] => {
-  const textualControls = (node.row.controls ?? [])
-    .filter((control) => control.kind !== LogicTreeControlKind.ICON)
-    .map((control) => resolveControlDisplayValue(control))
-    .filter(Boolean)
-
-  const [first, ...rest] = textualControls
-  const shouldSkipFirst = first?.trim() === node.row.title.trim()
-  const values = shouldSkipFirst ? rest : textualControls
-
-  return values.map((text, index) => ({
-    id: `${node.id}-readonly-${index + 1}`,
-    text,
-  }))
-}
-
 const resolveRowInlineContent = (node: UiLogicTreeNode): UiLogicTreeInlineText[] => {
-  if (!props.editable && resolveConfiguredRowView(node) === LogicTreeRowView.EDITOR) {
-    return resolveReadonlyInlineContent(node)
-  }
-
   return resolveInlineContent(node)
 }
 
 const isRowDraggable = (node: UiLogicTreeNode): boolean => (
-  props.editable
-  && Boolean(node.row.draggable)
+  Boolean(node.row.draggable)
   && resolveConfiguredRowView(node) !== LogicTreeRowView.ACTIONS
 )
 
@@ -1116,27 +1171,56 @@ const isGroupedDraggableRow = (row: FlattenedRow): boolean => (
   && isRowDraggable(row.node)
 )
 
-const resolveRowSurface = (node: UiLogicTreeNode): boolean => (
-  node.row.surface ?? true
-)
-
 const isRowSelected = (row: FlattenedRow): boolean => (
   Boolean(row.node.row.selected)
   || activePathKey.value === pathToKey(row.path)
   || isRowEditing(row)
 )
 
-const onControlUpdate = (path: number[], controlId: string, value: string | number) => {
-  if (!props.editable) {
-    return
-  }
+const resolveRowSlotProps = (row: FlattenedRow): UiLogicTreeRowSlotProps => ({
+  editing: isRowEditing(row),
+  expanded: row.expanded,
+  grouped: Boolean(row.sectionKey),
+  groupedHeader: row.node.childrenView === LogicTreeChildrenView.GROUPED,
+  groupedPosition: row.groupedPosition || undefined,
+  hasChildren: row.hasChildren,
+  highlighted: Boolean(row.node.row.highlighted),
+  node: row.node,
+  onAction: (action: UiLogicTreeAction) => {
+    onAction(row, action)
+  },
+  onControlUpdate: (controlId: string, value: string | number) => {
+    onControlUpdate(row.path, controlId, value)
+  },
+  onRemove: () => {
+    onRemove(row.path, row.node.id)
+  },
+  onToggle: () => {
+    onToggle(row)
+  },
+  path: [...row.path],
+  pathKey: pathToKey(row.path),
+  rowView: resolveRowView(row),
+  selected: isRowSelected(row),
+})
 
+const onControlUpdate = (path: number[], controlId: string, value: string | number) => {
   const currentNode = getNodeAtPath(itemsState.value, path)
   const currentControl = currentNode?.row.controls?.find((control) => control.id === controlId)
+  const previousValue = currentControl?.value ?? null
 
-  if (currentControl) {
+  if (currentControl && currentNode) {
     currentControl.value = value
     scheduleItemsUpdate()
+
+    emit('row:edit', {
+      controlId,
+      item: cloneNode(currentNode),
+      nodeId: currentNode.id,
+      pathKey: pathToKey(path),
+      previousValue,
+      value,
+    })
   }
 
   emit('control:update', {
@@ -1164,31 +1248,43 @@ const onToggle = (row: FlattenedRow) => {
 }
 
 const onRemove = (path: number[], nodeId: string) => {
-  if (!props.editable) {
-    return
-  }
-
   const pathKey = pathToKey(path)
+  let rowRemovePayload: UiLogicTreeRowRemovePayload | null = null
 
   withItemsMutation((nextItems) => {
-    removeNodeAtPath(nextItems, path)
+    const index = path.at(-1)
+    const { parentNode, parentPathKey } = resolveParentMeta(nextItems, path)
+    const removedNode = removeNodeAtPath(nextItems, path)
+
+    if (removedNode && index !== undefined) {
+      rowRemovePayload = {
+        index,
+        item: cloneNode(removedNode),
+        nodeId: removedNode.id,
+        parentNodeId: parentNode?.id ?? null,
+        parentPathKey,
+        pathKey,
+      }
+    }
   })
 
   if (activePathKey.value === pathKey) {
     activePathKey.value = ''
   }
 
-  if (editingPathKey.value === pathKey) {
-    editingPathKey.value = ''
+  if (rowRemovePayload) {
+    emit('row:remove', rowRemovePayload)
   }
 
   emit('remove', nodeId)
 }
 
 const onAction = (row: FlattenedRow, action: UiLogicTreeAction) => {
-  if (!props.editable || resolveRowView(row) !== LogicTreeRowView.ACTIONS) {
+  if (resolveRowView(row) !== LogicTreeRowView.ACTIONS) {
     return
   }
+
+  let rowAddPayload: UiLogicTreeRowAddPayload | null = null
 
   withItemsMutation((nextItems) => {
     const branch = getBranchAtPath(nextItems, row.parentPath)
@@ -1199,12 +1295,31 @@ const onAction = (row: FlattenedRow, action: UiLogicTreeAction) => {
     }
 
     const tone = row.node.tone ?? LogicTreeTone.BLUE
+    const contentSlot = Boolean(row.node.row.contentSlot)
     const nextNode = action.kind === LogicTreeActionKind.GROUP
-      ? createGroupNode(tone)
-      : createConditionNode(tone)
+      ? createGroupNode(tone, contentSlot)
+      : createConditionNode(tone, contentSlot)
 
     branch.splice(actionIndex, 0, nextNode)
+
+    const nextPath = [...row.parentPath, actionIndex]
+    const { parentNode, parentPathKey } = resolveParentMeta(nextItems, nextPath)
+
+    rowAddPayload = {
+      actionId: action.id,
+      item: cloneNode(nextNode),
+      kind: nextNode.kind as UiLogicTreeRowAddPayload['kind'],
+      nodeId: nextNode.id,
+      parentNodeId: parentNode?.id ?? null,
+      parentPathKey,
+      pathKey: pathToKey(nextPath),
+      triggerNodeId: row.node.id,
+    }
   })
+
+  if (rowAddPayload) {
+    emit('row:add', rowAddPayload)
+  }
 
   emit('action', {
     actionId: action.id,
@@ -1218,18 +1333,28 @@ const onRowClick = (row: FlattenedRow) => {
   }
 
   activePathKey.value = pathToKey(row.path)
+}
 
-  if (canEditRow(row.node)) {
-    editingPathKey.value = pathToKey(row.path)
+const onSlotRowClick = (row: FlattenedRow, event: MouseEvent) => {
+  const target = event.target as HTMLElement | null
+
+  if (
+    target?.closest(
+      'button, input, select, textarea, [role="button"], [role="option"], [data-skip-row-click="true"]'
+    )
+  ) {
     return
   }
 
-  editingPathKey.value = ''
+  onRowClick(row)
 }
 
 const onOutsideClick = () => {
   activePathKey.value = ''
-  editingPathKey.value = ''
+
+  withItemsMutation((nextItems) => {
+    setEditableState(nextItems, null)
+  })
 }
 
 const resolveGroupedDropPayload = (event: RemoteSortableEvent): UiLogicTreeDropPayload | null => {

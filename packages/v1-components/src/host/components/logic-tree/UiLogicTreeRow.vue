@@ -89,10 +89,10 @@
                         :class="{
                             'ui-v1-logic-tree__surface-row-content': true,
                             'ui-v1-logic-tree__surface-row-content_active': selected,
-                            'ui-v1-logic-tree__surface-row-content_editing': editing,
-                            'ui-v1-logic-tree__surface-row-content_editor': rowView === LogicTreeRowView.EDITOR,
+                            'ui-v1-logic-tree__surface-row-content_editing': isEditable,
+                            'ui-v1-logic-tree__surface-row-content_editor': isEditable,
                             'ui-v1-logic-tree__surface-row-content_highlighted': highlighted,
-                            'ui-v1-logic-tree__surface-row-content_simple': !surface,
+                            'ui-v1-logic-tree__surface-row-content_simple': true,
                         }"
                         tabindex="0"
                         @click="onClick"
@@ -140,7 +140,7 @@ const props = defineProps({
     default: () => [],
   },
 
-  editing: {
+  editable: {
     type: Boolean,
     default: false,
   },
@@ -194,16 +194,14 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-
-  surface: {
-    type: Boolean,
-    default: true,
-  },
 })
 
 const emit = defineEmits<{
   'row-click': [pathKey: string];
+  'row-edit': [value: boolean];
 }>()
+
+const isEditable = computed(() => props.editable)
 
 const onClick = (event: MouseEvent) => {
   const target = event.target as HTMLElement | null
@@ -216,6 +214,7 @@ const onClick = (event: MouseEvent) => {
     return
   }
 
+  emit('row-edit', !props.editable)
   emit('row-click', props.pathKey)
 }
 
