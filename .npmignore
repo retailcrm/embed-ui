@@ -1,16 +1,23 @@
+.docker
 .github
 .idea
 .yarn
 .vscode
+coverage
 meta
 node_modules
 packages/
 scripts
+skills
 src
 tests
 
+.actrc
 .gitignore
 .npmrc
+.versionrc.json
+.yarnrc.yml
+.yarnrc.*.yml
 docker-compose.yml
 eslint.config.js
 tsconfig.json
@@ -18,3 +25,8 @@ tsconfig.test.json
 vite.config.ts
 vitest.config.ts
 yarn.lock
+
+AGENTS.md
+ARCHITECTURE.md
+
+Makefile
