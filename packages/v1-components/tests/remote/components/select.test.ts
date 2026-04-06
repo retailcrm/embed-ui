@@ -117,6 +117,8 @@ describe('remote/components/select', () => {
 
     expect(options[0].attributes('aria-selected')).toBe('true')
     expect(wrapper?.find('.ui-v1-select-trigger-stub').attributes('data-active-descendant')).toBeUndefined()
+    expect(wrapper?.emitted('change')).toEqual([['first']])
+    expect(wrapper?.emitted('update:value')).toEqual([['first']])
   })
 
   test('skips disabled option during keyboard navigation', async () => {
@@ -141,5 +143,21 @@ describe('remote/components/select', () => {
 
     expect(options[0].attributes('aria-selected')).toBe('false')
     expect(options[1].attributes('aria-selected')).toBe('true')
+    expect(wrapper?.emitted('change')).toEqual([['second']])
+    expect(wrapper?.emitted('update:value')).toEqual([['second']])
+  })
+
+  test('re-emits trigger value updates for external v-model sync', async () => {
+    createComponent([
+      { label: 'First', value: 'first' },
+    ])
+
+    const trigger = wrapper?.findComponent(UiSelectTriggerStub)
+
+    trigger?.vm.$emit('update:value', null)
+    await nextTick()
+
+    expect(wrapper?.emitted('change')).toEqual([[null]])
+    expect(wrapper?.emitted('update:value')).toEqual([[null]])
   })
 })

@@ -20,7 +20,7 @@
             v-bind="$attrs"
             @input="onInput"
             @keydown="onKeyDown"
-            @update:value="state.value = $event"
+            @update:value="setValue($event)"
             @update:expanded="state.expanded = $event"
         />
 
@@ -107,6 +107,11 @@ import { UiSelectTrigger } from './parts'
 defineOptions({
   inheritAttrs: false,
 })
+
+const emit = defineEmits<{
+  'change': [value: unknown | unknown[]];
+  'update:value': [value: unknown | unknown[]];
+}>()
 
 const props = defineProps({
   /** Атрибут id корневого элемента выпадающего списка. Должен быть уникальным на странице */
@@ -285,6 +290,12 @@ const equals = (a: unknown, b: unknown) => props.equalsFn(a, b)
 const contains = (array: unknown[], value: unknown) => array.some(v => equals(v, value))
 const navigableOptions = computed(() => optionsRegistry.value.filter(option => option.isMatched() && !option.disabled))
 
+const setValue = (value: unknown | unknown[]) => {
+  state.value = value
+  emit('change', value)
+  emit('update:value', value)
+}
+
 provide(RegisterKey, (option: Option) => {
   if (optionsRegistry.value.some(item => item.id === option.id)) {
     throw new Error(`[UiSelect] Component with id ${option.id} already registered. Unregister it before using again.`)
@@ -327,13 +338,13 @@ provide(ToggleKey, (value: unknown) => {
       model.push(value)
     }
 
-    state.value = model
+    setValue(model)
 
     if (!props.multiple) {
       close()
     }
   } else {
-    state.value = value
+    setValue(value)
 
     close()
   }
@@ -406,9 +417,9 @@ const selectHighlightedOption = () => {
       model.push(option.value)
     }
 
-    state.value = model
+    setValue(model)
   } else {
-    state.value = option.value
+    setValue(option.value)
     close()
   }
 }
