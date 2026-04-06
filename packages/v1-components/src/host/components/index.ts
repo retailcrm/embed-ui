@@ -53,6 +53,7 @@ export { default as UiTextbox } from '@/host/components/textbox/UiTextbox.vue'
 export { default as UiTimePicker } from '@/host/components/time-picker/UiTimePicker.vue'
 export { default as UiToggleButton } from '@/host/components/toggle-button/UiToggleButton.vue'
 export { default as UiToggleGroupRoot } from '@/host/components/toggle-group/UiToggleGroupRoot.vue'
+// Host-only container: remote trees can render toolbar items, but cannot create UiToolbar itself.
 export { default as UiToolbar } from '@/host/components/toolbar/UiToolbar.vue'
 export { default as UiToolbarButton } from '@/host/components/toolbar/UiToolbarButton.vue'
 export { default as UiToolbarLink } from '@/host/components/toolbar/UiToolbarLink.vue'
