@@ -14,12 +14,15 @@ export const UiLogicTreeRootType = 'UiLogicTreeRoot' as SchemaType<
   RemoteProperties<UiLogicTreeRootProperties>
 >
 
-export const UiLogicTreeRoot = defineRemoteComponent(UiLogicTreeRootType, {
-  emits: {
-    'outside-click': () => true,
+export const UiLogicTreeRoot = defineRemoteComponent(
+  UiLogicTreeRootType,
+  {
+    slots: ['default'],
   },
-  slots: ['default'],
-})
+  ['outside-click'] as unknown as {
+    'outside-click': (event: SerializedEvent) => boolean,
+  }
+)
 
 export const UiLogicTreeRowType = 'UiLogicTreeRow' as SchemaType<
   'UiLogicTreeRow',

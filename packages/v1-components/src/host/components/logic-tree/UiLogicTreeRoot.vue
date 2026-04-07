@@ -1,10 +1,7 @@
 <template>
     <div
         ref="root"
-        :class="{
-            'ui-v1-logic-tree': true,
-            'ui-v1-logic-tree_surface': surface,
-        }"
+        class="ui-v1-logic-tree"
         v-bind="$attrs"
         @click="onRootClick"
     >
@@ -17,14 +14,6 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 defineOptions({
   inheritAttrs: false,
-})
-
-defineProps({
-  /** Оборачивает всё древо в общий контейнер-карточку */
-  surface: {
-    type: Boolean,
-    default: true,
-  },
 })
 
 const emit = defineEmits<{
