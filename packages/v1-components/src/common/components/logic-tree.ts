@@ -90,7 +90,6 @@ export type UiLogicTreeRow = {
   view: LogicTreeRowView;
   title: string;
   editable: boolean;
-  contentSlot?: boolean;
   icon?: LogicTreeIcon;
   inline?: UiLogicTreeInlineText[];
   controls?: UiLogicTreeControl[];
@@ -170,21 +169,23 @@ export type UiLogicTreeRowSlotProps = {
   rowView: LogicTreeRowView;
   selected: boolean;
   onAction: (action: UiLogicTreeAction) => void;
+  onControlAction: (controlId: string) => void;
   onControlUpdate: (controlId: string, value: string | number) => void;
   onRemove: () => void;
   onToggle: () => void;
 }
 
-export type UiLogicTreeRootProperties = {
-  surface?: boolean;
-}
+export type UiLogicTreeRootProperties = Record<string, never>
 
 export type UiLogicTreeRowProperties = {
   pathKey?: string;
   rowView?: LogicTreeRowView;
   connectors?: UiLogicTreeConnector[];
   conjunction?: string;
+  conjunctionEndPathKey?: string;
   conjunctionLabel?: string;
+  conjunctionOffset?: number;
+  conjunctionStartPathKey?: string;
   conjunctionTone?: LogicTreeTone;
   groupedHeader?: boolean;
   grouped?: boolean;

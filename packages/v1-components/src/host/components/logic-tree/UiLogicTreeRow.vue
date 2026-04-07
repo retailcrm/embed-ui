@@ -1,5 +1,6 @@
 <template>
     <div
+        ref="rowRef"
         :class="{
             'ui-v1-logic-tree__row': true,
             'ui-v1-logic-tree__row_grouped-header': groupedHeader,
@@ -9,6 +10,7 @@
             'ui-v1-logic-tree__row_grouped-end': grouped && groupedPosition === 'end',
             'ui-v1-logic-tree__row_grouped-single': grouped && groupedPosition === 'single',
         }"
+        :data-row-path-key="pathKey"
     >
         <div class="ui-v1-logic-tree__row-main">
             <div
@@ -23,6 +25,8 @@
                         'ui-v1-logic-tree__connector_placeholder': connector.placeholder,
                         'ui-v1-logic-tree__connector_visible': connector.visible,
                         'ui-v1-logic-tree__connector_branch': index === connectors.length - 1,
+                        'ui-v1-logic-tree__connector_terminal': index === connectors.length - 1 && !connector.continues,
+                        'ui-v1-logic-tree__connector_with-relation': Boolean(conjunction) && index === connectors.length - 1 && !connector.placeholder,
                         [`ui-v1-logic-tree__connector_${connector.tone}`]: true,
                     }"
                 >
@@ -38,20 +42,21 @@
                         v-if="index === connectors.length - 1 && !connector.placeholder"
                         class="ui-v1-logic-tree__connector-stroke ui-v1-logic-tree__connector-stroke_middle"
                     />
-
-                    <span
-                        v-if="conjunction && index === connectors.length - 1 && !connector.placeholder"
-                        :class="{
-                            'ui-v1-logic-tree__relation-badge': true,
-                            'ui-v1-logic-tree__relation-badge_or': conjunctionKind === 'or',
-                            'ui-v1-logic-tree__relation-badge_and': conjunctionKind === 'and',
-                            [`ui-v1-logic-tree__relation-badge_${conjunctionTone}`]: true,
-                        }"
-                    >
-                        {{ conjunctionLabel || conjunction }}
-                    </span>
                 </span>
             </div>
+
+            <span
+                v-if="conjunction && connectors.length > 0"
+                :class="{
+                    'ui-v1-logic-tree__relation-badge': true,
+                    'ui-v1-logic-tree__relation-badge_or': conjunctionKind === 'or',
+                    'ui-v1-logic-tree__relation-badge_and': conjunctionKind === 'and',
+                    [`ui-v1-logic-tree__relation-badge_${conjunctionTone}`]: true,
+                }"
+                :style="conjunctionBadgeStyle"
+            >
+                {{ conjunctionLabel || conjunction }}
+            </span>
 
             <div
                 class="ui-v1-logic-tree__surface-row"
@@ -126,7 +131,14 @@ import type {
   UiLogicTreeRowProperties,
 } from '@/common/components/logic-tree'
 
-import { computed } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  onUpdated,
+  ref,
+} from 'vue'
 
 import { LogicTreeConjunction, LogicTreeRowView } from '@/common/components/logic-tree'
 
@@ -180,6 +192,21 @@ const props = defineProps({
     default: '',
   },
 
+  conjunctionEndPathKey: {
+    type: String,
+    default: '',
+  },
+
+  conjunctionOffset: {
+    type: Number,
+    default: undefined,
+  },
+
+  conjunctionStartPathKey: {
+    type: String,
+    default: '',
+  },
+
   conjunctionTone: {
     type: String as PropType<LogicTreeTone>,
     default: undefined,
@@ -214,7 +241,10 @@ const onClick = (event: MouseEvent) => {
     return
   }
 
-  emit('row-edit', !props.editable)
+  if (!props.editable) {
+    emit('row-edit', true)
+  }
+
   emit('row-click', props.pathKey)
 }
 
@@ -229,6 +259,68 @@ const conjunctionKind = computed(() => {
 
   return ''
 })
+
+const rowRef = ref<HTMLElement | null>(null)
+const conjunctionCalculatedOffset = ref<number | undefined>(props.conjunctionOffset)
+
+const recalculateConjunctionOffset = async () => {
+  if (!props.conjunction || !props.conjunctionStartPathKey || !props.conjunctionEndPathKey) {
+    conjunctionCalculatedOffset.value = props.conjunctionOffset
+    return
+  }
+
+  await nextTick()
+
+  const currentRow = rowRef.value
+  const root = currentRow?.closest('.ui-v1-logic-tree')
+
+  if (!currentRow || !root) {
+    conjunctionCalculatedOffset.value = props.conjunctionOffset
+    return
+  }
+
+  const startRow = root.querySelector<HTMLElement>(`[data-row-path-key="${props.conjunctionStartPathKey}"]`)
+  const endRow = root.querySelector<HTMLElement>(`[data-row-path-key="${props.conjunctionEndPathKey}"]`)
+
+  if (!startRow || !endRow) {
+    conjunctionCalculatedOffset.value = props.conjunctionOffset
+    return
+  }
+
+  const currentTop = currentRow.getBoundingClientRect().top
+  const startTop = startRow.getBoundingClientRect().top
+  const endBottom = endRow.getBoundingClientRect().bottom
+
+  conjunctionCalculatedOffset.value = ((startTop + endBottom) / 2) - currentTop
+}
+
+const onResize = () => {
+  void recalculateConjunctionOffset()
+}
+
+onMounted(() => {
+  void recalculateConjunctionOffset()
+  window.addEventListener('resize', onResize)
+})
+
+onUpdated(() => {
+  void recalculateConjunctionOffset()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+})
+
+const conjunctionBadgeStyle = computed(() => (
+  conjunctionCalculatedOffset.value === undefined
+    ? {
+      left: `${Math.max(0, (props.connectors.length - 1) * 32 + 8)}px`,
+    }
+    : {
+      left: `${Math.max(0, (props.connectors.length - 1) * 32 + 8)}px`,
+      top: `${conjunctionCalculatedOffset.value}px`,
+    }
+))
 </script>
 
 <style lang="less" src="./logic-tree.less" />

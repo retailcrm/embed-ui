@@ -1,5 +1,5 @@
 <template>
-    <UiLogicTreeRoot :surface="false" @outside-click="onOutsideClick">
+    <UiLogicTreeRoot @outside-click="onOutsideClick">
         <template
             v-for="entry in renderEntries"
             :key="entry.id"
@@ -32,7 +32,10 @@
                         :highlighted="Boolean(row.node.row.highlighted)"
                         :path-key="pathToKey(row.path)"
                         :conjunction="row.conjunction"
+                        :conjunction-end-path-key="row.conjunctionEndPathKey"
                         :conjunction-label="resolveConjunctionLabel(row.conjunction)"
+                        :conjunction-offset="row.conjunctionOffset"
+                        :conjunction-start-path-key="row.conjunctionStartPathKey"
                         :conjunction-tone="row.conjunctionTone"
                         :grouped-header="row.node.childrenView === LogicTreeChildrenView.GROUPED"
                         :row-view="resolveRowView(row)"
@@ -41,196 +44,31 @@
                         @row-edit="setRowEditable(row, $event)"
                     >
                         <template #prefix>
-                            <RemoteDragHandle
-                                v-if="isGroupedDraggableRow(row)"
-                                as="span"
-                                class="ui-v1-logic-tree__handle"
-                                data-skip-row-click="true"
-                                :for="row.node.id"
-                            >
-                                <IconDrag aria-hidden="true" />
-                            </RemoteDragHandle>
-
-                            <span
-                                v-else-if="row.node.row.icon"
-                                class="ui-v1-logic-tree__folder"
-                            >
-                                <component
-                                    :is="resolveRowIcon(row.node.row.icon)"
-                                    aria-hidden="true"
-                                />
-                            </span>
+                            <slot
+                                name="row-prefix"
+                                v-bind="resolveRowSlotProps(row)"
+                            />
                         </template>
 
                         <template #content>
-                            <template v-if="row.node.row.contentSlot">
-                                <div
-                                    class="ui-v1-logic-tree__slot-content"
-                                    @click="onSlotRowClick(row, $event)"
+                            <div class="ui-v1-logic-tree__slot-content">
+                                <slot
+                                    :name="resolveContentSlotName(row)"
+                                    v-bind="resolveRowSlotProps(row)"
                                 >
-                                    <slot
-                                        name="row-content"
-                                        v-bind="resolveRowSlotProps(row)"
-                                    >
-                                        <div
-                                            :class="{
-                                                'ui-v1-logic-tree__slot-placeholder': true,
-                                                'ui-v1-logic-tree__slot-placeholder_actions': resolveRowView(row) === LogicTreeRowView.ACTIONS,
-                                                'ui-v1-logic-tree__slot-placeholder_editor': isRowEditing(row),
-                                            }"
-                                            data-ui-logic-tree-slot="content"
-                                        />
-                                    </slot>
-                                </div>
-                            </template>
-
-                            <template v-else-if="isRowEditing(row) && (Boolean(row.node.row.controls?.length) || Boolean(row.node.row.contentSlot))">
-                                <div class="ui-v1-logic-tree__controls">
-                                    <template
-                                        v-for="control in row.node.row.controls ?? []"
-                                        :key="control.id"
-                                    >
-                                        <UiSelect
-                                            v-if="control.kind === LogicTreeControlKind.SELECT"
-                                            :class="[
-                                                'ui-v1-logic-tree__control',
-                                                'ui-v1-logic-tree__control_select',
-                                            ]"
-                                            :clearable="control.clearable"
-                                            :disabled="control.disabled"
-                                            :invalid="control.invalid"
-                                            :placeholder="control.placeholder ?? control.label"
-                                            :popper-fit-trigger="true"
-                                            :readonly="control.readonly"
-                                            :style="resolveWidth(control.width)"
-                                            :value="resolveControlValue(control)"
-                                            @update:value="onControlUpdate(row.path, control.id, $event ?? '')"
-                                        >
-                                            <UiSelectOption
-                                                v-for="option in resolveOptions(control)"
-                                                :key="option.id"
-                                                :label="option.label"
-                                                :value="option.value"
-                                            />
-                                        </UiSelect>
-
-                                        <UiTextbox
-                                            v-else-if="control.kind === LogicTreeControlKind.INPUT"
-                                            :class="[
-                                                'ui-v1-logic-tree__control',
-                                                'ui-v1-logic-tree__control_input',
-                                            ]"
-                                            :disabled="control.disabled"
-                                            :invalid="control.invalid"
-                                            :placeholder="control.placeholder ?? control.label"
-                                            :readonly="control.readonly"
-                                            :style="resolveWidth(control.width)"
-                                            :value="resolveControlValue(control)"
-                                            @update:value="onControlUpdate(row.path, control.id, $event ?? '')"
-                                        />
-
-                                        <UiButton
-                                            v-else
-                                            appearance="secondary"
-                                            :class="[
-                                                'ui-v1-logic-tree__control',
-                                                'ui-v1-logic-tree__control_icon',
-                                            ]"
-                                            size="xs"
-                                            @click="emit('control-action', {
-                                                controlId: control.id,
-                                                nodeId: row.node.id,
-                                            })"
-                                        >
-                                            <component
-                                                :is="resolveIcon(control.icon)"
-                                                aria-hidden="true"
-                                                class="ui-v1-logic-tree__control-icon"
-                                            />
-                                        </UiButton>
-                                    </template>
-                                </div>
-                            </template>
-
-                            <template v-else>
-                                <div class="ui-v1-logic-tree__content">
-                                    <span class="ui-v1-logic-tree__headline">
-                                        <span class="ui-v1-logic-tree__title">
-                                            {{ row.node.row.title }}
-                                        </span>
-
-                                        <UiButton
-                                            v-if="row.node.collapsible && row.hasChildren"
-                                            appearance="tertiary"
-                                            size="xs"
-                                            @click="onToggle(row)"
-                                        >
-                                            <IconCaretDown
-                                                aria-hidden="true"
-                                                :class="{
-                                                    'ui-v1-logic-tree__toggle-icon': true,
-                                                    'ui-v1-logic-tree__toggle-icon_collapsed': !row.expanded,
-                                                }"
-                                            />
-                                        </UiButton>
-                                    </span>
-
-                                    <span
-                                        v-for="item in resolveRowInlineContent(row.node)"
-                                        :key="item.id"
-                                        :class="{
-                                            'ui-v1-logic-tree__inline': true,
-                                            'ui-v1-logic-tree__inline_muted': item.tone === 'muted',
-                                            'ui-v1-logic-tree__inline_separated': item.separated,
-                                            'ui-v1-logic-tree__inline_semibold': item.weight === 'semibold',
-                                            [`ui-v1-logic-tree__inline_${item.tone}`]: Boolean(item.tone) && item.tone !== 'default' && item.tone !== 'muted',
-                                        }"
-                                    >
-                                        {{ item.text }}
-                                    </span>
-                                </div>
-                            </template>
+                                    <div
+                                        :class="resolveContentPlaceholderClass(row)"
+                                        data-ui-logic-tree-slot="content"
+                                    />
+                                </slot>
+                            </div>
                         </template>
 
                         <template #trailing>
-                            <UiButton
-                                v-if="resolveRowView(row) !== LogicTreeRowView.SUMMARY && row.node.collapsible && row.hasChildren"
-                                appearance="tertiary"
-                                class="ui-v1-logic-tree__toggle"
-                                size="xs"
-                                @click="onToggle(row)"
-                            >
-                                <IconCaretDown
-                                    aria-hidden="true"
-                                    :class="{
-                                        'ui-v1-logic-tree__toggle-icon': true,
-                                        'ui-v1-logic-tree__toggle-icon_collapsed': !row.expanded,
-                                    }"
-                                />
-                            </UiButton>
-
-                            <UiPopperConnector>
-                                <UiButton
-                                    v-if="row.node.row.removable"
-                                    :aria-label="deleteText"
-                                    :size="row.node.row.editable ? 'sm' : 'xs'"
-                                    class="ui-v1-logic-tree__delete"
-                                    appearance="tertiary"
-                                    variant="danger"
-                                    @click="onRemove(row.path, row.node.id)"
-                                >
-                                    <IconDeleteOutlined aria-hidden="true" />
-                                </UiButton>
-
-                                <UiTooltip
-                                    :target-triggers="{
-                                        show: ['hover', 'focus'],
-                                        hide: ['hover', 'focus', 'click'],
-                                    }"
-                                >
-                                    {{ deleteText }}
-                                </UiTooltip>
-                            </UiPopperConnector>
+                            <slot
+                                name="row-trailing"
+                                v-bind="resolveRowSlotProps(row)"
+                            />
                         </template>
                     </UiLogicTreeRow>
                 </RemoteSortableItem>
@@ -245,7 +83,10 @@
                     :highlighted="Boolean(row.node.row.highlighted)"
                     :path-key="pathToKey(row.path)"
                     :conjunction="row.conjunction"
+                    :conjunction-end-path-key="row.conjunctionEndPathKey"
                     :conjunction-label="resolveConjunctionLabel(row.conjunction)"
+                    :conjunction-offset="row.conjunctionOffset"
+                    :conjunction-start-path-key="row.conjunctionStartPathKey"
                     :conjunction-tone="row.conjunctionTone"
                     :grouped-header="row.node.childrenView === LogicTreeChildrenView.GROUPED"
                     :row-view="resolveRowView(row)"
@@ -253,63 +94,32 @@
                     @row-click="onRowClick(row)"
                     @row-edit="setRowEditable(row, $event)"
                 >
+                    <template #prefix>
+                        <slot
+                            name="row-prefix"
+                            v-bind="resolveRowSlotProps(row)"
+                        />
+                    </template>
+
                     <template #content>
-                        <template v-if="row.node.row.contentSlot">
-                            <div
-                                class="ui-v1-logic-tree__slot-content"
-                                @click="onSlotRowClick(row, $event)"
+                        <div class="ui-v1-logic-tree__slot-content">
+                            <slot
+                                :name="resolveContentSlotName(row)"
+                                v-bind="resolveRowSlotProps(row)"
                             >
-                                <slot
-                                    name="row-content"
-                                    v-bind="resolveRowSlotProps(row)"
-                                >
-                                    <div
-                                        class="ui-v1-logic-tree__slot-placeholder ui-v1-logic-tree__slot-placeholder_actions"
-                                        data-ui-logic-tree-slot="content"
-                                    />
-                                </slot>
-                            </div>
-                        </template>
-
-                        <template v-else>
-                            <UiButton
-                                v-for="action in row.node.row.actions ?? []"
-                                :key="action.id"
-                                appearance="tertiary"
-                                class="ui-v1-logic-tree__action-button"
-                                size="sm"
-                                @click="onAction(row, action)"
-                            >
-                                <IconAdd aria-hidden="true" />
-
-                                {{ action.label }}
-                            </UiButton>
-                        </template>
+                                <div
+                                    :class="resolveContentPlaceholderClass(row)"
+                                    data-ui-logic-tree-slot="content"
+                                />
+                            </slot>
+                        </div>
                     </template>
 
                     <template #trailing>
-                        <UiPopperConnector>
-                            <UiButton
-                                v-if="row.node.row.removable"
-                                :aria-label="deleteText"
-                                class="ui-v1-logic-tree__delete"
-                                appearance="tertiary"
-                                :size="row.node.row.editable ? 'sm' : 'xs'"
-                                variant="danger"
-                                @click="onRemove(row.path, row.node.id)"
-                            >
-                                <IconDeleteOutlined aria-hidden="true" />
-                            </UiButton>
-
-                            <UiTooltip
-                                :target-triggers="{
-                                    show: ['hover', 'focus'],
-                                    hide: ['hover', 'focus', 'click'],
-                                }"
-                            >
-                                {{ deleteText }}
-                            </UiTooltip>
-                        </UiPopperConnector>
+                        <slot
+                            name="row-trailing"
+                            v-bind="resolveRowSlotProps(row)"
+                        />
                     </template>
                 </UiLogicTreeRow>
             </RemoteSortableContainer>
@@ -323,7 +133,10 @@
                 :highlighted="Boolean(entry.row.node.row.highlighted)"
                 :path-key="pathToKey(entry.row.path)"
                 :conjunction="entry.row.conjunction"
+                :conjunction-end-path-key="entry.row.conjunctionEndPathKey"
                 :conjunction-label="resolveConjunctionLabel(entry.row.conjunction)"
+                :conjunction-offset="entry.row.conjunctionOffset"
+                :conjunction-start-path-key="entry.row.conjunctionStartPathKey"
                 :conjunction-tone="entry.row.conjunctionTone"
                 :grouped-header="entry.row.node.childrenView === LogicTreeChildrenView.GROUPED"
                 :row-view="resolveRowView(entry.row)"
@@ -332,201 +145,31 @@
                 @row-edit="setRowEditable(entry.row, $event)"
             >
                 <template #prefix>
-                    <span
-                        v-if="entry.row.node.row.icon"
-                        class="ui-v1-logic-tree__folder"
-                    >
-                        <component
-                            :is="resolveRowIcon(entry.row.node.row.icon)"
-                            aria-hidden="true"
-                        />
-                    </span>
+                    <slot
+                        name="row-prefix"
+                        v-bind="resolveRowSlotProps(entry.row)"
+                    />
                 </template>
 
                 <template #content>
-                    <template v-if="entry.row.node.row.contentSlot">
-                        <div
-                            class="ui-v1-logic-tree__slot-content"
-                            @click="onSlotRowClick(entry.row, $event)"
+                    <div class="ui-v1-logic-tree__slot-content">
+                        <slot
+                            :name="resolveContentSlotName(entry.row)"
+                            v-bind="resolveRowSlotProps(entry.row)"
                         >
-                            <slot
-                                name="row-content"
-                                v-bind="resolveRowSlotProps(entry.row)"
-                            >
-                                <div
-                                    :class="{
-                                        'ui-v1-logic-tree__slot-placeholder': true,
-                                        'ui-v1-logic-tree__slot-placeholder_actions': resolveRowView(entry.row) === LogicTreeRowView.ACTIONS,
-                                        'ui-v1-logic-tree__slot-placeholder_editor': isRowEditing(entry.row),
-                                    }"
-                                    data-ui-logic-tree-slot="content"
-                                />
-                            </slot>
-                        </div>
-                    </template>
-
-                    <template v-else-if="resolveRowView(entry.row) === LogicTreeRowView.ACTIONS">
-                        <UiButton
-                            v-for="action in entry.row.node.row.actions ?? []"
-                            :key="action.id"
-                            appearance="tertiary"
-                            class="ui-v1-logic-tree__action-button"
-                            size="sm"
-                            @click="onAction(entry.row, action)"
-                        >
-                            <IconAdd aria-hidden="true" />
-
-                            {{ action.label }}
-                        </UiButton>
-                    </template>
-
-                    <template v-else-if="isRowEditing(entry.row) && (Boolean(entry.row.node.row.controls?.length) || Boolean(entry.row.node.row.contentSlot))">
-                        <div class="ui-v1-logic-tree__controls">
-                            <template
-                                v-for="control in entry.row.node.row.controls ?? []"
-                                :key="control.id"
-                            >
-                                <UiSelect
-                                    v-if="control.kind === LogicTreeControlKind.SELECT"
-                                    :class="[
-                                        'ui-v1-logic-tree__control',
-                                        'ui-v1-logic-tree__control_select',
-                                    ]"
-                                    :clearable="control.clearable"
-                                    :disabled="control.disabled"
-                                    :invalid="control.invalid"
-                                    :placeholder="control.placeholder ?? control.label"
-                                    :popper-fit-trigger="true"
-                                    :readonly="control.readonly"
-                                    :style="resolveWidth(control.width)"
-                                    :value="resolveControlValue(control)"
-                                    @update:value="onControlUpdate(entry.row.path, control.id, $event ?? '')"
-                                >
-                                    <UiSelectOption
-                                        v-for="option in resolveOptions(control)"
-                                        :key="option.id"
-                                        :label="option.label"
-                                        :value="option.value"
-                                    />
-                                </UiSelect>
-
-                                <UiTextbox
-                                    v-else-if="control.kind === LogicTreeControlKind.INPUT"
-                                    :class="[
-                                        'ui-v1-logic-tree__control',
-                                        'ui-v1-logic-tree__control_input',
-                                    ]"
-                                    :disabled="control.disabled"
-                                    :invalid="control.invalid"
-                                    :placeholder="control.placeholder ?? control.label"
-                                    :readonly="control.readonly"
-                                    :style="resolveWidth(control.width)"
-                                    :value="resolveControlValue(control)"
-                                    @update:value="onControlUpdate(entry.row.path, control.id, $event ?? '')"
-                                />
-
-                                <UiButton
-                                    v-else
-                                    appearance="tertiary"
-                                    :class="[
-                                        'ui-v1-logic-tree__control',
-                                        'ui-v1-logic-tree__control_icon',
-                                    ]"
-                                    size="xs"
-                                    @click="emit('control-action', {
-                                        controlId: control.id,
-                                        nodeId: entry.row.node.id,
-                                    })"
-                                >
-                                    <component
-                                        :is="resolveIcon(control.icon)"
-                                        aria-hidden="true"
-                                        class="ui-v1-logic-tree__control-icon"
-                                    />
-                                </UiButton>
-                            </template>
-                        </div>
-                    </template>
-
-                    <template v-else>
-                        <div class="ui-v1-logic-tree__content">
-                            <span class="ui-v1-logic-tree__headline">
-                                <span class="ui-v1-logic-tree__title">
-                                    {{ entry.row.node.row.title }}
-                                </span>
-
-                                <UiButton
-                                    v-if="entry.row.node.collapsible && entry.row.hasChildren"
-                                    appearance="tertiary"
-                                    size="xs"
-                                    @click="onToggle(entry.row)"
-                                >
-                                    <IconCaretDown
-                                        aria-hidden="true"
-                                        :class="{
-                                            'ui-v1-logic-tree__toggle-icon': true,
-                                            'ui-v1-logic-tree__toggle-icon_collapsed': !entry.row.expanded,
-                                        }"
-                                    />
-                                </UiButton>
-                            </span>
-
-                            <span
-                                v-for="item in resolveRowInlineContent(entry.row.node)"
-                                :key="item.id"
-                                :class="{
-                                    'ui-v1-logic-tree__inline': true,
-                                    'ui-v1-logic-tree__inline_muted': item.tone === 'muted',
-                                    'ui-v1-logic-tree__inline_separated': item.separated,
-                                    'ui-v1-logic-tree__inline_semibold': item.weight === 'semibold',
-                                    [`ui-v1-logic-tree__inline_${item.tone}`]: Boolean(item.tone) && item.tone !== 'default' && item.tone !== 'muted',
-                                }"
-                            >
-                                {{ item.text }}
-                            </span>
-                        </div>
-                    </template>
+                            <div
+                                :class="resolveContentPlaceholderClass(entry.row)"
+                                data-ui-logic-tree-slot="content"
+                            />
+                        </slot>
+                    </div>
                 </template>
 
                 <template #trailing>
-                    <UiButton
-                        v-if="resolveRowView(entry.row) !== LogicTreeRowView.SUMMARY && entry.row.node.collapsible && entry.row.hasChildren"
-                        appearance="tertiary"
-                        class="ui-v1-logic-tree__toggle"
-                        size="xs"
-                        @click="onToggle(entry.row)"
-                    >
-                        <IconCaretDown
-                            aria-hidden="true"
-                            :class="{
-                                'ui-v1-logic-tree__toggle-icon': true,
-                                'ui-v1-logic-tree__toggle-icon_collapsed': !entry.row.expanded,
-                            }"
-                        />
-                    </UiButton>
-
-                    <UiPopperConnector>
-                        <UiButton
-                            v-if="entry.row.node.row.removable"
-                            :aria-label="deleteText"
-                            class="ui-v1-logic-tree__delete"
-                            appearance="tertiary"
-                            :size="entry.row.node.row.editable ? 'sm' : 'xs'"
-                            variant="danger"
-                            @click="onRemove(entry.row.path, entry.row.node.id)"
-                        >
-                            <IconDeleteOutlined aria-hidden="true" />
-                        </UiButton>
-
-                        <UiTooltip
-                            :target-triggers="{
-                                show: ['hover', 'focus'],
-                                hide: ['hover', 'focus', 'click'],
-                            }"
-                        >
-                            {{ deleteText }}
-                        </UiTooltip>
-                    </UiPopperConnector>
+                    <slot
+                        name="row-trailing"
+                        v-bind="resolveRowSlotProps(entry.row)"
+                    />
                 </template>
             </UiLogicTreeRow>
         </template>
@@ -540,11 +183,8 @@ import type { RemoteSortableEvent } from '@omnicajs/vue-remote/remote'
 import type {
   UiLogicTreeAction,
   UiLogicTreeConnector,
-  UiLogicTreeControl,
   UiLogicTreeDropPayload,
-  UiLogicTreeInlineText,
   UiLogicTreeNode,
-  UiLogicTreeOption,
   UiLogicTreeProperties,
   UiLogicTreeRowAddPayload,
   UiLogicTreeRowEditPayload,
@@ -558,20 +198,8 @@ import {
   onBeforeUnmount,
   ref,
 } from 'vue'
-import {
-  RemoteDragHandle,
-  RemoteSortableContainer,
-  RemoteSortableItem,
-} from '@omnicajs/vue-remote/remote'
+import { RemoteSortableContainer, RemoteSortableItem } from '@omnicajs/vue-remote/remote'
 import { watch } from 'vue'
-
-import IconAdd from '~assets/sprites/actions/add.svg'
-import IconAddSquareOutlined from '~assets/sprites/actions/add-square-outlined.svg'
-import IconCaretDown from '~assets/sprites/arrows/caret-down.svg'
-import IconDeleteOutlined from '~assets/sprites/ui/delete-outlined.svg'
-import IconDrag from '~assets/sprites/actions/drag.svg'
-import IconFolderOutlined from '~assets/sprites/files/folder-outlined.svg'
-import IconMoreHorizontal from '~assets/sprites/ui/more-horizontal.svg'
 
 import {
   LogicTreeActionKind,
@@ -587,16 +215,14 @@ import {
 import _i18n from '@/host/components/logic-tree/i18n'
 
 import { I18nInjectKey } from '@/host/i18n/plugin'
-import { UiButton } from '@/remote/components/button'
-import { UiPopperConnector } from '@/remote/components/popper'
-import { UiSelect, UiSelectOption } from '@/remote/components/select'
-import { UiTextbox } from '@/remote/components/textbox'
-import { UiTooltip } from '@/remote/components/tooltip'
 
 import { UiLogicTreeRoot, UiLogicTreeRow } from './parts'
 
 type FlattenedRow = {
   conjunction: UiLogicTreeNode['conjunction'];
+  conjunctionEndPathKey: string | undefined;
+  conjunctionOffset: number | undefined;
+  conjunctionStartPathKey: string | undefined;
   connectors: UiLogicTreeConnector[];
   expanded: boolean;
   groupedPosition: '' | 'end' | 'middle' | 'single' | 'start';
@@ -629,7 +255,11 @@ const props = defineProps({
 })
 
 defineSlots<{
-  'row-content'?: (props: UiLogicTreeRowSlotProps) => unknown;
+  'row-actions'?: (props: UiLogicTreeRowSlotProps) => unknown;
+  'row-edit'?: (props: UiLogicTreeRowSlotProps) => unknown;
+  'row-prefix'?: (props: UiLogicTreeRowSlotProps) => unknown;
+  'row-summary'?: (props: UiLogicTreeRowSlotProps) => unknown;
+  'row-trailing'?: (props: UiLogicTreeRowSlotProps) => unknown;
 }>()
 
 const emit = defineEmits<{
@@ -646,8 +276,6 @@ const emit = defineEmits<{
 }>()
 
 const i18n = computed((): I18nLocalized => _i18n.init(inject(I18nInjectKey, null)?.locale ?? _i18n.fallback))
-
-const deleteText = computed(() => i18n.value.t('delete'))
 
 const resolveConjunctionLabel = (conjunction: UiLogicTreeNode['conjunction']): string => {
   if (conjunction === LogicTreeConjunction.AND) {
@@ -688,6 +316,195 @@ const resolveConjunctionTone = (
   return fallback
 }
 
+const DEFAULT_ROW_GAP = 16
+
+const resolveRowConjunction = (
+  node: UiLogicTreeNode,
+  index: number,
+  isGroupedSectionRow: boolean
+): UiLogicTreeNode['conjunction'] => {
+  if (index === 0 || isGroupedSectionRow || !isConjunctionContentNode(node)) {
+    return ''
+  }
+
+  return node.conjunction ?? ''
+}
+
+const resolveConjunctionOffset = (conjunction: UiLogicTreeNode['conjunction']): number | undefined => {
+  if (!conjunction) {
+    return undefined
+  }
+
+  return -(DEFAULT_ROW_GAP / 2)
+}
+
+const resolveSubtreeEndPathKey = (source: FlattenedRow[], rowIndex: number): string => {
+  const row = source[rowIndex]
+  const rowPathKey = pathToKey(row.path)
+  const subtreePrefix = `${rowPathKey}.`
+  let endIndex = rowIndex
+
+  for (let index = rowIndex + 1; index < source.length; index += 1) {
+    const candidatePathKey = pathToKey(source[index].path)
+
+    if (candidatePathKey.startsWith(subtreePrefix)) {
+      endIndex = index
+      continue
+    }
+
+    break
+  }
+
+  return pathToKey(source[endIndex].path)
+}
+
+const resolveConjunctionRangeEndPathKey = (
+  source: FlattenedRow[],
+  rowIndex: number
+): string | undefined => {
+  const row = source[rowIndex]
+  const siblingIndex = row.path.at(-1)
+
+  if (siblingIndex === undefined) {
+    return undefined
+  }
+
+  let lastSiblingRowIndex = rowIndex
+
+  source.forEach((candidate, candidateIndex) => {
+    const candidateSiblingIndex = candidate.path.at(-1)
+
+    if (
+      candidate.path.length === row.path.length
+      && candidateSiblingIndex !== undefined
+      && candidateSiblingIndex >= siblingIndex
+      && candidate.parentPath.length === row.parentPath.length
+      && candidate.parentPath.every((segment, index) => segment === row.parentPath[index])
+    ) {
+      lastSiblingRowIndex = candidateIndex
+    }
+  })
+
+  return resolveSubtreeEndPathKey(source, lastSiblingRowIndex)
+}
+
+const applyConjunctionToneToConnectors = (
+  connectors: UiLogicTreeConnector[],
+  conjunction: UiLogicTreeNode['conjunction'],
+  conjunctionTone: LogicTreeTone
+): UiLogicTreeConnector[] => {
+  if (!conjunction || connectors.length === 0) {
+    return connectors
+  }
+
+  return connectors.map((connector, connectorIndex, source) => (
+    connectorIndex === source.length - 1
+      ? {
+        ...connector,
+        tone: conjunctionTone,
+      }
+      : connector
+  ))
+}
+
+const setConnectorToneAtIndex = (
+  row: FlattenedRow,
+  connectorIndex: number,
+  tone: LogicTreeTone
+): FlattenedRow => {
+  if (!row.connectors[connectorIndex]) {
+    return row
+  }
+
+  return {
+    ...row,
+    connectors: row.connectors.map((connector, index) => (
+      index === connectorIndex
+        ? {
+          ...connector,
+          tone,
+        }
+        : connector
+    )),
+  }
+}
+
+const applyConjunctionBranchTones = (source: FlattenedRow[]): FlattenedRow[] => {
+  const rows = source.map((row) => ({
+    ...row,
+    connectors: row.connectors.map((connector) => ({ ...connector })),
+  }))
+
+  const samePath = (left: number[], right: number[]) => (
+    left.length === right.length
+    && left.every((segment, index) => segment === right[index])
+  )
+
+  const recolorSubtree = (path: number[], connectorIndex: number, tone: LogicTreeTone) => {
+    const rowPathKey = pathToKey(path)
+    const subtreePrefix = `${rowPathKey}.`
+
+    rows.forEach((candidate, index) => {
+      const candidatePathKey = pathToKey(candidate.path)
+
+      if (candidatePathKey === rowPathKey || candidatePathKey.startsWith(subtreePrefix)) {
+        rows[index] = setConnectorToneAtIndex(candidate, connectorIndex, tone)
+      }
+    })
+  }
+
+  rows.forEach((row) => {
+    if (!row.conjunction) {
+      return
+    }
+
+    const connectorIndex = Math.max(0, row.connectors.length - 1)
+    const siblingIndex = row.path.at(-1)
+
+    if (siblingIndex !== undefined && siblingIndex > 0) {
+      const previousSiblingPath = [...row.parentPath, siblingIndex - 1]
+
+      recolorSubtree(previousSiblingPath, connectorIndex, row.conjunctionTone)
+    }
+
+    rows.forEach((candidate) => {
+      const candidateSiblingIndex = candidate.path.at(-1)
+
+      if (
+        !samePath(candidate.parentPath, row.parentPath)
+        || candidate.path.length !== row.path.length
+        || candidateSiblingIndex === undefined
+        || siblingIndex === undefined
+        || candidateSiblingIndex < siblingIndex
+      ) {
+        return
+      }
+
+      recolorSubtree(candidate.path, connectorIndex, row.conjunctionTone)
+    })
+  })
+
+  return rows
+}
+
+const applyConjunctionRanges = (source: FlattenedRow[]): FlattenedRow[] => source.map((row, rowIndex) => {
+  if (!row.conjunction) {
+    return row
+  }
+
+  const siblingIndex = row.path.at(-1)
+
+  if (siblingIndex === undefined || siblingIndex === 0) {
+    return row
+  }
+
+  return {
+    ...row,
+    conjunctionEndPathKey: resolveConjunctionRangeEndPathKey(source, rowIndex),
+    conjunctionStartPathKey: pathToKey([...row.parentPath, siblingIndex - 1]),
+  }
+})
+
 const pathToKey = (path: number[]): string => path.join('.')
 
 const cloneNodes = (nodes: UiLogicTreeNode[]): UiLogicTreeNode[] => nodes.map((node) => ({
@@ -715,11 +532,45 @@ const isConjunctionContentNode = (node: UiLogicTreeNode): boolean => (
   && node.kind !== LogicTreeNodeKind.BRANCH
 )
 
+const shouldAssignConditionConjunction = (
+  branch: UiLogicTreeNode[],
+  insertionIndex: number
+): boolean => {
+  const hasPreviousContentSibling = branch
+    .slice(0, insertionIndex)
+    .some((node) => isConjunctionContentNode(node))
+
+  if (!hasPreviousContentSibling) {
+    return false
+  }
+
+  const hasExistingConjunction = branch.some((node) => (
+    isConjunctionContentNode(node)
+    && Boolean(node.conjunction)
+  ))
+
+  return !hasExistingConjunction
+}
+
+const hasEditableContent = (node: UiLogicTreeNode): boolean => (
+  Boolean(node.row.controls?.length)
+)
+
+const canSetRowEditable = (row: FlattenedRow): boolean => (
+  resolveConfiguredRowView(row.node) !== LogicTreeRowView.ACTIONS
+  && hasEditableContent(row.node)
+)
+
 const isRowEditing = (row: FlattenedRow): boolean => (
-  Boolean(row.node.row.editable)
+  canSetRowEditable(row)
+  && Boolean(row.node.row.editable)
 )
 
 const setRowEditable = (row: FlattenedRow, value: boolean) => {
+  if (!canSetRowEditable(row)) {
+    return
+  }
+
   withItemsMutation((nextItems) => {
     setEditableState(nextItems, value ? row.path : null)
   })
@@ -734,6 +585,24 @@ const resolveRowView = (row: FlattenedRow): LogicTreeRowView => {
 
   return configuredRowView
 }
+
+const resolveContentSlotName = (row: FlattenedRow): 'row-actions' | 'row-edit' | 'row-summary' => {
+  if (resolveRowView(row) === LogicTreeRowView.ACTIONS) {
+    return 'row-actions'
+  }
+
+  if (isRowEditing(row)) {
+    return 'row-edit'
+  }
+
+  return 'row-summary'
+}
+
+const resolveContentPlaceholderClass = (row: FlattenedRow) => ({
+  'ui-v1-logic-tree__slot-placeholder': true,
+  'ui-v1-logic-tree__slot-placeholder_actions': resolveContentSlotName(row) === 'row-actions',
+  'ui-v1-logic-tree__slot-placeholder_editor': resolveContentSlotName(row) === 'row-edit',
+})
 
 watch(() => props.items, (items) => {
   itemsState.value = cloneNodes(items ?? [])
@@ -765,7 +634,7 @@ const nextId = (prefix: string): string => {
   return `${prefix}-${uid}`
 }
 
-const createActionRow = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeNode => ({
+const createActionRow = (tone: LogicTreeTone): UiLogicTreeNode => ({
   id: nextId('actions'),
   kind: LogicTreeNodeKind.CONDITION,
   row: {
@@ -781,7 +650,6 @@ const createActionRow = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeN
         label: 'Группа',
       },
     ],
-    contentSlot,
     editable: false,
     title: 'Добавить в ветку',
     view: LogicTreeRowView.ACTIONS,
@@ -789,7 +657,7 @@ const createActionRow = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeN
   tone,
 })
 
-const createConditionNode = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeNode => ({
+const createConditionNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
   id: nextId('condition'),
   kind: LogicTreeNodeKind.CONDITION,
   row: {
@@ -833,7 +701,6 @@ const createConditionNode = (tone: LogicTreeTone, contentSlot = false): UiLogicT
         label: 'Дополнительно',
       },
     ],
-    contentSlot,
     draggable: true,
     editable: false,
     removable: true,
@@ -843,9 +710,9 @@ const createConditionNode = (tone: LogicTreeTone, contentSlot = false): UiLogicT
   tone,
 })
 
-const createGroupNode = (tone: LogicTreeTone, contentSlot = false): UiLogicTreeNode => ({
+const createGroupNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
   children: [
-    createActionRow(tone, contentSlot),
+    createActionRow(tone),
   ],
   collapsible: true,
   expanded: true,
@@ -973,13 +840,11 @@ const flatten = (
   const shouldPreserveChildLevel = node.kind === LogicTreeNodeKind.BRANCH && ancestors.length === 0
   const descendsIntoChildren = hasChildren && expanded
   const isGroupedSectionRow = Boolean(currentSectionKey)
-  const conjunction = !isGroupedSectionRow && isConjunctionContentNode(node)
-    ? node.conjunction ?? ''
-    : ''
+  const conjunction = resolveRowConjunction(node, index, isGroupedSectionRow)
   const connectorTone = parentTone ?? fallbackTone(node)
   const conjunctionTone = resolveConjunctionTone(conjunction, connectorTone)
   const connectorContinues = !isLast || descendsIntoChildren
-  const connectors = [
+  const connectors = applyConjunctionToneToConnectors([
     ...ancestors,
     ...(parentTone
       ? [{
@@ -991,10 +856,14 @@ const flatten = (
   ].map((connector, connectorIndex, source) => ({
     ...connector,
     placeholder: isGroupedSectionRow && connectorIndex === source.length - 1,
-  }))
+  })), conjunction, conjunctionTone)
+  const conjunctionOffset = resolveConjunctionOffset(conjunction)
 
   const rows: FlattenedRow[] = [{
     conjunction,
+    conjunctionEndPathKey: undefined,
+    conjunctionOffset,
+    conjunctionStartPathKey: undefined,
     connectors,
     expanded,
     groupedPosition: '',
@@ -1036,7 +905,7 @@ const flatten = (
   return rows
 })
 
-const rows = computed(() => flatten(itemsState.value))
+const rows = computed(() => applyConjunctionRanges(applyConjunctionBranchTones(flatten(itemsState.value))))
 
 const rowsWithGrouping = computed<FlattenedRow[]>(() => rows.value.map((row, index, source) => {
   if (!row.sectionKey) {
@@ -1101,66 +970,6 @@ const renderEntries = computed<RenderEntry[]>(() => {
   return nextEntries
 })
 
-const resolveControlValue = (control: UiLogicTreeControl): string | number | null => (
-  control.value ?? null
-)
-
-const resolveWidth = (width?: number | string) => {
-  if (width === undefined) {
-    return undefined
-  }
-
-  return {
-    width: typeof width === 'number' ? `${width}px` : width,
-  }
-}
-
-const resolveOptions = (control: UiLogicTreeControl): UiLogicTreeOption[] => {
-  if (control.options?.length) {
-    return control.options
-  }
-
-  const value = resolveControlValue(control)
-
-  if (value === null || value === undefined) {
-    return []
-  }
-
-  return [{
-    id: `${control.id}-option`,
-    label: String(value),
-    value,
-  }]
-}
-
-const resolveIcon = (icon?: LogicTreeIcon) => {
-  if (icon === LogicTreeIcon.FOLDER) {
-    return IconFolderOutlined
-  }
-
-  if (icon === LogicTreeIcon.MORE) {
-    return IconMoreHorizontal
-  }
-
-  return IconAddSquareOutlined
-}
-
-const resolveRowIcon = (icon?: LogicTreeIcon) => {
-  if (icon === LogicTreeIcon.FOLDER) {
-    return IconFolderOutlined
-  }
-
-  return resolveIcon(icon)
-}
-
-const resolveInlineContent = (node: UiLogicTreeNode): UiLogicTreeInlineText[] => {
-  return node.row.inline ?? []
-}
-
-const resolveRowInlineContent = (node: UiLogicTreeNode): UiLogicTreeInlineText[] => {
-  return resolveInlineContent(node)
-}
-
 const isRowDraggable = (node: UiLogicTreeNode): boolean => (
   Boolean(node.row.draggable)
   && resolveConfiguredRowView(node) !== LogicTreeRowView.ACTIONS
@@ -1188,6 +997,12 @@ const resolveRowSlotProps = (row: FlattenedRow): UiLogicTreeRowSlotProps => ({
   node: row.node,
   onAction: (action: UiLogicTreeAction) => {
     onAction(row, action)
+  },
+  onControlAction: (controlId: string) => {
+    emit('control-action', {
+      controlId,
+      nodeId: row.node.id,
+    })
   },
   onControlUpdate: (controlId: string, value: string | number) => {
     onControlUpdate(row.path, controlId, value)
@@ -1295,10 +1110,16 @@ const onAction = (row: FlattenedRow, action: UiLogicTreeAction) => {
     }
 
     const tone = row.node.tone ?? LogicTreeTone.BLUE
-    const contentSlot = Boolean(row.node.row.contentSlot)
     const nextNode = action.kind === LogicTreeActionKind.GROUP
-      ? createGroupNode(tone, contentSlot)
-      : createConditionNode(tone, contentSlot)
+      ? createGroupNode(tone)
+      : createConditionNode(tone)
+
+    if (
+      action.kind === LogicTreeActionKind.CONDITION
+      && shouldAssignConditionConjunction(branch, actionIndex)
+    ) {
+      nextNode.conjunction = LogicTreeConjunction.AND
+    }
 
     branch.splice(actionIndex, 0, nextNode)
 
@@ -1332,21 +1153,13 @@ const onRowClick = (row: FlattenedRow) => {
     return
   }
 
-  activePathKey.value = pathToKey(row.path)
-}
-
-const onSlotRowClick = (row: FlattenedRow, event: MouseEvent) => {
-  const target = event.target as HTMLElement | null
-
-  if (
-    target?.closest(
-      'button, input, select, textarea, [role="button"], [role="option"], [data-skip-row-click="true"]'
-    )
-  ) {
-    return
+  if (!canSetRowEditable(row)) {
+    withItemsMutation((nextItems) => {
+      setEditableState(nextItems, null)
+    })
   }
 
-  onRowClick(row)
+  activePathKey.value = pathToKey(row.path)
 }
 
 const onOutsideClick = () => {
