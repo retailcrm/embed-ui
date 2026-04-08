@@ -128,18 +128,14 @@ export type UiLogicTreeDropPayload = {
 
 export type UiLogicTreeRowAddPayload = {
   actionId: string;
-  item: UiLogicTreeNode;
   kind: Exclude<UiLogicTreeNode['kind'], LogicTreeNodeKind.BRANCH>;
-  nodeId: string;
   parentNodeId: string | null;
   parentPathKey: string | null;
-  pathKey: string;
   triggerNodeId: string;
 }
 
 export type UiLogicTreeRowEditPayload = {
   controlId: string;
-  item: UiLogicTreeNode;
   nodeId: string;
   pathKey: string;
   previousValue: string | number | null;
@@ -148,7 +144,6 @@ export type UiLogicTreeRowEditPayload = {
 
 export type UiLogicTreeRowRemovePayload = {
   index: number;
-  item: UiLogicTreeNode;
   nodeId: string;
   parentNodeId: string | null;
   parentPathKey: string | null;

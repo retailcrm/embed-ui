@@ -51,7 +51,20 @@
                         </template>
 
                         <template #content>
-                            <div class="ui-v1-logic-tree__slot-content">
+                            <div
+                                v-if="resolveRowView(row) === LogicTreeRowView.ACTIONS"
+                                class="ui-v1-logic-tree__slot-content ui-v1-logic-tree__slot-content_actions"
+                            >
+                                <slot
+                                    name="row-actions"
+                                    v-bind="resolveRowSlotProps(row)"
+                                />
+                            </div>
+
+                            <div
+                                v-else
+                                class="ui-v1-logic-tree__slot-content"
+                            >
                                 <slot
                                     :name="resolveContentSlotName(row)"
                                     v-bind="resolveRowSlotProps(row)"
@@ -102,7 +115,20 @@
                     </template>
 
                     <template #content>
-                        <div class="ui-v1-logic-tree__slot-content">
+                        <div
+                            v-if="resolveRowView(row) === LogicTreeRowView.ACTIONS"
+                            class="ui-v1-logic-tree__slot-content ui-v1-logic-tree__slot-content_actions"
+                        >
+                            <slot
+                                name="row-actions"
+                                v-bind="resolveRowSlotProps(row)"
+                            />
+                        </div>
+
+                        <div
+                            v-else
+                            class="ui-v1-logic-tree__slot-content"
+                        >
                             <slot
                                 :name="resolveContentSlotName(row)"
                                 v-bind="resolveRowSlotProps(row)"
@@ -152,7 +178,20 @@
                 </template>
 
                 <template #content>
-                    <div class="ui-v1-logic-tree__slot-content">
+                    <div
+                        v-if="resolveRowView(entry.row) === LogicTreeRowView.ACTIONS"
+                        class="ui-v1-logic-tree__slot-content ui-v1-logic-tree__slot-content_actions"
+                    >
+                        <slot
+                            name="row-actions"
+                            v-bind="resolveRowSlotProps(entry.row)"
+                        />
+                    </div>
+
+                    <div
+                        v-else
+                        class="ui-v1-logic-tree__slot-content"
+                    >
                         <slot
                             :name="resolveContentSlotName(entry.row)"
                             v-bind="resolveRowSlotProps(entry.row)"
@@ -192,12 +231,7 @@ import type {
   UiLogicTreeRowSlotProps,
 } from '@/common/components/logic-tree'
 
-import {
-  computed,
-  inject,
-  onBeforeUnmount,
-  ref,
-} from 'vue'
+import { computed, inject, ref } from 'vue'
 import { RemoteSortableContainer, RemoteSortableItem } from '@omnicajs/vue-remote/remote'
 import { watch } from 'vue'
 
@@ -205,8 +239,6 @@ import {
   LogicTreeActionKind,
   LogicTreeChildrenView,
   LogicTreeConjunction,
-  LogicTreeControlKind,
-  LogicTreeIcon,
   LogicTreeNodeKind,
   LogicTreeRowView,
   LogicTreeTone,
@@ -290,9 +322,6 @@ const resolveConjunctionLabel = (conjunction: UiLogicTreeNode['conjunction']): s
 }
 const itemsState = ref<UiLogicTreeNode[]>([])
 const activePathKey = ref('')
-
-let uid = 0
-let controlUpdateTimer: ReturnType<typeof setTimeout> | null = null
 
 const fallbackTone = (node: UiLogicTreeNode): LogicTreeTone => (
   node.tone
@@ -435,21 +464,22 @@ const applyConjunctionBranchTones = (source: FlattenedRow[]): FlattenedRow[] => 
     connectors: row.connectors.map((connector) => ({ ...connector })),
   }))
 
-  const samePath = (left: number[], right: number[]) => (
-    left.length === right.length
-    && left.every((segment, index) => segment === right[index])
+  const startsWithPath = (path: number[], prefix: number[]) => (
+    prefix.length <= path.length
+    && prefix.every((segment, index) => path[index] === segment)
   )
 
-  const recolorSubtree = (path: number[], connectorIndex: number, tone: LogicTreeTone) => {
-    const rowPathKey = pathToKey(path)
-    const subtreePrefix = `${rowPathKey}.`
-
+  const recolorBranchLevel = (parentPath: number[], connectorIndex: number, tone: LogicTreeTone) => {
     rows.forEach((candidate, index) => {
-      const candidatePathKey = pathToKey(candidate.path)
-
-      if (candidatePathKey === rowPathKey || candidatePathKey.startsWith(subtreePrefix)) {
-        rows[index] = setConnectorToneAtIndex(candidate, connectorIndex, tone)
+      if (!startsWithPath(candidate.path, parentPath)) {
+        return
       }
+
+      if (!candidate.connectors[connectorIndex]) {
+        return
+      }
+
+      rows[index] = setConnectorToneAtIndex(candidate, connectorIndex, tone)
     })
   }
 
@@ -459,29 +489,8 @@ const applyConjunctionBranchTones = (source: FlattenedRow[]): FlattenedRow[] => 
     }
 
     const connectorIndex = Math.max(0, row.connectors.length - 1)
-    const siblingIndex = row.path.at(-1)
 
-    if (siblingIndex !== undefined && siblingIndex > 0) {
-      const previousSiblingPath = [...row.parentPath, siblingIndex - 1]
-
-      recolorSubtree(previousSiblingPath, connectorIndex, row.conjunctionTone)
-    }
-
-    rows.forEach((candidate) => {
-      const candidateSiblingIndex = candidate.path.at(-1)
-
-      if (
-        !samePath(candidate.parentPath, row.parentPath)
-        || candidate.path.length !== row.path.length
-        || candidateSiblingIndex === undefined
-        || siblingIndex === undefined
-        || candidateSiblingIndex < siblingIndex
-      ) {
-        return
-      }
-
-      recolorSubtree(candidate.path, connectorIndex, row.conjunctionTone)
-    })
+    recolorBranchLevel(row.parentPath, connectorIndex, row.conjunctionTone)
   })
 
   return rows
@@ -521,8 +530,6 @@ const cloneNodes = (nodes: UiLogicTreeNode[]): UiLogicTreeNode[] => nodes.map((n
   },
 }))
 
-const cloneNode = (node: UiLogicTreeNode): UiLogicTreeNode => cloneNodes([node])[0]
-
 const resolveConfiguredRowView = (node: UiLogicTreeNode): LogicTreeRowView => (
   node.row.view
 )
@@ -531,26 +538,6 @@ const isConjunctionContentNode = (node: UiLogicTreeNode): boolean => (
   resolveConfiguredRowView(node) !== LogicTreeRowView.ACTIONS
   && node.kind !== LogicTreeNodeKind.BRANCH
 )
-
-const shouldAssignConditionConjunction = (
-  branch: UiLogicTreeNode[],
-  insertionIndex: number
-): boolean => {
-  const hasPreviousContentSibling = branch
-    .slice(0, insertionIndex)
-    .some((node) => isConjunctionContentNode(node))
-
-  if (!hasPreviousContentSibling) {
-    return false
-  }
-
-  const hasExistingConjunction = branch.some((node) => (
-    isConjunctionContentNode(node)
-    && Boolean(node.conjunction)
-  ))
-
-  return !hasExistingConjunction
-}
 
 const hasEditableContent = (node: UiLogicTreeNode): boolean => (
   Boolean(node.row.controls?.length)
@@ -616,130 +603,6 @@ const withItemsMutation = (mutator: (items: UiLogicTreeNode[]) => void) => {
   itemsState.value = nextItems
   emit('update:items', cloneNodes(itemsState.value))
 }
-
-const scheduleItemsUpdate = () => {
-  if (controlUpdateTimer) {
-    clearTimeout(controlUpdateTimer)
-  }
-
-  controlUpdateTimer = setTimeout(() => {
-    controlUpdateTimer = null
-    emit('update:items', cloneNodes(itemsState.value))
-  }, 80)
-}
-
-const nextId = (prefix: string): string => {
-  uid += 1
-
-  return `${prefix}-${uid}`
-}
-
-const createActionRow = (tone: LogicTreeTone): UiLogicTreeNode => ({
-  id: nextId('actions'),
-  kind: LogicTreeNodeKind.CONDITION,
-  row: {
-    actions: [
-      {
-        id: nextId('add-condition'),
-        kind: LogicTreeActionKind.CONDITION,
-        label: 'Условие',
-      },
-      {
-        id: nextId('add-group'),
-        kind: LogicTreeActionKind.GROUP,
-        label: 'Группа',
-      },
-    ],
-    editable: false,
-    title: 'Добавить в ветку',
-    view: LogicTreeRowView.ACTIONS,
-  },
-  tone,
-})
-
-const createConditionNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
-  id: nextId('condition'),
-  kind: LogicTreeNodeKind.CONDITION,
-  row: {
-    controls: [
-      {
-        id: nextId('field'),
-        kind: LogicTreeControlKind.SELECT,
-        label: 'Поле',
-        options: [
-          { id: nextId('field-option'), label: 'Тип доставки', value: 'Тип доставки' },
-          { id: nextId('field-option'), label: 'Заказ клиента', value: 'Заказ клиента' },
-          { id: nextId('field-option'), label: 'Список обращений', value: 'Список обращений' },
-        ],
-        value: 'Тип доставки',
-        width: 198,
-      },
-      {
-        id: nextId('operator'),
-        kind: LogicTreeControlKind.SELECT,
-        label: 'Оператор',
-        options: [
-          { id: nextId('operator-option'), label: 'Равно', value: 'Равно' },
-          { id: nextId('operator-option'), label: 'Не равно', value: 'Не равно' },
-          { id: nextId('operator-option'), label: 'Есть такие', value: 'Есть такие' },
-        ],
-        value: 'Равно',
-        width: 110,
-      },
-      {
-        id: nextId('value'),
-        kind: LogicTreeControlKind.INPUT,
-        label: 'Значение',
-        placeholder: 'Введите значение',
-        value: '',
-        width: 198,
-      },
-      {
-        icon: LogicTreeIcon.MORE,
-        id: nextId('menu'),
-        kind: LogicTreeControlKind.ICON,
-        label: 'Дополнительно',
-      },
-    ],
-    draggable: true,
-    editable: false,
-    removable: true,
-    title: 'Новое условие',
-    view: LogicTreeRowView.SUMMARY,
-  },
-  tone,
-})
-
-const createGroupNode = (tone: LogicTreeTone): UiLogicTreeNode => ({
-  children: [
-    createActionRow(tone),
-  ],
-  collapsible: true,
-  expanded: true,
-  id: nextId('group'),
-  kind: LogicTreeNodeKind.GROUP,
-  row: {
-    draggable: true,
-    editable: false,
-    inline: [
-      {
-        id: nextId('group-subtitle'),
-        text: 'Последовательное применение',
-        tone,
-      },
-      {
-        id: nextId('group-meta'),
-        separated: true,
-        text: 'Новая ветка',
-        tone: 'muted',
-      },
-    ],
-    removable: true,
-    title: 'Новая группа',
-    view: LogicTreeRowView.SUMMARY,
-  },
-  tone,
-})
 
 const getBranchAtPath = (
   nodes: UiLogicTreeNode[],
@@ -811,19 +674,6 @@ const resolveParentMeta = (nodes: UiLogicTreeNode[], path: number[]) => {
     parentPath,
     parentPathKey: parentPath.length > 0 ? pathToKey(parentPath) : null,
   }
-}
-
-const removeNodeAtPath = (nodes: UiLogicTreeNode[], path: number[]): UiLogicTreeNode | null => {
-  const branch = getBranchAtPath(nodes, path.slice(0, -1))
-  const index = path.at(-1)
-
-  if (!branch || index === undefined) {
-    return null
-  }
-
-  const [removedNode] = branch.splice(index, 1)
-
-  return removedNode ?? null
 }
 
 const flatten = (
@@ -1025,12 +875,8 @@ const onControlUpdate = (path: number[], controlId: string, value: string | numb
   const previousValue = currentControl?.value ?? null
 
   if (currentControl && currentNode) {
-    currentControl.value = value
-    scheduleItemsUpdate()
-
     emit('row:edit', {
       controlId,
-      item: cloneNode(currentNode),
       nodeId: currentNode.id,
       pathKey: pathToKey(path),
       previousValue,
@@ -1064,31 +910,21 @@ const onToggle = (row: FlattenedRow) => {
 
 const onRemove = (path: number[], nodeId: string) => {
   const pathKey = pathToKey(path)
-  let rowRemovePayload: UiLogicTreeRowRemovePayload | null = null
-
-  withItemsMutation((nextItems) => {
-    const index = path.at(-1)
-    const { parentNode, parentPathKey } = resolveParentMeta(nextItems, path)
-    const removedNode = removeNodeAtPath(nextItems, path)
-
-    if (removedNode && index !== undefined) {
-      rowRemovePayload = {
-        index,
-        item: cloneNode(removedNode),
-        nodeId: removedNode.id,
-        parentNodeId: parentNode?.id ?? null,
-        parentPathKey,
-        pathKey,
-      }
-    }
-  })
+  const index = path.at(-1)
+  const { parentNode, parentPathKey } = resolveParentMeta(itemsState.value, path)
 
   if (activePathKey.value === pathKey) {
     activePathKey.value = ''
   }
 
-  if (rowRemovePayload) {
-    emit('row:remove', rowRemovePayload)
+  if (index !== undefined) {
+    emit('row:remove', {
+      index,
+      nodeId,
+      parentNodeId: parentNode?.id ?? null,
+      parentPathKey,
+      pathKey,
+    })
   }
 
   emit('remove', nodeId)
@@ -1099,48 +935,17 @@ const onAction = (row: FlattenedRow, action: UiLogicTreeAction) => {
     return
   }
 
-  let rowAddPayload: UiLogicTreeRowAddPayload | null = null
+  const { parentNode, parentPathKey } = resolveParentMeta(itemsState.value, row.path)
 
-  withItemsMutation((nextItems) => {
-    const branch = getBranchAtPath(nextItems, row.parentPath)
-    const actionIndex = row.path.at(-1)
-
-    if (!branch || actionIndex === undefined) {
-      return
-    }
-
-    const tone = row.node.tone ?? LogicTreeTone.BLUE
-    const nextNode = action.kind === LogicTreeActionKind.GROUP
-      ? createGroupNode(tone)
-      : createConditionNode(tone)
-
-    if (
-      action.kind === LogicTreeActionKind.CONDITION
-      && shouldAssignConditionConjunction(branch, actionIndex)
-    ) {
-      nextNode.conjunction = LogicTreeConjunction.AND
-    }
-
-    branch.splice(actionIndex, 0, nextNode)
-
-    const nextPath = [...row.parentPath, actionIndex]
-    const { parentNode, parentPathKey } = resolveParentMeta(nextItems, nextPath)
-
-    rowAddPayload = {
-      actionId: action.id,
-      item: cloneNode(nextNode),
-      kind: nextNode.kind as UiLogicTreeRowAddPayload['kind'],
-      nodeId: nextNode.id,
-      parentNodeId: parentNode?.id ?? null,
-      parentPathKey,
-      pathKey: pathToKey(nextPath),
-      triggerNodeId: row.node.id,
-    }
+  emit('row:add', {
+    actionId: action.id,
+    kind: action.kind === LogicTreeActionKind.GROUP
+      ? LogicTreeNodeKind.GROUP
+      : LogicTreeNodeKind.CONDITION,
+    parentNodeId: parentNode?.id ?? null,
+    parentPathKey,
+    triggerNodeId: row.node.id,
   })
-
-  if (rowAddPayload) {
-    emit('row:add', rowAddPayload)
-  }
 
   emit('action', {
     actionId: action.id,
@@ -1236,12 +1041,5 @@ const onGroupedDrop = (event: RemoteSortableEvent) => {
 
   emit('drop', payload)
 }
-
-onBeforeUnmount(() => {
-  if (controlUpdateTimer) {
-    clearTimeout(controlUpdateTimer)
-    controlUpdateTimer = null
-  }
-})
 
 </script>
