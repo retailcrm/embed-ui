@@ -261,7 +261,22 @@ const conjunctionKind = computed(() => {
 })
 
 const rowRef = ref<HTMLElement | null>(null)
-const conjunctionCalculatedOffset = ref<number | undefined>(props.conjunctionOffset)
+const conjunctionCalculatedOffset = ref<number | undefined>(
+  props.conjunction && props.conjunctionStartPathKey && props.conjunctionEndPathKey
+    ? undefined
+    : props.conjunctionOffset
+)
+
+const resolveRelationElement = (root: HTMLElement, pathKey: string): HTMLElement | null => (
+  root.querySelector<HTMLElement>(`[data-path-key="${pathKey}"]`)
+  ?? root.querySelector<HTMLElement>(`[data-row-path-key="${pathKey}"]`)
+)
+
+const resolveRelationAnchor = (element: HTMLElement): number => {
+  const rect = element.getBoundingClientRect()
+
+  return rect.top + (rect.height / 2)
+}
 
 const recalculateConjunctionOffset = async () => {
   if (!props.conjunction || !props.conjunctionStartPathKey || !props.conjunctionEndPathKey) {
@@ -279,8 +294,8 @@ const recalculateConjunctionOffset = async () => {
     return
   }
 
-  const startRow = root.querySelector<HTMLElement>(`[data-row-path-key="${props.conjunctionStartPathKey}"]`)
-  const endRow = root.querySelector<HTMLElement>(`[data-row-path-key="${props.conjunctionEndPathKey}"]`)
+  const startRow = resolveRelationElement(root, props.conjunctionStartPathKey)
+  const endRow = resolveRelationElement(root, props.conjunctionEndPathKey)
 
   if (!startRow || !endRow) {
     conjunctionCalculatedOffset.value = props.conjunctionOffset
@@ -288,10 +303,10 @@ const recalculateConjunctionOffset = async () => {
   }
 
   const currentTop = currentRow.getBoundingClientRect().top
-  const startTop = startRow.getBoundingClientRect().top
-  const endBottom = endRow.getBoundingClientRect().bottom
+  const startAnchor = resolveRelationAnchor(startRow)
+  const endAnchor = resolveRelationAnchor(endRow)
 
-  conjunctionCalculatedOffset.value = ((startTop + endBottom) / 2) - currentTop
+  conjunctionCalculatedOffset.value = ((startAnchor + endAnchor) / 2) - currentTop
 }
 
 const onResize = () => {
@@ -312,14 +327,19 @@ onBeforeUnmount(() => {
 })
 
 const conjunctionBadgeStyle = computed(() => (
-  conjunctionCalculatedOffset.value === undefined
+  props.conjunction && props.conjunctionStartPathKey && props.conjunctionEndPathKey && conjunctionCalculatedOffset.value === undefined
     ? {
       left: `${Math.max(0, (props.connectors.length - 1) * 32 + 8)}px`,
+      visibility: 'hidden',
     }
-    : {
-      left: `${Math.max(0, (props.connectors.length - 1) * 32 + 8)}px`,
-      top: `${conjunctionCalculatedOffset.value}px`,
-    }
+    : conjunctionCalculatedOffset.value === undefined
+      ? {
+        left: `${Math.max(0, (props.connectors.length - 1) * 32 + 8)}px`,
+      }
+      : {
+        left: `${Math.max(0, (props.connectors.length - 1) * 32 + 8)}px`,
+        top: `${conjunctionCalculatedOffset.value}px`,
+      }
 ))
 </script>
 

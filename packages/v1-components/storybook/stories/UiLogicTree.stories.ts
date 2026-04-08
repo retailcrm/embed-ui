@@ -91,6 +91,29 @@ const inputControl = (
   width,
 })
 
+const groupedItemControls = (id: string) => ([
+  selectControl(
+    `${id}-type`,
+    'Тип доставки',
+    'Тип доставки',
+    260,
+    ['Тип доставки', 'Самовывоз', 'Курьер']
+  ),
+  selectControl(
+    `${id}-operator`,
+    'Равно',
+    'Равно',
+    140,
+    ['Равно', 'Не равно']
+  ),
+  inputControl(
+    `${id}-value`,
+    'Значение',
+    '',
+    260
+  ),
+])
+
 const summaryRow = (
   title: string,
   config: Omit<UiLogicTreeRowData, 'editable' | 'title' | 'view'> = {}
@@ -185,6 +208,7 @@ const campaignTree: UiLogicTreeNode[] = [
         expanded: true,
         children: [
           conditionNode('campaign-count-item-1', summaryRow('1. Название акции #1', {
+            controls: groupedItemControls('campaign-count-item-1'),
             draggable: true,
             inline: [
               inlineText('campaign-count-item-1-meta', 'Бонусы', { tone: 'muted' }),
@@ -192,6 +216,7 @@ const campaignTree: UiLogicTreeNode[] = [
             removable: true,
           })),
           conditionNode('campaign-count-item-2', summaryRow('2. Название акции #2', {
+            controls: groupedItemControls('campaign-count-item-2'),
             draggable: true,
             inline: [
               inlineText('campaign-count-item-2-meta', 'Бонусы', { tone: 'muted' }),
@@ -199,6 +224,7 @@ const campaignTree: UiLogicTreeNode[] = [
             removable: true,
           })),
           conditionNode('campaign-count-item-3', summaryRow('3. Название акции #3', {
+            controls: groupedItemControls('campaign-count-item-3'),
             draggable: true,
             inline: [
               inlineText('campaign-count-item-3-meta', 'Бонусы', { tone: 'muted' }),
@@ -299,6 +325,7 @@ const campaignTree: UiLogicTreeNode[] = [
                 expanded: true,
                 children: [
                   conditionNode('campaign-group-3-item-1', summaryRow('1. Название акции #1', {
+                    controls: groupedItemControls('campaign-group-3-item-1'),
                     draggable: true,
                     inline: [
                       inlineText('campaign-group-3-item-1-meta', 'Бонусы', { tone: 'muted' }),
@@ -307,6 +334,7 @@ const campaignTree: UiLogicTreeNode[] = [
                   })),
 
                   conditionNode('campaign-group-3-item-2', summaryRow('2. Название акции #2', {
+                    controls: groupedItemControls('campaign-group-3-item-2'),
                     draggable: true,
                     inline: [
                       inlineText('campaign-group-3-item-2-meta', 'Бонусы', { tone: 'muted' }),
@@ -315,6 +343,7 @@ const campaignTree: UiLogicTreeNode[] = [
                   })),
 
                   conditionNode('campaign-group-3-item-3', summaryRow('3. Название акции #3', {
+                    controls: groupedItemControls('campaign-group-3-item-3'),
                     draggable: true,
                     inline: [
                       inlineText('campaign-group-3-item-3-meta', 'Бонусы', { tone: 'muted' }),
@@ -373,6 +402,136 @@ const campaignTree: UiLogicTreeNode[] = [
   }),
 ]
 
+const segmentsEditingTree: UiLogicTreeNode[] = [
+  groupNode('segments-root', summaryRow('Клиенты', {
+    inline: [
+      inlineText('segments-root-operator', 'Есть такие'),
+    ],
+  }), {
+    tone: LogicTreeTone.GREY,
+    children: [
+      groupNode('segments-order', summaryRow('Заказ клиента', {
+        inline: [
+          inlineText('segments-order-operator', 'Есть такие'),
+        ],
+      }), {
+        tone: LogicTreeTone.YELLOW,
+        children: [
+          groupNode('segments-messenger', summaryRow('Способ оформления', {
+            inline: [
+              inlineText('segments-messenger-operator', 'Равно Мессенджер'),
+            ],
+          }), {
+            tone: LogicTreeTone.BLUE,
+            conjunction: LogicTreeConjunction.OR,
+            children: [
+              conditionNode('segments-messenger-phone', summaryRow('Телефон', {
+                inline: [
+                  inlineText('segments-messenger-phone-operator', 'Есть'),
+                ],
+              }), {
+                conjunction: LogicTreeConjunction.AND,
+              }),
+              conditionNode('segments-messenger-actions', actionsRow('Добавить в сегмент', [
+                {
+                  id: 'segments-messenger-add-condition',
+                  kind: LogicTreeActionKind.CONDITION,
+                  label: 'Условие',
+                },
+                {
+                  id: 'segments-messenger-add-group',
+                  kind: LogicTreeActionKind.GROUP,
+                  label: 'Группа',
+                },
+              ])),
+            ],
+          }),
+          groupNode('segments-site', {
+            ...summaryRow('Способ оформления', {
+              controls: [
+                selectControl(
+                  'segments-site-type',
+                  'Способ оформления',
+                  'Способ оформления',
+                  252,
+                  ['Способ оформления', 'Телефон', 'Канал']
+                ),
+                selectControl(
+                  'segments-site-operator',
+                  'Равно',
+                  'Равно',
+                  160,
+                  ['Равно', 'Не равно', 'Есть такие']
+                ),
+                selectControl(
+                  'segments-site-value',
+                  'Сайт',
+                  'Сайт',
+                  252,
+                  ['Сайт', 'Мессенджер']
+                ),
+              ],
+              removable: true,
+            }),
+            editable: true,
+          }, {
+            tone: LogicTreeTone.BLUE,
+            children: [
+              conditionNode('segments-site-phone', summaryRow('Телефон', {
+                inline: [
+                  inlineText('segments-site-phone-operator', 'Есть'),
+                ],
+              }), {
+                conjunction: LogicTreeConjunction.AND,
+              }),
+              conditionNode('segments-site-actions', actionsRow('Добавить в сегмент', [
+                {
+                  id: 'segments-site-add-condition',
+                  kind: LogicTreeActionKind.CONDITION,
+                  label: 'Условие',
+                },
+                {
+                  id: 'segments-site-add-group',
+                  kind: LogicTreeActionKind.GROUP,
+                  label: 'Группа',
+                },
+              ])),
+            ],
+          }),
+          conditionNode('segments-order-actions', actionsRow('Добавить в заказ', [
+            {
+              id: 'segments-order-add-condition',
+              kind: LogicTreeActionKind.CONDITION,
+              label: 'Условие',
+            },
+            {
+              id: 'segments-order-add-group',
+              kind: LogicTreeActionKind.GROUP,
+              label: 'Группа',
+            },
+          ]), {
+            tone: LogicTreeTone.YELLOW,
+          }),
+        ],
+      }),
+      conditionNode('segments-root-actions', actionsRow('Добавить в корень', [
+        {
+          id: 'segments-root-add-condition',
+          kind: LogicTreeActionKind.CONDITION,
+          label: 'Условие',
+        },
+        {
+          id: 'segments-root-add-group',
+          kind: LogicTreeActionKind.GROUP,
+          label: 'Группа',
+        },
+      ]), {
+        tone: LogicTreeTone.GREY,
+      }),
+    ],
+  }),
+]
+
 const meta = {
   title: 'Components/UiLogicTree',
   component: UiLogicTree,
@@ -419,5 +578,11 @@ type Story = StoryObj<typeof meta>
 export const CampaignArbitrage: Story = {
   args: {
     items: campaignTree,
+  },
+}
+
+export const SegmentsEditing: Story = {
+  args: {
+    items: segmentsEditingTree,
   },
 }
