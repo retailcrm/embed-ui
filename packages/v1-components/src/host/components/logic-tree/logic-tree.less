@@ -225,9 +225,20 @@
     padding-top: 0;
   }
 
+  &__grouped-block:has(> .ui-v1-logic-tree__grouped-sortable > [data-dnd-placeholder='true']:first-child) {
+    padding-top: 0;
+  }
+
   &__grouped-block_middle {
     padding-top: 8px;
     border-radius: 0;
+  }
+
+  &__grouped-sortable:has([data-dnd-dragging='true'], [data-dnd-placeholder='true']) &__grouped-block,
+  &__grouped-sortable:has([data-dnd-dragging='true'], [data-dnd-placeholder='true']) &__surface-row-content,
+  &__grouped-sortable:has([data-dnd-dragging='true'], [data-dnd-placeholder='true']) &__actions-row,
+  &__grouped-sortable:has([data-dnd-dragging='true'], [data-dnd-placeholder='true']) &__surface-row-content::before {
+    transition: none;
   }
 
   &__grouped-block_end {
@@ -247,14 +258,49 @@
     background: transparent;
   }
 
-  &__row_grouped &__surface-row-content:hover,
-  &__row_grouped &__surface-row-content_active,
-  &__row_grouped &__surface-row-content_highlighted {
+  &__row_grouped &__surface-row-content {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 16px;
+      bottom: 0;
+      left: 16px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: @border-radius-sm;
+      pointer-events: none;
+      transition: @transition;
+    }
+  }
+
+  &__row_grouped &__surface-row-content > &__surface-row-content__main,
+  &__row_grouped &__surface-row-content > &__row-trailing {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__row_grouped &__surface-row-content:hover {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  &__row_grouped &__surface-row-content:hover::before {
     background: @blue-transparent;
   }
 
-  &__row_grouped &__surface-row-content_active {
-    border: 1px solid @blue-500;
+  &__row_grouped &__surface-row-content_editing::before,
+  &__row_grouped &__surface-row-content_editor::before,
+  &__row_grouped &__surface-row-content_editing:hover::before,
+  &__row_grouped &__surface-row-content_editor:hover::before,
+  &__row_grouped &__surface-row-content_editing.ui-v1-logic-tree__surface-row-content_active::before,
+  &__row_grouped &__surface-row-content_editor.ui-v1-logic-tree__surface-row-content_active::before,
+  &__row_grouped &__surface-row-content_editing.ui-v1-logic-tree__surface-row-content_highlighted::before,
+  &__row_grouped &__surface-row-content_editor.ui-v1-logic-tree__surface-row-content_highlighted::before {
+    background: transparent;
+    border-color: transparent;
   }
 
   &__row_grouped &__surface-row-content_editing,
@@ -485,6 +531,12 @@
     transition: none;
   }
 
+  [data-dnd-dragging='true'] &__row_grouped-start &__grouped-block,
+  [data-dnd-dragging='true'] &__row_grouped-single &__grouped-block {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+  }
+
   [data-dnd-dragging='true'] &__surface-row-content__main,
   [data-dnd-dragging='true'] &__actions-row-content,
   [data-dnd-dragging='true'] &__row-trailing {
@@ -508,6 +560,41 @@
   [data-dnd-placeholder='true'] &__actions-row-content,
   [data-dnd-placeholder='true'] &__row-trailing {
     visibility: hidden;
+  }
+
+  [data-dnd-placeholder='true'] &__row_grouped &__surface-row-content,
+  [data-dnd-placeholder='true'] &__row_grouped &__actions-row {
+    outline: none;
+    position: relative;
+  }
+
+  [data-dnd-placeholder='true'] &__row_grouped-start,
+  [data-dnd-placeholder='true'] &__row_grouped-single {
+    margin-top: 0;
+  }
+
+  [data-dnd-placeholder='true']:first-child &__grouped-block {
+    padding-top: 0;
+    border-top-right-radius: @border-radius-md;
+    border-top-left-radius: @border-radius-md;
+  }
+
+  [data-dnd-placeholder='true']:first-child + * &__row_grouped-start,
+  [data-dnd-placeholder='true']:first-child + * &__row_grouped-single {
+    margin-top: 0;
+  }
+
+  [data-dnd-placeholder='true'] &__row_grouped &__surface-row-content::before,
+  [data-dnd-placeholder='true'] &__row_grouped &__actions-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 16px;
+    bottom: 0;
+    left: 16px;
+    border: 2px dashed @blue-500;
+    border-radius: @border-radius-sm;
+    pointer-events: none;
   }
 
   [data-dnd-overlay='true'] &__surface-row-content,

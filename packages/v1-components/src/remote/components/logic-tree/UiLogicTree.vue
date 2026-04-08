@@ -350,10 +350,19 @@ const DEFAULT_ROW_GAP = 16
 const resolveRowConjunction = (
   node: UiLogicTreeNode,
   index: number,
-  isGroupedSectionRow: boolean
+  isGroupedSectionRow: boolean,
+  parentNode: UiLogicTreeNode | null
 ): UiLogicTreeNode['conjunction'] => {
-  if (index === 0 || isGroupedSectionRow || !isConjunctionContentNode(node)) {
+  if (isGroupedSectionRow || !isConjunctionContentNode(node)) {
     return ''
+  }
+
+  if (index === 0) {
+    return parentNode
+      && isConjunctionContentNode(parentNode)
+      && countConjunctionContentChildren(parentNode) >= 2
+      ? (node.conjunction ?? '')
+      : ''
   }
 
   return node.conjunction ?? ''
@@ -502,9 +511,21 @@ const applyConjunctionRanges = (source: FlattenedRow[]): FlattenedRow[] => sourc
   }
 
   const siblingIndex = row.path.at(-1)
+  const parentPathKey = row.parentPath.length > 0 ? pathToKey(row.parentPath) : undefined
+  const parentRow = parentPathKey
+    ? source.find((candidate) => pathToKey(candidate.path) === parentPathKey)
+    : undefined
 
-  if (siblingIndex === undefined || siblingIndex === 0) {
+  if (siblingIndex === undefined) {
     return row
+  }
+
+  if (siblingIndex === 0) {
+    return {
+      ...row,
+      conjunctionEndPathKey: resolveConjunctionRangeEndPathKey(source, rowIndex),
+      conjunctionStartPathKey: parentRow ? pathToKey(parentRow.path) : undefined,
+    }
   }
 
   return {
@@ -537,6 +558,10 @@ const resolveConfiguredRowView = (node: UiLogicTreeNode): LogicTreeRowView => (
 const isConjunctionContentNode = (node: UiLogicTreeNode): boolean => (
   resolveConfiguredRowView(node) !== LogicTreeRowView.ACTIONS
   && node.kind !== LogicTreeNodeKind.BRANCH
+)
+
+const countConjunctionContentChildren = (node: UiLogicTreeNode | null): number => (
+  node?.children?.filter((child) => isConjunctionContentNode(child)).length ?? 0
 )
 
 const hasEditableContent = (node: UiLogicTreeNode): boolean => (
@@ -681,7 +706,8 @@ const flatten = (
   ancestors: UiLogicTreeConnector[] = [],
   parentPath: number[] = [],
   parentTone: LogicTreeTone | null = null,
-  currentSectionKey = ''
+  currentSectionKey = '',
+  parentNode: UiLogicTreeNode | null = null
 ): FlattenedRow[] => nodes.flatMap((node, index, siblings) => {
   const isLast = index === siblings.length - 1
   const path = [...parentPath, index]
@@ -690,7 +716,7 @@ const flatten = (
   const shouldPreserveChildLevel = node.kind === LogicTreeNodeKind.BRANCH && ancestors.length === 0
   const descendsIntoChildren = hasChildren && expanded
   const isGroupedSectionRow = Boolean(currentSectionKey)
-  const conjunction = resolveRowConjunction(node, index, isGroupedSectionRow)
+  const conjunction = resolveRowConjunction(node, index, isGroupedSectionRow, parentNode)
   const connectorTone = parentTone ?? fallbackTone(node)
   const conjunctionTone = resolveConjunctionTone(conjunction, connectorTone)
   const connectorContinues = !isLast || descendsIntoChildren
@@ -748,7 +774,8 @@ const flatten = (
       childAncestors,
       path,
       childParentTone,
-      nextSectionKey
+      nextSectionKey,
+      node
     ))
   }
 
