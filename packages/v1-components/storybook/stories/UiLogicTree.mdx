@@ -4,7 +4,11 @@ import * as UiLogicTreeStories from './UiLogicTree.stories'
 # UiLogicTree
 
 `UiLogicTree` - slot-driven древо условий для remote-части `embed-ui`.
-Компонент управляет структурой, линиями, grouped-layout, DnD, состоянием редактирования и событиями, а весь пользовательский контент строк приходит снаружи через slots.
+Компонент управляет структурой, линиями, grouped-layout, DnD и состоянием редактирования, а пользовательский контент строк и бизнес-логика add/edit/remove приходят снаружи.
+
+Важно: `UiLogicTree` является controlled-компонентом для действий со строками.
+По `row:add`, `row:edit`, `row:remove` и `control-action` дерево только отдаёт событие наружу; consumer сам обновляет `items` и передаёт новый массив обратно.
+`update:items` остаётся синхронизацией для внутренних сценариев вроде DnD/reorder и toggle.
 
 ## Когда использовать
 
@@ -39,10 +43,10 @@ import * as UiLogicTreeStories from './UiLogicTree.stories'
 
 Доступные callbacks:
 
-* `onAction(action)` - выполнить действие строки.
-* `onControlUpdate(controlId, value)` - обновить значение контрола.
+* `onAction(action)` - запросить действие строки. Consumer должен обработать `row:add` и обновить `items`.
+* `onControlUpdate(controlId, value)` - запросить обновление значения контрола. Consumer должен обработать `row:edit` и обновить `items`.
 * `onControlAction(controlId)` - выполнить action у контрола.
-* `onRemove()` - удалить строку.
+* `onRemove()` - запросить удаление строки. Consumer должен обработать `row:remove` и обновить `items`.
 * `onToggle()` - раскрыть или свернуть ветку.
 
 ## Как собирать строку
@@ -51,7 +55,13 @@ import * as UiLogicTreeStories from './UiLogicTree.stories'
 
 ```vue
 <template>
-  <UiLogicTree :items="items">
+  <UiLogicTree
+    :items="items"
+    @row:add="handleRowAdd"
+    @row:edit="handleRowEdit"
+    @row:remove="handleRowRemove"
+    @update:items="items = $event"
+  >
     <template #row-prefix="{ node, editing }">
       <UiDragHandle v-if="node.row.draggable && !editing" />
       <UiFolderIcon v-else-if="node.row.icon && !editing" />
@@ -74,7 +84,7 @@ import * as UiLogicTreeStories from './UiLogicTree.stories'
       <UiSelect
         v-for="control in node.row.controls"
         :key="control.id"
-        :value="String(control.value ?? '')"
+        :value="control.value"
         @update:value="(value) => onControlUpdate(control.id, value)"
       />
     </template>
@@ -100,6 +110,8 @@ import * as UiLogicTreeStories from './UiLogicTree.stories'
   </UiLogicTree>
 </template>
 ```
+
+В каноничном примере ниже эти обработчики уже вынесены в consumer-слой: `UiLogicTree.remote.ts` ловит `row:add`, `row:edit`, `row:remove` и обновляет `items` снаружи.
 
 ## Каноничный пример
 

@@ -165,7 +165,7 @@ export type UiLogicTreeRowSlotProps = {
   selected: boolean;
   onAction: (action: UiLogicTreeAction) => void;
   onControlAction: (controlId: string) => void;
-  onControlUpdate: (controlId: string, value: string | number) => void;
+  onControlUpdate: (controlId: string, value: string | number | null) => void;
   onRemove: () => void;
   onToggle: () => void;
 }
