@@ -230,7 +230,6 @@ const campaignTree: UiLogicTreeNode[] = [
         ],
         removable: true,
       }), {
-        conjunction: LogicTreeConjunction.OR,
         tone: LogicTreeTone.BLUE,
         children: [
           branchNode('campaign-group-1-count', summaryRow('10 акций'), {
@@ -361,6 +360,11 @@ const campaignTree: UiLogicTreeNode[] = [
           id: 'campaign-root-add-group',
           kind: LogicTreeActionKind.GROUP,
           label: 'Группа',
+        },
+        {
+          id: 'campaign-root-add-condition',
+          kind: LogicTreeActionKind.CONDITION,
+          label: 'Условие',
         },
       ]), {
         tone: LogicTreeTone.GREEN,
