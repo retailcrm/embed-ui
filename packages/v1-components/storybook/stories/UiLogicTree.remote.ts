@@ -393,7 +393,7 @@ const renderEdit = (slotProps: UiLogicTreeRowSlotProps) => h('div', {
       style: resolveWidth(control.width),
       value: resolveControlValue(control),
       'onUpdate:value': (value: string | number | null) => {
-        slotProps.onControlUpdate(control.id, value ?? '')
+        slotProps.onControlUpdate(control.id, value)
       },
     }, () => resolveOptions(control).map((option) => h(UiSelectOption, {
       key: option.id,
@@ -416,7 +416,7 @@ const renderEdit = (slotProps: UiLogicTreeRowSlotProps) => h('div', {
       style: resolveWidth(control.width),
       value: resolveControlValue(control),
       'onUpdate:value': (value: string | number | null) => {
-        slotProps.onControlUpdate(control.id, value ?? '')
+        slotProps.onControlUpdate(control.id, value)
       },
     })
   }
@@ -555,7 +555,7 @@ createComponentEndpoint<UiLogicTreeProps>({
 
         return () => h(UiLogicTree, {
           ...props,
-          'onControl-action': handleControlAction,
+          onControlAction: handleControlAction,
           'onRow:add': handleRowAdd,
           'onRow:edit': handleRowEdit,
           'onRow:remove': handleRowRemove,

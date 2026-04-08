@@ -793,6 +793,10 @@ const rowsWithGrouping = computed<FlattenedRow[]>(() => rows.value.map((row, ind
   const next = source[index + 1]
   const hasPrev = prev?.sectionKey === row.sectionKey
   const hasNext = next?.sectionKey === row.sectionKey
+  const parentNode = row.parentPath.length > 0
+    ? getNodeAtPath(itemsState.value, row.parentPath)
+    : null
+  const hasGroupedHeader = parentNode?.childrenView === LogicTreeChildrenView.GROUPED
 
   let groupedPosition: FlattenedRow['groupedPosition'] = 'single'
 
@@ -801,6 +805,8 @@ const rowsWithGrouping = computed<FlattenedRow[]>(() => rows.value.map((row, ind
   } else if (hasPrev && hasNext) {
     groupedPosition = 'middle'
   } else if (hasPrev && !hasNext) {
+    groupedPosition = 'end'
+  } else if (!hasPrev && !hasNext && hasGroupedHeader) {
     groupedPosition = 'end'
   }
 
@@ -881,7 +887,7 @@ const resolveRowSlotProps = (row: FlattenedRow): UiLogicTreeRowSlotProps => ({
       nodeId: row.node.id,
     })
   },
-  onControlUpdate: (controlId: string, value: string | number) => {
+  onControlUpdate: (controlId: string, value: string | number | null) => {
     onControlUpdate(row.path, controlId, value)
   },
   onRemove: () => {
@@ -896,7 +902,7 @@ const resolveRowSlotProps = (row: FlattenedRow): UiLogicTreeRowSlotProps => ({
   selected: isRowSelected(row),
 })
 
-const onControlUpdate = (path: number[], controlId: string, value: string | number) => {
+const onControlUpdate = (path: number[], controlId: string, value: string | number | null) => {
   const currentNode = getNodeAtPath(itemsState.value, path)
   const currentControl = currentNode?.row.controls?.find((control) => control.id === controlId)
   const previousValue = currentControl?.value ?? null

@@ -101,6 +101,8 @@
                         }"
                         tabindex="0"
                         @click="onClick"
+                        @keydown.enter.prevent="onKeydownActivate"
+                        @keydown.space.prevent="onKeydownActivate"
                     >
                         <div class="ui-v1-logic-tree__surface-row-content__main">
                             <div class="ui-v1-logic-tree__row-prefix">
@@ -231,6 +233,24 @@ const emit = defineEmits<{
 const isEditable = computed(() => props.editable)
 
 const onClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement | null
+
+  if (
+    target?.closest(
+      'button, input, select, textarea, [role="button"], [role="option"], [data-skip-row-click="true"]'
+    )
+  ) {
+    return
+  }
+
+  if (!props.editable) {
+    emit('row-edit', true)
+  }
+
+  emit('row-click', props.pathKey)
+}
+
+const onKeydownActivate = (event: KeyboardEvent) => {
   const target = event.target as HTMLElement | null
 
   if (
