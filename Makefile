@@ -106,6 +106,20 @@ else
 endif
 	$(TARGET_OK)
 
+.PHONY: tests-playwright
+tests-playwright: .require-compose ## [Tests][docker] Runs Playwright tests in a workspace
+	$(TARGET_HEADER)
+	@UID=$$(id -u) GID=$$(id -g) $(COMPOSE) run --rm playwright \
+		yarn workspace $(if $(workspace),$(workspace),@retailcrm/embed-ui-v1-sandbox) exec playwright test -c vitest.config.playwright.ts $(cli)
+	$(TARGET_OK)
+
+.PHONY: playwright-report
+playwright-report: .require-compose ## [Tests][docker] Serves Playwright HTML report with published port
+	$(TARGET_HEADER)
+	@UID=$$(id -u) GID=$$(id -g) $(COMPOSE) run --rm --service-ports playwright \
+		yarn workspace $(if $(workspace),$(workspace),@retailcrm/embed-ui-v1-sandbox) exec playwright show-report --host 0.0.0.0 $(cli)
+	$(TARGET_OK)
+
 .PHONY: tests-typecheck-contexts
 tests-typecheck-contexts: .require-compose ## [Tests][docker] Runs typecheck tests (test-d.ts) for v1-contexts
 	$(TARGET_HEADER)
