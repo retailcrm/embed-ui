@@ -94,6 +94,7 @@ export type UiLogicTreeRow = {
   inline?: UiLogicTreeInlineText[];
   controls?: UiLogicTreeControl[];
   actions?: UiLogicTreeAction[];
+  disabled?: boolean;
   draggable?: boolean;
   removable?: boolean;
   selected?: boolean;
@@ -158,6 +159,7 @@ export type UiLogicTreeRowSlotProps = {
   groupedPosition?: UiLogicTreeRowProperties['groupedPosition'];
   hasChildren: boolean;
   highlighted: boolean;
+  disabled: boolean;
   node: UiLogicTreeNode;
   path: number[];
   pathKey: string;
@@ -186,6 +188,7 @@ export type UiLogicTreeRowProperties = {
   grouped?: boolean;
   groupedPosition?: 'end' | 'middle' | 'single' | 'start';
   editable?: boolean;
+  disabled?: boolean;
   highlighted?: boolean;
   selected?: boolean;
 }

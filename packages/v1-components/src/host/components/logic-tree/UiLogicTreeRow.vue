@@ -94,12 +94,14 @@
                         :class="{
                             'ui-v1-logic-tree__surface-row-content': true,
                             'ui-v1-logic-tree__surface-row-content_active': selected,
+                            'ui-v1-logic-tree__surface-row-content_disabled': disabled,
                             'ui-v1-logic-tree__surface-row-content_editing': isEditable,
                             'ui-v1-logic-tree__surface-row-content_editor': isEditable,
                             'ui-v1-logic-tree__surface-row-content_highlighted': highlighted,
                             'ui-v1-logic-tree__surface-row-content_simple': true,
                         }"
-                        tabindex="0"
+                        :aria-disabled="disabled || undefined"
+                        :tabindex="disabled ? undefined : 0"
                         @click="onClick"
                         @keydown.enter.prevent="onKeydownActivate"
                         @keydown.space.prevent="onKeydownActivate"
@@ -152,6 +154,11 @@ const props = defineProps({
   connectors: {
     type: Array as PropType<UiLogicTreeConnector[]>,
     default: () => [],
+  },
+
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 
   editable: {
@@ -233,6 +240,10 @@ const emit = defineEmits<{
 const isEditable = computed(() => props.editable)
 
 const onClick = (event: MouseEvent) => {
+  if (props.disabled) {
+    return
+  }
+
   const target = event.target as HTMLElement | null
 
   if (
@@ -251,6 +262,10 @@ const onClick = (event: MouseEvent) => {
 }
 
 const onKeydownActivate = (event: KeyboardEvent) => {
+  if (props.disabled) {
+    return
+  }
+
   const target = event.target as HTMLElement | null
 
   if (

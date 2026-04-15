@@ -251,56 +251,22 @@
     background: transparent;
     border-color: transparent;
     box-shadow: none;
-    padding: 16px;
+    padding: 16px 4px 16px 8px;
+    margin-left: 8px;
   }
 
   &__row_grouped &__surface-row {
     background: transparent;
   }
 
-  &__row_grouped &__surface-row-content {
-    position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 16px;
-      bottom: 0;
-      left: 16px;
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: @border-radius-sm;
-      pointer-events: none;
-      transition: @transition;
-    }
-  }
-
-  &__row_grouped &__surface-row-content > &__surface-row-content__main,
-  &__row_grouped &__surface-row-content > &__row-trailing {
-    position: relative;
-    z-index: 1;
-  }
-
   &__row_grouped &__surface-row-content:hover {
-    background: transparent;
-    border-color: transparent;
-  }
-
-  &__row_grouped &__surface-row-content:hover::before {
     background: @blue-transparent;
+    border-color: transparent;
   }
 
-  &__row_grouped &__surface-row-content_editing::before,
-  &__row_grouped &__surface-row-content_editor::before,
-  &__row_grouped &__surface-row-content_editing:hover::before,
-  &__row_grouped &__surface-row-content_editor:hover::before,
-  &__row_grouped &__surface-row-content_editing.ui-v1-logic-tree__surface-row-content_active::before,
-  &__row_grouped &__surface-row-content_editor.ui-v1-logic-tree__surface-row-content_active::before,
-  &__row_grouped &__surface-row-content_editing.ui-v1-logic-tree__surface-row-content_highlighted::before,
-  &__row_grouped &__surface-row-content_editor.ui-v1-logic-tree__surface-row-content_highlighted::before {
-    background: transparent;
-    border-color: transparent;
+  &__row_grouped &__surface-row-content_disabled:hover,
+  &__row_grouped &__surface-row-content_disabled:focus-within {
+    background: @grey-400;
   }
 
   &__row_grouped &__surface-row-content_editing,
@@ -325,9 +291,13 @@
   }
 
   &__surface-row-content {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 8px;
+    width: fit-content;
+    max-width: 100%;
+    vertical-align: top;
     min-width: 0;
     min-height: 36px;
     padding: 6px 8px;
@@ -345,6 +315,20 @@
       border: 1px solid @blue-500;
     }
 
+    &_disabled {
+      cursor: default;
+
+      &:hover,
+      &:focus-within {
+        background: @grey-100;
+        border-color: transparent;
+      }
+
+      &:active {
+        border-color: transparent;
+      }
+    }
+
     &_editor {
       min-height: 52px;
     }
@@ -357,6 +341,7 @@
 
     &__main {
       display: flex;
+      flex: 0 1 auto;
       align-items: center;
       gap: @spacing-xs;
       min-width: 0;
@@ -376,6 +361,11 @@
 
       &:hover {
         background: @blue-transparent;
+      }
+
+      &.ui-v1-logic-tree__surface-row-content_disabled:hover,
+      &.ui-v1-logic-tree__surface-row-content_disabled:focus-within {
+        background: @grey-100;
       }
     }
 
@@ -398,7 +388,7 @@
   &__row-content,
   &__actions-row-content {
     display: flex;
-    flex: 1;
+    flex: 0 1 auto;
     align-items: center;
     flex-wrap: nowrap;
     gap: 8px;
@@ -410,9 +400,17 @@
     gap: 8px;
   }
 
+  &__row-trailing {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
   &__surface-row-content_editing &__row-trailing,
   &__surface-row-content_editor &__row-trailing {
-    margin-left: 8px;
+    margin-inline: 8px;
   }
 
   &__surface-row-content_editing,
@@ -464,14 +462,24 @@
 
   &__slot-content {
     display: flex;
-    flex: 1;
+    flex: 0 1 auto;
     align-items: center;
     min-width: 0;
+    max-width: 100%;
   }
 
-  &__grouped-sortable,
-  &__grouped-sortable-item {
+  &__grouped-sortable {
+    display: inline-grid;
+    grid-template-columns: minmax(560px, max-content);
+    width: auto;
+    max-width: 100%;
+  }
+
+  &__grouped-sortable-item,
+  &__grouped-sortable > &__row {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
 
   &__grouped-sortable-item {

@@ -26,6 +26,7 @@
                 >
                     <UiLogicTreeRow
                         :connectors="row.connectors"
+                        :disabled="Boolean(row.node.row.disabled)"
                         :editable="row.node.row.editable"
                         :grouped="Boolean(row.sectionKey)"
                         :grouped-position="row.groupedPosition || undefined"
@@ -90,6 +91,7 @@
                     v-for="row in entry.footerRows"
                     :key="row.node.id"
                     :connectors="row.connectors"
+                    :disabled="Boolean(row.node.row.disabled)"
                     :editable="row.node.row.editable"
                     :grouped="Boolean(row.sectionKey)"
                     :grouped-position="row.groupedPosition || undefined"
@@ -153,6 +155,7 @@
             <UiLogicTreeRow
                 v-else
                 :connectors="entry.row.connectors"
+                :disabled="Boolean(entry.row.node.row.disabled)"
                 :editable="entry.row.node.row.editable"
                 :grouped="Boolean(entry.row.sectionKey)"
                 :grouped-position="entry.row.groupedPosition || undefined"
@@ -877,6 +880,7 @@ const resolveRowSlotProps = (row: FlattenedRow): UiLogicTreeRowSlotProps => ({
   groupedPosition: row.groupedPosition || undefined,
   hasChildren: row.hasChildren,
   highlighted: Boolean(row.node.row.highlighted),
+  disabled: Boolean(row.node.row.disabled),
   node: row.node,
   onAction: (action: UiLogicTreeAction) => {
     onAction(row, action)

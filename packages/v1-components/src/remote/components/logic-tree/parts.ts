@@ -1,6 +1,5 @@
 import type { RemoteProperties } from '@/remote/scaffolding'
 import type { SchemaType } from '@omnicajs/vue-remote/remote'
-import type { SerializedEvent } from '@omnicajs/vue-remote/types/events'
 
 import type {
   UiLogicTreeRootProperties,
@@ -14,28 +13,27 @@ export const UiLogicTreeRootType = 'UiLogicTreeRoot' as SchemaType<
   RemoteProperties<UiLogicTreeRootProperties>
 >
 
-export const UiLogicTreeRoot = defineRemoteComponent(
-  UiLogicTreeRootType,
-  {
-    slots: ['default'],
+export const UiLogicTreeRoot = defineRemoteComponent(UiLogicTreeRootType, {
+  emits: [
+    'outsideClick',
+  ] as unknown as {
+    'outsideClick': () => boolean,
   },
-  ['outside-click'] as unknown as {
-    'outside-click': (event: SerializedEvent) => boolean,
-  }
-)
+  slots: ['default'],
+})
 
 export const UiLogicTreeRowType = 'UiLogicTreeRow' as SchemaType<
   'UiLogicTreeRow',
   RemoteProperties<UiLogicTreeRowProperties>
 >
 
-export const UiLogicTreeRow = defineRemoteComponent(
-  UiLogicTreeRowType,
-  {
-    slots: ['prefix', 'content', 'trailing'],
+export const UiLogicTreeRow = defineRemoteComponent(UiLogicTreeRowType, {
+  emits: [
+    'rowClick',
+    'rowEdit',
+  ] as unknown as {
+    'rowClick': (pathKey: string) => boolean,
+    'rowEdit': (value: boolean) => boolean,
   },
-  ['row-click', 'row-edit'] as unknown as {
-    'row-click': (event: SerializedEvent) => boolean,
-    'row-edit': (event: SerializedEvent) => boolean,
-  }
-)
+  slots: ['prefix', 'content', 'trailing'],
+})

@@ -195,6 +195,7 @@ const campaignTree: UiLogicTreeNode[] = [
       ),
     ],
     removable: true,
+    disabled: true,
     inline: [
       inlineText('campaign-root-mode', 'Последовательное применение', { tone: LogicTreeTone.GREEN }),
       inlineText('campaign-root-meta', 'До 5 000 ₽ скидки', { separated: true, tone: 'muted' }),
@@ -202,7 +203,7 @@ const campaignTree: UiLogicTreeNode[] = [
   }), {
     tone: LogicTreeTone.GREEN,
     children: [
-      groupNode('campaign-count', summaryRow('8 акций', { removable: true }), {
+      groupNode('campaign-count', summaryRow('8 акций', { disabled: true }), {
         childrenView: LogicTreeChildrenView.GROUPED,
         collapsible: true,
         expanded: true,
@@ -327,6 +328,7 @@ const campaignTree: UiLogicTreeNode[] = [
                   conditionNode('campaign-group-3-item-1', summaryRow('1. Название акции #1', {
                     controls: groupedItemControls('campaign-group-3-item-1'),
                     draggable: true,
+                    disabled: true,
                     inline: [
                       inlineText('campaign-group-3-item-1-meta', 'Бонусы', { tone: 'muted' }),
                     ],
