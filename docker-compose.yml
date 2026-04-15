@@ -29,6 +29,8 @@ services:
     volumes:
       - ./:/project
     working_dir: /project
+    ports:
+      - "9323:9323"
 
   actionlint:
     image: rhysd/actionlint:latest

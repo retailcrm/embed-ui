@@ -72,7 +72,9 @@
   "scripts": {
     "build": "yarn build:code",
     "build:code": "vite build -c ./vite.config.ts",
-    "test": "vitest --run"
+    "dev:e2e": "vite --host 0.0.0.0 --port 4173",
+    "test": "vitest --run",
+    "e2e": "playwright test -c vitest.config.playwright.ts"
   },
   "peerDependencies": {
     "@omnicajs/vue-remote": "^0.2.23",
@@ -87,7 +89,9 @@
   },
   "devDependencies": {
     "@omnicajs/vue-remote": "^0.2.23",
+    "@playwright/test": "1.58.2",
     "@remote-ui/rpc": "^1.4.7",
+    "@types/node": "^25.6.0",
     "pinia": "^2.2.8",
     "typescript": "^5.9.3",
     "vite": "^7.2.7",
