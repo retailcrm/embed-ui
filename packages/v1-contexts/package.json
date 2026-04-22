@@ -85,6 +85,7 @@
   },
   "files": [
     "dist",
+    "docs",
     "types",
     "README.md"
   ],
