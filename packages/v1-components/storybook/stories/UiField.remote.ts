@@ -33,7 +33,7 @@ createComponentEndpoint<UiFieldWorkerProps>({
             customHint = false,
             hideLabel = false,
             textboxPlaceholder = 'Type value',
-            containerWidth = 360,
+            containerWidth = 100,
             ...fieldProps
           } = props
 
@@ -78,7 +78,7 @@ createComponentEndpoint<UiFieldWorkerProps>({
             slots.addon = () => h('span', addonText)
           }
 
-          return h('div', { style: `width: ${containerWidth}px;` }, [
+          return h('div', { style: `width: ${containerWidth}%;` }, [
             h(UiField, resolvedFieldProps, slots),
           ])
         }
