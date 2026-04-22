@@ -47,4 +47,7 @@ export default mergeConfig(basic, defineConfig({
     insertTypesEntry: true,
     staticImport: true,
   })],
+  server: {
+    allowedHosts: ['v1.embed-ui-sandbox.local'],
+  },
 }))

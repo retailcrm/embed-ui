@@ -41,6 +41,11 @@ storybook.serve: .require-compose ## [Build][docker] Runs Storybook for v1-compo
 	$(TARGET_HEADER)
 	$(COMPOSE) up v1-components
 
+.PHONY: sandbox.serve
+sandbox.serve: .require-compose ## [Build][docker] Runs Vite e2e sandbox for v1-sandbox
+	$(TARGET_HEADER)
+	$(YARN) workspace @retailcrm/embed-ui-v1-sandbox run dev:e2e $(cli)
+
 .PHONY: storybook.shot
 storybook.shot: .require-compose ## [Research][docker] Captures a Storybook screenshot for v1-components docs/story page
 	$(TARGET_HEADER)
