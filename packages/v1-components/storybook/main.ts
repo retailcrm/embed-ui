@@ -37,6 +37,7 @@ export default defineMain({
     },
   ],
   core: {
+    allowedHosts: ['v1.embed-ui.local'],
     builder: {
       name: '@storybook/builder-vite',
       options: {
