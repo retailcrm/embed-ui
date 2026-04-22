@@ -67,6 +67,7 @@
   },
   "files": [
     "dist",
+    "docs",
     "README.md"
   ],
   "scripts": {
