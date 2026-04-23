@@ -24,15 +24,25 @@ createComponentEndpoint<UiPageHeaderProps>({
               value.value = String(next ?? '')
             },
           }, {
-            addon: () => h(UiLink, {}, 'Свернуть фильтр'),
-            actions: () => h(UiButton, {
-              appearance: 'tertiary',
-            }, {
-              default: () => [
-                'Действия',
-                h(IconCaretDown, { 'aria-hidden': 'true' }),
-              ],
-            }),
+            addon: () => [
+              h(UiLink, {}, 'Свернуть фильтр'),
+              h(UiLink, {}, 'Отправить'),
+            ],
+            actions: () => [
+              h(UiButton, {
+                appearance: 'tertiary',
+              }, {
+                default: () => [
+                  'Действия',
+                  h(IconCaretDown, { 'aria-hidden': 'true' }),
+                ],
+              }),
+              h(UiButton, {
+                size: 'md',
+              }, {
+                default: () => 'Сохранить',
+              }),
+            ],
           }),
         ])
       },

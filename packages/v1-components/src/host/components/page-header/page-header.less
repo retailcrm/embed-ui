@@ -10,13 +10,7 @@
 .ui-v1-page-header {
   .reset-box-sizing();
 
-  display: flex;
   width: 100%;
-  min-width: 0;
-  align-items: center;
-  justify-content: space-between;
-  gap: @spacing-s @spacing-l;
-  flex-wrap: wrap;
 
   &_disabled {
     opacity: 0.7;
@@ -37,9 +31,14 @@
 
   &__main {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: baseline;
+  }
+
+  &__body {
+    display: flex;
     gap: @spacing-s;
+    align-items: baseline;
   }
 
   &__title {
@@ -110,10 +109,10 @@
   }
 
   &__actions {
-    display: inline-flex;
-    align-items: center;
+    display: flex;
     gap: @spacing-s;
-    flex: 0 0 auto;
+    float: right;
+    white-space: nowrap;
   }
 
   &__addon {

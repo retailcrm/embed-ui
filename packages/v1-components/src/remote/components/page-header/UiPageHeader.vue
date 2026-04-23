@@ -8,58 +8,60 @@
         }"
         v-bind="$attrs"
     >
-        <div class="ui-v1-page-header__main">
-            <UiPopperConnector>
-                <UiPopperTarget
-                    tag="div"
-                    class="ui-v1-page-header__title"
-                >
-                    <UiPageHeaderTitle
-                        :id="id"
-                        ref="header"
-                        :value="valueState"
-                        :placeholder="placeholder"
-                        :error="error"
-                        :invalid="invalid"
-                        :editable="editable"
-                        :autofocus="autofocus"
-                        :autoselect="autoselect"
-                        :readonly="readonly"
-                        :disabled="disabled"
-                        @blur="$emit('blur', $event)"
-                        @change="$emit('change', $event)"
-                        @focus="$emit('focus', $event)"
-                        @keydown="$emit('keydown', $event)"
-                        @update:value="onUpdateValue"
-                    />
-                </UiPopperTarget>
-
-                <UiTooltip
-                    v-if="displayInvalid && error"
-                    :target-triggers="{
-                        hide: [''],
-                    }"
-                    :offset-main-axis="8"
-                    visible
-                    placement="right"
-                >
-                    {{ error }}
-                </UiTooltip>
-            </UiPopperConnector>
-
-            <div
-                v-if="$slots.addon"
-                class="ui-v1-page-header__addon"
-            >
-                <slot name="addon" />
-            </div>
-        </div>
-
         <div
             v-if="$slots.actions"
             class="ui-v1-page-header__actions"
         >
             <slot name="actions" />
+        </div>
+
+        <div class="ui-v1-page-header__main">
+            <div class="ui-v1-page-header__body">
+                <UiPopperConnector>
+                    <UiPopperTarget
+                        tag="div"
+                        class="ui-v1-page-header__title"
+                    >
+                        <UiPageHeaderTitle
+                            :id="id"
+                            ref="header"
+                            :value="valueState"
+                            :placeholder="placeholder"
+                            :error="error"
+                            :invalid="invalid"
+                            :editable="editable"
+                            :autofocus="autofocus"
+                            :autoselect="autoselect"
+                            :readonly="readonly"
+                            :disabled="disabled"
+                            @blur="$emit('blur', $event)"
+                            @change="$emit('change', $event)"
+                            @focus="$emit('focus', $event)"
+                            @keydown="$emit('keydown', $event)"
+                            @update:value="onUpdateValue"
+                        />
+                    </UiPopperTarget>
+
+                    <UiTooltip
+                        v-if="displayInvalid && error"
+                        :target-triggers="{
+                            hide: [''],
+                        }"
+                        :offset-main-axis="8"
+                        visible
+                        placement="right"
+                    >
+                        {{ error }}
+                    </UiTooltip>
+                </UiPopperConnector>
+
+                <div
+                    v-if="$slots.addon"
+                    class="ui-v1-page-header__addon"
+                >
+                    <slot name="addon" />
+                </div>
+            </div>
         </div>
     </div>
 </template>
