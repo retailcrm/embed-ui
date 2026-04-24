@@ -2,6 +2,7 @@ component: UiYandexMap
 summary: >
   UiYandexMap is the Yandex map component for map display and related location scenarios.
   Treat it as unstable for now and avoid it unless the screen explicitly requires a map surface.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/experimental-uiyandexmap--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -27,3 +28,38 @@ geometry:
   layout: block-like map container
   root_display: flex
   width_behavior: stretches to container width by default
+
+api:
+  key_props:
+    - name: apiKey
+      notes: Required Yandex Maps API key.
+    - name: address
+      notes: Address string used by the map and update channel.
+    - name: plugins
+      notes: Optional map plugins such as locator integration.
+  emits:
+    - name: update:address
+    - name: change
+
+behavior:
+  notes:
+    - Depends on Yandex map runtime availability.
+    - Should be treated as a specialized surface, not a generic layout block.
+    - The current public API is address-oriented rather than marker-list oriented.
+
+composition:
+  works_well_with:
+    - UiLoader
+    - UiAlert
+  patterns:
+    - title: Location display
+      notes: Use only when map interaction or spatial context is essential.
+    - title: Address-only view
+      notes: Prefer text address output when a map does not add actionable value.
+
+ai_notes:
+  do:
+    - Use only for explicit map requirements.
+    - Provide a non-map fallback or error state when the map runtime can fail.
+  avoid:
+    - Do not add maps as decorative content.

@@ -2,6 +2,7 @@ component: UiModalSidebar
 summary: >
   UiModalSidebar is a side-docked modal surface with open state, direction, size, and
   scrolling control. Use it when the UI should slide from an edge instead of opening as a centered dialog.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uimodalsidebar--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -44,3 +45,17 @@ behavior:
 ai_notes:
   do:
     - Use UiModalSidebar when page context should stay visually connected to the modal content.
+    - Use for inspect, edit, or secondary workflows that relate to the current list or page.
+  avoid:
+    - Do not use for short confirmations; use UiModalWindow.
+
+composition:
+  works_well_with:
+    - UiTable
+    - UiField
+    - UiButton
+  patterns:
+    - title: Row detail side panel
+      notes: Open from a table row when the user should keep list context visible.
+    - title: Side edit form
+      notes: Put primary actions in the sidebar footer when the form edits the selected object.

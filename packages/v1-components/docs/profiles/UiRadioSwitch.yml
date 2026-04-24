@@ -4,6 +4,7 @@ summary: >
   a compact inline switch and a richer section-card layout. It is useful when the
   choice set is small and always visible. For richer per-option content, compose it
   with UiRadioSwitchOption instead of relying only on the options array.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiradioswitch--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

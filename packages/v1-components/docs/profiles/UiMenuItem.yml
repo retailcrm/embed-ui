@@ -2,6 +2,7 @@ component: UiMenuItem
 summary: >
   UiMenuItem is a structured menu row component with support for icons, avatar, description,
   counters, and active or danger styling.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/uimenuitem--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -55,3 +56,23 @@ geometry:
 ai_notes:
   do:
     - Use structured slots instead of custom wrappers inside menu rows.
+    - Use danger only for destructive menu actions.
+  avoid:
+    - Do not use as a generic card or list row outside menu-like surfaces.
+
+behavior:
+  notes:
+    - active marks the current or selected item.
+    - disabled prevents interaction.
+    - danger changes semantic tone for destructive actions.
+
+composition:
+  works_well_with:
+    - UiMenuItemGroup
+    - UiAvatar
+    - UiTag
+  patterns:
+    - title: Command menu row
+      notes: Use leading-icon for action identity and trailing-icon for disclosure or shortcut-like hints.
+    - title: Entity menu row
+      notes: Use avatar and description slots for users, customers, or entities.

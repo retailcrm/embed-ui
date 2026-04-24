@@ -2,6 +2,7 @@ component: UiRadio
 summary: >
   UiRadio is the single-choice selection control for exclusive option sets.
   It is the radio-style counterpart to UiCheckbox.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiradio--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -36,3 +37,25 @@ geometry:
   layout: inline radio control
   root_display: inline-flex
   width_behavior: content-sized by default
+
+behavior:
+  notes:
+    - Use several UiRadio controls with the same model to represent one exclusive group.
+    - The selected value comes from the option value, not from the label text.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiRadioSwitch
+  patterns:
+    - title: Simple exclusive choice
+      notes: Use UiRadio for compact vertical or inline lists of mutually exclusive values.
+    - title: Rich segmented choice
+      notes: Use UiRadioSwitch instead when the options should look like a segmented control or rich section cards.
+
+ai_notes:
+  do:
+    - Use for plain mutually exclusive options.
+    - Keep all options in one visible group with clear labels.
+  avoid:
+    - Do not use for multiple independent selections; use UiCheckbox or UiToggleGroup.

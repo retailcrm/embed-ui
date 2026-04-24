@@ -2,6 +2,7 @@ component: UiCollapseBox
 summary: >
   UiCollapseBox is a structured expandable container with built-in header, state handling,
   and visual treatment. It is a higher-level companion to UiCollapse.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uicollapsebox--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -47,5 +48,17 @@ behavior:
 ai_notes:
   do:
     - Use UiCollapseBox for structured disclosure UI.
+    - Put the summary in the header and details in the body; avoid hiding critical required fields.
   avoid:
     - Do not rebuild collapse header UI manually when this component already fits.
+
+composition:
+  works_well_with:
+    - UiCollapse
+    - UiCollapseGroup
+    - UiInfobox
+  patterns:
+    - title: Settings section
+      notes: Use for optional or advanced settings groups.
+    - title: Grouped disclosures
+      notes: Use inside UiCollapseGroup when multiple boxes should coordinate active state.

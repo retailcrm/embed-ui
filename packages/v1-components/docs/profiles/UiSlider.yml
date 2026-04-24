@@ -2,6 +2,7 @@ component: UiSlider
 summary: >
   UiSlider is a range-selection control for single values or ranges on a numeric track.
   It supports single-handle and range-handle modes.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uislider--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -36,3 +37,25 @@ geometry:
   layout: horizontal slider track
   root_display: flex
   width_behavior: stretches to container width by default
+
+behavior:
+  notes:
+    - Use when approximate adjustment is acceptable.
+    - For exact numeric input, prefer UiTextbox with numeric inputmode or UiNumberStepper.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiNumberStepper
+  patterns:
+    - title: Bounded adjustment
+      notes: Wrap in UiField and show min, max, or current value nearby when precision matters.
+    - title: Slider plus exact value
+      notes: Pair with UiNumberStepper when users need both quick dragging and exact entry.
+
+ai_notes:
+  do:
+    - Use only for bounded numeric ranges.
+    - Make the current value visible when the slider affects important settings.
+  avoid:
+    - Do not use for open-ended numbers, money amounts, or identifiers.

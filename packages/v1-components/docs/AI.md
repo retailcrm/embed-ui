@@ -10,7 +10,7 @@ Only the public package contract is described below, without depending on the re
 - Package name: `@retailcrm/embed-ui-v1-components`
 - Purpose: UI components and UI helpers for RetailCRM JS extensions
 - Framework: Vue 3
-- Published Storybook: `https://retailcrm.github.io/embed-ui/v1-components/0.9.14/`
+- Published Storybook: `https://retailcrm.github.io/embed-ui/v1-components/0.9.18/`
 - Primary public entrypoints:
   - `@retailcrm/embed-ui-v1-components/remote`
   - `@retailcrm/embed-ui-v1-components/host`
@@ -30,9 +30,10 @@ When generating UI code, use this order:
 
 1. read [`COMPONENTS.md`](./COMPONENTS.md) to identify candidate components;
 2. open a detailed profile from [`PROFILES.md`](./PROFILES.md) if one exists;
-3. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
-4. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
-5. if no profile exists yet, fall back to [Storybook](https://retailcrm.github.io/embed-ui/v1-components/0.9.14/) docs and public type declarations, and state any inference explicitly.
+3. use the profile `usage` link for published Storybook examples and visual behavior;
+4. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
+5. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
+6. if no profile exists yet, fall back to [Storybook](https://retailcrm.github.io/embed-ui/v1-components/0.9.18/) docs and public type declarations, and state any inference explicitly.
 
 ## Default Recommendation For Common Forms
 
@@ -54,6 +55,67 @@ Typical compositions:
 - `UiField` + `UiSelect`
 - `UiPageHeader` + `UiButton`
 - `UiSelect` + `UiSelectOption`
+
+## Default Recommendation For Full Screens
+
+When building a complete extension screen, prioritize a working operational interface over a
+decorative landing page.
+
+Default screen rules:
+
+- use `UiPageHeader` for page identity and top-level actions;
+- keep filters and controls near the content they affect;
+- use `UiField` around labeled form controls;
+- use `UiTable` for structured result lists;
+- use `UiLink` for navigation and inline links, `UiButton` for commands;
+- use `UiLoader` with `overlay: true` when loading should dim the covered page or module content;
+- keep public imports on `@retailcrm/embed-ui-v1-components/remote`;
+- avoid custom markup that recreates textbox, select, button, link, or table chrome.
+
+## Default Recommendation For Table Screens
+
+When building a registry, catalog, journal, search result, order list, customer list, or any
+screen where users scan and refine datasets:
+
+- put search and filters directly above `UiTable`;
+- use `UiTextbox` for free-text search and `UiSelect` or compact toggle controls for finite filters;
+- keep filters, sorting, page, and page size in GET query parameters when the host app has routing;
+- hydrate initial filter and pagination state from the current query;
+- reset `page` to `1` when filters or sorting change;
+- debounce free-text search before writing query or fetching data;
+- use `UiTableSorter` for sortable headers;
+- use `UiTable` footer slots for summary, page-size controls, export, and pagination;
+- set `size="small"` on `UiLink` inside table cells so links match table body typography.
+
+Suggested query names:
+
+- `q` for text search;
+- `status`, `managerId`, `dateFrom`, `dateTo` for filters;
+- `sort` and `direction` for sorting;
+- `page` and `pageSize` for pagination.
+
+## External Documentation Patterns
+
+These references are useful when extending the profiles and examples in this package:
+
+- [shadcn/ui Data Table source](https://github.com/shadcn-ui/ui/blob/main/apps/v4/content/docs/components/radix/data-table.mdx)
+  documents a scenario-first table build: base table, row actions, pagination, sorting,
+  filtering, visibility, row selection, and reusable table pieces.
+- [shadcn/ui LLMs.txt source](https://github.com/shadcn-ui/ui/blob/main/apps/v4/public/llms.txt)
+  is a compact AI entry point with library overview and links to component docs.
+- [shadcn/ui Registry MCP source](https://github.com/shadcn-ui/ui/blob/main/apps/v4/content/docs/registry/mcp.mdx)
+  describes how component registries expose descriptions and dependencies to AI tools.
+- [Nuxt UI v4 Table source](https://github.com/nuxt/ui/blob/v4/docs/content/docs/2.components/table.md)
+  documents table state, sorting, pagination, loading, empty state, slots, and advanced flows.
+- [Nuxt UI v4 AI docs](https://github.com/nuxt/ui/tree/v4/docs/content/docs/1.getting-started/7.ai)
+  shows MCP, LLMs.txt, and AI skills documentation in a Vue UI library.
+- [Nuxt UI v2 Table source](https://github.com/nuxt/ui/blob/v2/docs/content/2.components/table.md)
+  is useful for explicit searchable, paginable, manual sorting, and reactive query examples.
+- [PrimeVue DataTable docs](https://primevue.org/datatable/)
+  are useful for Vue table patterns around filtering, pagination, selection, lazy loading, empty,
+  loading, and accessibility.
+- [PrimeVue LLMs docs](https://primevue.org/llms)
+  show an AI-oriented documentation endpoint for a Vue component library.
 
 ## What AI Needs In A Good Component Profile
 

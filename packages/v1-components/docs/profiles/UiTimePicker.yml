@@ -2,6 +2,7 @@ component: UiTimePicker
 summary: >
   UiTimePicker is a time input component that combines textbox-like entry with a list of
   normalized time variants and bounds.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitimepicker--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -44,3 +45,25 @@ geometry:
   layout: combobox wrapper with floating menu
   root_display: block
   width_behavior: follows normal block flow for the wrapper, with a floating dropdown layer
+
+behavior:
+  notes:
+    - interval and timeVariants shape the selectable list.
+    - minTime and maxTime constrain valid selection.
+    - textboxOptions should be used for trigger sizing and placeholder behavior.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiTextbox
+  patterns:
+    - title: Time field
+      notes: Wrap in UiField for forms and settings screens.
+    - title: Bounded scheduler input
+      notes: Use minTime, maxTime, and interval for schedules instead of allowing arbitrary text.
+
+ai_notes:
+  do:
+    - Use for semantic time values and schedule inputs.
+  avoid:
+    - Do not use UiTextbox alone when the value must be a valid bounded time.

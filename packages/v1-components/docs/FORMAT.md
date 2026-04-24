@@ -19,12 +19,17 @@ A good profile should let an agent answer these questions without opening the so
 
 Recommended filename: `<ComponentName>.yml`
 
+Top-level `usage` should point to the published Storybook docs page for version `0.9.18`.
+If the component is a subcomponent without its own Storybook page, point `usage` to the nearest
+parent or composition page that demonstrates it, for example table parts point to `UiTable`.
+
 Minimal shape:
 
 ```yml
 component: UiComponent
 summary: >
   A short description of the component.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/intro--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

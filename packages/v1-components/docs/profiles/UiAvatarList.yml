@@ -2,6 +2,7 @@ component: UiAvatarList
 summary: >
   UiAvatarList renders a compact list of avatars with consistent sizing. It is useful for showing
   several users or actors in a narrow area.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiavatar--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -38,5 +39,19 @@ geometry:
 ai_notes:
   do:
     - Use for compact grouped identity display.
+    - Keep the list short enough to scan.
   avoid:
     - Do not use it as a replacement for a full people list.
+
+behavior:
+  notes:
+    - avatars prop should contain concise identity data, not full profile records.
+    - size should match the density of the surrounding table, menu, or card.
+
+composition:
+  works_well_with:
+    - UiAvatar
+    - UiTooltip
+  patterns:
+    - title: Compact collaborators
+      notes: Use when several actors must be shown in a narrow table or header area.

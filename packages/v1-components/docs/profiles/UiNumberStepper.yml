@@ -2,6 +2,7 @@ component: UiNumberStepper
 summary: >
   UiNumberStepper is a numeric input with increase and decrease controls. It is built for
   constrained numeric entry where arrowing and step-based changes matter.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uinumberstepper--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -50,3 +51,21 @@ behavior:
   notes:
     - Can clamp values into range.
     - Supports horizontal and vertical direction.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiTextbox
+    - UiSlider
+  patterns:
+    - title: Exact bounded number
+      notes: Use for quantities, limits, delays, and other settings where increment and decrement controls are useful.
+    - title: Numeric filter
+      notes: In table filters, keep the value in query parameters when routing exists.
+
+ai_notes:
+  do:
+    - Use for precise numeric settings with known min, max, or step.
+    - Prefer nullable when clearing the value is a valid state.
+  avoid:
+    - Do not use when the value is an identifier, phone, code, or other numeric-looking text.

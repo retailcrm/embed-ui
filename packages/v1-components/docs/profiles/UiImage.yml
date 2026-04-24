@@ -2,6 +2,7 @@ component: UiImage
 summary: >
   UiImage is a generic image display component with optional resize and crop hints.
   Use it for regular visual content rather than identity avatars.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiimage--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -37,3 +38,19 @@ geometry:
 ai_notes:
   do:
     - Use UiImage for general media and UiAvatar for people or identity.
+    - Provide alt text unless the image is purely decorative in the host context.
+  avoid:
+    - Do not use for status icons or avatars.
+
+behavior:
+  notes:
+    - resize and crop are image processing hints, not layout containers.
+    - Intrinsic image dimensions still matter unless the parent constrains size.
+
+composition:
+  works_well_with:
+    - UiAvatar
+    - UiSkeleton
+  patterns:
+    - title: Content image
+      notes: Use for product, attachment, or preview images where real media is the content.

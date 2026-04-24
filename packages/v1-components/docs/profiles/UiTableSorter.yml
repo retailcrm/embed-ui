@@ -2,6 +2,7 @@ component: UiTableSorter
 summary: >
   UiTableSorter is a compact sort control primitive for custom table head content.
   Use it when header rendering is composed manually and sorting state must be shown explicitly.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitable--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -41,5 +42,15 @@ geometry:
 ai_notes:
   do:
     - Pair it with explicit sort state in screen logic.
+    - Persist sort key and direction in URL query parameters when the table is routable.
+    - Reset the current page to 1 when sorting changes.
   avoid:
     - Do not use it as a generic icon-only control outside table headers.
+
+composition:
+  works_well_with:
+    - UiTableColumn
+    - UiTableHeadCell
+  patterns:
+    - title: Column label slot
+      notes: Place in UiTableColumn label slot for normal sortable columns.

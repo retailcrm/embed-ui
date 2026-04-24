@@ -2,6 +2,7 @@ component: UiSelectOption
 summary: >
   UiSelectOption is the base selectable child of UiSelect. It represents one option node
   in the select option tree.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiselect--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -42,3 +43,21 @@ geometry:
 ai_notes:
   do:
     - Use as the default child node of UiSelect.
+    - Provide stable value and human-readable label.
+    - Use description for secondary explanation, not for long help text.
+  avoid:
+    - Do not put arbitrary controls inside options.
+
+behavior:
+  notes:
+    - disabled prevents selection while keeping the option visible.
+    - counter and accent help scan dense option lists.
+    - In filterable selects, label and description participate in matching.
+
+composition:
+  works_well_with:
+    - UiSelect
+    - UiSelectOptionGroup
+  patterns:
+    - title: Status filter option
+      notes: Use concise labels that match the visible table status names.

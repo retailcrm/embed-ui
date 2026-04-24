@@ -2,6 +2,7 @@ component: UiCalendar
 summary: >
   UiCalendar is the date selection primitive behind date and date-range flows. It supports
   single and range selection, multiple visual appearances, and locale-sensitive behavior.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uicalendar--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -46,3 +47,13 @@ ai_notes:
     - Use UiCalendar when inline calendar selection is the actual UI.
   avoid:
     - Use UiDatePicker instead if users expect textbox plus popup behavior.
+
+composition:
+  works_well_with:
+    - UiDatePicker
+    - UiField
+  patterns:
+    - title: Inline calendar panel
+      notes: Use in dashboards or popover content when the calendar itself should remain visible.
+    - title: Date input
+      notes: Prefer UiDatePicker for normal forms and filters because it provides the textbox trigger and popper behavior.

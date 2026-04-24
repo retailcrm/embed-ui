@@ -2,6 +2,7 @@ component: UiAddButton
 summary: >
   UiAddButton is an action-first button for add or create flows. It is close to UiButton,
   but tuned for "create another item" scenarios and supports small descriptive additions.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiaddbutton--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -53,5 +54,17 @@ behavior:
 ai_notes:
   do:
     - Use for create and add flows rather than generic submit actions.
+    - Use description only when it clarifies what will be added.
   avoid:
     - Do not replace a plain UiButton unless the add semantics are intentional.
+
+composition:
+  works_well_with:
+    - UiButton
+    - UiPageHeader
+    - UiToolbarButton
+  patterns:
+    - title: Add item action
+      notes: Use near a list, empty state, or repeatable form section where the action creates another item.
+    - title: Page primary create
+      notes: UiButton in UiPageHeader is often better for a main create action; use UiAddButton for local add-another flows.

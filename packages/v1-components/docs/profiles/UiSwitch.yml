@@ -2,6 +2,7 @@ component: UiSwitch
 summary: >
   UiSwitch is a compact boolean toggle control. It is the most concise choice for on or off state
   when checkbox semantics would feel visually heavy.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiswitch--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -35,3 +36,23 @@ geometry:
   layout: inline switch control
   root_display: inline-block
   width_behavior: content-sized by default
+
+behavior:
+  notes:
+    - Best for immediate boolean settings, not for long-form confirmation choices.
+    - Disabled blocks interaction while preserving the current state visually.
+
+composition:
+  works_well_with:
+    - UiField
+  patterns:
+    - title: Settings row
+      notes: Pair with a visible label and optional description so the on or off state is unambiguous.
+  avoid:
+    - Do not use without a nearby label; the switch alone does not explain what will change.
+
+ai_notes:
+  do:
+    - Use for compact feature toggles and enable or disable settings.
+  avoid:
+    - Do not use for multi-select lists or legal acknowledgements; use UiCheckbox.

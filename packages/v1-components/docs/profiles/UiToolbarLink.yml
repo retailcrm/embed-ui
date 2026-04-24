@@ -1,6 +1,7 @@
 component: UiToolbarLink
 summary: >
   UiToolbarLink is a compact toolbar-oriented link. It is the link counterpart to UiToolbarButton.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitoolbarlink--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -30,3 +31,22 @@ geometry:
   layout: compact toolbar link
   root_display: inline-flex
   width_behavior: content-sized by default
+
+behavior:
+  notes:
+    - Delegates link semantics to UiLink.
+    - Use only for real navigation or link-shaped actions in dense toolbar areas.
+
+composition:
+  works_well_with:
+    - UiToolbarButton
+    - UiLink
+  patterns:
+    - title: Toolbar navigation
+      notes: Use for compact links next to toolbar buttons when the action navigates.
+
+ai_notes:
+  do:
+    - Use in toolbar zones when a compact real link is needed.
+  avoid:
+    - Do not use for ordinary inline content links; use UiLink.

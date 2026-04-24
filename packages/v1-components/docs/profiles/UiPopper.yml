@@ -3,6 +3,7 @@ summary: >
   UiPopper is the low-level floating layer used for tooltips, dropdowns, and popups.
   It controls visibility, teleport container, positioning, and trigger logic, but is usually
   consumed as part of a higher-level component rather than as a standalone content wrapper.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uipopper--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
