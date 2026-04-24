@@ -3,6 +3,7 @@ summary: >
   UiTab is a declarative child node for UiTabGroup. It does not render meaningful
   standalone UI by itself; instead, UiTabGroup consumes its props and slots to build
   tab buttons, overflow menu items, and optional tab panel content.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitab--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

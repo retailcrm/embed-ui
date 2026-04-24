@@ -2,6 +2,7 @@ component: UiLink
 summary: >
   UiLink is the main text-link component for inline navigation and inline actions that should
   still read as links rather than buttons.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uilink--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -21,6 +22,7 @@ api:
     - name: external
     - name: appearance
     - name: size
+      notes: Defaults to body text. Use size="small" inside UiTable cells to match table body typography.
     - name: accent
     - name: ellipsis
   slots:
@@ -44,8 +46,24 @@ geometry:
   root_display: inline-flex
   width_behavior: content-sized by default
 
+composition:
+  works_well_with:
+    - UiTable
+    - UiToolbarLink
+    - UiButton
+  patterns:
+    - title: Table primary link
+      notes: Use size="small", accent, and ellipsis for the primary object link in a table cell.
+    - title: External link
+      notes: Use external when the link opens outside the current extension context.
+    - title: Button-shaped navigation
+      notes: Use UiButton with href when the navigation should visually read as a command button.
+
 ai_notes:
   do:
     - Use UiLink for real link semantics and inline navigation.
+    - Use size="small" for links inside UiTable body cells.
+    - Use ellipsis when a table-cell link can contain long names.
   avoid:
     - Do not use UiLink where the action should read as a button.
+    - Do not leave table-cell links at the default body size unless the link is intentionally emphasized.

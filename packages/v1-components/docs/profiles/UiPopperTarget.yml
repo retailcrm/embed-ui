@@ -2,6 +2,7 @@ component: UiPopperTarget
 summary: >
   UiPopperTarget is the target-side wrapper that registers a DOM element in popper context.
   A good mental model is "this node is the anchor", not "this is a visual layout wrapper".
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uipopper--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

@@ -3,6 +3,7 @@ summary: >
   UiPageHeader is a page or major section header with an optional inline addon next to the title
   and an optional actions area on the right. In display state it renders the title as a semantic h1;
   in edit state it switches to UiTextbox.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uipageheader--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

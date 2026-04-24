@@ -1,6 +1,7 @@
 component: UiLoader
 summary: >
   UiLoader displays loading progress or waiting state. It can be used inline or as an overlay.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiskeleton--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -35,4 +36,25 @@ geometry:
 
 ai_notes:
   do:
+    - Use overlay=true when the loader should dim the covered page or module content.
     - Use overlay or fixed only when the loader should escape normal inline flow.
+    - Preserve surrounding filters and headers when only the content area is loading.
+  avoid:
+    - Do not create custom dimming markup around UiLoader; use the overlay prop.
+    - Do not replace content-shaped loading with a page-wide loader when UiSkeleton would communicate layout better.
+
+behavior:
+  notes:
+    - overlay=true adds the dimmed backdrop for covered content.
+    - fixed and overlay change the loader from inline feedback into a surface-covering state.
+    - diameter and thickness tune the visual weight of the indicator.
+
+composition:
+  works_well_with:
+    - UiSkeleton
+    - UiAlert
+  patterns:
+    - title: Table loading
+      notes: Keep filters visible and show loading in the table area.
+    - title: Blocking operation
+      notes: Use overlay only when interaction with the covered content must be blocked.

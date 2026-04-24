@@ -1,6 +1,7 @@
 component: UiSelectOptionGroup
 summary: >
   UiSelectOptionGroup groups related UiSelectOption nodes under a shared label.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiselect--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -36,3 +37,19 @@ geometry:
 ai_notes:
   do:
     - Use to structure large option lists inside UiSelect.
+    - Keep group labels short and categorical.
+  avoid:
+    - Do not use groups for two or three obvious flat options.
+
+behavior:
+  notes:
+    - Group visibility can change when the parent select is filterable.
+    - The group itself is not selectable; child UiSelectOption nodes provide selection.
+
+composition:
+  works_well_with:
+    - UiSelect
+    - UiSelectOption
+  patterns:
+    - title: Large grouped select
+      notes: Use for managers by team, statuses by category, or locations by region.

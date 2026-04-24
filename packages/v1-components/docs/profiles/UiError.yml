@@ -2,6 +2,7 @@ component: UiError
 summary: >
   UiError is a compact error-state component for short error messages or fallback states.
   It is intended for concise inline error display rather than large alert copy.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uierror--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -14,6 +15,19 @@ use_when:
 
 avoid_when:
   - You need a richer feedback block, use UiAlert or UiInfobox instead.
+
+api:
+  key_props:
+    - name: message
+      notes: Fallback error text when default slot is not provided.
+    - name: align
+      notes: left or right text alignment.
+    - name: ellipsis
+      notes: Truncates long error text instead of wrapping.
+  slots:
+    - name: default
+      zone: error-content
+      creates: Error text or compact fallback content.
 
 rendered_structure:
   descriptive_only: true
@@ -30,3 +44,16 @@ geometry:
 ai_notes:
   do:
     - Use for compact error presentation.
+    - Keep the message short and specific.
+  avoid:
+    - Do not use for multi-paragraph explanations or page-level failures.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiAlert
+  patterns:
+    - title: Field or section error
+      notes: Use where the user needs to see a concise local error message.
+    - title: Page-level failure
+      notes: Use UiAlert or UiInfobox instead when the error needs explanation and actions.

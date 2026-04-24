@@ -2,6 +2,7 @@ component: UiCollapseGroup
 summary: >
   UiCollapseGroup coordinates several collapse boxes and tracks which box is active.
   It is useful when multiple disclosures should behave as one grouped unit.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uicollapsebox--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -37,3 +38,17 @@ geometry:
 ai_notes:
   do:
     - Use with UiCollapseBox when grouped expansion matters.
+  avoid:
+    - Do not introduce a group for a single collapsible section.
+
+behavior:
+  notes:
+    - activeBoxId tracks which child section is active.
+    - The component is mostly coordination logic rather than a visual container.
+
+composition:
+  works_well_with:
+    - UiCollapseBox
+  patterns:
+    - title: Accordion-like settings
+      notes: Use when users should move between several related expandable sections.

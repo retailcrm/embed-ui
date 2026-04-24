@@ -2,6 +2,7 @@ component: UiModalWindow
 summary: >
   UiModalWindow is the main centered modal container. It supports open state, closability,
   appearance variants, fullscreen and responsive behavior, and dialog roles.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uimodalwindow--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -42,3 +43,27 @@ geometry:
   layout: teleported modal layer with centered surface
   root_display: flex
   width_behavior: viewport-covering overlay with content-sized or responsive surface
+
+behavior:
+  notes:
+    - opened controls modal visibility.
+    - closable should be false only when the user must complete or acknowledge a blocking flow.
+    - fullscreen and responsive affect surface sizing rather than modal semantics.
+
+composition:
+  works_well_with:
+    - UiButton
+    - UiField
+    - UiModalWindowSurface
+  patterns:
+    - title: Confirmation dialog
+      notes: Keep copy concise and put primary and secondary actions in the footer.
+    - title: Focused form
+      notes: Use for short forms that should not navigate away from the current page.
+
+ai_notes:
+  do:
+    - Use for focused blocking tasks and confirmations.
+    - Provide clear title, body, and footer actions when the modal asks the user to decide.
+  avoid:
+    - Do not use as a general page layout or for long workflows that deserve a full page or sidebar.

@@ -3,6 +3,7 @@ summary: >
   UiSelect is a dropdown component for single-select and multi-select flows. It combines
   a textbox-like trigger with a popper-based option layer. For a correct mental model,
   read it together with UiPopper, UiPopperConnector, and UiPopperTarget.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiselect--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

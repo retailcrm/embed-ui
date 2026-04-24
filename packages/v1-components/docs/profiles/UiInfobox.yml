@@ -2,6 +2,7 @@ component: UiInfobox
 summary: >
   UiInfobox is a richer explanatory block for inline product, warning, or helper content.
   It can be closable and expandable.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiinfobox--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -43,3 +44,22 @@ geometry:
 ai_notes:
   do:
     - Use UiInfobox for richer guidance blocks, not tiny alerts.
+    - Use expandable when secondary explanation would otherwise make the screen noisy.
+  avoid:
+    - Do not use for transient success or error states; use UiAlert.
+
+behavior:
+  notes:
+    - shown controls visibility.
+    - expandable and expanded control progressive disclosure.
+    - warning changes the visual tone for cautionary guidance.
+
+composition:
+  works_well_with:
+    - UiAlert
+    - UiCollapse
+  patterns:
+    - title: Product guidance
+      notes: Use near the related form or table, not as a decorative card.
+    - title: Long explanation
+      notes: Prefer expandable content when the text is useful but not always needed.

@@ -2,6 +2,7 @@ component: UiTransition
 summary: >
   UiTransition is a transition wrapper for animated mount, unmount, and visibility flows.
   Use it to express motion without switching to raw transition markup.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uialert--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -25,3 +26,28 @@ geometry:
   layout: no standalone layout of its own
   root_display: none
   width_behavior: defined entirely by the transitioned child
+
+api:
+  key_props:
+    - name: name
+    - name: appear
+
+behavior:
+  notes:
+    - Adds transition semantics around the slotted child.
+    - Does not create layout or styling by itself.
+
+composition:
+  works_well_with:
+    - UiAlert
+    - UiCollapse
+    - UiModalWindow
+  patterns:
+    - title: Animated presence
+      notes: Use when content should mount or unmount with the shared transition behavior.
+
+ai_notes:
+  do:
+    - Use around one logical child whose own layout should remain responsible for size.
+  avoid:
+    - Do not use as a layout wrapper or visual container.

@@ -2,6 +2,7 @@ component: UiCollapse
 summary: >
   UiCollapse is a low-level show and hide container for expandable content. It controls
   whether content is hidden or disposed and how the transition behaves.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uicollapse--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -38,3 +39,19 @@ ai_notes:
     - Use UiCollapse as a primitive for expandable content regions.
   avoid:
     - Do not use it when a full disclosure component is the actual need.
+
+behavior:
+  notes:
+    - expanded controls visibility.
+    - collapseBehaviour controls whether collapsed content stays mounted or is disposed.
+    - duration controls transition timing.
+
+composition:
+  works_well_with:
+    - UiCollapseBox
+    - UiCollapseGroup
+  patterns:
+    - title: Custom disclosure
+      notes: Use UiCollapse when the trigger and header are custom and only the body transition is needed.
+    - title: Standard disclosure box
+      notes: Use UiCollapseBox when the screen needs built-in header, icon, and box chrome.

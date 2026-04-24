@@ -3,6 +3,7 @@ summary: >
   UiField is a remote-only form field wrapper. It connects a label and an inner control through
   id and ARIA data, supports a hint tooltip near the label, and exposes an addon zone on the
   right side of the headline.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uifield--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

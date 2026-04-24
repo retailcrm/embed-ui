@@ -3,6 +3,7 @@ summary: >
   UiTabGroup is the navigation container for UiTab children or simple tab items.
   It manages active tab selection by string id, keyboard navigation, optional overflow
   into a dropdown menu, and optional tabpanel rendering from the active UiTab content slot.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitab--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

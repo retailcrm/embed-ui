@@ -2,6 +2,7 @@ component: UiAlert
 summary: >
   UiAlert is a compact contextual message block for status, warning, success, and danger feedback.
   It can be shown inline in normal page flow and can be closable.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uialert--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -44,5 +45,18 @@ behavior:
 ai_notes:
   do:
     - Use UiAlert for inline feedback that should stay in normal layout flow.
+    - Keep the message close to the section or form it describes.
   avoid:
     - Do not use it as a replacement for modal confirmation.
+    - Do not use for field-level validation when UiField or UiError is more precise.
+
+composition:
+  works_well_with:
+    - UiButton
+    - UiInfobox
+    - UiError
+  patterns:
+    - title: Section-level feedback
+      notes: Place above or inside the affected section, not at the page top by default.
+    - title: Recoverable error
+      notes: Pair with a retry or fix action when the user can recover immediately.

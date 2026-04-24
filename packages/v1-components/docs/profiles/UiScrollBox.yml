@@ -2,6 +2,7 @@ component: UiScrollBox
 summary: >
   UiScrollBox is a scrollable container for constrained content areas. Use it when content
   should remain inside a dedicated scrolling region instead of growing the whole page.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiscrollbox--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -29,3 +30,25 @@ geometry:
   layout: scroll container
   root_display: block
   width_behavior: stretches to the size of its layout context
+
+behavior:
+  notes:
+    - Use only when a bounded region should scroll independently.
+    - The parent layout must provide meaningful height or width constraints.
+
+composition:
+  works_well_with:
+    - UiModalWindow
+    - UiModalSidebar
+    - UiTable
+  patterns:
+    - title: Modal body scrolling
+      notes: Use when modal content is long but header and footer should remain accessible.
+    - title: Constrained list
+      notes: Use for long menu or panel content when full page scrolling is undesirable.
+
+ai_notes:
+  do:
+    - Give the surrounding layout a stable height before relying on scrolling.
+  avoid:
+    - Do not wrap normal page content in a scroll container by default.

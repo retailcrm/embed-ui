@@ -3,6 +3,7 @@ summary: >
   UiRadioSwitchOption is the declarative option child of UiRadioSwitch. It is the
   richer alternative to the plain options array and is used when one option needs
   custom icon, label, description, or selected-state checkmark content.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiradioswitch--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

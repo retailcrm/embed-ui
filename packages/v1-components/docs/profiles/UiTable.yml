@@ -2,6 +2,7 @@ component: UiTable
 summary: >
   UiTable is the main data table component. It supports row rendering, grouping, expandable rows,
   footer areas, and row-level interactions.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitable--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -10,6 +11,9 @@ public_import:
 
 related_components:
   - UiTableColumn
+  - UiTableFooterButton
+  - UiTableFooterSection
+  - UiTableSorter
 
 use_when:
   - You need structured tabular data.
@@ -36,6 +40,18 @@ api:
     - name: footer
       zone: footer
       creates: Full footer area.
+    - name: footer-summary
+      zone: structured-footer
+      creates: Summary or selected-count area above table footer controls.
+    - name: footer-page-size
+      zone: structured-footer
+      creates: Page-size controls in the footer control row.
+    - name: footer-export
+      zone: structured-footer
+      creates: Export controls in the footer control row.
+    - name: footer-pagination
+      zone: structured-footer
+      creates: Pagination controls in the footer control row.
     - name: group-head
       zone: group-head
       creates: Group heading content.
@@ -75,6 +91,8 @@ geometry:
     - Root fills available width.
     - fixed=true switches table-layout from auto to fixed.
     - bordered=true adds border and corner rounding through CSS variables.
+    - Filters and search controls should usually be placed above the table, not in the table root.
+    - Table-scoped pagination belongs in footer slots when custom controls are needed.
 
 styling:
   notes:
@@ -150,3 +168,32 @@ styling:
       size: 12px
       line_height: 14px
       weight: 400
+
+composition:
+  filters:
+    notes:
+      - Keep filter controls directly above UiTable so the relationship between filters and rows is obvious.
+      - Use UiTextbox for text search and UiSelect or compact toggle controls for finite filters.
+      - Persist filter values in URL query parameters when routing is available.
+  sorting:
+    notes:
+      - Use UiTableSorter inside a UiTableColumn label slot for sortable columns.
+      - Reset pagination to the first page when sorting changes.
+      - Persist sort key and direction in URL query parameters when routing is available.
+  pagination:
+    notes:
+      - Use footer-summary, footer-page-size, footer-export, and footer-pagination slots for structured footer controls.
+      - Persist page and page size in URL query parameters when routing is available.
+      - Reset page to 1 when filters or sorting change.
+
+ai_notes:
+  do:
+    - Read ../AI.md table-screen rules before generating complete table screens.
+    - Provide row-key for stable row identity.
+    - Put table filters above the table.
+    - Use structured footer slots for summary, page-size controls, export, and pagination.
+    - Use UiTableSorter for sortable headers.
+  avoid:
+    - Do not hide table filters in page header actions.
+    - Do not put pagination only in local state when the screen has routable result sets.
+    - Do not import table internals from host or src paths.

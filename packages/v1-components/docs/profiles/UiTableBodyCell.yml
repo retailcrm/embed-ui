@@ -2,6 +2,7 @@ component: UiTableBodyCell
 summary: >
   UiTableBodyCell is the low-level body cell primitive used inside UiTable rows.
   Use it only for custom table layouts built from public table parts.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitable--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -43,5 +44,14 @@ geometry:
 ai_notes:
   do:
     - Keep it inside UiTable row composition.
+    - Use theme="group" only for group header style cells.
   avoid:
     - Do not use it as a generic box or layout wrapper.
+
+composition:
+  works_well_with:
+    - UiTable
+    - UiTableColumn
+  patterns:
+    - title: Custom row structure
+      notes: Prefer UiTableColumn cell slots first; use UiTableBodyCell only for low-level custom rows.
