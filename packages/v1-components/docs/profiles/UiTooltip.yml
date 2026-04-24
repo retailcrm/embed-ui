@@ -2,6 +2,7 @@ component: UiTooltip
 summary: >
   UiTooltip is the tooltip-specialized floating layer built on top of popper mechanics.
   Use it for compact helper content anchored to one target.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitooltip--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -41,3 +42,23 @@ geometry:
 ai_notes:
   do:
     - Use UiTooltip for tooltip semantics and UiPopper for lower-level floating behavior.
+    - Keep tooltip content short and non-essential.
+  avoid:
+    - Do not put forms, tables, or multi-step interactions in tooltips.
+
+behavior:
+  notes:
+    - visible can control display explicitly.
+    - targetTriggers and popperTriggers define how the tooltip opens and closes.
+    - placement controls the preferred floating position.
+
+composition:
+  works_well_with:
+    - UiPopperConnector
+    - UiPopperTarget
+    - UiButton
+  patterns:
+    - title: Icon helper
+      notes: Pair with an icon-only or compact control when a short explanation is needed.
+    - title: Truncated text hint
+      notes: Use to reveal full text only when the visible cell or label is intentionally truncated.

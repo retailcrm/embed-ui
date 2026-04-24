@@ -4,6 +4,7 @@ summary: >
   designed for short always-visible choice sets such as weekdays, filters, or compact
   mode flags where classic checkboxes would feel visually heavy. For richer option
   markup, compose it with UiToggleGroupOption instead of relying only on the options array.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitogglegroup--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

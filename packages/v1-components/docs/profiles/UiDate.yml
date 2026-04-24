@@ -2,6 +2,7 @@ component: UiDate
 summary: >
   UiDate is a display component for formatted date or date-time output. It is for presenting
   date values, not for editing them.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uidate--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -36,3 +37,19 @@ geometry:
 ai_notes:
   do:
     - Use UiDate for formatted output and UiDatePicker for input.
+    - Use withTime only when the time changes user interpretation.
+  avoid:
+    - Do not use for editable date fields or filter controls.
+
+behavior:
+  notes:
+    - Renders semantic time output for display.
+    - locale should be explicit when the surrounding screen uses a specific locale.
+
+composition:
+  works_well_with:
+    - UiTable
+    - UiDatePicker
+  patterns:
+    - title: Table date
+      notes: Use plain formatted output in tables; split date and time into separate lines only for compact scanning.

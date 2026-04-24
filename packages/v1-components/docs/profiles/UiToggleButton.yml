@@ -4,6 +4,7 @@ summary: >
   native button shape and methods, but the pressed state is controlled externally and
   can be used either for a standalone toggle or as the visual basis of segmented groups
   such as UiToggleGroup.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitogglebutton--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

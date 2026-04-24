@@ -2,6 +2,7 @@ component: UiTextbox
 summary: >
   UiTextbox is the base text and numeric input component. It covers single-line input,
   textarea mode, numeric and decimal input, plus prefix, suffix, icon zones, and a clear action.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitextbox--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

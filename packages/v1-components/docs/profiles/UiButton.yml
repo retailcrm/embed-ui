@@ -3,6 +3,7 @@ summary: >
   UiButton is the main action component in the library. It covers primary, secondary,
   tertiary, and outlined use cases, can render as either a button or an anchor,
   and adapts well to text-plus-icon and icon-only content.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uibutton--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

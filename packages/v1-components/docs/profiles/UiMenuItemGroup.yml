@@ -2,6 +2,7 @@ component: UiMenuItemGroup
 summary: >
   UiMenuItemGroup groups related menu items and exposes dedicated zones for group label
   and quantity metadata.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/uimenuitem--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -48,3 +49,16 @@ geometry:
 ai_notes:
   do:
     - Use for grouped menu structure instead of manual heading-plus-list markup.
+  avoid:
+    - Do not group unrelated actions only for visual spacing.
+
+behavior:
+  notes:
+    - The group organizes nested menu rows but does not manage selection by itself.
+
+composition:
+  works_well_with:
+    - UiMenuItem
+  patterns:
+    - title: Grouped options
+      notes: Use label and quantity slots to clarify large option groups.

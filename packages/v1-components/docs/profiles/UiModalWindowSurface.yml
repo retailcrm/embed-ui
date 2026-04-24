@@ -2,6 +2,7 @@ component: UiModalWindowSurface
 summary: >
   UiModalWindowSurface is the lower-level modal surface API behind modal window flows.
   Use it when you need modal surface behavior with more explicit composition control.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uimodalwindow--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -39,3 +40,21 @@ geometry:
   layout: teleported modal overlay
   root_display: flex
   width_behavior: viewport-covering overlay with content-sized or responsive surface
+
+behavior:
+  notes:
+    - Lower-level surface keeps modal mechanics while leaving more composition responsibility to the caller.
+    - Use role intentionally for dialog or alertdialog flows.
+
+composition:
+  works_well_with:
+    - UiModalWindow
+  patterns:
+    - title: Custom modal shell
+      notes: Use only when UiModalWindow does not expose enough structure for the required modal.
+
+ai_notes:
+  do:
+    - Prefer UiModalWindow for ordinary centered dialogs.
+  avoid:
+    - Do not choose the surface API just to change simple body content.

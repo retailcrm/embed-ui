@@ -3,6 +3,7 @@ summary: >
   UiToggleGroupOption is the declarative option child of UiToggleGroup. It is the
   richer alternative to the plain options array and is used when one segment needs
   custom icon, custom label markup, or a non-trivial value.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitogglegroup--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

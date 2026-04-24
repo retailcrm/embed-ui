@@ -2,6 +2,7 @@ component: UiDatePicker
 summary: >
   UiDatePicker combines textbox-like date display, popper behavior, and calendar selection.
   It supports single-date and range flows, constraints, and quick options.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uidatepicker--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -55,5 +56,17 @@ behavior:
 ai_notes:
   do:
     - Prefer UiDatePicker for typed or popup date input.
+    - Use textboxOptions for trigger sizing and placeholder behavior instead of custom trigger markup.
   avoid:
     - Do not use UiCalendar directly if a textbox trigger is expected.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiTable
+    - UiCalendar
+  patterns:
+    - title: Date filter
+      notes: Use in the filter area above UiTable for date and date-range filters; persist selected values in URL query parameters when routing exists.
+    - title: Form date input
+      notes: Wrap in UiField so label, hint, and validation are preserved.

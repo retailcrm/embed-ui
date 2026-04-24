@@ -1,6 +1,7 @@
 component: UiTag
 summary: >
   UiTag is a compact label or status pill. It can be interactive, removable, pinned, or visually saturated.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitag--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -39,3 +40,27 @@ geometry:
   layout: wrapper around a content-sized tag pill
   root_display: block
   width_behavior: root follows normal block flow, inner tag stays content-sized
+
+behavior:
+  notes:
+    - interactive makes the tag feel actionable; use it only when click handling exists.
+    - removable should emit remove and needs a clear removal consequence.
+    - background is useful for semantic status palettes, but keep contrast readable.
+
+composition:
+  works_well_with:
+    - UiTable
+    - UiSelectOption
+    - UiMenuItem
+  patterns:
+    - title: Table status
+      notes: Use in UiTable cells for categorical states instead of raw colored text.
+    - title: Removable filter chip
+      notes: Use removable tags to show active filters when space allows.
+
+ai_notes:
+  do:
+    - Use for short statuses, categories, and active filter chips.
+    - Keep labels concise; tags should scan quickly.
+  avoid:
+    - Do not use as a full command button or as long explanatory text.

@@ -2,6 +2,7 @@ component: UiTableFooterButton
 summary: >
   UiTableFooterButton is a footer-scoped action control for custom table footer layouts.
   It behaves like a table-specific button primitive rather than a full replacement for UiButton.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitable--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -40,5 +41,16 @@ geometry:
 ai_notes:
   do:
     - Keep it in table footer usage.
+    - Use for page-size, pagination, export, and compact table-scoped footer actions.
   avoid:
     - Do not substitute it for general page-level actions.
+
+composition:
+  works_well_with:
+    - UiTableFooterSection
+    - UiTable
+  patterns:
+    - title: Pagination control
+      notes: Use inside footer-pagination slot for previous, next, and page controls.
+    - title: Page-size control
+      notes: Use inside footer-page-size slot for compact page-size choices.

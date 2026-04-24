@@ -2,6 +2,7 @@ component: UiSkeleton
 summary: >
   UiSkeleton displays a placeholder block for loading content. It supports text,
   rectangle and circle appearances with pulse or shimmer animation.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiskeleton--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -39,3 +40,21 @@ ai_notes:
     - Use text appearance for line placeholders.
     - Use circle appearance for avatar placeholders.
     - Override width or height only when the preset size is not enough.
+  avoid:
+    - Do not use for errors or empty states; skeletons mean content is still expected.
+
+behavior:
+  notes:
+    - appearance should approximate the eventual content shape.
+    - animation communicates loading; avoid excessive animated skeletons in dense screens.
+
+composition:
+  works_well_with:
+    - UiAvatar
+    - UiTable
+    - UiLoader
+  patterns:
+    - title: Loading rows
+      notes: Use text or rectangle skeletons where table or list rows will appear.
+    - title: Loading identity
+      notes: Use circle skeletons where avatars will appear.

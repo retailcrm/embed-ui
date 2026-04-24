@@ -2,6 +2,7 @@ component: UiToolbarButton
 summary: >
   UiToolbarButton is a compact button for toolbar zones. It shares action semantics with buttons
   but is tuned for dense toolbar layouts.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitoolbarbutton--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -35,3 +36,22 @@ geometry:
   layout: compact toolbar action
   root_display: inline-block
   width_behavior: content-sized by default
+
+behavior:
+  notes:
+    - Delegates button semantics to UiButton.
+    - Use for dense repeated toolbar actions, not primary form submission.
+
+composition:
+  works_well_with:
+    - UiToolbarLink
+    - UiButton
+  patterns:
+    - title: Compact action strip
+      notes: Use for secondary actions near tables, editors, or filter bars.
+
+ai_notes:
+  do:
+    - Use in toolbar zones where UiButton would be too visually heavy.
+  avoid:
+    - Do not use for the main page CTA; use UiButton.

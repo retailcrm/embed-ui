@@ -3,6 +3,7 @@ summary: >
   UiPopperConnector is a lightweight wrapper that gives target-side and popper-side parts
   a shared target context. It has almost no UI meaning on its own, but is often required
   for correct target-driven floating behavior.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uipopper--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'

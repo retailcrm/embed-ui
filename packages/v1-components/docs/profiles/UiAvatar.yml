@@ -2,6 +2,7 @@ component: UiAvatar
 summary: >
   UiAvatar renders a user or entity avatar with optional name, status, and link semantics.
   It is meant for compact identity display rather than generic image rendering.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uiavatar--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -44,5 +45,17 @@ behavior:
 ai_notes:
   do:
     - Use UiAvatar for identity display, not for general media.
+    - Provide name whenever possible so fallback identity stays meaningful.
   avoid:
     - Do not use it where UiImage is the better semantic fit.
+
+composition:
+  works_well_with:
+    - UiAvatarList
+    - UiTable
+    - UiMenuItem
+  patterns:
+    - title: Table identity cell
+      notes: Pair with UiLink size="small" when an avatar appears next to a linked user or customer name.
+    - title: Menu identity row
+      notes: Use in UiMenuItem avatar slot for users, customers, or accounts.

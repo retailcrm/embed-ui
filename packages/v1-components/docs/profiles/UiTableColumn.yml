@@ -2,6 +2,7 @@ component: UiTableColumn
 summary: >
   UiTableColumn declares one logical column inside UiTable. It carries label and sizing metadata
   and defines how header labels and cells render.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitable--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -48,3 +49,25 @@ geometry:
   layout: structural table column
   root_display: table-column
   width_behavior: controlled by table layout and width props on the parent table
+
+composition:
+  works_well_with:
+    - UiTable
+    - UiTableSorter
+    - UiLink
+    - UiTag
+  patterns:
+    - title: Primary link column
+      notes: Put the row's main UiLink in the first meaningful text column and set link size to small.
+    - title: Sortable header
+      notes: Use the label slot with UiTableSorter when the column supports sorting.
+    - title: Status column
+      notes: Use UiTag for categorical statuses instead of raw colored text.
+
+ai_notes:
+  do:
+    - Set minWidth for important text columns so generated tables remain scannable.
+    - Use align="right" for numbers, money, and percentages.
+    - Use trim only for narrow checkbox, icon, or action columns.
+  avoid:
+    - Do not place filters inside column labels; filters belong above the table.

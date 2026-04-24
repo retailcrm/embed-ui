@@ -2,6 +2,7 @@ component: UiCheckbox
 summary: >
   UiCheckbox is a boolean or set-membership control. It supports single boolean-like usage
   as well as model-plus-value patterns for checkbox groups.
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uicheckbox--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -49,5 +50,19 @@ behavior:
 ai_notes:
   do:
     - Use for boolean choice or checkbox-group membership.
+    - Use indeterminate for parent selection such as "select all visible rows".
   avoid:
     - Do not use for mutually exclusive options.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiTable
+    - UiTableColumn
+  patterns:
+    - title: Form boolean
+      notes: Wrap in UiField when the checkbox needs a persistent label, hint, or validation text.
+    - title: Table row selection
+      notes: Use in the first narrow UiTableColumn for row selection; use indeterminate in the header checkbox for partial selection.
+  avoid:
+    - Do not use as a visual switch replacement when the action is an immediate on or off setting.

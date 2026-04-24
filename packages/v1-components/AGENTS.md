@@ -124,3 +124,8 @@ const save = () => {}
   [`./docs/AI.md`](./docs/AI.md)
 - Component profiles:
   [`./docs/PROFILES.md`](./docs/PROFILES.md)
+
+For table, catalog, registry, journal, or search-result screens, read [`./docs/AI.md`](./docs/AI.md)
+and the `UiTable` and `UiLink` profiles before generating code. Put filters above the table,
+persist filters and pagination in GET query parameters when routing exists, and set
+`size="small"` on `UiLink` inside table cells by default.
