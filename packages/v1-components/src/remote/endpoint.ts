@@ -24,6 +24,8 @@ export const createEndpointRoot = async (
     'UiInfobox',
     'UiLink',
     'UiLoader',
+    'UiLogicTreeRoot',
+    'UiLogicTreeRow',
     'UiMenuItem',
     'UiMenuItemGroup',
     'UiModalSidebar',

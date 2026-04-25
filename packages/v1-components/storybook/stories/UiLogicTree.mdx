@@ -1,0 +1,124 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiLogicTreeStories from './UiLogicTree.stories'
+
+# UiLogicTree
+
+`UiLogicTree` - slot-driven древо условий для remote-части `embed-ui`.
+Компонент управляет структурой, линиями, grouped-layout, DnD и состоянием редактирования, а пользовательский контент строк и бизнес-логика add/edit/remove приходят снаружи.
+
+Важно: `UiLogicTree` является controlled-компонентом для действий со строками.
+По `row:add`, `row:edit`, `row:remove` и `control-action` дерево только отдаёт событие наружу; consumer сам обновляет `items` и передаёт новый массив обратно.
+`update:items` остаётся синхронизацией для внутренних сценариев вроде DnD/reorder и toggle.
+
+## Когда использовать
+
+* Нужна древовидная структура условий, групп и действий с готовой механикой линий и вложенности.
+* Нужно собирать внешний контент строки самостоятельно: текст, кнопки, инпуты, селекты, меню и trailing-действия.
+* Нужны grouped-ветки с DnD и единый editable-flow, но без жёстко зашитого UI внутри компонента.
+
+## Публичные slots
+
+`UiLogicTree` больше не рисует прикладной контент строки сам. Вместо этого дерево отдаёт наружу зоны строки:
+
+* `row-prefix` - левая зона строки. Обычно сюда попадают `drag handle`, иконка папки или другая служебная иконка.
+* `row-summary` - основное содержимое обычной строки. Здесь удобно рендерить title, inline-текст, collapse-trigger и summary-представление.
+* `row-edit` - центральная зона строки в режиме редактирования. Сюда нужно передавать `UiSelect`, `UiTextbox`, кнопки действий и другие editable-контролы.
+* `row-actions` - центральная зона action-строки. Consumer сам решает, как рендерить `node.row.actions` и какие `UiButton` использовать.
+* `row-trailing` - правая зона строки. Подходит для delete, overflow-menu и вторичных действий.
+
+Если слот summary/edit не передан, дерево показывает нейтральный placeholder только в центральной зоне строки.
+
+## Slot props
+
+Во все публичные slots дерево передаёт `UiLogicTreeRowSlotProps`.
+
+Основные поля:
+
+* `node` - текущий узел дерева целиком.
+* `path` и `pathKey` - адрес строки в дереве.
+* `rowView` - текущий режим строки (`summary` или `actions`).
+* `editing` - строка сейчас в режиме редактирования.
+* `grouped`, `groupedHeader`, `groupedPosition` - информация о grouped-секции.
+* `selected`, `highlighted`, `expanded`, `hasChildren` - состояние строки.
+
+Доступные callbacks:
+
+* `onAction(action)` - запросить действие строки. Consumer должен обработать `row:add` и обновить `items`.
+* `onControlUpdate(controlId, value)` - запросить обновление значения контрола. Consumer должен обработать `row:edit` и обновить `items`.
+* `onControlAction(controlId)` - выполнить action у контрола.
+* `onRemove()` - запросить удаление строки. Consumer должен обработать `row:remove` и обновить `items`.
+* `onToggle()` - раскрыть или свернуть ветку.
+
+## Как собирать строку
+
+Базовая идея такая:
+
+```vue
+<template>
+  <UiLogicTree
+    :items="items"
+    @row:add="handleRowAdd"
+    @row:edit="handleRowEdit"
+    @row:remove="handleRowRemove"
+    @update:items="items = $event"
+  >
+    <template #row-prefix="{ node, editing }">
+      <UiDragHandle v-if="node.row.draggable && !editing" />
+      <UiFolderIcon v-else-if="node.row.icon && !editing" />
+    </template>
+
+    <template #row-summary="{ node, onToggle }">
+      <div class="logic-tree-summary">
+        <strong>{{ node.row.title }}</strong>
+        <button
+          v-if="node.collapsible"
+          type="button"
+          @click.stop="onToggle"
+        >
+          toggle
+        </button>
+      </div>
+    </template>
+
+    <template #row-edit="{ node, onControlUpdate }">
+      <UiSelect
+        v-for="control in node.row.controls"
+        :key="control.id"
+        :value="control.value"
+        @update:value="(value) => onControlUpdate(control.id, value)"
+      />
+    </template>
+
+    <template #row-actions="{ node, onAction }">
+      <UiButton
+        v-for="action in node.row.actions"
+        :key="action.id"
+        @click="onAction(action)"
+      >
+        {{ action.label }}
+      </UiButton>
+    </template>
+
+    <template #row-trailing="{ node, onRemove }">
+      <UiButton
+        v-if="node.row.removable"
+        @click="onRemove"
+      >
+        Удалить
+      </UiButton>
+    </template>
+  </UiLogicTree>
+</template>
+```
+
+В каноничном примере ниже эти обработчики уже вынесены в consumer-слой: `UiLogicTree.remote.ts` ловит `row:add`, `row:edit`, `row:remove` и обновляет `items` снаружи.
+
+## Каноничный пример
+
+`CampaignArbitrage` - основной пример того, как дерево собирается целиком через slots снаружи.
+
+<Story of={UiLogicTreeStories.CampaignArbitrage} />
+
+## API
+
+<ArgTypes of={UiLogicTreeStories} />
