@@ -10,6 +10,8 @@ These docs are optimized for two main scenarios:
 
 ## Documentation Map
 
+- [`../AGENTS.md`](../AGENTS.md)
+  package-level instructions for AI assistants using the installed package.
 - [`AI.md`](./AI.md)
   a compact quickstart for AI agents: which entrypoint to prefer, which reading order to use,
   and which boundaries are safe by default.
@@ -19,6 +21,8 @@ These docs are optimized for two main scenarios:
   the target component profile format for AI assistants.
 - [`STYLING.md`](./STYLING.md)
   shared guidance for reading classes, CSS variables, and typography in profiles.
+- [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md)
+  page composition rules for agents generating full RetailCRM extension screens.
 - [`PROFILES.md`](./PROFILES.md)
   the index of YAML component profiles.
 
@@ -53,13 +57,18 @@ The same rule applies to `.ui-v1-*` selectors in profile `styling` sections.
 
 If you need to generate UI quickly:
 
-1. [`AI.md`](./AI.md)
-2. [`COMPONENTS.md`](./COMPONENTS.md)
-3. the relevant profile from [`PROFILES.md`](./PROFILES.md)
-4. [`STYLING.md`](./STYLING.md) if the task is about classes, variables, typography, or layout tuning
+1. [`../README.md`](../README.md)
+2. [`../AGENTS.md`](../AGENTS.md)
+3. [`AI.md`](./AI.md)
+4. [`COMPONENTS.md`](./COMPONENTS.md)
+5. the relevant profile from [`PROFILES.md`](./PROFILES.md)
+6. [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md) if the task is about complete pages,
+   modals, sidebars, filters, tables, or settings layouts
+7. [`STYLING.md`](./STYLING.md) if the task is about classes, variables, typography, or layout tuning
 
 If you are extending the docs:
 
 1. [`FORMAT.md`](./FORMAT.md)
 2. [`STYLING.md`](./STYLING.md)
-3. the existing profiles in [`PROFILES.md`](./PROFILES.md)
+3. [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md)
+4. the existing profiles in [`PROFILES.md`](./PROFILES.md)

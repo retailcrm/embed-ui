@@ -210,29 +210,6 @@ composition:
     - title: Compact actions
       notes: Keep only one or two compact actions on the right.
 
-examples:
-  - title: Editable header with addon and actions
-    goal: Build a page header with inline validation and a link near the title.
-    code: |
-      <UiPageHeader
-        v-model:value="title"
-        :invalid="!title"
-        :error="title ? '' : 'Title is required'"
-        editable
-        placeholder="Enter a title"
-      >
-        <template #addon>
-          <UiLink>
-            Collapse filter
-          </UiLink>
-        </template>
-
-        <template #actions>
-          <UiButton appearance="tertiary">
-            Actions
-          </UiButton>
-        </template>
-      </UiPageHeader>
 
 ai_notes:
   do:

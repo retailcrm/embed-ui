@@ -212,14 +212,6 @@ composition:
     - UiInfobox
     - modal actions
 
-examples:
-  - title: Dangerous secondary action
-    goal: Build a secondary destructive action.
-    code: |
-      <UiButton appearance="secondary" variant="danger">
-        <IconDelete aria-hidden="true" />
-        Delete
-      </UiButton>
 
 ai_notes:
   do:

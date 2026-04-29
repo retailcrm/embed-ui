@@ -122,10 +122,13 @@ const save = () => {}
   [`./docs/README.md`](./docs/README.md)
 - Machine-oriented package summary:
   [`./docs/AI.md`](./docs/AI.md)
+- Page composition guidelines:
+  [`./docs/AGENT-DESIGN-GUIDELINES.md`](./docs/AGENT-DESIGN-GUIDELINES.md)
 - Component profiles:
   [`./docs/PROFILES.md`](./docs/PROFILES.md)
 
 For table, catalog, registry, journal, or search-result screens, read [`./docs/AI.md`](./docs/AI.md)
-and the `UiTable` and `UiLink` profiles before generating code. Put filters above the table,
-persist filters and pagination in GET query parameters when routing exists, and set
-`size="small"` on `UiLink` inside table cells by default.
+and [`./docs/AGENT-DESIGN-GUIDELINES.md`](./docs/AGENT-DESIGN-GUIDELINES.md), then check the
+`UiTable` and `UiLink` profiles before generating code. Put filters above the table, persist
+filters and pagination in GET query parameters when routing exists, and set `size="small"` on
+`UiLink` inside table cells by default.

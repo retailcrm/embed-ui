@@ -28,12 +28,33 @@ Only the public package contract is described below, without depending on the re
 
 When generating UI code, use this order:
 
-1. read [`COMPONENTS.md`](./COMPONENTS.md) to identify candidate components;
-2. open a detailed profile from [`PROFILES.md`](./PROFILES.md) if one exists;
-3. use the profile `usage` link for published Storybook examples and visual behavior;
-4. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
-5. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
-6. if no profile exists yet, fall back to [Storybook](https://retailcrm.github.io/embed-ui/v1-components/0.9.18/) docs and public type declarations, and state any inference explicitly.
+1. read [`../README.md`](../README.md) and [`../AGENTS.md`](../AGENTS.md) for package-level usage rules;
+2. read [`COMPONENTS.md`](./COMPONENTS.md) to identify candidate components;
+3. open a detailed profile from [`PROFILES.md`](./PROFILES.md) if one exists;
+4. use the profile `usage` link for published Storybook examples and visual behavior;
+5. read [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md) when the task is about complete
+   pages, modals, sidebars, filters, tables, or settings layouts;
+6. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
+7. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
+8. if no profile exists yet, fall back to [Storybook](https://retailcrm.github.io/embed-ui/v1-components/0.9.18/) docs and public type declarations, and state any inference explicitly.
+
+## Runtime Embedding References
+
+When generating code for a CRM extension, separate UI component choice from runtime placement:
+
+- [`targets` and contexts](../../v1-endpoint/docs/targets.md): explains that `target` is the CRM
+  embedding point, while `context` is the reactive CRM data available at that point.
+- [`menu placements`](../../v1-endpoint/docs/menu-placements.md): explains how host/manifest menu
+  items map to remote page codes.
+- [`page routes`](../../v1-endpoint/docs/page-routes.md): explains how page `code`, CRM route names,
+  and `definePageRunner` are connected.
+- [`defineWidgetRunner`](../../v1-endpoint/docs/define-widget-runner.md): shows how a widget receives
+  the current `target` prop.
+- [`definePageRunner`](../../v1-endpoint/docs/define-page-runner.md): shows how a page receives the
+  current `code` prop.
+- [`context concept`](../../v1-contexts/docs/ru/CONCEPT.md): explains predefined CRM contexts such as
+  `order/card`, `customer/card`, `user/current`, and `settings`.
+- [`custom context`](../../v1-contexts/docs/ru/CUSTOM.md): explains custom-field contexts.
 
 ## Default Recommendation For Common Forms
 
@@ -63,6 +84,8 @@ decorative landing page.
 
 Default screen rules:
 
+- use [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md) to choose between an entity list,
+  card/settings page, multi-column page, collapse-block page, modal sidebar, or modal window;
 - use `UiPageHeader` for page identity and top-level actions;
 - keep filters and controls near the content they affect;
 - use `UiField` around labeled form controls;
@@ -85,6 +108,9 @@ screen where users scan and refine datasets:
 - debounce free-text search before writing query or fetching data;
 - use `UiTableSorter` for sortable headers;
 - use `UiTable` footer slots for summary, page-size controls, export, and pagination;
+- compose table footer controls with `UiTableFooterSection` and `UiTableFooterButton`, not regular `UiButton`;
+- use chevron icon assets for table footer previous/next controls instead of text glyphs;
+- add local CSS for table footer layout and states; use `AGENT-DESIGN-GUIDELINES.md` for the canonical footer CSS contract;
 - set `size="small"` on `UiLink` inside table cells so links match table body typography.
 
 Suggested query names:
@@ -101,21 +127,13 @@ These references are useful when extending the profiles and examples in this pac
 - [shadcn/ui Data Table source](https://github.com/shadcn-ui/ui/blob/main/apps/v4/content/docs/components/radix/data-table.mdx)
   documents a scenario-first table build: base table, row actions, pagination, sorting,
   filtering, visibility, row selection, and reusable table pieces.
-- [shadcn/ui LLMs.txt source](https://github.com/shadcn-ui/ui/blob/main/apps/v4/public/llms.txt)
-  is a compact AI entry point with library overview and links to component docs.
-- [shadcn/ui Registry MCP source](https://github.com/shadcn-ui/ui/blob/main/apps/v4/content/docs/registry/mcp.mdx)
-  describes how component registries expose descriptions and dependencies to AI tools.
 - [Nuxt UI v4 Table source](https://github.com/nuxt/ui/blob/v4/docs/content/docs/2.components/table.md)
   documents table state, sorting, pagination, loading, empty state, slots, and advanced flows.
-- [Nuxt UI v4 AI docs](https://github.com/nuxt/ui/tree/v4/docs/content/docs/1.getting-started/7.ai)
-  shows MCP, LLMs.txt, and AI skills documentation in a Vue UI library.
 - [Nuxt UI v2 Table source](https://github.com/nuxt/ui/blob/v2/docs/content/2.components/table.md)
   is useful for explicit searchable, paginable, manual sorting, and reactive query examples.
 - [PrimeVue DataTable docs](https://primevue.org/datatable/)
   are useful for Vue table patterns around filtering, pagination, selection, lazy loading, empty,
   loading, and accessibility.
-- [PrimeVue LLMs docs](https://primevue.org/llms)
-  show an AI-oriented documentation endpoint for a Vue component library.
 
 ## What AI Needs In A Good Component Profile
 
@@ -162,7 +180,10 @@ The preferred styling signal is:
 ## Related Public Docs
 
 - [`README.md`](./README.md)
+- [`../README.md`](../README.md)
+- [`../AGENTS.md`](../AGENTS.md)
 - [`COMPONENTS.md`](./COMPONENTS.md)
 - [`FORMAT.md`](./FORMAT.md)
 - [`STYLING.md`](./STYLING.md)
+- [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md)
 - [`../AGENTS.md`](../AGENTS.md)

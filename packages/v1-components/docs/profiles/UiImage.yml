@@ -54,3 +54,14 @@ composition:
   patterns:
     - title: Content image
       notes: Use for product, attachment, or preview images where real media is the content.
+
+accessibility:
+  notes:
+    - Keep rendered text concise and meaningful for screen-reader users.
+    - Do not use this component as the only carrier of critical state if the state also needs form-level validation or focus management.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.

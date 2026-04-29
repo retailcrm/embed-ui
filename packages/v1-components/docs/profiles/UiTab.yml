@@ -94,22 +94,6 @@ composition:
     - title: Rich tab declaration
       notes: Keep icon, counter, and content close to the tab declaration inside UiTabGroup.
 
-examples:
-  - title: Rich tab child
-    goal: Declare one tab with custom icon and panel content.
-    code: |
-      <UiTab id="overview" label="Overview" counter="8">
-        <template #icon>
-          <IconStar />
-        </template>
-
-        <template #content>
-          <section>
-            <h4>Overview</h4>
-            <p>Panel content for the active tab.</p>
-          </section>
-        </template>
-      </UiTab>
 
 ai_notes:
   do:
@@ -118,3 +102,9 @@ ai_notes:
   avoid:
     - Do not expect UiTab to render useful DOM outside a group.
     - Do not rely on an undocumented default slot for header rendering.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.

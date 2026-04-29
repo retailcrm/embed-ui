@@ -61,3 +61,16 @@ composition:
   patterns:
     - title: Status filter option
       notes: Use concise labels that match the visible table status names.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+  root_classes:
+    - .ui-v1-select-option

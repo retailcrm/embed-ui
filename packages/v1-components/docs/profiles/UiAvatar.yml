@@ -59,3 +59,16 @@ composition:
       notes: Pair with UiLink size="small" when an avatar appears next to a linked user or customer name.
     - title: Menu identity row
       notes: Use in UiMenuItem avatar slot for users, customers, or accounts.
+
+accessibility:
+  notes:
+    - Keep rendered text concise and meaningful for screen-reader users.
+    - Do not use this component as the only carrier of critical state if the state also needs form-level validation or focus management.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+  root_classes:
+    - .ui-v1-avatar

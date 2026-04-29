@@ -59,3 +59,20 @@ composition:
       notes: Open from a table row when the user should keep list context visible.
     - title: Side edit form
       notes: Put primary actions in the sidebar footer when the form edits the selected object.
+
+accessibility:
+  notes:
+    - Prefer visible text labels for interactive controls.
+    - For icon-only or custom visual content, provide an accessible name through the supported label, title, or ARIA attributes exposed by the component.
+    - Preserve native keyboard semantics by using the component root instead of recreating the control with arbitrary markup.
+  keyboard:
+    - Tab moves focus to the control when it is focusable.
+    - Enter or Space activates native button-like controls when the host implementation renders a button.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+  root_classes:
+    - .ui-v1-modal-sidebar-overlay

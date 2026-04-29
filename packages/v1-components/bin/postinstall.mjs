@@ -26,8 +26,8 @@ const agentsPath = path.join(targetRoot, 'AGENTS.md')
 const hasAgentsFile = fs.existsSync(agentsPath)
 
 console.log('')
-console.log(`[${PACKAGE_NAME}] AI docs are available in node_modules/${PACKAGE_NAME}/docs`)
-console.log(`[${PACKAGE_NAME}] Start with docs/AI.md, docs/COMPONENTS.md, and docs/profiles/*.yml`)
+console.log(`[${PACKAGE_NAME}] AI docs are available in node_modules/${PACKAGE_NAME}/README.md, AGENTS.md, and docs`)
+console.log(`[${PACKAGE_NAME}] Start with README.md, AGENTS.md, docs/AI.md, docs/COMPONENTS.md, and docs/profiles/*.yml`)
 
 if (!hasAgentsFile) {
   console.log(`[${PACKAGE_NAME}] To scaffold AGENTS.md for this project, run:`)

@@ -82,12 +82,6 @@ styling:
       line_height: 24px
       weight: 400
 
-examples:
-  - title: Basic example
-    goal: What the user or the agent is trying to build.
-    code: |
-      <UiComponent />
-
 ai_notes:
   do:
     - rule
@@ -225,15 +219,17 @@ Capture:
 - what happens to `aria-invalid`, `aria-labelledby`, `role`, `aria-expanded`, and similar attributes;
 - which keys affect behavior, if that behavior is documented.
 
-## 11. `examples` and `composition`
+## 11. `composition`
 
 List:
 
 - common combinations;
 - required neighboring components;
 - safe defaults for typical screens;
-- goal-oriented examples such as "build a table", "build an editable header", or "build a field with a select";
-- examples of correct and incorrect composition.
+- correct and incorrect composition patterns.
+
+Do not duplicate Storybook examples in YAML profiles. The top-level `usage` link is the source for runnable
+examples and visual behavior.
 
 ## 12. `ai_notes`
 
@@ -249,6 +245,7 @@ A short list of rules specifically for code generation:
 - Use the exact names of props, emits, and slots.
 - For slots, describe not only the name, but also what the slot does and which content restrictions exist.
 - For styling, distinguish between safe CSS variables and descriptive class names.
+- Keep runnable examples in Storybook; YAML profiles should link to Storybook through `usage`.
 - Do not mix "how the component looks right now" with "what is publicly guaranteed".
 - If behavior is inferred from implementation rather than public API, say that explicitly.
 - If information is missing, state the limitation rather than inventing details.

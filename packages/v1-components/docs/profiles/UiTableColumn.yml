@@ -71,3 +71,19 @@ ai_notes:
     - Use trim only for narrow checkbox, icon, or action columns.
   avoid:
     - Do not place filters inside column labels; filters belong above the table.
+
+behavior:
+  notes:
+    - Behavior is mostly coordinated by the parent component.
+    - Use this child only in the documented parent composition.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.

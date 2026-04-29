@@ -52,3 +52,14 @@ ai_notes:
     - Give the surrounding layout a stable height before relying on scrolling.
   avoid:
     - Do not wrap normal page content in a scroll container by default.
+
+accessibility:
+  notes:
+    - Keep visible labels and slot content meaningful.
+    - Prefer documented props and slots over custom DOM replacements so host-side accessibility behavior is preserved.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.

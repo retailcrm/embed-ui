@@ -11,6 +11,11 @@
     --ui-v1-table-cell-padding-y: 12px;
     --ui-v1-table-padding-start: 16px;
     --ui-v1-table-padding-end: 16px;
+    --ui-v1-table-rounding: 4px;
+    --ui-v1-table-head-cell-padding-block-start: 14px;
+    --ui-v1-table-head-cell-padding-block-end: 14px;
+    --ui-v1-table-body-cell-padding-block-start: 15px;
+    --ui-v1-table-body-cell-padding-block-end: 15px;
   }
 
   &__centered {
@@ -159,5 +164,91 @@
     height: 16px;
     margin-right: 6px;
     vertical-align: -3px;
+  }
+
+  &__table .ui-v1-table__head-cell {
+    height: 42px;
+  }
+
+  &__table .ui-v1-table__footer-meta {
+    min-height: 40px;
+    font-weight: @font-weight-normal;
+  }
+
+  &__table .ui-v1-table__footer-controls {
+    min-height: 52px;
+    background: #f9fafb;
+  }
+
+  &__table .ui-v1-table__footer-section {
+    .text-small();
+  }
+
+  &__page-size,
+  &__pagination-section {
+    color: @black-500;
+  }
+
+  &__footer-caption {
+    margin-right: 4px;
+  }
+
+  &__footer-button {
+    color: @blue-500;
+  }
+
+  &__footer-button&__footer-button_current {
+    color: @black-500;
+  }
+
+  &__delimiter {
+    padding: 0 5px;
+    color: @grey-800;
+  }
+
+  &__table .ui-v1-table__footer-side > &__pagination-section {
+    padding-block: 8px;
+  }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+  }
+
+  &__pagination-button,
+  &__pagination-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+  }
+
+  &__table .ui-v1-table__footer-button&__pagination-button {
+    color: @black-500;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  &__table .ui-v1-table__footer-button&__pagination-button_current {
+    color: #fff;
+    background: @blue-500;
+  }
+
+  &__table .ui-v1-table__footer-button&__pagination-arrow {
+    color: @grey-700;
+  }
+
+  &__pagination-arrow-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+  }
+
+  &__pagination-divider {
+    width: 1px;
+    height: 52px;
+    margin-block: -8px;
+    background: @grey-500;
   }
 }

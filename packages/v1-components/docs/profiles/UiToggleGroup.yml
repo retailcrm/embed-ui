@@ -188,19 +188,6 @@ composition:
     - title: Filter chips with icon
       notes: Use manual option composition or the shared icon slot for compact filters.
 
-examples:
-  - title: Weekday selection
-    goal: Build a segmented multi-select weekday picker.
-    code: |
-      <UiToggleGroup
-        v-model:model="days"
-        aria-label="Weekdays"
-        rubber
-      >
-        <UiToggleGroupOption label="Mon" value="monday" />
-        <UiToggleGroupOption label="Tue" value="tuesday" />
-        <UiToggleGroupOption label="Wed" value="wednesday" />
-      </UiToggleGroup>
 
 ai_notes:
   do:

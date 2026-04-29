@@ -2,7 +2,7 @@ component: UiTableFooterButton
 summary: >
   UiTableFooterButton is a footer-scoped action control for custom table footer layouts.
   It behaves like a table-specific button primitive rather than a full replacement for UiButton.
-usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitable--docs
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.20/?path=/docs/components-uitable--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -52,5 +52,36 @@ composition:
   patterns:
     - title: Pagination control
       notes: Use inside footer-pagination slot for previous, next, and page controls.
+      states:
+        - name: ordinary-page
+          notes: Render the page number as UiTableFooterButton text.
+        - name: current-page
+          notes: Mark the active page with a local custom class and style it inside the table example scope.
+        - name: arrow
+          notes: Render the previous/next chevron icon inside UiTableFooterButton and provide an aria-label.
+        - name: passive-or-disabled
+          notes: Use disabled when the control is unavailable; use a local custom class only for visual passive states such as selected page size.
     - title: Page-size control
       notes: Use inside footer-page-size slot for compact page-size choices.
+
+behavior:
+  notes:
+    - Behavior is mostly coordinated by the parent component.
+    - Use this child only in the documented parent composition.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+    - For footer pagination, style local custom classes on UiTableFooterButton instead of replacing it with UiButton.
+    - For page buttons, use a 36px square target with 4px radius, 14px text, black ordinary page color, and blue active background.
+    - For arrow buttons, use a 36px square target with a 24px chevron icon and grey color.
+    - Combine selectors like `.entity-list-table .ui-v1-table__footer-button.entity-list-table__pagination-button_current` when overriding active states, because base footer button styles set link-like colors.
+  root_classes:
+    - .ui-v1-table

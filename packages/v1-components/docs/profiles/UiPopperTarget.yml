@@ -84,31 +84,6 @@ composition:
     - title: Not always needed
       notes: Connector-only composition is enough when the trigger already exposes its root element.
 
-examples:
-  - title: Tooltip anchor
-    goal: Anchor a floating layer to a specific title or button wrapper.
-    code: |
-      <UiPopperConnector>
-        <UiPopperTarget tag="span">
-          <span>Title</span>
-        </UiPopperTarget>
-
-        <UiPopper :visible="open">
-          Tooltip
-        </UiPopper>
-      </UiPopperConnector>
-  - title: Explicit title-only anchor
-    goal: Bind the floating layer to a title wrapper instead of the whole row.
-    code: |
-      <UiPopperConnector>
-        <UiPopperTarget tag="span">
-          <span class="header-title">Title</span>
-        </UiPopperTarget>
-
-        <UiPopper :visible="open">
-          Tooltip
-        </UiPopper>
-      </UiPopperConnector>
 
 ai_notes:
   do:
@@ -117,3 +92,9 @@ ai_notes:
   avoid:
     - Do not treat the wrapper as decorative only; it affects what the floating layer anchors to.
     - Do not wrap every UiButton or similar trigger with UiPopperTarget if connector already gives the correct anchor.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.

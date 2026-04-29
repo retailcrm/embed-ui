@@ -62,3 +62,16 @@ composition:
   patterns:
     - title: Grouped options
       notes: Use label and quantity slots to clarify large option groups.
+
+accessibility:
+  notes:
+    - Keep visible labels and slot content meaningful.
+    - Prefer documented props and slots over custom DOM replacements so host-side accessibility behavior is preserved.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+  root_classes:
+    - .ui-v1-menu-item-group

@@ -81,31 +81,6 @@ composition:
     - title: Explicit anchor
       notes: Add UiPopperTarget only when the anchor must be limited to a specific wrapper or sub-area.
 
-examples:
-  - title: Shared target context
-    goal: Connect target and popper through one shared wrapper.
-    code: |
-      <UiPopperConnector>
-        <UiPopperTarget>
-          <button type="button">Open</button>
-        </UiPopperTarget>
-
-        <UiPopper :visible="open">
-          Content
-        </UiPopper>
-      </UiPopperConnector>
-  - title: Connector without explicit target
-    goal: Use a button as the implicit anchor.
-    code: |
-      <UiPopperConnector>
-        <UiButton appearance="secondary">
-          Open
-        </UiButton>
-
-        <UiPopper :visible="open">
-          Content
-        </UiPopper>
-      </UiPopperConnector>
 
 ai_notes:
   do:
@@ -114,3 +89,9 @@ ai_notes:
   avoid:
     - Do not use it as a styling wrapper.
     - Do not add UiPopperTarget automatically around every trigger.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.

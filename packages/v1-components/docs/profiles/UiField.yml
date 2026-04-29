@@ -209,21 +209,6 @@ composition:
     - title: Safe field wiring
       notes: Use slot props for semantics, not just for visual wrapping.
 
-examples:
-  - title: Text field with propagated semantics
-    goal: Build a text field with correct ARIA wiring.
-    code: |
-      <UiField id="comment" label="Comment" hint="Visible to managers">
-        <template #default="field">
-          <UiTextbox
-            :id="field.id"
-            :input-attributes="{
-              'aria-labelledby': field.ariaLabelledby,
-              'aria-invalid': field.ariaInvalid,
-            }"
-          />
-        </template>
-      </UiField>
 
 ai_notes:
   do:
