@@ -2,7 +2,7 @@ component: UiTableFooterSection
 summary: >
   UiTableFooterSection is the low-level footer container for custom table footer layouts.
   It is mainly useful when UiTable footer slots are not enough on their own.
-usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/components-uitable--docs
+usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.20/?path=/docs/components-uitable--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -42,6 +42,7 @@ ai_notes:
   do:
     - Use it only as part of custom table footer composition.
     - Keep content compact and table-scoped.
+    - Add local CSS on the table root for footer row height, background, typography, and pagination spacing when recreating the reference footer.
   avoid:
     - Do not treat it as a standalone layout section.
 
@@ -52,3 +53,23 @@ composition:
   patterns:
     - title: Structured table footer
       notes: Use in footer-page-size, footer-export, and footer-pagination slots to match table footer spacing.
+
+behavior:
+  notes:
+    - Behavior is mostly coordinated by the parent component.
+    - Use this child only in the documented parent composition.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+    - For reference-style footer controls, apply a local class to each UiTableFooterSection and style it through the UiTable root class.
+    - The pagination section usually needs padding-block 8px and an inner flex group with 8px gaps.
+  root_classes:
+    - .ui-v1-table

@@ -97,17 +97,6 @@ composition:
     - title: Custom label content
       notes: Use label or default slot when the option needs richer inline markup.
 
-examples:
-  - title: Icon option inside a group
-    goal: Define one rich segmented option with icon content.
-    code: |
-      <UiToggleGroup v-model:model="filters" aria-label="Filters">
-        <UiToggleGroupOption label="Files" value="files">
-          <template #icon>
-            <IconFile />
-          </template>
-        </UiToggleGroupOption>
-      </UiToggleGroup>
 
 ai_notes:
   do:
@@ -115,3 +104,11 @@ ai_notes:
     - Prefer label prop for plain text and slots for richer content.
   avoid:
     - Do not use it as a standalone control outside UiToggleGroup.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+  root_classes:
+    - .ui-v1-toggle-button

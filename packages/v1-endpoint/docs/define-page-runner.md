@@ -55,3 +55,8 @@ const pageRunner = definePageRunner(PageRoot, async (app, pinia) => {
   // init code
 })
 ```
+
+Читайте также:
+
+- [`page-routes`](./page-routes.md) — как связать page `code`, CRM route и компонент страницы.
+- [`menu-placements`](./menu-placements.md) — как описывать пункты меню, которые открывают remote-страницы.

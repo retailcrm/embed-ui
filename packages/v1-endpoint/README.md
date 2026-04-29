@@ -41,4 +41,6 @@ runEndpoint(runner)
 - [`createEndpoint`](./docs/create-endpoint.md) — как вручную создать endpoint с transport и messenger.
 - [`runEndpoint`](./docs/run-endpoint.md) — как поднять endpoint в worker entry одной строкой.
 - [`targets` и `defineTarget`](./docs/targets.md) — как типизировать цели виджетов и маршрутизировать их по target.
+- [`menu-placements`](./docs/menu-placements.md) — как описывать меню и пункты навигации для remote-страниц.
+- [`page-routes`](./docs/page-routes.md) — как связывать page `code`, CRM route и `definePageRunner`.
 - [`layout`](./docs/layout.md) — как выбирать layout-паттерны страниц, `modal sidebar` и `modal window`, и из каких `v1-components` их собирать.

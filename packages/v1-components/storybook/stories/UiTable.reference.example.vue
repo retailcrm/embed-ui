@@ -213,6 +213,42 @@
                     </UiTableFooterButton>
                 </UiTableFooterSection>
             </template>
+
+            <template #footer-pagination>
+                <UiTableFooterSection class="reference-table__pagination-section">
+                    <div class="reference-table__pagination">
+                        <UiTableFooterButton class="reference-table__pagination-button">
+                            1
+                        </UiTableFooterButton>
+                        <UiTableFooterButton class="reference-table__pagination-button">
+                            2
+                        </UiTableFooterButton>
+                        <UiTableFooterButton class="reference-table__pagination-button reference-table__pagination-button_current">
+                            3
+                        </UiTableFooterButton>
+                        <span class="reference-table__pagination-divider" />
+                        <UiTableFooterButton
+                            aria-label="Предыдущая страница"
+                            class="reference-table__pagination-arrow"
+                        >
+                            <IconChevronLeft
+                                aria-hidden="true"
+                                class="reference-table__pagination-arrow-icon"
+                            />
+                        </UiTableFooterButton>
+                        <span class="reference-table__pagination-divider" />
+                        <UiTableFooterButton
+                            aria-label="Следующая страница"
+                            class="reference-table__pagination-arrow"
+                        >
+                            <IconChevronRight
+                                aria-hidden="true"
+                                class="reference-table__pagination-arrow-icon"
+                            />
+                        </UiTableFooterButton>
+                    </div>
+                </UiTableFooterSection>
+            </template>
         </UiTable>
     </div>
 </template>
@@ -224,6 +260,8 @@ import IconCalendar from '../../assets/sprites/actions/calendar.svg'
 import IconCallTalking from '../../assets/sprites/communication/call-talking.svg'
 import IconCheckmarkCircle from '../../assets/sprites/actions/checkmark-circle.svg'
 import IconCheckmarkCircleOutlined from '../../assets/sprites/actions/checkmark-circle-outlined.svg'
+import IconChevronLeft from '../../assets/sprites/arrows/chevron-left.svg'
+import IconChevronRight from '../../assets/sprites/arrows/chevron-right.svg'
 import IconClearCircle from '../../assets/sprites/actions/clear-circle.svg'
 import IconClearCircleOutlined from '../../assets/sprites/actions/clear-circle-outlined.svg'
 import IconDownloadTo from '../../assets/sprites/ui/download-to.svg'

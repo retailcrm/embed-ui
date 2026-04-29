@@ -179,19 +179,6 @@ composition:
     - title: Shared target context
       notes: The target ref usually comes through UiPopperConnector and UiPopperTarget.
 
-examples:
-  - title: Mental model
-    goal: Understand the basic target plus floating content pattern.
-    code: |
-      <UiPopperConnector>
-        <UiPopperTarget>
-          <button type="button">Open</button>
-        </UiPopperTarget>
-
-        <UiPopper :visible="open">
-          Popup content
-        </UiPopper>
-      </UiPopperConnector>
 
 ai_notes:
   do:

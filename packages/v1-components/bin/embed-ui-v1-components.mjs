@@ -74,24 +74,28 @@ ${AGENTS_SECTION_HEADER}
 
 When working with \`${PACKAGE_NAME}\` in this project:
 
-1. Read \`./node_modules/${PACKAGE_NAME}/docs/AI.md\`.
-2. Then read \`./node_modules/${PACKAGE_NAME}/docs/COMPONENTS.md\`.
-3. Then open the relevant profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/<Component>.yml\`.
-4. Prefer those docs and profiles over guessing from internal implementation files.
-5. Import only from documented public entrypoints:
+1. Read \`./node_modules/${PACKAGE_NAME}/README.md\`.
+2. Then read \`./node_modules/${PACKAGE_NAME}/AGENTS.md\`.
+3. Then read \`./node_modules/${PACKAGE_NAME}/docs/AI.md\`.
+4. Then read \`./node_modules/${PACKAGE_NAME}/docs/COMPONENTS.md\`.
+5. Then open the relevant profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/<Component>.yml\`.
+6. Prefer those docs and profiles over guessing from internal implementation files.
+7. Import only from documented public entrypoints:
    - \`${PACKAGE_NAME}/remote\`
    - \`${PACKAGE_NAME}/host\`
    - \`${PACKAGE_NAME}/assets/...\`
-6. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
-7. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
+8. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
+9. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
 
 ## Suggested Reading Order
 
-1. \`docs/AI.md\`
-2. \`docs/COMPONENTS.md\`
-3. The relevant profile from \`docs/profiles/*.yml\`
-4. \`docs/FORMAT.md\` if you need to understand profile structure
-5. Storybook and public types only when no profile exists yet
+1. \`README.md\`
+2. \`AGENTS.md\`
+3. \`docs/AI.md\`
+4. \`docs/COMPONENTS.md\`
+5. The relevant profile from \`docs/profiles/*.yml\`
+6. \`docs/FORMAT.md\` if you need to understand profile structure
+7. Storybook and public types only when no profile exists yet
 ` + DEFAULT_NEWLINE
 }
 
@@ -100,24 +104,28 @@ const createAgentsSection = () => {
 
 When working with \`${PACKAGE_NAME}\` in this project:
 
-1. Read \`./node_modules/${PACKAGE_NAME}/docs/AI.md\`.
-2. Then read \`./node_modules/${PACKAGE_NAME}/docs/COMPONENTS.md\`.
-3. Then open the relevant profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/<Component>.yml\`.
-4. Prefer those docs and profiles over guessing from internal implementation files.
-5. Import only from documented public entrypoints:
+1. Read \`./node_modules/${PACKAGE_NAME}/README.md\`.
+2. Then read \`./node_modules/${PACKAGE_NAME}/AGENTS.md\`.
+3. Then read \`./node_modules/${PACKAGE_NAME}/docs/AI.md\`.
+4. Then read \`./node_modules/${PACKAGE_NAME}/docs/COMPONENTS.md\`.
+5. Then open the relevant profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/<Component>.yml\`.
+6. Prefer those docs and profiles over guessing from internal implementation files.
+7. Import only from documented public entrypoints:
    - \`${PACKAGE_NAME}/remote\`
    - \`${PACKAGE_NAME}/host\`
    - \`${PACKAGE_NAME}/assets/...\`
-6. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
-7. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
+8. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
+9. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
 
 ## Suggested Reading Order
 
-1. \`docs/AI.md\`
-2. \`docs/COMPONENTS.md\`
-3. The relevant profile from \`docs/profiles/*.yml\`
-4. \`docs/FORMAT.md\` if you need to understand profile structure
-5. Storybook and public types only when no profile exists yet
+1. \`README.md\`
+2. \`AGENTS.md\`
+3. \`docs/AI.md\`
+4. \`docs/COMPONENTS.md\`
+5. The relevant profile from \`docs/profiles/*.yml\`
+6. \`docs/FORMAT.md\` if you need to understand profile structure
+7. Storybook and public types only when no profile exists yet
 `
 }
 

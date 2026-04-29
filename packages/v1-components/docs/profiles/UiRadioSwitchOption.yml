@@ -100,19 +100,6 @@ composition:
     - title: Rich switch option
       notes: Use when one option needs icon, label, description, and custom selected state.
 
-examples:
-  - title: Section option
-    goal: Define one rich option inside a radio switch.
-    code: |
-      <UiRadioSwitchOption
-        label="Manual"
-        :value="{ key: 'manual' }"
-        description="Manual setup"
-      >
-        <template #icon>
-          <IconStar />
-        </template>
-      </UiRadioSwitchOption>
 
 ai_notes:
   do:
@@ -120,3 +107,11 @@ ai_notes:
     - Prefer label and description props for simple content and slots for richer custom markup.
   avoid:
     - Do not use it as a standalone control outside UiRadioSwitch.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+    - Use Storybook from the usage link to verify visual variants before generating custom layout around the component.
+  root_classes:
+    - .ui-v1-radio-switch-option

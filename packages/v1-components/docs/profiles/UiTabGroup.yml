@@ -198,36 +198,6 @@ composition:
     - title: Rich tabs from UiTab
       notes: Use UiTab children when tabs need icon, custom label, counter, or tabpanel content.
 
-examples:
-  - title: Data-driven tabs
-    goal: Render a compact tab header from plain items.
-    code: |
-      <UiTabGroup
-        v-model:active-id="activeId"
-        :items="[
-          { id: 'overview', label: 'Overview', counter: '8' },
-          { id: 'orders', label: 'Orders', counter: '12' },
-        ]"
-        overflowing
-      />
-  - title: Tabs with panel content
-    goal: Render active tabpanel content from UiTab child declarations.
-    code: |
-      <UiTabGroup
-        v-model:active-id="activeId"
-        overflowing
-      >
-        <UiTab id="overview" label="Overview">
-          <template #content>
-            <section>
-              <h4>Overview</h4>
-              <p>Visible only when this tab is active.</p>
-            </section>
-          </template>
-        </UiTab>
-
-        <UiTab id="orders" label="Orders" />
-      </UiTabGroup>
 
 ai_notes:
   do:

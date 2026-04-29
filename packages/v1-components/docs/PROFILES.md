@@ -6,7 +6,7 @@ The current profile layer is structured like this:
 
 - the index stays in markdown so both humans and agents can navigate it easily;
 - the actual profiles live in `docs/profiles/*.yml`;
-- YAML is the source of truth for structure, props, slots, emits, examples, and AI rules.
+- YAML is the source of truth for structure, props, slots, emits, composition, and AI rules.
 
 ## Table Of Contents
 
@@ -18,9 +18,11 @@ The current profile layer is structured like this:
 
 ## Reading Order
 
-1. [`AI.md`](./AI.md)
-2. this index
-3. the relevant `.yml` profile
+1. [`../README.md`](../README.md)
+2. [`../AGENTS.md`](../AGENTS.md)
+3. [`AI.md`](./AI.md)
+4. this index
+5. the relevant `.yml` profile
 
 ## Current Coverage
 
@@ -30,6 +32,7 @@ Use these entrypoints:
 
 - [`COMPONENTS.md`](./COMPONENTS.md) for the full linked component index
 - `docs/profiles/*.yml` for per-component machine-readable profiles
+- each profile `usage` field for published Storybook 0.9.18 examples and visual behavior
 
 Current high-signal core profiles:
 
@@ -53,7 +56,7 @@ Current high-signal core profiles:
 - `props` if you need a broader practical API view.
 - `slots` if the task is about markup, zones, and allowed content.
 - `emits` if the component must be wired into screen logic.
-- `examples` if you need a working usage pattern quickly.
+- `usage` if you need Storybook examples or visual behavior.
 - `ai_notes` if the agent needs safe defaults and anti-patterns.
 
 ## Styling Reads
@@ -64,3 +67,4 @@ Current high-signal core profiles:
 ## Notes
 
 - All new updates should be made in YAML profiles.
+- Keep profile `usage` links on the Storybook 0.9.18 URL unless another version is required explicitly.

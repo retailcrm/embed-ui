@@ -99,6 +99,8 @@ styling:
     - UiTable exposes a relatively rich CSS-variable surface for spacing and table chrome.
     - Prefer table props and slot composition first, then CSS variables for spacing or background tuning.
     - Internal classes are descriptive and mainly useful for debugging or narrow local integration.
+    - For reference-style footers, add a local class to UiTable and scope footer styles through that class.
+    - When styling footer pagination buttons, combine the internal footer button class with the local state class so base footer styles do not override page, active, or arrow colors.
   root_classes:
     - .ui-v1-table
   state_classes:
@@ -168,6 +170,84 @@ styling:
       size: 12px
       line_height: 14px
       weight: 400
+  reference_footer_css:
+    notes:
+      - Use this as the minimum CSS contract when recreating the Storybook reference table footer.
+      - Keep class names local to the screen, but preserve the same geometry and state rules.
+      - Plain CSS values below mirror the package palette: blue #005eeb, black #1e2248, grey #afb9c3 / #dee2e6.
+    example: |
+      .entity-list-table {
+        --ui-v1-table-cell-padding-x: 12px;
+        --ui-v1-table-cell-padding-y: 12px;
+        --ui-v1-table-padding-start: 16px;
+        --ui-v1-table-padding-end: 16px;
+        --ui-v1-table-rounding: 4px;
+        --ui-v1-table-head-cell-padding-block-start: 14px;
+        --ui-v1-table-head-cell-padding-block-end: 14px;
+        --ui-v1-table-body-cell-padding-block-start: 15px;
+        --ui-v1-table-body-cell-padding-block-end: 15px;
+      }
+
+      .entity-list-table .ui-v1-table__footer-meta {
+        min-height: 40px;
+        font-weight: 400;
+      }
+
+      .entity-list-table .ui-v1-table__footer-controls {
+        min-height: 52px;
+        background: #f9fafb;
+      }
+
+      .entity-list-table .ui-v1-table__footer-section {
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      .entity-list-table .ui-v1-table__footer-side > .entity-list-table__pagination-section {
+        padding-block: 8px;
+      }
+
+      .entity-list-table__pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 36px;
+      }
+
+      .entity-list-table__pagination-button,
+      .entity-list-table__pagination-arrow {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+      }
+
+      .entity-list-table .ui-v1-table__footer-button.entity-list-table__pagination-button {
+        color: #1e2248;
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      .entity-list-table .ui-v1-table__footer-button.entity-list-table__pagination-button_current {
+        color: #fff;
+        background: #005eeb;
+      }
+
+      .entity-list-table .ui-v1-table__footer-button.entity-list-table__pagination-arrow {
+        color: #afb9c3;
+      }
+
+      .entity-list-table__pagination-arrow-icon {
+        display: block;
+        width: 24px;
+        height: 24px;
+      }
+
+      .entity-list-table__pagination-divider {
+        width: 1px;
+        height: 52px;
+        margin-block: -8px;
+        background: #dee2e6;
+      }
 
 composition:
   filters:
@@ -183,6 +263,12 @@ composition:
   pagination:
     notes:
       - Use footer-summary, footer-page-size, footer-export, and footer-pagination slots for structured footer controls.
+      - footer-pagination should use UiTableFooterSection as the root wrapper.
+      - Use UiTableFooterButton for page numbers and previous/next arrow controls.
+      - Do not use regular UiButton for table footer pagination.
+      - Use a local inner flex group for page buttons, dividers, and arrow buttons when recreating the reference-table footer pattern.
+      - Use chevron icon assets for previous/next arrows instead of text glyphs such as < or >.
+      - Add scoped CSS for footer meta height, control-row background, pagination button size, active page state, arrow icon size, and vertical dividers.
       - Persist page and page size in URL query parameters when routing is available.
       - Reset page to 1 when filters or sorting change.
 
@@ -192,8 +278,23 @@ ai_notes:
     - Provide row-key for stable row identity.
     - Put table filters above the table.
     - Use structured footer slots for summary, page-size controls, export, and pagination.
+    - Compose footer controls with UiTableFooterSection and UiTableFooterButton.
+    - Copy the reference_footer_css pattern when building a realistic entity-list footer.
     - Use UiTableSorter for sortable headers.
   avoid:
     - Do not hide table filters in page header actions.
+    - Do not use UiButton inside table footer pagination.
     - Do not put pagination only in local state when the screen has routable result sets.
     - Do not import table internals from host or src paths.
+
+behavior:
+  notes:
+    - Read key_props first to identify supported states and variants.
+    - Prefer controlled props and documented emits when synchronizing component state with screen logic.
+
+accessibility:
+  notes:
+    - Use meaningful column labels so screen-reader users can understand each cell in context.
+    - Use stable row keys so expanded rows and row-level state remain attached to the correct data item.
+    - Put interactive controls inside cells as real controls such as UiLink or UiButton, not plain clickable text.
+    - When rows are clickable, keep the primary row action visible as a link or button as well.

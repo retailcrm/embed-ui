@@ -190,17 +190,6 @@ composition:
     - title: Segmented multi-select primitive
       notes: Use grouped buttons when composing a custom segmented row or when extending UiToggleGroup behavior.
 
-examples:
-  - title: Standalone pressed state
-    goal: Build a toggleable filter button.
-    code: |
-      <UiToggleButton
-        :pressed="filtersOpened"
-        :aria-pressed="filtersOpened"
-        @click="filtersOpened = !filtersOpened"
-      >
-        Filters
-      </UiToggleButton>
 
 ai_notes:
   do:

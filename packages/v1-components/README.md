@@ -46,15 +46,19 @@ import { UiButton } from '@retailcrm/embed-ui-v1-components/remote'
 
 Дополнительные материалы по пакету находятся в `docs/`:
 
+- [`AGENTS.md`](./AGENTS.md) — инструкции для AI-агентов, использующих пакет в целевом проекте.
 - [`docs/README.md`](./docs/README.md) — обзор пакета и правил использования.
 - [`docs/COMPONENTS.md`](./docs/COMPONENTS.md) — карта публичных компонентов.
 - [`docs/AI.md`](./docs/AI.md) — контекст для ИИ и автоматизаций.
 - [`docs/PROFILES.md`](./docs/PROFILES.md) — AI-friendly YAML-профили компонентов.
 - [`docs/FORMAT.md`](./docs/FORMAT.md) — формат описания компонента для AI-агентов.
+- [`docs/AGENT-DESIGN-GUIDELINES.md`](./docs/AGENT-DESIGN-GUIDELINES.md) — правила построения страниц,
+  модалок, шторок, фильтров и таблиц.
 
 ## AI и инициализация `AGENTS.md`
 
-После установки пакет показывает подсказку, что внутри есть AI-заметки и YAML-профили компонентов.
+После установки пакет показывает подсказку, что внутри есть `README.md`, `AGENTS.md`,
+AI-заметки и YAML-профили компонентов.
 
 Если в целевом проекте еще нет `AGENTS.md`, можно сгенерировать стартовый файл командой:
 

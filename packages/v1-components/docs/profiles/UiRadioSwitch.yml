@@ -189,38 +189,6 @@ composition:
     - title: Section cards
       notes: Use UiRadioSwitchOption when each choice needs icon, description, or custom checkmark.
 
-examples:
-  - title: Simple options array
-    goal: Build a compact single-choice segmented control.
-    code: |
-      <UiRadioSwitch
-        v-model:value="mode"
-        :options="[
-          { label: 'Auto', value: 'auto' },
-          { label: 'Manual', value: 'manual' },
-        ]"
-      />
-  - title: Rich card options
-    goal: Render section cards with object values and descriptions.
-    code: |
-      <UiRadioSwitch
-        v-model:value="mode"
-        appearance="section"
-        rubber
-        :equal-fn="(a, b) => a?.key === b?.key"
-      >
-        <UiRadioSwitchOption
-          label="Auto"
-          :value="{ key: 'auto' }"
-          description="Automatic mode"
-        />
-
-        <UiRadioSwitchOption
-          label="Manual"
-          :value="{ key: 'manual' }"
-          description="Manual setup"
-        />
-      </UiRadioSwitch>
 
 ai_notes:
   do:

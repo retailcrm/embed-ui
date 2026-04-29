@@ -347,38 +347,6 @@ composition:
     - title: Inline control
       notes: Use UiTextbox as a self-contained control, not as a wrapper for arbitrary content.
 
-examples:
-  - title: Field wiring
-    goal: Build a standard text field with correct ARIA wiring.
-    code: |
-      <UiField id="name" label="Name">
-        <template #default="field">
-          <UiTextbox
-            :id="field.id"
-            :input-attributes="{
-              'aria-labelledby': field.ariaLabelledby,
-              'aria-invalid': field.ariaInvalid,
-            }"
-            v-model:value="name"
-          />
-        </template>
-      </UiField>
-  - title: Search pattern
-    goal: Build a textbox with a leading icon and clear action.
-    code: |
-      <UiTextbox v-model:value="term" clearable>
-        <template #leading-icon>
-          <IconSearch aria-hidden="true" />
-        </template>
-      </UiTextbox>
-  - title: Prefix and suffix zones
-    goal: Show safe markup for prefix and suffix content.
-    code: |
-      <UiTextbox v-model:value="amount" inputmode="decimal" suffix="₽">
-        <template #prefix>
-          <span>Amount</span>
-        </template>
-      </UiTextbox>
 
 ai_notes:
   do:

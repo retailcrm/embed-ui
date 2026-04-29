@@ -272,50 +272,6 @@ composition:
     - title: Popper mental model
       notes: Think of UiSelect as target plus floating dropdown, not as a single inline control.
 
-examples:
-  - title: Standard select in a field
-    goal: Build a labeled select with field semantics.
-    code: |
-      <UiField id="assignee" label="Assignee">
-        <template #default="field">
-          <UiSelect
-            :id="field.id"
-            :invalid="field.invalid"
-            :placeholder="'Select assignee'"
-            v-model:value="assignee"
-          >
-            <UiSelectOption value="kyle" label="Kyle Simmons" />
-            <UiSelectOption value="eduardo" label="Eduardo Henry" />
-          </UiSelect>
-        </template>
-      </UiField>
-  - title: Grouped options
-    goal: Build a grouped option tree through the safe child components.
-    code: |
-      <UiSelect placeholder="Employee">
-        <UiSelectOptionGroup label="Sales">
-          <UiSelectOption value="kyle" label="Kyle Simmons" />
-        </UiSelectOptionGroup>
-
-        <UiSelectOptionGroup label="Support">
-          <UiSelectOption value="philip" label="Philip Williamson" />
-        </UiSelectOptionGroup>
-      </UiSelect>
-  - title: Object values with equalsFn
-    goal: Avoid object comparison by reference.
-    code: |
-      <UiSelect
-        v-model:value="selectedUser"
-        :equals-fn="(left, right) => left?.id === right?.id"
-        placeholder="Employee"
-      >
-        <UiSelectOption
-          v-for="user in users"
-          :key="user.id"
-          :value="user"
-          :label="user.name"
-        />
-      </UiSelect>
 
 ai_notes:
   do:
