@@ -28,7 +28,7 @@
                 :active="expanded"
                 :clearable="clearable"
                 :invalid="invalid"
-                :readonly="inputReadonly"
+                :readonly="readonly"
                 :size="textboxSize"
                 :disabled="disabled"
                 :input-attributes="textboxAttributes"
@@ -311,6 +311,13 @@ const onKeyDown = (event: KeyboardEvent) => {
 
 const onInput = (event: Event) => {
   const target = event.target as HTMLInputElement | null
+  if (inputReadonly.value) {
+    if (target) {
+      target.value = inputValue.value
+    }
+    return
+  }
+
   emit('input', target?.value ?? '')
 }
 const onFocus = (event: Event) => emit('focus', event)
