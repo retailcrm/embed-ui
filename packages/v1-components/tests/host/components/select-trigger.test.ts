@@ -89,6 +89,36 @@ describe('host/components/select-trigger', () => {
     expect(wrapper?.emitted('clear')?.at(-1)).toEqual([undefined])
   })
 
+  test('check clearable method, when click button', async () => {
+    createComponent({
+      clearable: true,
+      value: 'kyle',
+      selection: [{
+        id: 'option-1',
+        value: 'kyle',
+        label: 'Kyle Simmons',
+        isMatched: () => true,
+      }],
+    })
+
+    const input = wrapper?.find('input')
+    const clearButton = wrapper?.find('.ui-v1-textbox__eraser')
+
+    expect(input?.attributes('readonly')).toBeUndefined()
+    expect(clearButton?.exists()).toBe(true)
+    expect(clearButton?.attributes('disabled')).toBeUndefined()
+
+    await input?.trigger('input')
+
+    expect((input?.element as HTMLInputElement).value).toBe('Kyle Simmons')
+    expect(wrapper?.emitted('input')).toBeUndefined()
+
+    await clearButton?.trigger('click')
+
+    expect(wrapper?.emitted('update:value')?.at(-1)).toEqual([null])
+    expect(wrapper?.emitted('clear')).toBeTruthy()
+  })
+
   test('supports fluid and exact width modes', async () => {
     createComponent({
       width: WIDTH.FLUID,
