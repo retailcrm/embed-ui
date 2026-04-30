@@ -1,10 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import { createProvider } from '@omnicajs/vue-remote/host'
-
-import UiTab from '@/host/components/tab/UiTab.vue'
-import UiTabGroup from '@/host/components/tab/UiTabGroup.vue'
-
 import { APPEARANCE, SIZE } from '@/common/components/tab'
 
 import { UiTabGroup as RemoteUiTabGroup } from '@/remote/components/tab'
@@ -23,11 +18,6 @@ type UiTabStoryExtras = {
   withContent?: boolean;
 }
 type UiTabStoryArgs = UiTabGroupProps & UiTabStoryExtras
-
-const provider = createProvider({
-  UiTab,
-  UiTabGroup,
-})
 
 const meta = {
   title: 'Components/UiTab',
@@ -59,7 +49,6 @@ const meta = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiTabWorker,
   }),
 

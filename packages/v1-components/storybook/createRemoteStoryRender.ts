@@ -7,15 +7,17 @@ import { createReceiver } from '@omnicajs/vue-remote/host'
 import { defineComponent } from 'vue'
 import { onUnmounted, watch } from 'vue'
 
+import { storybookHostProvider } from './provider'
+
 type RemoteStoryRenderOptions = {
-  provider: object;
+  provider?: object;
   worker: {
     new (options?: WorkerOptions): Worker;
   };
 }
 
 export const createRemoteStoryRender = <TArgs extends object>({
-  provider,
+  provider = storybookHostProvider,
   worker: Worker,
 }: RemoteStoryRenderOptions) => (args: TArgs) => defineComponent({
     name: 'RemoteStoryRender',

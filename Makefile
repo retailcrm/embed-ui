@@ -84,6 +84,18 @@ else
 endif
 	$(TARGET_OK)
 
+.PHONY: tests-e2e
+tests-e2e: .require-compose ## [Tests][docker] Runs v1-components browser e2e tests
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-components run test:e2e $(cli)
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-components run test:e2e
+endif
+	$(TARGET_OK)
+
 .PHONY: tests-coverage
 tests-coverage: .require-compose ## [Tests][docker][heavy] Runs autotests with coverage report
 	$(TARGET_HEADER)

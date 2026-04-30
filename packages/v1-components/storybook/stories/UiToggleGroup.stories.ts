@@ -1,10 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import { createProvider } from '@omnicajs/vue-remote/host'
-
-import UiToggleButton from '@/host/components/toggle-button/UiToggleButton.vue'
-import UiToggleGroupRoot from '@/host/components/toggle-group/UiToggleGroupRoot.vue'
-
 import { UiToggleButtonSize } from '@/common/components/toggle-button'
 
 import { UiToggleGroup } from '@/remote/components/toggle-group'
@@ -21,11 +16,6 @@ type UiToggleGroupStoryExtras = {
   withSlots?: boolean;
 }
 type UiToggleGroupStoryArgs = UiToggleGroupProps & UiToggleGroupStoryExtras
-
-const provider = createProvider({
-  UiToggleButton,
-  UiToggleGroupRoot,
-})
 
 const meta = {
   title: 'Components/UiToggleGroup',
@@ -48,7 +38,6 @@ const meta = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiToggleGroupWorker,
   }),
 

@@ -1,14 +1,6 @@
 import type { Meta } from '@storybook/vue3'
 import type { StoryObj } from '@storybook/vue3'
 
-import { createProvider } from '@omnicajs/vue-remote/host'
-
-import UiMenuItem from '@/host/components/menu/UiMenuItem.vue'
-import UiMenuItemGroup from '@/host/components/menu/UiMenuItemGroup.vue'
-import UiPopperConnector from '@/host/components/popper/UiPopperConnector.vue'
-import UiSelectPopper from '@/host/components/select/UiSelectPopper.vue'
-import UiSelectTrigger from '@/host/components/select/UiSelectTrigger.vue'
-
 import { PLACEMENT } from '@/common/components/select'
 import { SIZE } from '@/common/components/select'
 
@@ -18,14 +10,6 @@ import UiSelectWorker from './UiSelect.remote.ts?worker'
 import { createRemoteStoryRender } from '../createRemoteStoryRender'
 import { docsOnlyStory } from '../docsOnlyStory'
 import page from './UiSelect.mdx'
-
-const provider = createProvider({
-  UiMenuItem,
-  UiMenuItemGroup,
-  UiPopperConnector,
-  UiSelectPopper,
-  UiSelectTrigger,
-})
 
 const meta = {
   title: 'Components/UiSelect',
@@ -63,7 +47,6 @@ const meta = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiSelectWorker,
   }),
 

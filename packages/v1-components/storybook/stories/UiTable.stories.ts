@@ -3,22 +3,6 @@ import './UiTable.stories.less'
 
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import { createProvider } from '@omnicajs/vue-remote/host'
-
-import UiAvatar from '@/host/components/avatar/UiAvatar.vue'
-import UiCheckbox from '@/host/components/checkbox/UiCheckbox.vue'
-import UiLink from '@/host/components/link/UiLink.vue'
-import UiTableBodyCell from '@/host/components/table/UiTableBodyCell.vue'
-import UiTableCol from '@/host/components/table/UiTableCol.vue'
-import UiTableFooterButton from '@/host/components/table/UiTableFooterButton.vue'
-import UiTableFooterSection from '@/host/components/table/UiTableFooterSection.vue'
-import UiTableHeadCell from '@/host/components/table/UiTableHeadCell.vue'
-import UiTableRoot from '@/host/components/table/UiTableRoot.vue'
-import UiTableRow from '@/host/components/table/UiTableRow.vue'
-import UiTableSection from '@/host/components/table/UiTableSection.vue'
-import UiTableSorter from '@/host/components/table/UiTableSorter.vue'
-import UiTag from '@/host/components/tag/UiTag.vue'
-
 import { UiTable } from '../../src/remote/components/table'
 import UiTableReferenceWorker from './UiTable.reference.remote.ts?worker'
 import UiTableWorker from './UiTable.remote.ts?worker'
@@ -38,22 +22,6 @@ type UiTableStoryExtras = {
   empty?: boolean;
 }
 type UiTableStoryArgs = UiTableProps & UiTableStoryExtras
-
-const provider = createProvider({
-  UiAvatar,
-  UiCheckbox,
-  UiLink,
-  UiTableBodyCell,
-  UiTableCol,
-  UiTableFooterButton,
-  UiTableFooterSection,
-  UiTableHeadCell,
-  UiTableRoot,
-  UiTableRow,
-  UiTableSection,
-  UiTableSorter,
-  UiTag,
-})
 
 const meta = {
   title: 'Components/UiTable',
@@ -85,7 +53,6 @@ const meta = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiTableWorker,
   }),
 
@@ -191,7 +158,6 @@ export const CampaignsOverview: Story = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiTableReferenceWorker,
   }),
 
