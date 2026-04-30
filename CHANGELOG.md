@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.9.21](https://github.com/retailcrm/embed-ui/compare/v0.9.20...v0.9.21) (2026-04-30)
+
+### Bug Fixes
+
+* **v1-components:** Added Storybook host and UiField story width were adjusted ([cc0de30](https://github.com/retailcrm/embed-ui/commit/cc0de3080943d4159d48c0850318c8a5027017a6))
+* **v1-components:** fixed clear action in UiSelectTrigger ([7d581cb](https://github.com/retailcrm/embed-ui/commit/7d581cb689789b08b9207cc78d1fe7d41fe2d973))
+* **v1-components:** reworked UiPageHeader actions layout ([d7c48e8](https://github.com/retailcrm/embed-ui/commit/d7c48e8d222bf117fcbf588254bb0d113a4ca5ba))
 ## [0.9.20](https://github.com/retailcrm/embed-ui/compare/v0.9.19...v0.9.20) (2026-04-22)
 
 ### Bug Fixes

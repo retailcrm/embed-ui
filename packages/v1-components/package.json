@@ -2,7 +2,7 @@
   "name": "@retailcrm/embed-ui-v1-components",
   "bin": "./bin/embed-ui-v1-components.mjs",
   "type": "module",
-  "version": "0.9.20",
+  "version": "0.9.21",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
   "repository": "git@github.com:retailcrm/embed-ui.git",
