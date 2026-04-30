@@ -1,0 +1,188 @@
+import { ArgTypes, Story } from '@storybook/addon-docs/blocks'
+import * as UiLogicTreeStories from './UiLogicTree.stories'
+
+# UiLogicTree
+
+`UiLogicTree` - slot-driven древо условий для remote-части `embed-ui`.
+Компонент управляет структурой, линиями, grouped-layout, DnD и состоянием редактирования, а пользовательский контент узлов и бизнес-логика add/edit/remove приходят снаружи.
+
+Важно: `UiLogicTree` является controlled-компонентом для действий с узлами.
+По `node:add`, `node:edit`, `node:remove` и `control-action` дерево только отдаёт событие наружу; consumer сам обновляет `items` и передаёт новый массив обратно.
+`update:items` остаётся синхронизацией для внутренних сценариев вроде DnD/reorder и toggle.
+
+## Когда использовать
+
+* Нужна древовидная структура условий, групп и действий с готовой механикой линий и вложенности.
+* Нужно собирать внешний контент узла самостоятельно: текст, кнопки, инпуты, селекты, меню и trailing-действия.
+* Нужны grouped-ветки с DnD и единый editable-flow, но без жёстко зашитого UI внутри компонента.
+
+## Публичные slots
+
+`UiLogicTree` не задаёт прикладной контент узла внутри себя. Дерево отвечает за каркас узла, линии, вложенность и состояние, а consumer через slots описывает, как конкретный узел выглядит и какие контролы в нём есть.
+
+Слоты делятся на две группы:
+
+* `node-prefix` и `node-trailing` - боковые зоны узла. Они не выбирают режим узла и рендерятся вокруг центрального контента, когда consumer возвращает из них разметку.
+* `node` - центральный контент узла. Consumer сам выбирает, что показать для read-only, edit и actions-сценариев, опираясь на `nodeView`, `editing` и данные узла.
+* `conjunction-poppers` - popper-контент для кликабельного бейджа связи (`AND`/`OR`). Сам target создаёт дерево, а consumer передаёт меню, tooltip или другой floating UI.
+
+Смысл каждого слота:
+
+* `node-prefix` - левая служебная зона. Обычно сюда попадает `drag handle`, иконка папки, маркер типа узла или другой компактный визуальный признак.
+* `node` - центральная зона узла. Здесь consumer рендерит title, inline-текст, edit-контролы, actions-кнопки и любые другие варианты представления.
+* `node-trailing` - правая зона вторичных действий узла. Подходит для delete, overflow-menu, quick action и похожих действий над текущим узлом.
+* `conjunction-poppers` - содержимое `UiPopperConnector`, связанное с бейджем conjunction текущего узла. Слот получает те же props, что и node-слоты, поэтому consumer может менять `items` по `pathKey` или `node`.
+
+Важно: слоты не являются моделью данных. `UiLogicTree` не знает, какие именно controls/actions/icons существуют у consumer. Он только передаёт текущий `node`, состояние узла и callbacks. Если центральный слот `node` не передан, дерево показывает нейтральный placeholder только в центральной зоне узла.
+
+## Строительные компоненты
+
+Для стандартной визуальной сборки узла есть небольшие primitives. Они не добавляют бизнес-логику и не требуют от дерева знания о данных consumer: это только готовые structural-компоненты поверх классов `ui-v1-logic-tree`.
+
+Основные primitives:
+
+* `UiLogicTreeNodeItem` - интерактивный элемент узла с областями `headline`, `title`, `trailing` и основным содержимым.
+* `UiLogicTreeNodeIcon` - компактная иконка узла.
+* `UiLogicTreeCaret` - иконка раскрытия ветки; по умолчанию закрыта, `active` показывает раскрытое состояние.
+* `UiLogicTreeDragHandle` - готовая remote-ручка drag'n'drop с `RemoteDragHandle`, иконкой и `data-skip-node-click`.
+
+Consumer может использовать эти primitives в `node`, `node-prefix` и `node-trailing`, либо полностью заменить их своей разметкой.
+
+## Slot props
+
+Во все публичные slots дерево передаёт `UiLogicTreeNodeSlotProps`.
+
+Основные поля:
+
+* `node` - текущий узел дерева целиком.
+* `path` и `pathKey` - адрес узла в дереве.
+* `nodeView` - текущий режим узла (`summary` или `actions`).
+* `editing` - узел сейчас в режиме редактирования.
+* `grouped`, `groupedHeader`, `groupedPosition` - информация о grouped-секции.
+* `selected`, `highlighted`, `expanded`, `hasChildren` - состояние узла.
+
+Доступные callbacks:
+
+* `onAction(actionId, kind)` - запросить добавление узла заданного типа. Consumer должен обработать `node:add` и обновить `items`.
+* `onControlUpdate(controlId, value)` - запросить обновление значения контрола. Consumer должен обработать `node:edit` и обновить `items`.
+* `onControlAction(controlId)` - выполнить action у контрола.
+* `onRemove()` - запросить удаление узла. Consumer должен обработать `node:remove` и обновить `items`.
+* `onToggle()` - раскрыть или свернуть ветку.
+
+## Как собирать узел
+
+Базовая идея такая:
+
+```vue
+<template>
+  <UiLogicTree
+    :items="items"
+    @node:add="handleNodeAdd"
+    @node:edit="handleNodeEdit"
+    @node:remove="handleNodeRemove"
+    @update:items="items = $event"
+  >
+    <template #node-prefix="{ node, editing }">
+      <UiLogicTreeDragHandle
+        v-if="node.data.draggable && !editing"
+        :for="node.id"
+      />
+      <UiLogicTreeNodeIcon v-else-if="node.data.icon && !editing">
+        <UiFolderIcon />
+      </UiLogicTreeNodeIcon>
+    </template>
+
+    <template #node="{ node, nodeView, editing, expanded, onAction, onControlUpdate, onToggle }">
+      <template v-if="nodeView === 'actions'">
+        <UiButton
+          v-for="action in node.data.actions"
+          :key="action.id"
+          appearance="tertiary"
+          size="sm"
+          @click="onAction(action.id, action.kind)"
+        >
+          {{ action.label }}
+        </UiButton>
+      </template>
+
+      <div
+        v-else-if="editing"
+        class="consumer-controls"
+      >
+        <UiSelect
+          v-for="control in node.data.controls"
+          :key="control.id"
+          :value="control.value"
+          :width="control.width"
+          @update:value="(value) => onControlUpdate(control.id, value)"
+        />
+      </div>
+
+      <UiLogicTreeNodeItem
+        v-else
+      >
+        <template #title>
+          {{ node.data.title }}
+        </template>
+
+        <template #trailing>
+          <UiButton
+            v-if="node.collapsible"
+            type="button"
+            @click.stop="onToggle"
+          >
+            <UiLogicTreeCaret :active="expanded" />
+          </UiButton>
+        </template>
+
+        <span
+          v-for="item in node.data.inline"
+          :key="item.id"
+          class="consumer-inline"
+        >
+          {{ item.text }}
+        </span>
+      </UiLogicTreeNodeItem>
+    </template>
+
+    <template #node-trailing="{ node, onRemove }">
+      <UiButton
+        v-if="node.data.removable"
+        appearance="tertiary"
+        variant="danger"
+        @click="onRemove"
+      >
+        Удалить
+      </UiButton>
+    </template>
+
+    <template #conjunction-poppers="{ node, pathKey }">
+      <UiPopper
+        :target-triggers="['click']"
+        :global-triggers="['miss-click', 'reference-hidden']"
+        placement="bottom-start"
+      >
+        <UiMenuItem @click="setConjunction(pathKey, 'and')">
+          AND
+        </UiMenuItem>
+
+        <UiMenuItem @click="setConjunction(pathKey, 'or')">
+          OR
+        </UiMenuItem>
+      </UiPopper>
+    </template>
+  </UiLogicTree>
+</template>
+```
+
+В каноничном примере ниже обработчики находятся в consumer-слое: `UiLogicTree.remote.example.vue` ловит `node:add`, `node:edit`, `node:remove` и обновляет `items` снаружи.
+
+## Каноничный пример
+
+`CampaignArbitrage` - основной пример того, как дерево собирается целиком через slots снаружи.
+
+<Story of={UiLogicTreeStories.CampaignArbitrage} />
+
+## API
+
+<ArgTypes of={UiLogicTreeStories} />

@@ -34,6 +34,7 @@ export type FloatingOptions = {
 }
 
 export type ShowingOptions = {
+  visible?: boolean;
   shown?: boolean;
   targetTriggers?: Trigger[] | TriggerSchema;
   popperTriggers?: Trigger[] | TriggerSchema;

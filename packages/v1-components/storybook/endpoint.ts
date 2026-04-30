@@ -11,6 +11,8 @@ import { createEndpoint, release, retain } from '@remote-ui/rpc'
 
 import { createRemoteRenderer, createRemoteRoot } from '@omnicajs/vue-remote/remote'
 
+import { hostComponentNames } from './host-components'
+
 export type Lifecycle<T extends object = object> = {
   run (channel: Channel, props?: Partial<T>): Promise<void>;
   release (): void;
@@ -33,37 +35,7 @@ export interface Runner<T extends object = object> {
 
 const createRoot = async (channel: Channel) => {
   const root = createRemoteRoot(channel, {
-    components: [
-      'UiAvatar',
-      'UiButton',
-      'UiCheckbox',
-      'UiLink',
-      'UiMenuItem',
-      'UiMenuItemGroup',
-      'UiPageHeaderTitle',
-      'UiPopperConnector',
-      'UiPopperTarget',
-      'UiRadioSwitchOptionShell',
-      'UiRadioSwitchRoot',
-      'UiSelectPopper',
-      'UiSelectTrigger',
-      'UiTab',
-      'UiTabGroup',
-      'UiTableBodyCell',
-      'UiTableCol',
-      'UiTableFooterButton',
-      'UiTableFooterSection',
-      'UiTableHeadCell',
-      'UiTableRoot',
-      'UiTableRow',
-      'UiTableSection',
-      'UiTableSorter',
-      'UiTag',
-      'UiTextbox',
-      'UiTooltip',
-      'UiToggleButton',
-      'UiToggleGroupRoot',
-    ],
+    components: [...hostComponentNames],
   })
 
   await root.mount()

@@ -1,0 +1,73 @@
+@import (reference) '../../assets/stylesheets/typography.less';
+@import (reference) '../../assets/stylesheets/variables.less';
+
+.controls {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: @spacing-xs;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.remove {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity @transition;
+}
+
+.inline {
+  .text-regular();
+
+  color: @black-500;
+  white-space: nowrap;
+}
+
+.inline_muted {
+  color: @grey-800;
+}
+
+.inline_separated {
+  padding-left: 12px;
+  position: relative;
+
+  &::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    position: absolute;
+    top: 50%;
+    left: 0;
+  }
+}
+
+.inline_semibold {
+  font-weight: 500;
+}
+
+.inline_blue { color: @blue-300; }
+.inline_green { color: @green-400; }
+.inline_grey { color: @grey-800; }
+.inline_red { color: @red-500; }
+.inline_yellow { color: @yellow-400; }
+
+:global(.ui-v1-logic-tree__surface-node-content:hover) .remove,
+:global(.ui-v1-logic-tree__surface-node-content_editor) .remove,
+:global(.ui-v1-logic-tree__surface-node-content_active) .remove,
+:global(.ui-v1-logic-tree__surface-node-content_editing) .remove,
+:global(.ui-v1-logic-tree__surface-node-content_highlighted) .remove,
+:global(.ui-v1-logic-tree__surface-node-content:focus-within) .remove,
+:global(.ui-v1-logic-tree__actions-node:hover) .remove,
+:global(.ui-v1-logic-tree__actions-node:focus-within) .remove {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:global([data-dnd-overlay='true']) .remove {
+  opacity: 0;
+  pointer-events: none;
+}

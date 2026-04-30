@@ -10,7 +10,25 @@ export const UiPopperType = 'UiPopper' as SchemaType<
   RemoteProperties<UiPopperProperties>
 >
 
-export const UiPopper = defineRemoteComponent(UiPopperType)
+export const UiPopper = defineRemoteComponent(UiPopperType, {
+  emits: [
+    'attached',
+    'dispose',
+    'hide',
+    'hidden',
+    'show',
+    'shown',
+    'update:visible',
+  ] as unknown as {
+    'attached': () => boolean,
+    'dispose': () => boolean,
+    'hide': (reason?: 'generic' | 'by-miss-click') => boolean,
+    'hidden': () => boolean,
+    'show': () => boolean,
+    'shown': () => boolean,
+    'update:visible': (visible: boolean) => boolean,
+  },
+})
 
 export const UiPopperConnectorType = 'UiPopperConnector' as SchemaType<'UiPopperConnector'>
 

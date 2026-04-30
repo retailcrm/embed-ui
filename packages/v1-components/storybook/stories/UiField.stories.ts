@@ -2,13 +2,6 @@ import '@/host/components/field/field.less'
 
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import { createProvider } from '@omnicajs/vue-remote/host'
-
-import UiPopperConnector from '@/host/components/popper/UiPopperConnector.vue'
-import UiPopperTarget from '@/host/components/popper/UiPopperTarget.vue'
-import UiTextbox from '@/host/components/textbox/UiTextbox.vue'
-import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
-
 import { UiField } from '../../src/remote/components/field'
 import UiFieldWorker from './UiField.remote.ts?worker'
 
@@ -26,13 +19,6 @@ type UiFieldStoryExtras = {
   containerWidth?: number;
 }
 type UiFieldStoryArgs = UiFieldProps & UiFieldStoryExtras
-
-const provider = createProvider({
-  UiPopperConnector,
-  UiPopperTarget,
-  UiTextbox,
-  UiTooltip,
-})
 
 const meta = {
   title: 'Components/UiField',
@@ -59,7 +45,6 @@ const meta = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiFieldWorker,
   }),
 

@@ -1,10 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import { createProvider } from '@omnicajs/vue-remote/host'
-
-import UiRadioSwitchOptionShell from '@/host/components/radio-switch/UiRadioSwitchOptionShell.vue'
-import UiRadioSwitchRoot from '@/host/components/radio-switch/UiRadioSwitchRoot.vue'
-
 import { APPEARANCE, SIZE } from '@/common/components/radio-switch'
 
 import { UiRadioSwitch } from '@/remote/components/radio-switch'
@@ -21,11 +16,6 @@ type UiRadioSwitchStoryExtras = {
   withSlots?: boolean;
 }
 type UiRadioSwitchStoryArgs = UiRadioSwitchProps & UiRadioSwitchStoryExtras
-
-const provider = createProvider({
-  UiRadioSwitchOptionShell,
-  UiRadioSwitchRoot,
-})
 
 const meta = {
   title: 'Components/UiRadioSwitch',
@@ -52,7 +42,6 @@ const meta = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiRadioSwitchWorker,
   }),
 

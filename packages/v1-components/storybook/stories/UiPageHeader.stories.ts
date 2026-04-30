@@ -1,29 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/vue3'
 
-import { createProvider } from '@omnicajs/vue-remote/host'
-
-import UiButton from '@/host/components/button/UiButton.vue'
-import UiLink from '@/host/components/link/UiLink.vue'
-import UiPageHeaderTitle from '@/host/components/page-header/UiPageHeaderTitle.vue'
-import UiPopperConnector from '@/host/components/popper/UiPopperConnector.vue'
-import UiPopperTarget from '@/host/components/popper/UiPopperTarget.vue'
-import UiTooltip from '@/host/components/tooltip/UiTooltip.vue'
-
 import { UiPageHeader } from '@/remote/components/page-header'
 
 import UiPageHeaderWorker from './UiPageHeader.remote.ts?worker'
 
 import { createRemoteStoryRender } from '../createRemoteStoryRender'
 import page from './UiPageHeader.mdx'
-
-const provider = createProvider({
-  UiButton,
-  UiLink,
-  UiPageHeaderTitle,
-  UiPopperConnector,
-  UiPopperTarget,
-  UiTooltip,
-})
 
 const meta = {
   title: 'Components/UiPageHeader',
@@ -44,7 +26,6 @@ const meta = {
   },
 
   render: createRemoteStoryRender({
-    provider,
     worker: UiPageHeaderWorker,
   }),
 
