@@ -19,6 +19,7 @@ function getAbsolutePath(value: string): string {
 }
 
 const isDevelopment = process.env.NODE_ENV === 'development'
+const allowedHosts = ['v1.embed-ui.local', 'v1.embed-ui.test']
 
 export default defineMain({
   addons: [
@@ -37,7 +38,7 @@ export default defineMain({
     },
   ],
   core: {
-    allowedHosts: ['v1.embed-ui.local'],
+    allowedHosts,
     builder: {
       name: '@storybook/builder-vite',
       options: {
@@ -56,7 +57,7 @@ export default defineMain({
   ],
   viteFinal: async (config) => {
     if (config.server) {
-      config.server.allowedHosts = true
+      config.server.allowedHosts = allowedHosts
       config.server.hmr.clientPort = 80
     }
     return config
