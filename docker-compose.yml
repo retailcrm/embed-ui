@@ -1,6 +1,8 @@
 services:
   node: &node
-    image: node:22
+    build:
+      context: ./
+      dockerfile: .docker/node/Dockerfile
     user: node
     environment:
       - PATH=/project/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

@@ -2,13 +2,13 @@
 
 TARGET_HEADER=@echo -e '===== \e[34m' $@ '\e[0m'
 TARGET_OK=@echo -e '\e[32mOK\e[0m'
-COMPOSE=$(shell if command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; elif command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then echo "docker compose"; fi)
+COMPOSE=docker compose
 YARN=$(COMPOSE) run --rm node yarn
 
 .PHONY: .require-compose
 .require-compose:
-	@if [ -z "$(COMPOSE)" ]; then \
-		echo "docker compose is unavailable (need 'docker compose' or 'docker-compose')"; \
+	@if ! $(COMPOSE) version >/dev/null 2>&1; then \
+		echo "docker compose is unavailable"; \
 		exit 1; \
 	fi
 
@@ -19,9 +19,9 @@ YARN=$(COMPOSE) run --rm node yarn
 	$(TARGET_OK)
 
 .PHONY: node_modules
-node_modules: .require-compose package.json yarn.lock ## [Setup][docker][heavy] Installs dependencies
+node_modules: .require-compose .yarnrc.yml package.json yarn.lock ## [Setup][docker][heavy] Installs dependencies
 	$(TARGET_HEADER)
-	@$(COMPOSE) run --rm node yarn install --silent
+	@$(YARN) install --silent
 	$(TARGET_OK)
 
 .PHONY: build
@@ -132,7 +132,7 @@ ci-actionlint: ## [CI][docker] Lints GitHub Actions workflows locally (actionlin
 	elif command -v docker >/dev/null 2>&1; then \
 		docker run --rm -v "$$(pwd):/repo" -w /repo rhysd/actionlint:latest; \
 	else \
-		echo "actionlint is not installed and docker/docker-compose is unavailable"; \
+		echo "actionlint is not installed and docker compose is unavailable"; \
 		exit 1; \
 	fi
 	$(TARGET_OK)
