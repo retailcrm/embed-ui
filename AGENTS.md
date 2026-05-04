@@ -93,15 +93,16 @@ yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
 ```
 
 ## Commit Workflow
-- Before creating commits, you must read `skills/commit-workflow/SKILL.md` and follow its rules.
+- Before creating commits, you must read `.agents/skills/commit-workflow/SKILL.md` and follow its rules.
 
 ## Skills
-- Repository-local skills are available under `skills/`.
+- Repository-local skills are available under `.agents/skills/`.
 - If a skill conflicts with this file, follow `AGENTS.md`.
 - Current local skills:
-  - `skills/commit-workflow/SKILL.md`
-  - `skills/sync-remote-host-registry/SKILL.md`
-  - `skills/yarn-lock-conflict-resolution/SKILL.md`
+  - `.agents/skills/commit-workflow/SKILL.md`
+  - `.agents/skills/local-ci-simulation/SKILL.md`
+  - `.agents/skills/sync-remote-host-registry/SKILL.md`
+  - `.agents/skills/yarn-lock-conflict-resolution/SKILL.md`
 
 ## Notes
 - Do not assume legacy rules from other repositories (especially `omnica`) apply here.
