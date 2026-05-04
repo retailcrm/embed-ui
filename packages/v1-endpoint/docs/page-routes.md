@@ -1,16 +1,15 @@
-# Роуты страниц
+# Маршруты страниц
 
-Remote-страницы в `v1-endpoint` запускаются по `code`. Этот `code` приходит от host и пробрасывается
-в компонент через `definePageRunner`.
+Встраиваемые страницы в `v1-endpoint` запускаются по `code`. Host передаёт `code`, а
+`definePageRunner` пробрасывает его в компонент.
 
-`v1-endpoint` не задаёт фиксированный список page routes. Список страниц и CRM-маршрутов принадлежит
+`v1-endpoint` не задаёт фиксированный список маршрутов страниц. Список страниц и CRM-маршрутов принадлежит
 host/manifest конкретного расширения, поэтому его нужно хранить в справочнике проекта рядом с кодом
 расширения.
 
 ## Что такое `page code`
 
-`page code` — стабильный идентификатор remote-страницы внутри расширения. Он отвечает на вопрос:
-«какую страницу расширения нужно смонтировать?».
+`page code` — стабильный идентификатор встраиваемой страницы внутри расширения.
 
 Пример:
 
@@ -37,11 +36,10 @@ defineProps<{
 
 ## Что такое `route`
 
-`route` — CRM-маршрут или route name, через который host открывает страницу. В remote-коде route
-может использоваться для переходов через `HostApi.goTo(route, params)`.
+`route` — CRM-маршрут или имя маршрута, через который host открывает страницу. В коде расширения
+route может использоваться для переходов через `HostApi.goTo(route, params)`.
 
-Данные Symfony JS router доступны в контексте `settings` в поле `system.routing`. Это полезно,
-когда нужно проверить доступные route names или собрать ссылку тем же routing data, что отдаёт host.
+Данные Symfony JS router доступны в контексте `settings` в поле `system.routing`.
 
 ```ts
 import { useContext as useSettingsContext } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
@@ -51,9 +49,9 @@ const settings = useSettingsContext()
 console.log(settings['system.routing'].routes)
 ```
 
-## Пример справочника роутов страниц
+## Пример справочника маршрутов страниц
 
-Это пример формата. Конкретные `code`, `route` и параметры нужно брать из host/manifest расширения.
+Конкретные `code`, `route` и параметры нужно брать из host/manifest расширения.
 
 | Page code | Route | Params | Открывается из | Компонент |
 | --- | --- | --- | --- | --- |
@@ -61,7 +59,7 @@ console.log(settings['system.routing'].routes)
 | `integration-settings` | `embed.page.integration_settings` | `{}` | `settings / integration-settings` | `IntegrationSettingsPage.vue` |
 | `customer-tools` | `embed.page.customer_tools` | `{ customerId }` | `customer/card:actions / customer-tools` | `CustomerToolsPage.vue` |
 
-## Переход на CRM route
+## Переход на CRM-маршрут
 
 Если странице нужен переход на другой CRM-маршрут, используйте host API, а не прямую сборку URL.
 Способ получения `HostApi` зависит от host-интеграции проекта, но сам публичный контракт выглядит так:
@@ -76,7 +74,7 @@ const openSettings = (host: HostApi) => {
 
 Читайте также:
 
-- [`menu-placements`](./menu-placements.md) — как связать пункт меню, page `code` и route.
+- [`menu-placements`](./menu-placements.md) — как связать пункт меню, page `code` и маршрут.
 - [`definePageRunner`](./define-page-runner.md) — как page `code` попадает в компонент.
 - [`settings context`](../../v1-contexts/docs/ru/CONCEPT.md) — общий принцип работы контекстов.
 - [`HostApi`](../../v1-types/host.d.ts) — публичный тип host API с `goTo`.

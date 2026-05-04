@@ -1,6 +1,6 @@
 # `defineWidgetRunner`
 
-`defineWidgetRunner` создаёт runner для remote-виджетов.
+`defineWidgetRunner` создаёт runner для встраиваемых виджетов.
 При запуске в компонент пробрасывается проп `target`.
 
 ## Перегрузки
@@ -47,7 +47,7 @@ const widgetRunner = defineWidgetRunner({
 
 ## `beforeMount`
 
-`beforeMount` работает аналогично page-раннеру: выполняется перед mount и после подключения `pinia`.
+`beforeMount` работает аналогично page-раннеру: выполняется перед монтированием и после подключения `pinia`.
 
 ```ts
 const widgetRunner = defineWidgetRunner(WidgetRoot, async (app, pinia) => {

@@ -1,6 +1,6 @@
 # `definePageRunner`
 
-`definePageRunner` создаёт runner для remote-страниц.
+`definePageRunner` создаёт runner для встраиваемых страниц.
 При запуске в компонент пробрасывается проп `code`.
 
 ## Перегрузки
@@ -58,5 +58,5 @@ const pageRunner = definePageRunner(PageRoot, async (app, pinia) => {
 
 Читайте также:
 
-- [`page-routes`](./page-routes.md) — как связать page `code`, CRM route и компонент страницы.
-- [`menu-placements`](./menu-placements.md) — как описывать пункты меню, которые открывают remote-страницы.
+- [`page-routes`](./page-routes.md) — как связать page `code`, CRM-маршрут и компонент страницы.
+- [`menu-placements`](./menu-placements.md) — как описывать пункты меню, которые открывают встраиваемые страницы.

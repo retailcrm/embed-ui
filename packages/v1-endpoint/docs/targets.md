@@ -14,7 +14,7 @@
 ## Что такое `target` и `context`
 
 `target` — это идентификатор места встраивания виджета в интерфейсе CRM. Он отвечает на вопрос:
-«куда CRM сейчас монтирует remote-виджет?». Например, `order/card:common.before` означает конкретную
+«куда CRM сейчас монтирует встраиваемый виджет?». Например, `order/card:common.before` означает конкретную
 точку встраивания на карточке заказа.
 
 `context` — это набор реактивных данных, доступных виджету в этом месте. Он отвечает на вопрос:
@@ -129,8 +129,8 @@ const testTarget = defineTarget('customer/card:test.after', [
 
 Читайте также:
 
-- [`defineWidgetRunner`](./define-widget-runner.md) — как `target` попадает в remote-компонент.
+- [`defineWidgetRunner`](./define-widget-runner.md) — как `target` попадает в компонент встраиваемого виджета.
 - [`menu-placements`](./menu-placements.md) — чем пункты меню для страниц отличаются от widget `target`.
-- [`page-routes`](./page-routes.md) — как описывать page `code` и CRM route.
+- [`page-routes`](./page-routes.md) — как описывать page `code` и CRM-маршрут.
 - [`CONCEPT`](../../v1-contexts/docs/ru/CONCEPT.md) — общий принцип работы контекстов.
 - [`CUSTOM`](../../v1-contexts/docs/ru/CUSTOM.md) — пользовательский контекст для custom fields.
