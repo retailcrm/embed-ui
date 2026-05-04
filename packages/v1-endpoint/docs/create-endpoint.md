@@ -1,7 +1,7 @@
 # `createEndpoint`
 
-`createEndpoint` связывает runner и transport (messenger), после чего
-экспортирует endpoint API (`run`, `release`, `reset`) через `@remote-ui/rpc`.
+`createEndpoint` связывает runner и transport (`messenger`) и экспортирует
+endpoint API (`run`, `release`, `reset`) через `@remote-ui/rpc`.
 
 ## Сигнатура
 
@@ -15,15 +15,15 @@ createEndpoint(
 ): Endpoint<RemoteApi>
 ```
 
-## Что делает под капотом
+## Поведение
 
 При `run(...)`:
 
-1. сбрасывает предыдущий mount для того же `id` (widget) или `code` (page),
-2. поднимает remote root (`mountEndpointRoot`),
+1. сбрасывает предыдущее монтирование для того же `id` (widget) или `code` (page),
+2. поднимает endpoint root (`mountEndpointRoot`),
 3. создаёт `pinia` и инжектит endpoint/context accessors,
 4. вызывает нужный runner (`page.run` или `widget.run`),
-5. сохраняет destroy-функцию в registry.
+5. сохраняет destroy-функцию в реестре.
 
 При `release(...)`:
 
@@ -33,7 +33,7 @@ createEndpoint(
 
 - вызывает destroy для всех активных page/widget инстансов.
 
-## Пример (низкоуровневый)
+## Пример
 
 ```ts
 import { defineRunner, createEndpoint } from '@retailcrm/embed-ui-v1-endpoint/remote'
@@ -43,12 +43,10 @@ const runner = defineRunner({
   widgets: [MyWidgetRoot],
 })
 
-// messenger зависит от среды исполнения
 createEndpoint(runner, self as unknown as MessageEndpoint)
 ```
 
 ## Когда нужен именно `createEndpoint`
 
 - Нужна кастомная интеграция transport-слоя.
-- Вы сами контролируете, где и как создаётся `MessageEndpoint`.
-- Нужно использовать endpoint не через стандартный worker-entry сценарий.
+- Нужно использовать endpoint не через стандартную точку входа веб-воркера.

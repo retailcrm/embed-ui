@@ -1,6 +1,6 @@
 # `runEndpoint`
 
-`runEndpoint` — shortcut для worker entry:
+`runEndpoint` — краткая форма для точки входа веб-воркера:
 он вызывает `createEndpoint(runner, self as Worker)`.
 
 ## Сигнатура
@@ -28,10 +28,10 @@ runEndpoint(runner)
 
 ## Когда использовать
 
-- Почти всегда, если endpoint запускается как web worker.
+- Почти всегда, если endpoint запускается как веб-воркер.
 - Когда не нужен ручной контроль над messenger/transport.
 
 ## Когда лучше `createEndpoint`
 
-- Когда transport создаётся не от `self` worker.
-- Когда у вас кастомный runtime/bridge между host и remote.
+- Когда transport создаётся не от `self` веб-воркера.
+- Когда у вас кастомная среда выполнения или bridge между host и remote.
