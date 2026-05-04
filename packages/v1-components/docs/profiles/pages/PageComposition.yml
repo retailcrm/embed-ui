@@ -1,0 +1,56 @@
+page_profile: PageComposition
+summary: >
+  Shared page-composition rules for RetailCRM extension screens built with
+  @retailcrm/embed-ui-v1-components.
+
+use_after:
+  - ../../README.md
+  - ../../../AGENTS.md
+  - ../../AI.md
+  - ../components
+
+scope:
+  - Page-composition guidance for full pages, modals, sidebars, filters, tables, and settings layouts.
+  - Complements component API profiles instead of replacing them.
+
+shared_rules:
+  - Page title uses the large accent text style, Text large Accent 24.
+  - Page-level actions sit to the right of the title.
+  - A page can have only one Default Primary button and one Success Primary button.
+  - Additional page actions can use secondary or tertiary variants when the task needs them.
+  - When a group has multiple buttons, the primary action should represent the main flow.
+  - Secondary actions should support or cancel the primary flow.
+  - Components inside pages and blocks should be spaced by values divisible by 4px.
+  - Common spacing values are 4, 8, 12, 16, 20, 24, 28, and 32px.
+  - Content blocks commonly use 32px left, right, and bottom padding and 24px top padding.
+  - Prefer public components from @retailcrm/embed-ui-v1-components/remote.
+  - Do not invent custom chrome for pages, forms, tables, tabs, buttons, modals, or sidebars when a documented component fits.
+
+decision_guide:
+  - need: Searchable, filterable registry.
+    use: EntityListPage
+    profile: ./EntityListPage.yml
+  - need: Entity editing or settings form.
+    use: CardSettingsPage
+    profile: ./CardSettingsPage.yml
+  - need: Several semantic blocks visible together.
+    use: MultiColumnPage
+    profile: ./MultiColumnPage.yml
+  - need: Grouped settings with independent sections.
+    use: CollapseBlockPage
+    profile: ./CollapseBlockPage.yml
+  - need: Small contextual form or compact entity card.
+    use: ModalSidebar
+    profile: ./ModalSidebar.yml
+  - need: Large local workflow, auxiliary table, or dense settings flow.
+    use: ModalWindow
+    profile: ./ModalWindow.yml
+
+ai_notes:
+  do:
+    - Choose ModalSidebar only when the flow is compact.
+    - Choose ModalWindow or a full page when content needs wide tables, several sections, or complex controls.
+    - Keep operational CRM screens dense, scannable, and work-focused.
+  avoid:
+    - Do not turn internal CRM work screens into marketing-style layouts.
+    - Do not hide filters or primary workflow controls away from the content they affect.

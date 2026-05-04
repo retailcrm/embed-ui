@@ -1,12 +1,13 @@
-# Component Profiles
+# AI Profiles
 
-`PROFILES.md` is the entry point for machine-readable AI-friendly component profiles.
+`PROFILES.md` is the entry point for machine-readable AI-friendly profiles.
 
 The current profile layer is structured like this:
 
 - the index stays in markdown so both humans and agents can navigate it easily;
-- the actual profiles live in `docs/profiles/*.yml`;
-- YAML is the source of truth for structure, props, slots, emits, composition, and AI rules.
+- component profiles live in `docs/profiles/components/*.yml`;
+- page-composition profiles live in `docs/profiles/pages/*.yml`;
+- YAML is the source of truth for structure, props, slots, emits, composition, page patterns, and AI rules.
 
 ## Table Of Contents
 
@@ -31,24 +32,34 @@ Coverage is now expanding across the public component catalog.
 Use these entrypoints:
 
 - [`COMPONENTS.md`](./COMPONENTS.md) for the full linked component index
-- `docs/profiles/*.yml` for per-component machine-readable profiles
-- each profile `usage` field for published Storybook 0.9.18 examples and visual behavior
+- `docs/profiles/components/*.yml` for per-component machine-readable profiles
+- `docs/profiles/pages/*.yml` for page, modal, sidebar, filter, table, and settings-layout profiles
 
 Current high-signal core profiles:
 
-- [`UiField`](./profiles/UiField.yml)
-- [`UiTextbox`](./profiles/UiTextbox.yml)
-- [`UiButton`](./profiles/UiButton.yml)
-- [`UiToggleButton`](./profiles/UiToggleButton.yml)
-- [`UiToggleGroup`](./profiles/UiToggleGroup.yml)
-- [`UiPageHeader`](./profiles/UiPageHeader.yml)
-- [`UiSelect`](./profiles/UiSelect.yml)
-- [`UiRadioSwitch`](./profiles/UiRadioSwitch.yml)
-- [`UiTabGroup`](./profiles/UiTabGroup.yml)
-- [`UiTab`](./profiles/UiTab.yml)
-- [`UiPopper`](./profiles/UiPopper.yml)
-- [`UiPopperConnector`](./profiles/UiPopperConnector.yml)
-- [`UiPopperTarget`](./profiles/UiPopperTarget.yml)
+- [`UiField`](./profiles/components/UiField.yml)
+- [`UiTextbox`](./profiles/components/UiTextbox.yml)
+- [`UiButton`](./profiles/components/UiButton.yml)
+- [`UiToggleButton`](./profiles/components/UiToggleButton.yml)
+- [`UiToggleGroup`](./profiles/components/UiToggleGroup.yml)
+- [`UiPageHeader`](./profiles/components/UiPageHeader.yml)
+- [`UiSelect`](./profiles/components/UiSelect.yml)
+- [`UiRadioSwitch`](./profiles/components/UiRadioSwitch.yml)
+- [`UiTabGroup`](./profiles/components/UiTabGroup.yml)
+- [`UiTab`](./profiles/components/UiTab.yml)
+- [`UiPopper`](./profiles/components/UiPopper.yml)
+- [`UiPopperConnector`](./profiles/components/UiPopperConnector.yml)
+- [`UiPopperTarget`](./profiles/components/UiPopperTarget.yml)
+
+Current page profiles:
+
+- [`PageComposition`](./profiles/pages/PageComposition.yml)
+- [`EntityListPage`](./profiles/pages/EntityListPage.yml)
+- [`CardSettingsPage`](./profiles/pages/CardSettingsPage.yml)
+- [`MultiColumnPage`](./profiles/pages/MultiColumnPage.yml)
+- [`CollapseBlockPage`](./profiles/pages/CollapseBlockPage.yml)
+- [`ModalSidebar`](./profiles/pages/ModalSidebar.yml)
+- [`ModalWindow`](./profiles/pages/ModalWindow.yml)
 
 ## What To Read First
 
@@ -56,8 +67,9 @@ Current high-signal core profiles:
 - `props` if you need a broader practical API view.
 - `slots` if the task is about markup, zones, and allowed content.
 - `emits` if the component must be wired into screen logic.
-- `usage` if you need Storybook examples or visual behavior.
+- `examples` if you need copyable usage snippets.
 - `ai_notes` if the agent needs safe defaults and anti-patterns.
+- `profiles/pages/*.yml` if the task is about a full page, modal, sidebar, filter, table, or settings layout.
 
 ## Styling Reads
 
@@ -67,4 +79,5 @@ Current high-signal core profiles:
 ## Notes
 
 - All new updates should be made in YAML profiles.
-- Keep profile `usage` links on the Storybook 0.9.18 URL unless another version is required explicitly.
+- Keep component-level details in `profiles/components`.
+- Keep page-composition details in `profiles/pages`.

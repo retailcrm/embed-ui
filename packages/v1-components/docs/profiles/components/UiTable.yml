@@ -1,0 +1,622 @@
+component: UiTable
+summary: >
+  UiTable is the main data table component. It supports row rendering, grouping, expandable rows,
+  footer areas, and row-level interactions.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTable
+
+related_components:
+  - UiAvatar
+  - UiCheckbox
+  - UiLink
+  - UiTableColumn
+  - UiTableFooterButton
+  - UiTableFooterSection
+  - UiTableSorter
+  - UiTag
+
+examples:
+  - title: Basic table
+    notes:
+      - Use as the default bordered table composition with explicit UiTableColumn children.
+    code: |
+      <template>
+        <UiTable
+          bordered
+          :rows="rows"
+          row-key="id"
+        >
+          <UiTableColumn label="Title">
+            <template #cell="{ row }">
+              <strong>{{ row.title }}</strong>
+            </template>
+          </UiTableColumn>
+
+          <UiTableColumn label="Customer" width="180">
+            <template #cell="{ row }">
+              {{ row.customer }}
+            </template>
+          </UiTableColumn>
+
+          <UiTableColumn label="Status" width="160">
+            <template #cell="{ row }">
+              <UiTag :background="statusBackgroundByName[row.status]" size="md" saturated :ticker="false">
+                {{ row.status }}
+              </UiTag>
+            </template>
+          </UiTableColumn>
+        </UiTable>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiTable, UiTableColumn, UiTag } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const rows = [
+        { id: 101, title: 'Spring campaign', customer: 'Anna Smith', status: 'Scheduled' },
+        { id: 102, title: 'Accessories discount', customer: 'Ilya Johnson', status: 'Sent' },
+      ]
+
+      const statusBackgroundByName = {
+        Scheduled: '#005EEB',
+        Sent: '#1FA971',
+      }
+      </script>
+  - title: Expandable rows table
+    notes:
+      - Use the expand slot and cell toggle helper for expandable row details.
+    code: |
+      <template>
+        <UiTable
+          bordered
+          :rows="rows"
+          row-key="id"
+        >
+          <UiTableColumn :width="44" label="" trim>
+            <template #cell="{ expanded, toggle }">
+              <button class="table-expand" type="button" @click="toggle">
+                {{ expanded ? '-' : '+' }}
+              </button>
+            </template>
+          </UiTableColumn>
+
+          <UiTableColumn label="Title">
+            <template #cell="{ row }">
+              {{ row.title }}
+            </template>
+          </UiTableColumn>
+
+          <template #expand="{ row }">
+            <div class="table-expand-content">
+              <strong>Details</strong>
+              <div>{{ row.description }}</div>
+              <div>Contact: {{ row.phone }}</div>
+            </div>
+          </template>
+        </UiTable>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiTable, UiTableColumn } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const rows = [
+        {
+          id: 101,
+          title: 'Spring campaign',
+          description: 'Segment: loyal customers. Channel: SMS + email.',
+          phone: '+7 (999) 123-45-67',
+        },
+      ]
+      </script>
+  - title: Grouped rows table
+    notes:
+      - Use groupBy with group-head when rows need semantic grouping.
+    code: |
+      <template>
+        <UiTable
+          bordered
+          :rows="rows"
+          row-key="id"
+          :group-by="groupByStatus"
+        >
+          <UiTableColumn label="Title">
+            <template #cell="{ row }">
+              {{ row.title }}
+            </template>
+          </UiTableColumn>
+
+          <UiTableColumn label="Status" width="160">
+            <template #cell="{ row }">
+              {{ row.status }}
+            </template>
+          </UiTableColumn>
+
+          <template #group-head="{ group }">
+            <span>{{ group.data.title }}</span>
+          </template>
+        </UiTable>
+      </template>
+
+      <script lang="ts" setup>
+      import type { Group } from '@retailcrm/embed-ui-v1-components/remote'
+      import { UiTable, UiTableColumn } from '@retailcrm/embed-ui-v1-components/remote'
+
+      type Row = {
+        id: number
+        title: string
+        status: string
+      }
+
+      const rows: Row[] = [
+        { id: 101, title: 'Spring campaign', status: 'Scheduled' },
+        { id: 102, title: 'Accessories discount', status: 'Sent' },
+      ]
+
+      const groupByStatus = (items: readonly Row[]): Group<Row, { title: string }>[] => {
+        return ['Scheduled', 'Sent']
+          .map((status) => ({
+            key: status,
+            data: { title: status },
+            rows: items.filter((row) => row.status === status),
+          }))
+          .filter((group) => group.rows.length > 0)
+      }
+      </script>
+  - title: Entity list table footer
+    notes:
+      - Use structured footer slots with UiTableFooterSection and UiTableFooterButton for page-size and pagination controls.
+      - Keep footer styling scoped to a local table root class.
+    code: |
+      <template>
+        <UiTable
+          class="entity-list-table"
+          bordered
+          :rows="rows"
+          row-key="id"
+        >
+          <UiTableColumn label="Title">
+            <template #cell="{ row }">
+              {{ row.title }}
+            </template>
+          </UiTableColumn>
+
+          <template #footer-summary="{ rowsCount }">
+            <span>{{ rowsCount }} items</span>
+          </template>
+
+          <template #footer-page-size>
+            <UiTableFooterSection class="entity-list-table__page-size">
+              <span class="entity-list-table__footer-caption">Show:</span>
+              <UiTableFooterButton class="entity-list-table__footer-button entity-list-table__footer-button_passive">
+                20 per page
+              </UiTableFooterButton>
+              <span class="entity-list-table__footer-delimiter">/</span>
+              <UiTableFooterButton class="entity-list-table__footer-button">
+                50 per page
+              </UiTableFooterButton>
+              <span class="entity-list-table__footer-delimiter">/</span>
+              <UiTableFooterButton class="entity-list-table__footer-button">
+                100 per page
+              </UiTableFooterButton>
+            </UiTableFooterSection>
+          </template>
+
+          <template #footer-pagination>
+            <UiTableFooterSection class="entity-list-table__pagination-section">
+              <div class="entity-list-table__pagination">
+                <UiTableFooterButton class="entity-list-table__pagination-button">
+                  1
+                </UiTableFooterButton>
+                <UiTableFooterButton class="entity-list-table__pagination-button">
+                  2
+                </UiTableFooterButton>
+                <UiTableFooterButton class="entity-list-table__pagination-button entity-list-table__pagination-button_current">
+                  3
+                </UiTableFooterButton>
+                <span class="entity-list-table__pagination-divider" />
+                <UiTableFooterButton
+                  aria-label="Previous page"
+                  class="entity-list-table__pagination-arrow"
+                >
+                  <IconChevronLeft
+                    aria-hidden="true"
+                    class="entity-list-table__pagination-arrow-icon"
+                  />
+                </UiTableFooterButton>
+                <span class="entity-list-table__pagination-divider" />
+                <UiTableFooterButton
+                  aria-label="Next page"
+                  class="entity-list-table__pagination-arrow"
+                >
+                  <IconChevronRight
+                    aria-hidden="true"
+                    class="entity-list-table__pagination-arrow-icon"
+                  />
+                </UiTableFooterButton>
+              </div>
+            </UiTableFooterSection>
+          </template>
+        </UiTable>
+      </template>
+
+      <script lang="ts" setup>
+      import IconChevronLeft from '@retailcrm/embed-ui-v1-components/assets/sprites/arrows/chevron-left.svg'
+      import IconChevronRight from '@retailcrm/embed-ui-v1-components/assets/sprites/arrows/chevron-right.svg'
+      import {
+        UiTable,
+        UiTableColumn,
+        UiTableFooterButton,
+        UiTableFooterSection,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const rows = [
+        { id: 101, title: 'Spring campaign' },
+        { id: 102, title: 'Accessories discount' },
+      ]
+      </script>
+
+      <style scoped>
+      .entity-list-table {
+        --ui-v1-table-cell-padding-x: 12px;
+        --ui-v1-table-cell-padding-y: 12px;
+        --ui-v1-table-padding-start: 16px;
+        --ui-v1-table-padding-end: 16px;
+        --ui-v1-table-rounding: 4px;
+        --ui-v1-table-head-cell-padding-block-start: 14px;
+        --ui-v1-table-head-cell-padding-block-end: 14px;
+        --ui-v1-table-body-cell-padding-block-start: 15px;
+        --ui-v1-table-body-cell-padding-block-end: 15px;
+      }
+
+      .entity-list-table .ui-v1-table__head-cell {
+        height: 42px;
+      }
+
+      .entity-list-table .ui-v1-table__footer-meta {
+        min-height: 40px;
+        font-weight: 400;
+      }
+
+      .entity-list-table .ui-v1-table__footer-controls {
+        min-height: 52px;
+        background: #f9fafb;
+      }
+
+      .entity-list-table .ui-v1-table__footer-section {
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      .entity-list-table__page-size,
+      .entity-list-table__pagination-section {
+        color: #1e2248;
+      }
+
+      .entity-list-table__footer-caption {
+        display: inline-block;
+        margin-right: 4px;
+        vertical-align: baseline;
+        line-height: inherit;
+      }
+
+      .entity-list-table__footer-button {
+        color: #005eeb;
+      }
+
+      .entity-list-table__footer-button_passive {
+        color: #1e2248;
+      }
+
+      .entity-list-table__footer-delimiter {
+        display: inline-block;
+        padding: 0 5px;
+        color: #8a96a6;
+        vertical-align: baseline;
+        line-height: inherit;
+      }
+
+      .entity-list-table .ui-v1-table__footer-side > .entity-list-table__pagination-section {
+        padding-block: 8px;
+      }
+
+      .entity-list-table__pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 36px;
+      }
+
+      .entity-list-table__pagination-button,
+      .entity-list-table__pagination-arrow {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+      }
+
+      .entity-list-table .ui-v1-table__footer-button.entity-list-table__pagination-button {
+        color: #1e2248;
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      .entity-list-table .ui-v1-table__footer-button.entity-list-table__pagination-button_current {
+        color: #fff;
+        background: #005eeb;
+      }
+
+      .entity-list-table .ui-v1-table__footer-button.entity-list-table__pagination-arrow {
+        color: #afb9c3;
+      }
+
+      .entity-list-table__pagination-arrow-icon {
+        display: block;
+        width: 24px;
+        height: 24px;
+      }
+
+      .entity-list-table__pagination-divider {
+        width: 1px;
+        height: 52px;
+        margin-block: -8px;
+        background: #dee2e6;
+      }
+      </style>
+
+  - title: Dense table
+    notes:
+      - Use CSS variables on the table root to create a denser table layout.
+    code: |
+      <template>
+        <UiTable
+          class="campaign-table campaign-table_dense"
+          bordered
+          :rows="rows"
+          row-key="id"
+        >
+          <UiTableColumn label="Title">
+            <template #cell="{ row }">
+              {{ row.title }}
+            </template>
+          </UiTableColumn>
+
+          <UiTableColumn label="Status" width="160">
+            <template #cell="{ row }">
+              {{ row.status }}
+            </template>
+          </UiTableColumn>
+        </UiTable>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiTable, UiTableColumn } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const rows = [
+        { id: 101, title: 'Spring campaign', status: 'Scheduled' },
+        { id: 102, title: 'Accessories discount', status: 'Sent' },
+      ]
+      </script>
+
+      <style lang="less">
+      .campaign-table_dense {
+        --ui-v1-table-cell-padding-x: 8px;
+        --ui-v1-table-cell-padding-y: 8px;
+        --ui-v1-table-padding-start: 8px;
+        --ui-v1-table-padding-end: 8px;
+        --ui-v1-table-head-cell-padding-block-start: 8px;
+        --ui-v1-table-head-cell-padding-block-end: 8px;
+        --ui-v1-table-body-cell-padding-block-start: 8px;
+        --ui-v1-table-body-cell-padding-block-end: 8px;
+        --ui-v1-table-group-head-padding-block-start: 4px;
+        --ui-v1-table-group-head-padding-block-end: 4px;
+        --ui-v1-table-head-background: #f4f6f8;
+        --ui-v1-table-group-head-background: #f7f9fb;
+      }
+      </style>
+
+use_when:
+  - You need structured tabular data.
+  - You need group headers, expandable rows, or footer sections.
+
+avoid_when:
+  - You need a simple list or card layout.
+
+api:
+  key_props:
+    - name: rows
+    - name: rowKey
+    - name: headless
+    - name: bordered
+    - name: fixed
+    - name: groupBy
+  slots:
+    - name: default
+      zone: columns
+      creates: Column declarations.
+    - name: expand
+      zone: expanded-row
+      creates: Expanded row content.
+    - name: footer
+      zone: footer
+      creates: Full footer area.
+    - name: footer-summary
+      zone: structured-footer
+      creates: Summary or selected-count area above table footer controls.
+    - name: footer-page-size
+      zone: structured-footer
+      creates: Page-size controls in the footer control row.
+    - name: footer-export
+      zone: structured-footer
+      creates: Export controls in the footer control row.
+    - name: footer-pagination
+      zone: structured-footer
+      creates: Pagination controls in the footer control row.
+    - name: group-head
+      zone: group-head
+      creates: Group heading content.
+    - name: empty
+      zone: empty-state
+      creates: Empty-state content.
+  emits:
+    - name: row:click
+  methods:
+    - name: resetExpanded
+    - name: expand
+    - name: collapse
+    - name: toggle
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: table.ui-v1-table
+    tag: table
+  zones:
+    - .ui-v1-table__section_head
+    - .ui-v1-table__section_body
+    - .ui-v1-table__section_foot
+    - .ui-v1-table__row
+    - .ui-v1-table__head-cell
+    - .ui-v1-table__body-cell
+  notes: >
+    Table layout is distributed across head, body, foot, and cell-level classes. Treat this as a
+    reasoning model for geometry and spacing, not as a stable selector contract.
+
+geometry:
+  layout: block-width table
+  root_display: table
+  width: 100%
+  width_behavior: stretches to container width by default
+  notes:
+    - Root fills available width.
+    - fixed=true switches table-layout from auto to fixed.
+    - bordered=true adds border and corner rounding through CSS variables.
+    - Filters and search controls should usually be placed above the table, not in the table root.
+    - Table-scoped pagination belongs in footer slots when custom controls are needed.
+
+styling:
+  notes:
+    - UiTable exposes a relatively rich CSS-variable surface for spacing and table chrome.
+    - Prefer table props and slot composition first, then CSS variables for spacing or background tuning.
+    - Internal classes are descriptive and mainly useful for debugging or narrow local integration.
+    - For reference-style footers, add a local class to UiTable and scope footer styles through that class.
+    - When styling footer pagination buttons, combine the internal footer button class with the local state class so base footer styles do not override page, active, or arrow colors.
+  root_classes:
+    - .ui-v1-table
+  state_classes:
+    - .ui-v1-table_fixed
+    - .ui-v1-table_bordered
+    - .ui-v1-table__head-cell_align-center
+    - .ui-v1-table__head-cell_align-right
+    - .ui-v1-table__body-cell_align-center
+    - .ui-v1-table__body-cell_align-right
+    - .ui-v1-table__body-cell_valign-top
+    - .ui-v1-table__body-cell_valign-bottom
+    - .ui-v1-table__body-cell_theme-group
+    - .ui-v1-table__body-cell_trim
+    - .ui-v1-table__head-cell_trim
+  zones:
+    - .ui-v1-table__head-cell
+    - .ui-v1-table__body-cell
+    - .ui-v1-table__footer-cell
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-table-border-width
+        effect: Outer border width in bordered mode.
+      - name: --ui-v1-table-rounding
+        effect: Shared corner rounding.
+      - name: --ui-v1-table-cell-padding-x
+        effect: Base inline cell padding.
+      - name: --ui-v1-table-cell-padding-y
+        effect: Base block cell padding.
+      - name: --ui-v1-table-head-background
+        effect: Header row background.
+      - name: --ui-v1-table-group-head-background
+        effect: Group heading row background.
+      - name: --ui-v1-table-padding-start
+        effect: Effective first-column start padding.
+      - name: --ui-v1-table-padding-end
+        effect: Effective last-column end padding.
+    internal_layout_variables:
+      - name: --ui-v1-table-effective-padding-start
+        effect: Start padding after bordered adjustments.
+      - name: --ui-v1-table-effective-padding-end
+        effect: End padding after bordered adjustments.
+      - name: --ui-v1-table-head-cell-padding-block-start
+        effect: Header top padding.
+      - name: --ui-v1-table-head-cell-padding-block-end
+        effect: Header bottom padding.
+      - name: --ui-v1-table-body-cell-padding-block-start
+        effect: Body top padding.
+      - name: --ui-v1-table-body-cell-padding-block-end
+        effect: Body bottom padding.
+      - name: --ui-v1-table-group-head-padding-block-start
+        effect: Group row top padding.
+      - name: --ui-v1-table-group-head-padding-block-end
+        effect: Group row bottom padding.
+  typography:
+    default:
+      mixin: text-small
+      size: 14px
+      line_height: 20px
+      weight: 400
+    head_cells:
+      mixin: text-tiny-accent
+      size: 12px
+      line_height: 14px
+      weight: 500
+    group_rows:
+      mixin: text-tiny
+      size: 12px
+      line_height: 14px
+      weight: 400
+
+composition:
+  filters:
+    notes:
+      - Keep filter controls directly above UiTable so the relationship between filters and rows is obvious.
+      - Use UiTextbox for text search and UiSelect or compact toggle controls for finite filters.
+      - Persist filter values in URL query parameters when routing is available.
+  sorting:
+    notes:
+      - Use UiTableSorter inside a UiTableColumn label slot for sortable columns.
+      - Reset pagination to the first page when sorting changes.
+      - Persist sort key and direction in URL query parameters when routing is available.
+  pagination:
+    notes:
+      - Use footer-summary, footer-page-size, footer-export, and footer-pagination slots for structured footer controls.
+      - footer-pagination should use UiTableFooterSection as the root wrapper.
+      - Use UiTableFooterButton for page numbers and previous/next arrow controls.
+      - Do not use regular UiButton for table footer pagination.
+      - Use a local inner flex group for page buttons, dividers, and arrow buttons when recreating the reference-table footer pattern.
+      - Use chevron icon assets for previous/next arrows instead of text glyphs such as < or >.
+      - Add scoped CSS for footer meta height, control-row background, pagination button size, active page state, arrow icon size, and vertical dividers.
+      - Persist page and page size in URL query parameters when routing is available.
+      - Reset page to 1 when filters or sorting change.
+
+ai_notes:
+  do:
+    - Read ../../AI.md table-screen rules before generating complete table screens.
+    - Provide row-key for stable row identity.
+    - Put table filters above the table.
+    - Use structured footer slots for summary, page-size controls, export, and pagination.
+    - Compose footer controls with UiTableFooterSection and UiTableFooterButton.
+    - Copy the Entity list table footer example when building a realistic entity-list footer.
+    - Use UiTableSorter for sortable headers.
+  avoid:
+    - Do not hide table filters in page header actions.
+    - Do not use UiButton inside table footer pagination.
+    - Do not put pagination only in local state when the screen has routable result sets.
+    - Do not import table internals from host or src paths.
+
+behavior:
+  notes:
+    - Read key_props first to identify supported states and variants.
+    - Prefer controlled props and documented emits when synchronizing component state with screen logic.
+
+accessibility:
+  notes:
+    - Use meaningful column labels so screen-reader users can understand each cell in context.
+    - Use stable row keys so expanded rows and row-level state remain attached to the correct data item.
+    - Put interactive controls inside cells as real controls such as UiLink or UiButton, not plain clickable text.
+    - When rows are clickable, keep the primary row action visible as a link or button as well.

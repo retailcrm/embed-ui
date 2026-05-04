@@ -1,0 +1,72 @@
+component: UiTableSorter
+summary: >
+  UiTableSorter is a compact sort control primitive for custom table head content.
+  Use it when header rendering is composed manually and sorting state must be shown explicitly.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableSorter
+
+related_components:
+  - UiTable
+  - UiTableHeadCell
+
+use_when:
+  - You build a custom sortable header with table primitives.
+  - You need to show asc or desc state explicitly in header content.
+
+avoid_when:
+  - Sorting is not part of the table interaction.
+  - UiTableColumn label rendering is enough.
+
+api:
+  key_props:
+    - name: direction
+  emits:
+    - name: click
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: button.ui-v1-table__sorter
+    tag: button
+  notes: The root contains the label and sort icon as one inline control.
+
+geometry:
+  layout: inline sorting control
+  root_display: inline-flex
+  width_behavior: content-sized by label and icon
+
+ai_notes:
+  do:
+    - Pair it with explicit sort state in screen logic.
+    - Persist sort key and direction in URL query parameters when the table is routable.
+    - Reset the current page to 1 when sorting changes.
+  avoid:
+    - Do not use it as a generic icon-only control outside table headers.
+
+composition:
+  works_well_with:
+    - UiTableColumn
+    - UiTableHeadCell
+  patterns:
+    - title: Column label slot
+      notes: Place in UiTableColumn label slot for normal sortable columns.
+
+behavior:
+  notes:
+    - Behavior is mostly coordinated by the parent component.
+    - Use this child only in the documented parent composition.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-table

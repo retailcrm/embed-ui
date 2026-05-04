@@ -1,0 +1,90 @@
+component: UiTag
+summary: >
+  UiTag is a compact label or status pill. It can be interactive, removable, pinned, or visually saturated.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTag
+
+examples:
+  - title: Slots
+    code: |
+      <template>
+          <UiTag background="#FEA530" saturated>
+              VIP
+          </UiTag>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiTag } from '@retailcrm/embed-ui-v1-components/remote'
+      </script>
+
+use_when:
+  - You need a short status or label pill.
+  - You need removable or interactive tags.
+
+avoid_when:
+  - You need a full button or link.
+
+api:
+  key_props:
+    - name: size
+    - name: pinned
+    - name: removable
+    - name: interactive
+    - name: saturated
+    - name: background
+  emits:
+    - name: click
+    - name: focus
+    - name: blur
+    - name: remove
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-tag-wrapper
+    tag: div
+  notes: The public root is a wrapper div; the visible pill itself is the nested .ui-v1-tag node.
+
+geometry:
+  layout: wrapper around a content-sized tag pill
+  root_display: block
+  width_behavior: root follows normal block flow, inner tag stays content-sized
+
+behavior:
+  notes:
+    - interactive makes the tag feel actionable; use it only when click handling exists.
+    - removable should emit remove and needs a clear removal consequence.
+    - background is useful for semantic status palettes, but keep contrast readable.
+
+composition:
+  works_well_with:
+    - UiTable
+    - UiSelectOption
+    - UiMenuItem
+  patterns:
+    - title: Table status
+      notes: Use in UiTable cells for categorical states instead of raw colored text.
+    - title: Removable filter chip
+      notes: Use removable tags to show active filters when space allows.
+
+ai_notes:
+  do:
+    - Use for short statuses, categories, and active filter chips.
+    - Keep labels concise; tags should scan quickly.
+  avoid:
+    - Do not use as a full command button or as long explanatory text.
+
+accessibility:
+  notes:
+    - Keep rendered text concise and meaningful for screen-reader users.
+    - Do not use this component as the only carrier of critical state if the state also needs form-level validation or focus management.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-tag-wrapper

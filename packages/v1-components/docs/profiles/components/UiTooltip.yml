@@ -1,0 +1,97 @@
+component: UiTooltip
+summary: >
+  UiTooltip is the tooltip-specialized floating layer built on top of popper mechanics.
+  Use it for compact helper content anchored to one target.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTooltip
+
+related_components:
+  - UiPopper
+  - UiPopperConnector
+  - UiPopperTarget
+
+examples:
+  - title: Usage
+    code: |
+      <template>
+          <UiPopperConnector>
+              <UiButton disabled>
+                  Save
+              </UiButton>
+
+              <UiTooltip>
+                  Complete all required fields before saving
+              </UiTooltip>
+          </UiPopperConnector>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiButton, UiPopperConnector, UiTooltip } from '@retailcrm/embed-ui-v1-components/remote'
+      </script>
+use_when:
+  - You need compact helper text or tooltip content.
+
+avoid_when:
+  - You need a dropdown or rich popup layout.
+
+api:
+  key_props:
+    - name: visible
+    - name: placement
+    - name: targetTriggers
+    - name: popperTriggers
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-popper via UiPopper
+    tag: div
+  notes: The component delegates the actual floating root to UiPopper and renders its content inside the popper body.
+
+geometry:
+  layout: floating tooltip layer outside normal document flow
+  root_display: block
+  width_behavior: content-sized by tooltip content
+
+ai_notes:
+  do:
+    - Use UiTooltip for tooltip semantics and UiPopper for lower-level floating behavior.
+    - Keep tooltip content short and non-essential.
+  avoid:
+    - Do not put forms, tables, or multi-step interactions in tooltips.
+
+behavior:
+  notes:
+    - visible can control display explicitly.
+    - targetTriggers and popperTriggers define how the tooltip opens and closes.
+    - placement controls the preferred floating position.
+
+composition:
+  works_well_with:
+    - UiPopperConnector
+    - UiPopperTarget
+    - UiButton
+  patterns:
+    - title: Icon helper
+      notes: Pair with an icon-only or compact control when a short explanation is needed.
+    - title: Truncated text hint
+      notes: Use to reveal full text only when the visible cell or label is intentionally truncated.
+
+accessibility:
+  notes:
+    - Prefer visible text labels for interactive controls.
+    - For icon-only or custom visual content, provide an accessible name through the supported label, title, or ARIA attributes exposed by the component.
+    - Preserve native keyboard semantics by using the component root instead of recreating the control with arbitrary markup.
+  keyboard:
+    - Tab moves focus to the control when it is focusable.
+    - Enter or Space activates native button-like controls when the host implementation renders a button.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-popper

@@ -1,0 +1,71 @@
+component: UiLoader
+summary: >
+  UiLoader displays loading progress or waiting state. It can be used inline or as an overlay.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiLoader
+
+use_when:
+  - You need a visible loading indicator.
+  - You need inline or overlay loading state.
+
+avoid_when:
+  - You need skeleton content rather than a spinner-like loader.
+
+api:
+  key_props:
+    - name: diameter
+    - name: thickness
+    - name: fixed
+    - name: overlay
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-loader
+    tag: div
+  notes: The loader body may be wrapped in UiTransition, but the visible loader itself is one div root.
+
+geometry:
+  layout: loader surface or overlay
+  root_display: block
+  width_behavior: content-sized by default, viewport-covering in fixed or overlay modes
+
+ai_notes:
+  do:
+    - Use overlay=true when the loader should dim the covered page or module content.
+    - Use overlay or fixed only when the loader should escape normal inline flow.
+    - Preserve surrounding filters and headers when only the content area is loading.
+  avoid:
+    - Do not create custom dimming markup around UiLoader; use the overlay prop.
+    - Do not replace content-shaped loading with a page-wide loader when UiSkeleton would communicate layout better.
+
+behavior:
+  notes:
+    - overlay=true adds the dimmed backdrop for covered content.
+    - fixed and overlay change the loader from inline feedback into a surface-covering state.
+    - diameter and thickness tune the visual weight of the indicator.
+
+composition:
+  works_well_with:
+    - UiSkeleton
+    - UiAlert
+  patterns:
+    - title: Table loading
+      notes: Keep filters visible and show loading in the table area.
+    - title: Blocking operation
+      notes: Use overlay only when interaction with the covered content must be blocked.
+
+accessibility:
+  notes:
+    - Keep rendered text concise and meaningful for screen-reader users.
+    - Do not use this component as the only carrier of critical state if the state also needs form-level validation or focus management.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-loader

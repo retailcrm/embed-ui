@@ -21,10 +21,8 @@ These docs are optimized for two main scenarios:
   the target component profile format for AI assistants.
 - [`STYLING.md`](./STYLING.md)
   shared guidance for reading classes, CSS variables, and typography in profiles.
-- [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md)
-  page composition rules for agents generating full RetailCRM extension screens.
 - [`PROFILES.md`](./PROFILES.md)
-  the index of YAML component profiles.
+  the index of YAML component and page profiles.
 
 ## Public Entrypoints
 
@@ -62,7 +60,7 @@ If you need to generate UI quickly:
 3. [`AI.md`](./AI.md)
 4. [`COMPONENTS.md`](./COMPONENTS.md)
 5. the relevant profile from [`PROFILES.md`](./PROFILES.md)
-6. [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md) if the task is about complete pages,
+6. the relevant page profile from [`PROFILES.md`](./PROFILES.md) if the task is about complete pages,
    modals, sidebars, filters, tables, or settings layouts
 7. [`STYLING.md`](./STYLING.md) if the task is about classes, variables, typography, or layout tuning
 
@@ -70,5 +68,4 @@ If you are extending the docs:
 
 1. [`FORMAT.md`](./FORMAT.md)
 2. [`STYLING.md`](./STYLING.md)
-3. [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md)
-4. the existing profiles in [`PROFILES.md`](./PROFILES.md)
+3. the existing profiles in [`PROFILES.md`](./PROFILES.md)

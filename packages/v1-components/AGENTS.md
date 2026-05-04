@@ -77,7 +77,7 @@ Commonly used exports from `remote` include:
 
 - Do not import from `@retailcrm/embed-ui-v1-components/host` in normal extension code.
 - Do not rely on internal file paths from this repository.
-- Do not treat Storybook examples or internal source layout as stable runtime API.
+- Do not treat examples or internal source layout as stable runtime API.
 - Do not assume every host-side component is available to extension authors.
 
 ## Example
@@ -123,12 +123,12 @@ const save = () => {}
 - Machine-oriented package summary:
   [`./docs/AI.md`](./docs/AI.md)
 - Page composition guidelines:
-  [`./docs/AGENT-DESIGN-GUIDELINES.md`](./docs/AGENT-DESIGN-GUIDELINES.md)
+  [`./docs/profiles/pages`](./docs/profiles/pages)
 - Component profiles:
   [`./docs/PROFILES.md`](./docs/PROFILES.md)
 
 For table, catalog, registry, journal, or search-result screens, read [`./docs/AI.md`](./docs/AI.md)
-and [`./docs/AGENT-DESIGN-GUIDELINES.md`](./docs/AGENT-DESIGN-GUIDELINES.md), then check the
+and [`./docs/profiles/pages/EntityListPage.yml`](./docs/profiles/pages/EntityListPage.yml), then check the
 `UiTable` and `UiLink` profiles before generating code. Put filters above the table, persist
 filters and pagination in GET query parameters when routing exists, and set `size="small"` on
 `UiLink` inside table cells by default.

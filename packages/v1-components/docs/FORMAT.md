@@ -19,9 +19,9 @@ A good profile should let an agent answer these questions without opening the so
 
 Recommended filename: `<ComponentName>.yml`
 
-Top-level `usage` should point to the published Storybook docs page for version `0.9.18`.
-If the component is a subcomponent without its own Storybook page, point `usage` to the nearest
-parent or composition page that demonstrates it, for example table parts point to `UiTable`.
+Component profiles should live in `docs/profiles/components`.
+Page-composition profiles should live in `docs/profiles/pages`.
+Use `examples` for copyable snippets and cross-link related profiles with relative `profile` paths.
 
 Minimal shape:
 
@@ -29,7 +29,6 @@ Minimal shape:
 component: UiComponent
 summary: >
   A short description of the component.
-usage: https://retailcrm.github.io/embed-ui/v1-components/0.9.18/?path=/docs/intro--docs
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -228,8 +227,7 @@ List:
 - safe defaults for typical screens;
 - correct and incorrect composition patterns.
 
-Do not duplicate Storybook examples in YAML profiles. The top-level `usage` link is the source for runnable
-examples and visual behavior.
+Keep examples in YAML profiles focused, copyable, and aligned with the public package entrypoints.
 
 ## 12. `ai_notes`
 
@@ -245,7 +243,7 @@ A short list of rules specifically for code generation:
 - Use the exact names of props, emits, and slots.
 - For slots, describe not only the name, but also what the slot does and which content restrictions exist.
 - For styling, distinguish between safe CSS variables and descriptive class names.
-- Keep runnable examples in Storybook; YAML profiles should link to Storybook through `usage`.
+- Keep runnable examples in YAML profiles when they clarify safe public usage.
 - Do not mix "how the component looks right now" with "what is publicly guaranteed".
 - If behavior is inferred from implementation rather than public API, say that explicitly.
 - If information is missing, state the limitation rather than inventing details.
@@ -256,7 +254,7 @@ The following data can usually be obtained automatically or semi-automatically:
 
 - the list of public exports;
 - prop, emit, method, and enum names;
-- whether Storybook stories and examples exist;
+- whether profile examples exist;
 - the current root classes and layout zones from templates.
 
 These sections almost always need manual writing:

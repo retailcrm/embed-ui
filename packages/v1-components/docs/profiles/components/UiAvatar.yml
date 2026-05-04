@@ -1,0 +1,88 @@
+component: UiAvatar
+summary: >
+  UiAvatar renders a user or entity avatar with optional name, status, and link semantics.
+  It is meant for compact identity display rather than generic image rendering.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiAvatar
+
+examples:
+  - title: Basic avatar
+    code: |
+      <template>
+        <UiAvatar
+          name="Anna Smith"
+          src="https://example.com/avatar.jpg"
+          size="sm"
+          status="none"
+        />
+      </template>
+
+      <script lang="ts" setup>
+      import { UiAvatar } from '@retailcrm/embed-ui-v1-components/remote'
+      </script>
+
+use_when:
+  - You need a compact identity marker for a user or contact.
+  - You need avatar display with optional status.
+
+avoid_when:
+  - You need a generic content image.
+  - You need a large media block.
+
+api:
+  key_props:
+    - name: src
+    - name: name
+    - name: status
+    - name: size
+    - name: href
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-avatar or a.ui-v1-avatar
+    tag: div or a
+  notes: The root switches to anchor when href is provided.
+
+geometry:
+  layout: avatar frame
+  root_display: inline-block
+  width_behavior: content-sized by size
+
+behavior:
+  notes:
+    - Can render linked avatar behavior when href is provided.
+    - Name is useful as fallback identity information.
+
+ai_notes:
+  do:
+    - Use UiAvatar for identity display, not for general media.
+    - Provide name whenever possible so fallback identity stays meaningful.
+  avoid:
+    - Do not use it for generic content images or large media blocks.
+
+composition:
+  works_well_with:
+    - UiAvatarList
+    - UiTable
+    - UiMenuItem
+  patterns:
+    - title: Table identity cell
+      notes: Pair with UiLink size="small" when an avatar appears next to a linked user or customer name.
+    - title: Menu identity row
+      notes: Use in UiMenuItem avatar slot for users, customers, or accounts.
+
+accessibility:
+  notes:
+    - Keep rendered text concise and meaningful for screen-reader users.
+    - Do not use this component as the only carrier of critical state if the state also needs form-level validation or focus management.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-avatar

@@ -1,0 +1,63 @@
+component: UiCollapseGroup
+summary: >
+  UiCollapseGroup coordinates several collapse boxes and tracks which box is active.
+  It is useful when multiple disclosures should behave as one grouped unit.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiCollapseGroup
+
+related_components:
+  - UiCollapseBox
+
+use_when:
+  - You need several collapse boxes to coordinate state.
+  - You need one active box pattern.
+
+avoid_when:
+  - You only have one collapsible section.
+
+api:
+  key_props:
+    - name: activeBoxId
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div
+    tag: div
+  notes: Current implementation is an unstyled wrapper that coordinates child UiCollapseBox nodes.
+
+geometry:
+  layout: block wrapper for stacked collapse boxes
+  root_display: block
+  width_behavior: stretches to container width by default
+
+ai_notes:
+  do:
+    - Use with UiCollapseBox when grouped expansion matters.
+  avoid:
+    - Do not introduce a group for a single collapsible section.
+
+behavior:
+  notes:
+    - activeBoxId tracks which child section is active.
+    - The component is mostly coordination logic rather than a visual container.
+
+composition:
+  works_well_with:
+    - UiCollapseBox
+  patterns:
+    - title: Accordion-like settings
+      notes: Use when users should move between several related expandable sections.
+
+accessibility:
+  notes:
+    - Keep visible labels and slot content meaningful.
+    - Prefer documented props and slots over custom DOM replacements so host-side accessibility behavior is preserved.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.

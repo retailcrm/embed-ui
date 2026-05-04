@@ -1,0 +1,58 @@
+page_profile: CardSettingsPage
+summary: >
+  Settings page or entity card pattern for screens made mostly from forms and local actions.
+
+use_when:
+  - You need to edit an entity.
+  - You need a settings form.
+  - You need a white content surface with fields and local controls.
+
+examples_from_design:
+  - tracked event page
+  - sending limit settings
+  - email template settings
+  - trigger page
+
+expected_structure:
+  - UiPageHeader with a page title.
+  - The title can be editable via an inline-edit pattern when the product flow requires it.
+  - One or more 48px header buttons on the right.
+  - Header actions can be accompanied by text information or status labels.
+  - Optional top tabs.
+  - Main content sits on a white content surface.
+  - Content can include text, buttons, fields, checkboxes, radio groups, switches, and other form controls.
+  - A bottom save panel is optional.
+
+recommended_components:
+  - name: UiPageHeader
+    profile: ../components/UiPageHeader.yml
+  - name: UiButton
+    profile: ../components/UiButton.yml
+  - name: UiField
+    profile: ../components/UiField.yml
+  - name: UiTextbox
+    profile: ../components/UiTextbox.yml
+  - name: UiSelect
+    profile: ../components/UiSelect.yml
+  - name: UiCheckbox
+    profile: ../components/UiCheckbox.yml
+  - name: UiRadio
+    profile: ../components/UiRadio.yml
+  - name: UiRadioSwitch
+    profile: ../components/UiRadioSwitch.yml
+  - name: UiSwitch
+    profile: ../components/UiSwitch.yml
+  - name: UiTabGroup
+    profile: ../components/UiTabGroup.yml
+  - name: UiTab
+    profile: ../components/UiTab.yml
+  - name: UiTag
+    profile: ../components/UiTag.yml
+
+ai_notes:
+  do:
+    - Keep form controls grouped by task or semantic section.
+    - Use UiField around labelled form controls.
+    - Use tabs only when they reduce visible complexity without hiding required work.
+  avoid:
+    - Do not create a decorative landing page for operational settings.
