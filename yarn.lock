@@ -1414,6 +1414,9 @@ __metadata:
     "@retailcrm/embed-ui-v1-types": ^0.9.21
     pinia: ^2.2
     vue: ^3.5
+  bin:
+    embed-ui-v1-endpoint: ./bin/embed-ui-v1-endpoint.mjs
+    embed-ui-v1-endpoint-mcp: ./bin/embed-ui-v1-endpoint-mcp.mjs
   languageName: unknown
   linkType: soft
 
