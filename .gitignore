@@ -12,6 +12,7 @@ generated
 node_modules
 coverage
 artifacts/
+packages/v1-endpoint/docs/targets/
 
 .codex
 .npmrc

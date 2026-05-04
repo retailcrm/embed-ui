@@ -5,10 +5,9 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 
 import basic from '@retailcrm/embed-ui-v1-contexts/dist/meta.json'
+import endpoint from '@retailcrm/embed-ui-v1-endpoint/dist/meta.json'
 
-import { pageListDocumentation, targetListDocumentation } from '~meta'
-
-import { keysOf } from '@/utilities'
+import { pageListDocumentation } from '~meta'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -20,9 +19,11 @@ if (!fs.existsSync(dist)) {
 
 fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
   ...basic,
-  targets: keysOf(targetListDocumentation).map(target => ({
-    id: target,
-    ...targetListDocumentation[target],
+  targets: endpoint.targets,
+  pages: pageListDocumentation.map(page => ({
+    ...page,
+    targets: endpoint.targets
+      .map(target => target.id)
+      .filter(target => target.startsWith(`${page.id}:`)),
   })),
-  pages: pageListDocumentation,
 }, null, 2))

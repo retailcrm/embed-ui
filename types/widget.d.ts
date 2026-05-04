@@ -6,7 +6,10 @@ import type { Pinia } from 'pinia'
 
 import type { RemoteRoot, SchemaOf } from '@omnicajs/vue-remote/remote'
 
-import type { SchemaList } from './context'
+import type {
+  TargetList,
+  TargetName,
+} from '@retailcrm/embed-ui-v1-endpoint/common/targets'
 
 export interface WidgetRunner {
   run(
@@ -25,140 +28,7 @@ export interface WidgetEndpoint {
   release (): void;
 }
 
-export type WidgetTarget = keyof SchemaListByTarget
+export type WidgetTarget = TargetName
 
 export type SchemaListOf<T extends WidgetTarget> = SchemaListByTarget[T]
-export type SchemaListByTarget = {
-  'customer/card:phone': Pick<SchemaList,
-    | 'customer/card'
-    | 'customer/card:phone'
-    | 'user/current'
-    | 'settings'
-  >;
-  'customer/card:communications.after': Pick<SchemaList,
-    | 'customer/card'
-    | 'user/current'
-    | 'settings'
-  >,
-  'customer/card:inWork.before': Pick<SchemaList,
-    | 'customer/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'customer/card:inWork.after': Pick<SchemaList,
-    | 'customer/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:common.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:common.after': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:customer.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:customer.after': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:customer.email': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:customer.phone': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:list.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:list.after': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:store.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:dimensions.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:delivery.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:delivery.after': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:delivery.address': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:payment.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/card:comment.manager.before': Pick<SchemaList,
-    | 'order/card'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/mg:list.before': Pick<SchemaList,
-    | 'order/card'
-    | 'order/card:settings'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/mg:list.after': Pick<SchemaList,
-    | 'order/card'
-    | 'order/card:settings'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/mg:delivery.before': Pick<SchemaList,
-    | 'order/card'
-    | 'order/card:settings'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/mg:delivery.after': Pick<SchemaList,
-    | 'order/card'
-    | 'order/card:settings'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/mg:payment.before': Pick<SchemaList,
-    | 'order/card'
-    | 'order/card:settings'
-    | 'user/current'
-    | 'settings'
-  >;
-  'order/mg:payment.after': Pick<SchemaList,
-    | 'order/card'
-    | 'order/card:settings'
-    | 'user/current'
-    | 'settings'
-  >;
-}
+export type SchemaListByTarget = TargetList

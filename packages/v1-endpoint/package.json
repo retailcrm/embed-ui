@@ -71,8 +71,10 @@
     "README.md"
   ],
   "scripts": {
-    "build": "yarn build:code",
+    "build": "yarn build:docs && yarn build:code && yarn build:meta",
     "build:code": "vite build -c ./vite.config.ts",
+    "build:docs": "npx tsx scripts/build.docs.ts",
+    "build:meta": "npx tsx scripts/build.meta.ts",
     "test:e2e": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
     "test:playwright": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
     "test": "vitest --run"
@@ -97,6 +99,7 @@
     "date-fns": "^4.1.0",
     "lodash.isequal": "^4.5.0",
     "playwright": "1.58.2",
+    "tsx": "^4.21.0",
     "vite": "^7.3.2",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "4.1.3"

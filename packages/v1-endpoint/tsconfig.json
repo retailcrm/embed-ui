@@ -32,6 +32,7 @@
     "useDefineForClassFields": true
   },
   "include": [
+    "scripts/**/*.ts",
     "src/**/*.ts"
   ]
 }
