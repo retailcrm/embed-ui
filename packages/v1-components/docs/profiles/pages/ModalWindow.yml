@@ -1,0 +1,55 @@
+page_profile: ModalWindow
+summary: >
+  Centered modal pattern for large contextual tables or additional local settings when a sidebar is not enough.
+
+use_when:
+  - You need a large local workflow.
+  - You need auxiliary table content.
+  - You need dense local settings that do not fit a sidebar.
+
+examples_from_design:
+  - adding products to an order
+  - marking products in an order
+  - viewing an email from the communication list
+  - merging duplicates in the database cleanliness section
+
+size_rules:
+  - Modal can use 960px width.
+  - Modal can use full screen with side margins.
+
+expected_structure:
+  - Fixed header at the top with title and close button.
+  - Header can include extra text, icon, button, or tag.
+  - Fixed footer at the bottom.
+  - Footer usually contains save, cancel or close, and delete actions.
+  - Footer can also contain a copy button or auxiliary text.
+  - Content can be flexible; tables are a common modal use case.
+  - If a modal contains a table, the table stretches across the modal width.
+  - If a modal is split into sections, use large tabs instead of a regular modal header.
+
+spacing_rules:
+  - Left, right, and bottom margins are 32px.
+  - Top margin is 24px.
+
+recommended_components:
+  - name: UiModalWindow
+    profile: ../components/UiModalWindow.yml
+  - name: UiButton
+    profile: ../components/UiButton.yml
+  - name: UiTabGroup
+    profile: ../components/UiTabGroup.yml
+  - name: UiTab
+    profile: ../components/UiTab.yml
+  - name: UiTable
+    profile: ../components/UiTable.yml
+  - name: UiTableColumn
+    profile: ../components/UiTableColumn.yml
+  - name: UiTableFooterSection
+    profile: ../components/UiTableFooterSection.yml
+
+ai_notes:
+  do:
+    - Use for workflows that need width, table content, or several sections.
+    - Use large tabs when modal content is split into sections.
+  avoid:
+    - Do not use a sidebar when content needs wide tables or complex controls.

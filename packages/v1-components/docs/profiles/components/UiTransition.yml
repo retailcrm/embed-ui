@@ -1,0 +1,62 @@
+component: UiTransition
+summary: >
+  UiTransition is a transition wrapper for animated mount, unmount, and visibility flows.
+  Use it to express motion without switching to raw transition markup.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTransition
+
+use_when:
+  - You need transition behavior around content.
+
+avoid_when:
+  - You need static content with no transition behavior.
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: no persistent DOM root
+    tag: none
+  notes: The component is a thin wrapper around the native Vue transition and forwards its slot content.
+
+geometry:
+  layout: no standalone layout of its own
+  root_display: none
+  width_behavior: defined entirely by the transitioned child
+
+api:
+  key_props:
+    - name: name
+    - name: appear
+
+behavior:
+  notes:
+    - Adds transition semantics around the slotted child.
+    - Does not create layout or styling by itself.
+
+composition:
+  works_well_with:
+    - UiAlert
+    - UiCollapse
+    - UiModalWindow
+  patterns:
+    - title: Animated presence
+      notes: Use when content should mount or unmount with the shared transition behavior.
+
+ai_notes:
+  do:
+    - Use around one logical child whose own layout should remain responsible for size.
+  avoid:
+    - Do not use as a layout wrapper or visual container.
+
+accessibility:
+  notes:
+    - Keep rendered text concise and meaningful for screen-reader users.
+    - Do not use this component as the only carrier of critical state if the state also needs form-level validation or focus management.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.

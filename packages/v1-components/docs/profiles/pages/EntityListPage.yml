@@ -1,0 +1,66 @@
+page_profile: EntityListPage
+summary: >
+  Separate page pattern for listing entities with filtering, sorting, table data, pagination,
+  and a primary create action.
+
+use_when:
+  - You need a searchable, filterable registry.
+  - You need an order list, customer list, mailing list, task list, catalog, journal, or search-result page.
+
+examples_from_design:
+  - order list
+  - customer list
+  - mailing list
+  - task list
+
+expected_structure:
+  - UiPageHeader with a page title.
+  - One or more 48px page buttons on the right side of the header.
+  - If there are multiple header buttons, one should be primary and the rest can be secondary or tertiary.
+  - The main primary button usually creates a new entity for the list.
+  - Filters above the table, built from controls such as select, textbox, and combobox-like selection components.
+  - Filter controls should run in rows of roughly 4-5 fields, then wrap to the next row.
+  - Filters can be collapsible.
+  - Filter apply action uses a default secondary 36px text button.
+  - Filter reset action uses a danger secondary 36px icon button.
+  - Entity data is shown in a table.
+  - The table may scroll and may support export.
+
+recommended_components:
+  - name: UiPageHeader
+    profile: ../components/UiPageHeader.yml
+  - name: UiButton
+    profile: ../components/UiButton.yml
+  - name: UiField
+    profile: ../components/UiField.yml
+  - name: UiTextbox
+    profile: ../components/UiTextbox.yml
+  - name: UiSelect
+    profile: ../components/UiSelect.yml
+  - name: UiTable
+    profile: ../components/UiTable.yml
+  - name: UiTableColumn
+    profile: ../components/UiTableColumn.yml
+  - name: UiTableSorter
+    profile: ../components/UiTableSorter.yml
+  - name: UiTableFooterSection
+    profile: ../components/UiTableFooterSection.yml
+  - name: UiTableFooterButton
+    profile: ../components/UiTableFooterButton.yml
+
+table_footer_rules:
+  - Use UiTableFooterSection and UiTableFooterButton for table footer pagination.
+  - Do not replace table footer pagination controls with regular UiButton.
+  - Use chevron icon assets for arrow controls, not text glyphs.
+  - Keep footer styling scoped to a local table root class.
+  - Override the internal footer button class together with the local class when changing pagination text, active page, or arrow colours.
+  - "Reference Vue and CSS footer pattern: ../components/UiTable.yml"
+
+ai_notes:
+  do:
+    - Keep filters and table controls directly above the table.
+    - Persist filters, sorting, page, and page size in query parameters when routing is available.
+    - Reset page to 1 when filters or sorting change.
+  avoid:
+    - Do not hide filters in page header actions.
+    - Do not put pagination only in local state when the result set is routable.

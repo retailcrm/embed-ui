@@ -1,0 +1,74 @@
+component: UiSelectOption
+summary: >
+  UiSelectOption is the base selectable child of UiSelect. It represents one option node
+  in the select option tree.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiSelectOption
+
+related_components:
+  - UiSelect
+  - UiSelectOptionGroup
+
+use_when:
+  - You need one option inside UiSelect.
+
+avoid_when:
+  - You need free layout content inside a select dropdown.
+
+api:
+  key_props:
+    - name: value
+    - name: label
+    - name: description
+    - name: disabled
+    - name: counter
+    - name: accent
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-select-option
+    tag: div
+  notes: Renders one option wrapper that usually contains a UiMenuItem row.
+
+geometry:
+  layout: listbox option row
+  root_display: block
+  width_behavior: stretches to available dropdown width
+
+ai_notes:
+  do:
+    - Use as the default child node of UiSelect.
+    - Provide stable value and human-readable label.
+    - Use description for secondary explanation, not for long help text.
+  avoid:
+    - Do not put arbitrary controls inside options.
+
+behavior:
+  notes:
+    - disabled prevents selection while keeping the option visible.
+    - counter and accent help scan dense option lists.
+    - In filterable selects, label and description participate in matching.
+
+composition:
+  works_well_with:
+    - UiSelect
+    - UiSelectOptionGroup
+  patterns:
+    - title: Status filter option
+      notes: Use concise labels that match the visible table status names.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-select-option

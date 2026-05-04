@@ -1,0 +1,46 @@
+page_profile: CollapseBlockPage
+summary: >
+  Settings page pattern for content split into independent collapsible semantic groups.
+
+use_when:
+  - You need settings split into semantic groups.
+  - You need optional or advanced sections that can collapse independently.
+
+examples_from_design:
+  - product editing
+  - mailing editing
+  - Double Opt-In settings
+
+expected_structure:
+  - Multiple collapsible blocks with their own content and local actions.
+  - If the page contains only collapse blocks, the white page surface is not needed.
+  - If every collapse block has its own save action, the bottom save panel is not needed.
+  - Collapse blocks can contain text, buttons, fields, controls, and small tables.
+
+avoid_inside_blocks:
+  - complex tables
+  - nested collapse blocks
+  - two-column content split across separate surfaces
+
+recommended_components:
+  - name: UiCollapse
+    profile: ../components/UiCollapse.yml
+  - name: UiCollapseBox
+    profile: ../components/UiCollapseBox.yml
+  - name: UiCollapseGroup
+    profile: ../components/UiCollapseGroup.yml
+  - name: UiButton
+    profile: ../components/UiButton.yml
+  - name: UiField
+    profile: ../components/UiField.yml
+  - name: UiTable
+    profile: ../components/UiTable.yml
+    notes: Use only for small, simple tables.
+
+ai_notes:
+  do:
+    - Use collapses for optional or separable sections.
+    - Keep required critical actions visible enough for the workflow.
+  avoid:
+    - Do not nest collapses inside collapses.
+    - Do not hide complex tables inside collapse blocks.

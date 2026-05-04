@@ -10,7 +10,6 @@ Only the public package contract is described below, without depending on the re
 - Package name: `@retailcrm/embed-ui-v1-components`
 - Purpose: UI components and UI helpers for RetailCRM JS extensions
 - Framework: Vue 3
-- Published Storybook: `https://retailcrm.github.io/embed-ui/v1-components/0.9.18/`
 - Primary public entrypoints:
   - `@retailcrm/embed-ui-v1-components/remote`
   - `@retailcrm/embed-ui-v1-components/host`
@@ -31,12 +30,11 @@ When generating UI code, use this order:
 1. read [`../README.md`](../README.md) and [`../AGENTS.md`](../AGENTS.md) for package-level usage rules;
 2. read [`COMPONENTS.md`](./COMPONENTS.md) to identify candidate components;
 3. open a detailed profile from [`PROFILES.md`](./PROFILES.md) if one exists;
-4. use the profile `usage` link for published Storybook examples and visual behavior;
-5. read [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md) when the task is about complete
+4. read the relevant page profile from [`PROFILES.md`](./PROFILES.md) when the task is about complete
    pages, modals, sidebars, filters, tables, or settings layouts;
-6. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
-7. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
-8. if no profile exists yet, fall back to [Storybook](https://retailcrm.github.io/embed-ui/v1-components/0.9.18/) docs and public type declarations, and state any inference explicitly.
+5. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
+6. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
+7. if no profile exists yet, fall back to public type declarations and state any inference explicitly.
 
 ## Runtime Embedding References
 
@@ -84,7 +82,7 @@ decorative landing page.
 
 Default screen rules:
 
-- use [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md) to choose between an entity list,
+- use [`PageComposition.yml`](./profiles/pages/PageComposition.yml) to choose between an entity list,
   card/settings page, multi-column page, collapse-block page, modal sidebar, or modal window;
 - use `UiPageHeader` for page identity and top-level actions;
 - keep filters and controls near the content they affect;
@@ -110,7 +108,8 @@ screen where users scan and refine datasets:
 - use `UiTable` footer slots for summary, page-size controls, export, and pagination;
 - compose table footer controls with `UiTableFooterSection` and `UiTableFooterButton`, not regular `UiButton`;
 - use chevron icon assets for table footer previous/next controls instead of text glyphs;
-- add local CSS for table footer layout and states; use `AGENT-DESIGN-GUIDELINES.md` for the canonical footer CSS contract;
+- add local CSS for table footer layout and states; use [`UiTable.yml`](./profiles/components/UiTable.yml)
+  for the reference table footer example;
 - set `size="small"` on `UiLink` inside table cells so links match table body typography.
 
 Suggested query names:
@@ -165,17 +164,17 @@ The preferred styling signal is:
 
 ## Current High-Signal Profiles
 
-- [`UiField`](./profiles/UiField.yml)
-- [`UiTextbox`](./profiles/UiTextbox.yml)
-- [`UiButton`](./profiles/UiButton.yml)
-- [`UiPageHeader`](./profiles/UiPageHeader.yml)
-- [`UiSelect`](./profiles/UiSelect.yml)
-- [`UiRadioSwitch`](./profiles/UiRadioSwitch.yml)
-- [`UiTabGroup`](./profiles/UiTabGroup.yml)
-- [`UiTab`](./profiles/UiTab.yml)
-- [`UiPopper`](./profiles/UiPopper.yml)
-- [`UiPopperConnector`](./profiles/UiPopperConnector.yml)
-- [`UiPopperTarget`](./profiles/UiPopperTarget.yml)
+- [`UiField`](./profiles/components/UiField.yml)
+- [`UiTextbox`](./profiles/components/UiTextbox.yml)
+- [`UiButton`](./profiles/components/UiButton.yml)
+- [`UiPageHeader`](./profiles/components/UiPageHeader.yml)
+- [`UiSelect`](./profiles/components/UiSelect.yml)
+- [`UiRadioSwitch`](./profiles/components/UiRadioSwitch.yml)
+- [`UiTabGroup`](./profiles/components/UiTabGroup.yml)
+- [`UiTab`](./profiles/components/UiTab.yml)
+- [`UiPopper`](./profiles/components/UiPopper.yml)
+- [`UiPopperConnector`](./profiles/components/UiPopperConnector.yml)
+- [`UiPopperTarget`](./profiles/components/UiPopperTarget.yml)
 
 ## Related Public Docs
 
@@ -185,5 +184,5 @@ The preferred styling signal is:
 - [`COMPONENTS.md`](./COMPONENTS.md)
 - [`FORMAT.md`](./FORMAT.md)
 - [`STYLING.md`](./STYLING.md)
-- [`AGENT-DESIGN-GUIDELINES.md`](./AGENT-DESIGN-GUIDELINES.md)
+- [`PROFILES.md`](./PROFILES.md)
 - [`../AGENTS.md`](../AGENTS.md)

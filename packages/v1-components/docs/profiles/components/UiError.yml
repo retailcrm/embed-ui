@@ -1,0 +1,123 @@
+component: UiError
+summary: >
+  UiError is a compact error-state component for short error messages or fallback states.
+  It is intended for concise inline error display rather than large alert copy.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiError
+
+examples:
+  - title: Example
+    code: |
+      <template>
+          <UiError v-bind="$attrs" :class="$style['container']">
+              <template v-if="useSlot">
+                  <div :class="$style['content']">
+                      <IconError :class="$style['icon']" />
+                      Error message with icon
+                  </div>
+              </template>
+          </UiError>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiError } from '@retailcrm/embed-ui-v1-components/remote'
+
+      import IconError from '@retailcrm/embed-ui-v1-components/assets/sprites/alerts/error.svg'
+
+      defineProps({
+        useSlot: {
+          type: Boolean,
+          default: false,
+        },
+      })
+      </script>
+
+      <style lang="less" module>
+
+      .container {
+        padding: 8px;
+        background: #FFF;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+      }
+
+      .content {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+      </style>
+
+use_when:
+  - You need a compact error block.
+  - You need inline error text with standard styling.
+
+avoid_when:
+  - You need a richer feedback block, use UiAlert or UiInfobox instead.
+
+api:
+  key_props:
+    - name: message
+      notes: Fallback error text when default slot is not provided.
+    - name: align
+      notes: left or right text alignment.
+    - name: ellipsis
+      notes: Truncates long error text instead of wrapping.
+  slots:
+    - name: default
+      zone: error-content
+      creates: Error text or compact fallback content.
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-error
+    tag: div
+  notes: Renders one text container for error content.
+
+geometry:
+  layout: block-like error text container
+  root_display: block
+  width_behavior: stretches to container width by default
+
+ai_notes:
+  do:
+    - Use for compact error presentation.
+    - Keep the message short and specific.
+  avoid:
+    - Do not use for multi-paragraph explanations or page-level failures.
+
+composition:
+  works_well_with:
+    - UiField
+    - UiAlert
+  patterns:
+    - title: Field or section error
+      notes: Use where the user needs to see a concise local error message.
+    - title: Page-level failure
+      notes: Use UiAlert or UiInfobox instead when the error needs explanation and actions.
+
+behavior:
+  notes:
+    - Read key_props first to identify supported states and variants.
+    - Prefer controlled props and documented emits when synchronizing component state with screen logic.
+
+accessibility:
+  notes:
+    - Keep rendered text concise and meaningful for screen-reader users.
+    - Do not use this component as the only carrier of critical state if the state also needs form-level validation or focus management.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-error

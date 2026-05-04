@@ -1,0 +1,87 @@
+component: UiTableColumn
+summary: >
+  UiTableColumn declares one logical column inside UiTable. It carries label and sizing metadata
+  and defines how header labels and cells render.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableColumn
+
+related_components:
+  - UiTable
+
+use_when:
+  - You define columns for UiTable.
+
+avoid_when:
+  - You need standalone layout markup outside UiTable.
+
+api:
+  key_props:
+    - name: label
+    - name: width
+    - name: minWidth
+    - name: maxWidth
+    - name: align
+    - name: valign
+    - name: trim
+  slots:
+    - name: default
+      zone: cell
+      creates: Cell content.
+    - name: cell
+      zone: cell
+      creates: Explicit cell content.
+    - name: label
+      zone: header-label
+      creates: Header label content.
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: col
+    tag: col
+  notes: The component renders one structural table column node.
+
+geometry:
+  layout: structural table column
+  root_display: table-column
+  width_behavior: controlled by table layout and width props on the parent table
+
+composition:
+  works_well_with:
+    - UiTable
+    - UiTableSorter
+    - UiLink
+    - UiTag
+  patterns:
+    - title: Primary link column
+      notes: Put the row's main UiLink in the first meaningful text column and set link size to small.
+    - title: Sortable header
+      notes: Use the label slot with UiTableSorter when the column supports sorting.
+    - title: Status column
+      notes: Use UiTag for categorical statuses instead of raw colored text.
+
+ai_notes:
+  do:
+    - Set minWidth for important text columns so generated tables remain scannable.
+    - Use align="right" for numbers, money, and percentages.
+    - Use trim only for narrow checkbox, icon, or action columns.
+  avoid:
+    - Do not place filters inside column labels; filters belong above the table.
+
+behavior:
+  notes:
+    - Behavior is mostly coordinated by the parent component.
+    - Use this child only in the documented parent composition.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.

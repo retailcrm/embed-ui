@@ -1,0 +1,70 @@
+component: UiTableHeadCell
+summary: >
+  UiTableHeadCell is the low-level table header cell primitive used inside UiTable head rows.
+  Use it only when you build custom table structure from public table parts.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiTableHeadCell
+
+related_components:
+  - UiTable
+  - UiTableSorter
+
+use_when:
+  - You compose a custom table head with public table primitives.
+  - You need header-cell alignment or trim control outside UiTableColumn defaults.
+
+avoid_when:
+  - UiTableColumn already covers the header rendering you need.
+  - You are not building custom table markup.
+
+api:
+  key_props:
+    - name: align
+    - name: trim
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: th.ui-v1-table__head-cell
+    tag: th
+  notes: The component renders one table head cell.
+
+geometry:
+  layout: table header cell
+  root_display: table-cell
+  width_behavior: controlled by table layout and column sizing
+
+ai_notes:
+  do:
+    - Prefer UiTableColumn first for regular table headers.
+    - Use with UiTableSorter when building fully custom table structure.
+  avoid:
+    - Do not use it as a generic container outside table head rows.
+
+composition:
+  works_well_with:
+    - UiTableSorter
+    - UiTableColumn
+  patterns:
+    - title: Low-level sortable head
+      notes: Use only when UiTableColumn label slot cannot express the needed header.
+
+behavior:
+  notes:
+    - Behavior is mostly coordinated by the parent component.
+    - Use this child only in the documented parent composition.
+
+accessibility:
+  notes:
+    - This component is normally used inside its parent composition; accessibility behavior is completed by the parent component.
+    - Keep labels and visible text meaningful because parent keyboard and screen-reader behavior depends on child content.
+
+styling:
+  notes:
+    - Use documented props and slots as the primary styling API.
+    - Internal .ui-v1-* classes are descriptive implementation details for reasoning and debugging unless a profile marks them as public theme hooks.
+  root_classes:
+    - .ui-v1-table

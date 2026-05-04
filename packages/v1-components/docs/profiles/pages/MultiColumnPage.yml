@@ -1,0 +1,27 @@
+page_profile: MultiColumnPage
+summary: >
+  Detail-page pattern for entity cards with several semantic blocks that should be visible in parallel.
+
+use_when:
+  - You need an entity detail page with multiple related blocks.
+  - You need order, customer, or product information visible in parallel.
+
+examples_from_design:
+  - order page
+  - customer page
+  - product view page
+
+layout_rules:
+  - Content is placed on surfaces.
+  - The most common surface spans the full screen width.
+  - Semantic blocks can be arranged vertically and horizontally.
+  - Distance between blocks is 24px.
+  - Allowed width distributions are 100%, 50% / 50%, and 30% / 70%.
+
+ai_notes:
+  do:
+    - Keep hierarchy operational and dense.
+    - Use parallel blocks only when users need to compare or scan them together.
+  avoid:
+    - Do not use marketing-style layouts.
+    - Do not split content into columns when a single linear form is easier to complete.

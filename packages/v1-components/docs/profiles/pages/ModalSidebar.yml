@@ -1,0 +1,56 @@
+page_profile: ModalSidebar
+summary: >
+  Side-docked modal pattern for small contextual forms, local additional information,
+  or compact entity cards.
+
+use_when:
+  - You need a small contextual form.
+  - You need local additional information connected to the current page.
+  - You need a compact entity card with a limited number of fields and settings.
+
+examples_from_design:
+  - task card
+  - notifications
+  - new ticket
+  - scenario step editing
+
+size_rules:
+  - Sidebar can use 720px width.
+  - Sidebar can use 416px width.
+
+expected_structure:
+  - Fixed header at the top with title and close button.
+  - Header can also contain extra text, icon, button, or tag.
+  - If a sidebar opens from another sidebar, show a back arrow to return to the previous sidebar.
+  - Fixed footer at the bottom.
+  - Footer usually contains save, cancel or close, and delete actions.
+  - Footer can also contain a copy button or auxiliary text.
+  - Content can be flexible, but should stay compact.
+  - Small tables can be placed in sidebars.
+
+recommended_components:
+  - name: UiModalSidebar
+    profile: ../components/UiModalSidebar.yml
+  - name: UiButton
+    profile: ../components/UiButton.yml
+  - name: UiTag
+    profile: ../components/UiTag.yml
+  - name: UiField
+    profile: ../components/UiField.yml
+  - name: UiTextbox
+    profile: ../components/UiTextbox.yml
+  - name: UiSelect
+    profile: ../components/UiSelect.yml
+  - name: UiTable
+    profile: ../components/UiTable.yml
+    notes: Use only for small, simple tables.
+
+ai_notes:
+  do:
+    - Use for inspect, edit, or secondary workflows related to the current list or page.
+    - Keep the flow compact.
+  avoid:
+    - Do not use for bulky or complex interfaces.
+    - Do not use collapse blocks inside sidebars.
+    - Do not use two-column content on separate surfaces.
+    - Use a full page or modal window for bulky flows.
