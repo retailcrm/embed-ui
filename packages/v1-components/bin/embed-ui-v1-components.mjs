@@ -78,14 +78,17 @@ When working with \`${PACKAGE_NAME}\` in this project:
 2. Then read \`./node_modules/${PACKAGE_NAME}/AGENTS.md\`.
 3. Then read \`./node_modules/${PACKAGE_NAME}/docs/AI.md\`.
 4. Then read \`./node_modules/${PACKAGE_NAME}/docs/COMPONENTS.md\`.
-5. Then open the relevant profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/<Component>.yml\`.
-6. Prefer those docs and profiles over guessing from internal implementation files.
-7. Import only from documented public entrypoints:
+5. Then read \`./node_modules/${PACKAGE_NAME}/docs/PROFILES.md\`.
+6. Then open relevant component profiles from \`./node_modules/${PACKAGE_NAME}/docs/profiles/components/*.yml\`.
+7. For complete pages, modals, sidebars, filters, tables, or settings layouts, open the relevant
+   page profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/pages/*.yml\`.
+8. Prefer those docs and profiles over guessing from internal implementation files.
+9. Import only from documented public entrypoints:
    - \`${PACKAGE_NAME}/remote\`
    - \`${PACKAGE_NAME}/host\`
    - \`${PACKAGE_NAME}/assets/...\`
-8. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
-9. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
+10. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
+11. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
 
 ## Suggested Reading Order
 
@@ -93,9 +96,11 @@ When working with \`${PACKAGE_NAME}\` in this project:
 2. \`AGENTS.md\`
 3. \`docs/AI.md\`
 4. \`docs/COMPONENTS.md\`
-5. The relevant profile from \`docs/profiles/*.yml\`
-6. \`docs/FORMAT.md\` if you need to understand profile structure
-7. Storybook and public types only when no profile exists yet
+5. \`docs/PROFILES.md\`
+6. The relevant component profile from \`docs/profiles/components/*.yml\`
+7. The relevant page profile from \`docs/profiles/pages/*.yml\` for full-screen or overlay composition
+8. \`docs/FORMAT.md\` if you need to understand profile structure
+9. Public type declarations only when no profile exists yet
 ` + DEFAULT_NEWLINE
 }
 
@@ -108,14 +113,17 @@ When working with \`${PACKAGE_NAME}\` in this project:
 2. Then read \`./node_modules/${PACKAGE_NAME}/AGENTS.md\`.
 3. Then read \`./node_modules/${PACKAGE_NAME}/docs/AI.md\`.
 4. Then read \`./node_modules/${PACKAGE_NAME}/docs/COMPONENTS.md\`.
-5. Then open the relevant profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/<Component>.yml\`.
-6. Prefer those docs and profiles over guessing from internal implementation files.
-7. Import only from documented public entrypoints:
+5. Then read \`./node_modules/${PACKAGE_NAME}/docs/PROFILES.md\`.
+6. Then open relevant component profiles from \`./node_modules/${PACKAGE_NAME}/docs/profiles/components/*.yml\`.
+7. For complete pages, modals, sidebars, filters, tables, or settings layouts, open the relevant
+   page profile from \`./node_modules/${PACKAGE_NAME}/docs/profiles/pages/*.yml\`.
+8. Prefer those docs and profiles over guessing from internal implementation files.
+9. Import only from documented public entrypoints:
    - \`${PACKAGE_NAME}/remote\`
    - \`${PACKAGE_NAME}/host\`
    - \`${PACKAGE_NAME}/assets/...\`
-8. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
-9. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
+10. Prefer \`${PACKAGE_NAME}/remote\` for extension UI code.
+11. Do not import from package-internal files such as \`dist/*\`, repository-only paths, or source internals.
 
 ## Suggested Reading Order
 
@@ -123,9 +131,11 @@ When working with \`${PACKAGE_NAME}\` in this project:
 2. \`AGENTS.md\`
 3. \`docs/AI.md\`
 4. \`docs/COMPONENTS.md\`
-5. The relevant profile from \`docs/profiles/*.yml\`
-6. \`docs/FORMAT.md\` if you need to understand profile structure
-7. Storybook and public types only when no profile exists yet
+5. \`docs/PROFILES.md\`
+6. The relevant component profile from \`docs/profiles/components/*.yml\`
+7. The relevant page profile from \`docs/profiles/pages/*.yml\` for full-screen or overlay composition
+8. \`docs/FORMAT.md\` if you need to understand profile structure
+9. Public type declarations only when no profile exists yet
 `
 }
 
