@@ -7,7 +7,9 @@
 
 - `targets` — словарь встроенных target-конфигураций.
 - `TargetName` — union всех ключей `targets`.
-- `defineTarget(id, contexts)` — helper для объявления target с типами контекстов.
+- `TargetList` — словарь `target -> SchemaList`, выведенный из `targets[target].contexts`.
+- `defineTarget(id, config)` — helper для объявления target с типами контекстов, custom contexts и action scopes.
+  Также поддерживает альтернативную форму `defineTarget(id, contexts)`.
 
 ## Что такое `target` и `context`
 
@@ -21,15 +23,6 @@
 
 `target` не является данными заказа, клиента или пользователя. Это только место встраивания.
 Данные нужно брать из контекстов, которые привязаны к этому `target`.
-
-## Примеры встроенных `target`
-
-| Target | Где встраивается | Доступные контексты |
-| --- | --- | --- |
-| `order/card:common.before` | Карточка заказа, перед блоком общей информации | `order/card`, `user/current`, `settings` |
-| `order/card:customer.phone` | Карточка заказа, поле телефона клиента | `order/card`, `user/current`, `settings` |
-| `customer/card:phone` | Карточка клиента, телефонный блок | `customer/card`, `customer/card:phone`, `user/current`, `settings` |
-| `order/mg:list.before` | Карточка заказа, перед списком в multi-goods блоке | `order/card`, `order/card:settings`, `user/current`, `settings` |
 
 ## Проверка контекстов для `target`
 
@@ -60,6 +53,7 @@ const selectedTarget: TargetName = 'order/card:common.before'
 import type { TargetName } from '@retailcrm/embed-ui-v1-endpoint/common'
 
 import { useContext as useOrderContext } from '@retailcrm/embed-ui-v1-contexts/remote/order/card'
+import { useContext as useOrderSettingsContext } from '@retailcrm/embed-ui-v1-contexts/remote/order/card-settings'
 import { useContext as useSettingsContext } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 import { useContext as useUserContext } from '@retailcrm/embed-ui-v1-contexts/remote/user/current'
 
@@ -68,13 +62,14 @@ defineProps<{
 }>()
 
 const order = useOrderContext()
+const orderSettings = useOrderSettingsContext()
 const settings = useSettingsContext()
 const user = useUserContext()
 </script>
 ```
 
 Такой набор контекстов подходит для `order/card:common.before`, потому что этот `target` объявлен с
-контекстами `order/card`, `user/current` и `settings`.
+контекстами `order/card`, `order/card:settings`, `user/current` и `settings`.
 
 Для `customer/card:phone` набор импортов будет другим:
 
@@ -85,17 +80,47 @@ import { useContext as useSettingsContext } from '@retailcrm/embed-ui-v1-context
 import { useContext as useUserContext } from '@retailcrm/embed-ui-v1-contexts/remote/user/current'
 ```
 
-## Пример `defineTarget`
+## `defineTarget` в тестах
+
+CRM не предоставляет расширениям механизм регистрации произвольных widget targets.
+В рабочем сценарии виджет монтируется только в заранее определённые платформой цели из `targets`.
+
+`defineTarget` нужен для объявления этих встроенных целей внутри пакета и для автотестов,
+где требуется собрать изолированную target-конфигурацию без запуска CRM.
 
 ```ts
 import { defineTarget } from '@retailcrm/embed-ui-v1-endpoint/common'
 
-const customTarget = defineTarget('order/card:custom.after', [
-  'order/card',
+const testTarget = defineTarget('order/card:test.after', {
+  contexts: [
+    'order/card',
+    'order/card:settings',
+    'user/current',
+    'settings',
+  ],
+  customContexts: ['order'],
+  actions: ['order/card'],
+} as const)
+```
+
+Альтернативная форма с массивом контекстов подходит для target без custom contexts и action scopes.
+В этом случае `customContexts` и `actions` будут пустыми:
+
+```ts
+const testTarget = defineTarget('customer/card:test.after', [
+  'customer/card',
   'user/current',
   'settings',
 ] as const)
 ```
+
+## AI-friendly YAML profiles
+
+Для встроенных целей дополнительно генерируется каталог [`targets/*.yml`](./targets/).
+Эти файлы предназначены для AI-ассистентов: они описывают target на английском, перечисляют
+доступные contexts, custom contexts и action scopes, но не являются отдельным источником truth.
+Обновляйте `targets.ts` и `targets.documentation.ts`, затем запускайте
+`yarn workspace @retailcrm/embed-ui-v1-endpoint run build:docs`.
 
 ## Практический совет
 

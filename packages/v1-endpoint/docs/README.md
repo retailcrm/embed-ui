@@ -13,6 +13,7 @@
 ## Дополнительно
 
 - [`targets` и `defineTarget`](./targets.md) — типизированные цели для виджетов.
+- [`targets/*.yml`](./targets/) — сгенерированные AI-friendly описания встроенных widget targets на английском.
 - [`menu-placements`](./menu-placements.md) — как описывать меню и пункты навигации, из которых открываются remote-страницы.
 - [`page-routes`](./page-routes.md) — как связывать page `code`, CRM route и `definePageRunner`.
 - [`layout`](./layout.md) — практический гайд по layout-паттернам страниц, шторок и модалок.

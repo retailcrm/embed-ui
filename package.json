@@ -44,6 +44,7 @@
     "@remote-ui/rpc": "^1.4.5",
     "@retailcrm/embed-ui-v1-components": "^0.9.21",
     "@retailcrm/embed-ui-v1-contexts": "^0.9.21",
+    "@retailcrm/embed-ui-v1-endpoint": "^0.9.21",
     "@retailcrm/embed-ui-v1-types": "^0.9.21"
   },
   "devDependencies": {
