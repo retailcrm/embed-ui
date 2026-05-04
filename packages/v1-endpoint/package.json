@@ -1,5 +1,9 @@
 {
   "name": "@retailcrm/embed-ui-v1-endpoint",
+  "bin": {
+    "embed-ui-v1-endpoint": "./bin/embed-ui-v1-endpoint.mjs",
+    "embed-ui-v1-endpoint-mcp": "./bin/embed-ui-v1-endpoint-mcp.mjs"
+  },
   "type": "module",
   "version": "0.9.21",
   "description": "Endpoint API for integrations in RetailCRM",
@@ -24,6 +28,12 @@
       "import": "./dist/common/targets.js",
       "require": "./dist/common/targets.cjs",
       "default": "./dist/common/targets.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/server.d.ts",
+      "import": "./dist/mcp/server.js",
+      "require": "./dist/mcp/server.cjs",
+      "default": "./dist/mcp/server.js"
     },
     "./remote": {
       "types": "./dist/remote.d.ts",
@@ -54,6 +64,9 @@
       "common/targets": [
         "./dist/common/targets.d.ts"
       ],
+      "mcp": [
+        "./dist/mcp/server.d.ts"
+      ],
       "remote": [
         "./dist/remote.d.ts"
       ],
@@ -66,14 +79,16 @@
     }
   },
   "files": [
+    "bin",
     "dist",
     "docs",
     "README.md"
   ],
   "scripts": {
-    "build": "yarn build:docs && yarn build:code && yarn build:meta",
+    "build": "yarn build:docs && yarn build:code && yarn build:mcp && yarn build:meta",
     "build:code": "vite build -c ./vite.config.ts",
     "build:docs": "npx tsx scripts/build.docs.ts",
+    "build:mcp": "vite build -c ./vite.config.mcp.ts",
     "build:meta": "npx tsx scripts/build.meta.ts",
     "test:e2e": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
     "test:playwright": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
@@ -87,6 +102,7 @@
     "vue": "^3.5"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@remote-ui/rpc": "^1.4.7",
     "@retailcrm/embed-ui-v1-components": "^0.9.21",
     "@retailcrm/embed-ui-v1-contexts": "^0.9.21",
