@@ -9,6 +9,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import process from 'node:process'
+import { randomUUID } from 'node:crypto'
 
 import { applyInitAgents } from './agents'
 import { collectPackageJsonPaths } from './filesystem'
@@ -160,6 +161,13 @@ const quoteJsString = (value: string): string => `'${value.replace(/\\/gu, '\\\\
 
 const createEnvDts = () => `/// <reference types="vite/client" />
 
+declare module '*.svg' {
+  import type { DefineComponent } from 'vue'
+
+  const component: DefineComponent<Record<string, never>, Record<string, never>, unknown>
+  export default component
+}
+
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
 
@@ -201,27 +209,51 @@ const createTsConfig = (cwd: string, sourceRoot: string): string => {
 
 const createViteConfig = (cwd: string, sourceRoot: string): string => {
   const entryPath = toPosixRelative(cwd, path.join(sourceRoot, 'endpoint/endpoint.worker.ts'))
+  const sourceRootPath = toPosixRelative(cwd, sourceRoot)
 
-  return `import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+  return `import { fileURLToPath } from 'node:url'
+
+import path from 'node:path'
+
+import { defineConfig } from 'vite'
 
 import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vite'
+
+import vueI18n from '@intlify/unplugin-vue-i18n/vite'
+
+import svgLoader from 'vite-svg-loader'
 
 const root = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    svgLoader({
+      defaultImport: 'component',
+    }),
+    vueI18n({
+      defaultSFCLang: 'json',
+      include: path.resolve(root, '${toPosixRelative(cwd, path.join(sourceRoot, 'i18n/locales'))}/**/*.{json,json5,yaml,yml}'),
+    }),
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(root, ${quoteJsString(sourceRootPath)}),
+    },
+  },
   build: {
     rollupOptions: {
-      input: path.resolve(root, ${JSON.stringify(entryPath)}),
+      input: path.resolve(root, ${quoteJsString(entryPath)}),
     },
   },
 })
 `
 }
 
-const createEslintConfig = () => `import { defineConfig } from 'eslint/config'
+const createEslintConfig = (cwd: string, sourceRoot: string): string => {
+  const localeDirPattern = `./${toPosixRelative(cwd, path.join(sourceRoot, 'i18n/locales'))}/*.{json,json5,yaml,yml}`
+
+  return `import { defineConfig } from 'eslint/config'
 
 import globals from 'globals'
 
@@ -229,107 +261,30 @@ import pluginDependencies from '@omnicajs/eslint-plugin-dependencies'
 import pluginJs from '@eslint/js'
 import pluginTs from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
-
-const staticTranslationKeysRule = {
-  meta: {
-    type: 'problem',
-    docs: {
-      description: 'Require static vue-i18n translation keys',
-    },
-    messages: {
-      dynamicKey: 'Translation keys must be static string literals.',
-    },
-    schema: [],
-  },
-  create (context) {
-    const i18nFunctions = new Set(['$t', '$te'])
-    const i18nObjects = new Set(['i18n'])
-
-    const unwrap = (node) => node?.type === 'ChainExpression' ? node.expression : node
-    const isStaticKey = (node) => {
-      const unwrapped = unwrap(node)
-
-      return (unwrapped?.type === 'Literal' && typeof unwrapped.value === 'string')
-        || (unwrapped?.type === 'TemplateLiteral' && unwrapped.expressions.length === 0)
-    }
-    const isUseI18nCall = (node) => unwrap(node)?.type === 'CallExpression'
-      && unwrap(unwrap(node).callee)?.type === 'Identifier'
-      && unwrap(unwrap(node).callee).name === 'useI18n'
-    const registerUseI18nBinding = (node) => {
-      if (!isUseI18nCall(node.init)) {
-        return
-      }
-
-      if (node.id.type === 'Identifier') {
-        i18nObjects.add(node.id.name)
-        return
-      }
-
-      if (node.id.type !== 'ObjectPattern') {
-        return
-      }
-
-      for (const property of node.id.properties) {
-        if (property.type !== 'Property') {
-          continue
-        }
-
-        const key = property.key.type === 'Identifier' ? property.key.name : property.key.value
-        const value = property.value.type === 'Identifier' ? property.value.name : null
-
-        if ((key === 't' || key === 'te') && value) {
-          i18nFunctions.add(value)
-        }
-      }
-    }
-    const isTranslationCallee = (callee) => {
-      const unwrapped = unwrap(callee)
-
-      if (unwrapped?.type === 'Identifier') {
-        return i18nFunctions.has(unwrapped.name)
-      }
-
-      if (unwrapped?.type !== 'MemberExpression') {
-        return false
-      }
-
-      const object = unwrap(unwrapped.object)
-      const property = unwrap(unwrapped.property)
-      const propertyName = property?.type === 'Identifier' ? property.name : property?.value
-
-      if (!['$t', '$te', 't', 'te'].includes(propertyName)) {
-        return false
-      }
-
-      return object?.type === 'ThisExpression'
-        || (object?.type === 'Identifier' && i18nObjects.has(object.name))
-    }
-
-    return {
-      VariableDeclarator: registerUseI18nBinding,
-      CallExpression (node) {
-        if (!isTranslationCallee(node.callee)) {
-          return
-        }
-
-        if (!isStaticKey(node.arguments[0])) {
-          context.report({ node: node.arguments[0] ?? node, messageId: 'dynamicKey' })
-        }
-      },
-    }
-  },
-}
+import pluginVueI18n from '@intlify/eslint-plugin-vue-i18n'
 
 export default defineConfig([
   { files: ['**/*.{js,mjs,cjs,ts,vue}'] },
   {
-    plugins: {
-      dependencies: pluginDependencies,
-      'retailcrm-init': {
-        rules: {
-          'static-translation-keys': staticTranslationKeysRule,
+    settings: {
+      'vue-i18n': {
+        localeDir: {
+          pattern: '${localeDirPattern}',
+          localeKey: 'file',
         },
+        messageSyntaxVersion: '^11.0.0',
       },
+    },
+  },
+  pluginJs.configs.recommended,
+  ...pluginTs.configs.recommended,
+  ...pluginVue.configs['flat/essential'],
+  ...pluginVueI18n.configs.recommended,
+  {
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
+    plugins: {
+      '@intlify/vue-i18n': pluginVueI18n,
+      dependencies: pluginDependencies,
     },
     languageOptions: {
       globals: {
@@ -353,6 +308,21 @@ export default defineConfig([
         fixStyle: 'separate-type-imports',
       }],
 
+      '@intlify/vue-i18n/key-format-style': ['error', 'camelCase', {
+        allowArray: true,
+      }],
+      '@intlify/vue-i18n/no-duplicate-keys-in-locale': 'error',
+      '@intlify/vue-i18n/no-dynamic-keys': 'error',
+      '@intlify/vue-i18n/no-missing-keys': 'error',
+      '@intlify/vue-i18n/no-missing-keys-in-other-locales': 'error',
+      '@intlify/vue-i18n/no-raw-text': ['warn', {
+        ignorePattern: '^[-–—~+#:()&=×%/\\\\d\\\\s\\u00A0\\n,.<>•]+$',
+        ignoreText: ['API', 'CRM', ''],
+      }],
+      '@intlify/vue-i18n/no-unknown-locale': 'error',
+      '@intlify/vue-i18n/no-unused-keys': 'error',
+      '@intlify/vue-i18n/sfc-locale-attr': 'error',
+
       'dependencies/import-style': ['error', {
         maxSingleLineLength: 90,
         maxSingleLineSpecifiers: 3,
@@ -372,23 +342,43 @@ export default defineConfig([
         groups: [
           'side-effect-style',
           'side-effect',
-          ['type-import', 'type-external', 'type-internal', 'type-parent', 'type-sibling', 'type-index'],
+          [
+            'type-import',
+            'type-external',
+            'type-vue-components',
+            'type-internal',
+            'type-parent',
+            'type-sibling',
+            'type-index',
+          ],
           'builtin',
           'value-external',
+          'value-vue-components',
           'value-internal',
           ['value-parent', 'value-sibling'],
           'index',
+          'ts-equals-import',
           'unknown',
         ],
+        customGroups: [{
+          groupName: 'type-vue-components',
+          selector: 'type',
+          elementNamePattern: ['\\\\.(svg|vue)$'],
+        }, {
+          groupName: 'value-vue-components',
+          elementNamePattern: ['\\\\.(svg|vue)$'],
+        }],
         newlinesInside: 1,
+        partitions: {
+          orderBy: 'type-first',
+          splitBy: {
+            comments: false,
+            newlines: true,
+          },
+        },
       }],
-
-      'retailcrm-init/static-translation-keys': 'error',
     },
   },
-  pluginJs.configs.recommended,
-  ...pluginTs.configs.recommended,
-  ...pluginVue.configs['flat/essential'],
   {
     files: ['**/*.vue'],
     languageOptions: {
@@ -416,8 +406,13 @@ export default defineConfig([
   { ignores: ['dist/**', 'coverage/**'] },
 ])
 `
+}
 
 const createEndpointWorker = (options: InitOptions): string => `import type { App } from 'vue'
+
+import { watch } from 'vue'
+
+import { useField } from '@retailcrm/embed-ui'
 
 import {
   definePageRunner,
@@ -425,13 +420,29 @@ import {
   defineWidgetRunner,
   runEndpoint,
 } from '@retailcrm/embed-ui-v1-endpoint/remote'
+import {
+  useContext as useSettingsContext,
+} from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
-import { i18n } from '../i18n'
-import SettingsPage from '../pages/SettingsPage.vue'
 import OrderCommonAfterWidget from '../widgets/OrderCommonAfterWidget.vue'
 
-const setupApp = (app: App) => {
+import SettingsPage from '../pages/SettingsPage.vue'
+
+import { i18n } from '../i18n'
+
+const setupApp = async (app: App) => {
   app.use(i18n)
+
+  const settings = useSettingsContext()
+  await settings.initialize()
+
+  const locale = useField(settings, 'system.locale')
+
+  i18n.global.locale.value = locale.value
+
+  watch(locale, value => {
+    i18n.global.locale.value = value
+  })
 }
 
 const runner = defineRunner({
@@ -449,7 +460,9 @@ runEndpoint(runner)
 const createI18nIndex = (): string => `import { createI18n } from 'vue-i18n'
 
 import enGB from './locales/en-GB.json'
+
 import esES from './locales/es-ES.json'
+
 import ruRU from './locales/ru-RU.json'
 
 const messages = {
@@ -469,57 +482,444 @@ export const i18n = createI18n<[MessageSchema], Locale>({
 })
 `
 
-const createSettingsPage = (): string => `<script setup lang="ts">
+const createSettingsPage = (): string => `<script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+import ExtensionIcon from '@/shared/assets/extension.svg'
+
+const { t } = useI18n({ useScope: 'local' })
 </script>
 
 <template>
-  <main class="settings-page">
-    <h1>{{ t('settings.title') }}</h1>
-    <p>{{ t('settings.description') }}</p>
+  <main :class="$style.settingsPage">
+    <ExtensionIcon
+      :class="$style.icon"
+      aria-hidden="true"
+    />
+    <h1 :class="$style.title">{{ t('title') }}</h1>
+    <p :class="$style.description">{{ t('description') }}</p>
   </main>
 </template>
+
+<style lang="less" module>
+.settingsPage {
+  display: grid;
+  gap: 8px;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  color: #2563eb;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.description {
+  margin: 0;
+  color: #4f5664;
+  line-height: 1.5;
+}
+</style>
+
+<i18n locale="en-GB" lang="json">
+{
+  "title": "Extension settings",
+  "description": "Prepare embedded interface settings here."
+}
+</i18n>
+
+<i18n locale="es-ES" lang="json">
+{
+  "title": "Configuracion de la extension",
+  "description": "Aqui puede preparar la configuracion de la interfaz integrada."
+}
+</i18n>
+
+<i18n locale="ru-RU" lang="json">
+{
+  "title": "Настройки расширения",
+  "description": "Здесь можно подготовить настройки встроенного интерфейса."
+}
+</i18n>
 `
 
-const createOrderWidget = (): string => `<script setup lang="ts">
+const createOrderWidget = (): string => `<script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   target: string
 }>()
 
-const { t } = useI18n()
+const { t } = useI18n({ useScope: 'local' })
 </script>
 
 <template>
-  <section class="order-common-after-widget">
-    <h2>{{ t('orderCommonAfter.title') }}</h2>
-    <p>{{ t('orderCommonAfter.description') }}</p>
-    <small>{{ props.target }}</small>
+  <section :class="$style.orderCommonAfterWidget">
+    <h2 :class="$style.title">{{ t('title') }}</h2>
+    <p :class="$style.description">{{ t('description') }}</p>
+    <small :class="$style.target">{{ props.target }}</small>
   </section>
 </template>
+
+<style lang="less" module>
+.orderCommonAfterWidget {
+  display: grid;
+  gap: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.description {
+  margin: 0;
+  color: #4f5664;
+  line-height: 1.5;
+}
+
+.target {
+  color: #747b88;
+  font-size: 12px;
+}
+</style>
+
+<i18n locale="en-GB" lang="json">
+{
+  "title": "Order widget",
+  "description": "Starter widget for the order form."
+}
+</i18n>
+
+<i18n locale="es-ES" lang="json">
+{
+  "title": "Widget del pedido",
+  "description": "Widget inicial para el formulario del pedido."
+}
+</i18n>
+
+<i18n locale="ru-RU" lang="json">
+{
+  "title": "Виджет заказа",
+  "description": "Стартовый виджет для формы заказа."
+}
+</i18n>
 `
 
-const createMessages = (locale: 'en-GB' | 'es-ES' | 'ru-RU'): string => `${JSON.stringify({
-  settings: {
-    title: locale === 'ru-RU' ? 'Настройки расширения' : locale === 'es-ES' ? 'Configuracion de la extension' : 'Extension settings',
-    description: locale === 'ru-RU'
-      ? 'Здесь можно подготовить настройки встроенного интерфейса.'
-      : locale === 'es-ES'
-        ? 'Aqui puede preparar la configuracion de la interfaz integrada.'
-        : 'Prepare embedded interface settings here.',
-  },
-  orderCommonAfter: {
-    title: locale === 'ru-RU' ? 'Виджет заказа' : locale === 'es-ES' ? 'Widget del pedido' : 'Order widget',
-    description: locale === 'ru-RU'
-      ? 'Стартовый виджет для формы заказа.'
-      : locale === 'es-ES'
-        ? 'Widget inicial para el formulario del pedido.'
-        : 'Starter widget for the order form.',
-  },
+const createMessages = (): string => `${JSON.stringify({}, null, 2)}${DEFAULT_NEWLINE}`
+
+const createExtensionConfig = (options: InitOptions): string => `${JSON.stringify({
+  code: 'retailcrm-extension-frontend',
+  name: 'RetailCRM Extension Frontend',
+  uuid: randomUUID(),
+  version: '1.0.0',
+  targets: [options.widgetTarget],
+  pages: [options.pageCode],
+  stylesheet: true,
+  entrypointType: 'script',
+  runner: 'worker',
 }, null, 2)}${DEFAULT_NEWLINE}`
+
+const createExtensionIcon = (): string => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z" stroke="currentColor" stroke-width="1.5" />
+  <path d="m8 10 4 2 4-2M12 12v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+</svg>
+`
+
+const createPublishScript = (): string => `#!/usr/bin/env node
+
+import { fileURLToPath } from 'node:url'
+
+import fs from 'node:fs'
+
+import path from 'node:path'
+
+import { spawnSync } from 'node:child_process'
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.resolve(scriptDir, '..')
+const args = new Set(process.argv.slice(2))
+const archiveOnly = args.has('--archive-only')
+
+const readJsonFile = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+const loadEnvFile = (filePath) => {
+  if (!fs.existsSync(filePath)) {
+    return
+  }
+
+  for (const line of fs.readFileSync(filePath, 'utf8').split(/\\r?\\n/u)) {
+    const trimmed = line.trim()
+
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue
+    }
+
+    const separatorIndex = trimmed.indexOf('=')
+
+    if (separatorIndex === -1) {
+      continue
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim()
+    let value = trimmed.slice(separatorIndex + 1).trim()
+
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith('\\'') && value.endsWith('\\''))) {
+      value = value.slice(1, -1)
+    }
+
+    process.env[key] ??= value
+  }
+}
+
+const assertNonEmptyString = (value, field) => {
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error('Field "' + field + '" must be a non-empty string')
+  }
+
+  return value
+}
+
+const assertStringArray = (value, field) => {
+  if (value === undefined) {
+    return []
+  }
+
+  if (!Array.isArray(value) || value.some(item => typeof item !== 'string' || item.trim() === '')) {
+    throw new Error('Field "' + field + '" must be an array of non-empty strings')
+  }
+
+  return value
+}
+
+const listFiles = (directoryPath, basePath = directoryPath) => {
+  const result = []
+
+  for (const entry of fs.readdirSync(directoryPath, { withFileTypes: true })) {
+    const entryPath = path.join(directoryPath, entry.name)
+    const relativePath = path.relative(basePath, entryPath).split(path.sep).join('/')
+
+    if (entry.isDirectory()) {
+      result.push(...listFiles(entryPath, basePath))
+      continue
+    }
+
+    if (entry.isFile()) {
+      result.push(relativePath)
+    }
+  }
+
+  return result
+}
+
+const normalizeManifestPath = (value) => typeof value === 'string' && value.startsWith('./')
+  ? value.slice(2)
+  : value
+
+const pickBuildArtifacts = (distDir, code) => {
+  const files = listFiles(distDir)
+    .filter(file => file !== 'manifest.json')
+    .filter(file => file !== code + '.zip')
+    .filter(file => !file.endsWith('.map'))
+
+  const viteManifestPath = path.join(distDir, '.vite/manifest.json')
+
+  if (fs.existsSync(viteManifestPath)) {
+    const viteManifest = readJsonFile(viteManifestPath)
+    const entries = Object.values(viteManifest)
+    const entry = entries.find(item => item && item.isEntry) ?? entries[0]
+
+    if (entry?.file) {
+      return {
+        files,
+        scriptFile: normalizeManifestPath(entry.file),
+        styleFile: Array.isArray(entry.css) ? normalizeManifestPath(entry.css[0]) : null,
+      }
+    }
+  }
+
+  return {
+    files,
+    scriptFile: files.find(file => file.endsWith('.js')) ?? null,
+    styleFile: files.find(file => file.endsWith('.css')) ?? null,
+  }
+}
+
+const zipExtension = (distDir, code, extensionManifest, files) => {
+  const archivePath = path.join(distDir, 'extension.zip')
+  const manifestPath = path.join(distDir, 'manifest.json')
+  const previousManifest = fs.existsSync(manifestPath) ? fs.readFileSync(manifestPath) : null
+
+  fs.writeFileSync(manifestPath, JSON.stringify(extensionManifest), 'utf8')
+
+  try {
+    const zipResult = spawnSync('zip', ['-rFS', archivePath, ...files, 'manifest.json'], {
+      cwd: distDir,
+      stdio: 'inherit',
+    })
+
+    if (zipResult.error) {
+      throw new Error('Zip command failed: ' + zipResult.error.message)
+    }
+
+    if (zipResult.status !== 0) {
+      throw new Error('Zip archive creation failed')
+    }
+  } finally {
+    if (previousManifest) {
+      fs.writeFileSync(manifestPath, previousManifest)
+    } else {
+      fs.rmSync(manifestPath, { force: true })
+    }
+  }
+
+  return archivePath
+}
+
+loadEnvFile(path.join(projectRoot, '.env'))
+
+const configPath = path.join(projectRoot, 'extensionrc.json')
+
+if (!fs.existsSync(configPath)) {
+  console.error('Config not found: ' + configPath)
+  process.exit(1)
+}
+
+let config
+
+try {
+  config = readJsonFile(configPath)
+} catch (error) {
+  console.error('Cannot read extensionrc.json:', error)
+  process.exit(1)
+}
+
+try {
+  const code = config.code ?? 'retailcrm-extension-frontend'
+  const uuid = assertNonEmptyString(config.uuid, 'uuid')
+  const version = assertNonEmptyString(config.version, 'version')
+  const targets = assertStringArray(config.targets, 'targets')
+  const pages = assertStringArray(config.pages, 'pages')
+  const runner = config.runner ?? 'worker'
+
+  if (targets.length === 0 && pages.length === 0) {
+    throw new Error('Specify at least one target or page in extensionrc.json')
+  }
+
+  const distDir = path.join(projectRoot, 'dist')
+
+  if (!fs.existsSync(distDir)) {
+    throw new Error('Build directory not found: ' + distDir)
+  }
+
+  const { files, scriptFile, styleFile } = pickBuildArtifacts(distDir, code)
+
+  if (!scriptFile) {
+    throw new Error('Missing JS build artifact. Run npm run build before publishing.')
+  }
+
+  const extensionManifest = {
+    code,
+    version,
+    entrypoint: scriptFile,
+    scripts: [scriptFile],
+    runner,
+  }
+
+  if (targets.length > 0) {
+    extensionManifest.targets = targets
+  }
+
+  if (pages.length > 0) {
+    extensionManifest.pages = pages
+  }
+
+  if (styleFile) {
+    extensionManifest.stylesheet = styleFile
+  }
+
+  const archivePath = zipExtension(distDir, code, extensionManifest, files)
+
+  console.log('Archive created: ' + archivePath)
+
+  if (archiveOnly) {
+    process.exit(0)
+  }
+
+  const crmHost = process.env.CRM_API_HOST
+  const crmKey = process.env.CRM_API_KEY
+  const baseUrl = config.baseUrl || process.env.MODULE_URL || process.env.EXTENSION_BASE_URL
+
+  if (!crmHost || !crmKey) {
+    throw new Error('Missing CRM_API_HOST or CRM_API_KEY in .env')
+  }
+
+  if (!baseUrl) {
+    throw new Error('Missing MODULE_URL or EXTENSION_BASE_URL in .env or baseUrl in extensionrc.json')
+  }
+
+  const embedJs = {
+    entrypoint: config.entrypoint || '/extension/' + uuid + '/script',
+    runner,
+  }
+
+  if (targets.length > 0) {
+    embedJs.targets = targets
+  }
+
+  if (pages.length > 0) {
+    embedJs.pages = pages
+  }
+
+  if (styleFile && config.stylesheet !== false) {
+    embedJs.stylesheet = typeof config.stylesheet === 'string'
+      ? config.stylesheet
+      : '/extension/' + uuid + '/stylesheet'
+  }
+
+  const integrationModule = {
+    code,
+    integrationCode: code,
+    active: true,
+    name: config.name || code,
+    clientId: config.clientId || 'client-id-xxx',
+    baseUrl,
+    integrations: {
+      embedJs,
+    },
+  }
+
+  const form = new FormData()
+  form.append('integrationModule', JSON.stringify(integrationModule))
+
+  const response = await fetch(new URL('/api/v5/integration-modules/' + code + '/edit', crmHost), {
+    method: 'POST',
+    headers: {
+      'X-Api-Key': crmKey,
+    },
+    body: form,
+  })
+
+  const text = await response.text()
+
+  if (!response.ok) {
+    console.error('Request failed: ' + response.status + ' ' + response.statusText)
+    console.error(text)
+    process.exit(1)
+  }
+
+  console.log(text)
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error)
+  process.exit(1)
+}
+`
 
 export const runUpdate = (options: UpdateOptions): void => {
   const version = options.version ?? resolveLatestVersion()
@@ -622,6 +1022,7 @@ const applyInitPackageJson = (
   setMissingScript(packageJson, 'build', 'vite build', changes)
   setMissingScript(packageJson, 'lint', 'eslint .', changes)
   setMissingScript(packageJson, 'lint:fix', 'eslint --fix .', changes)
+  setMissingScript(packageJson, 'publish-extension', 'node scripts/publish-extension.mjs', changes)
 
   for (const selectedPackage of selectedPackages) {
     setDependency(
@@ -704,10 +1105,10 @@ const applyInitConfigs = (
   writeFileIfAllowed(path.join(cwd, 'tsconfig.json'), createTsConfig(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'vite.config.ts'), createViteConfig(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'env.d.ts'), createEnvDts(), options, changes)
-  writeFileIfAllowed(path.join(cwd, 'eslint.config.js'), createEslintConfig(), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'eslint.config.js'), createEslintConfig(cwd, sourceRoot), options, changes)
 }
 
-const applyInitTemplate = (sourceRoot: string, options: InitOptions, changes: InitChanges): void => {
+const applyInitTemplate = (cwd: string, sourceRoot: string, options: InitOptions, changes: InitChanges): void => {
   if (options.noTemplate || options.agentsOnly) {
     return
   }
@@ -722,12 +1123,15 @@ const applyInitTemplate = (sourceRoot: string, options: InitOptions, changes: In
     options,
     changes
   )
+  writeFileIfAllowed(path.join(sourceRoot, 'shared/assets/extension.svg'), createExtensionIcon(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'i18n/index.ts'), createI18nIndex(), options, changes)
-  writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/en-GB.json'), createMessages('en-GB'), options, changes)
-  writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/es-ES.json'), createMessages('es-ES'), options, changes)
-  writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/ru-RU.json'), createMessages('ru-RU'), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/en-GB.json'), createMessages(), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/es-ES.json'), createMessages(), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/ru-RU.json'), createMessages(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'pages/SettingsPage.vue'), createSettingsPage(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'widgets/OrderCommonAfterWidget.vue'), createOrderWidget(), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'extensionrc.json'), createExtensionConfig(options), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'scripts/publish-extension.mjs'), createPublishScript(), options, changes)
 }
 
 const runInstall = (
@@ -781,7 +1185,7 @@ export const runInit = async (options: InitOptions): Promise<void> => {
     packageJsonPath = applyInitPackageJson(cwd, selectedPackages, version, packageManager, options, changes)
     applyInitDirectories(sourceRoot, options, changes)
     applyInitConfigs(cwd, sourceRoot, options, changes)
-    applyInitTemplate(sourceRoot, options, changes)
+    applyInitTemplate(cwd, sourceRoot, options, changes)
   }
 
   applyInitAgents(cwd, selectedPackages, options, changes)
