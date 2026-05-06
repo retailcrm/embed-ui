@@ -40,9 +40,24 @@
             </div>
 
             <template v-if="footer" #footer>
-                <UiButton @click="open = false">
-                    Закрыть
-                </UiButton>
+                <div class="footer">
+                    <div class="footer__main">
+                        <UiButton>
+                            Открыть
+                        </UiButton>
+
+                        <UiButton appearance="secondary" @click="open = false">
+                            Закрыть
+                        </UiButton>
+                    </div>
+
+                    <div class="footer__second">
+                        <UiButton class="button-delete" variant="danger" appearance="tertiary">
+                            <IconDelete class="icon-delete" aria-hidden="true" />
+                        </UiButton>
+                    </div>
+                </div>
+
             </template>
         </UiModalSidebar>
     </div>
@@ -50,6 +65,8 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+
+import IconDelete from '~assets/sprites/ui/delete.svg'
 
 import UiButton from '@/host/components/button/UiButton.vue'
 import UiModalSidebar from '@/host/components/modal-sidebar/UiModalSidebar.vue'
@@ -74,3 +91,30 @@ defineProps({
 const open = ref(false)
 const modalSidebarInner = ref(false)
 </script>
+
+<style lang="less" scoped>
+@import (reference) '~assets/stylesheets/palette';
+@import (reference) '~assets/stylesheets/typography';
+@import (reference) '~assets/stylesheets/variables';
+
+.button-delete {
+  color: @grey-800;
+}
+
+.button-delete:hover {
+  color: @red-600;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+
+    &__main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+}
+</style>

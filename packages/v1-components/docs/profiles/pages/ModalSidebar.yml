@@ -14,6 +14,108 @@ examples_from_design:
   - new ticket
   - scenario step editing
 
+examples:
+  - title: Footer actions
+    code: |
+      <template>
+          <div>
+              <UiButton @click="open = true">
+                  Open sidebar
+              </UiButton>
+
+              <UiModalSidebar v-model:opened="open">
+                  <template #title>
+                      Title
+                  </template>
+
+                  <div class="modal-sidebar-example__body">
+                      Sidebar content
+                  </div>
+
+                  <template #footer>
+                      <div class="modal-sidebar-footer">
+                          <div class="modal-sidebar-footer__main">
+                              <UiButton @click="save">
+                                  Open
+                              </UiButton>
+
+                              <UiButton appearance="secondary" @click="open = false">
+                                  Close
+                              </UiButton>
+                          </div>
+
+                          <UiButton
+                              aria-label="Delete"
+                              appearance="tertiary"
+                              class="modal-sidebar-footer__delete"
+                              variant="danger"
+                              @click="deleteItem"
+                          >
+                              <IconDelete
+                                  aria-hidden="true"
+                                  class="modal-sidebar-footer__delete-icon"
+                              />
+                          </UiButton>
+                      </div>
+                  </template>
+              </UiModalSidebar>
+          </div>
+      </template>
+
+      <script lang="ts" setup>
+      import { ref } from 'vue'
+
+      import IconDelete from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete.svg'
+      import {
+        UiButton,
+        UiModalSidebar,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const open = ref(false)
+
+      const save = () => {
+        open.value = false
+      }
+
+      const deleteItem = () => {
+        open.value = false
+      }
+      </script>
+
+      <style scoped>
+      .modal-sidebar-example__body {
+        min-height: 360px;
+      }
+
+      .modal-sidebar-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .modal-sidebar-footer__main {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .modal-sidebar-footer__delete.ui-v1-button {
+        color: #8a96a6;
+      }
+
+      .modal-sidebar-footer__delete.ui-v1-button:hover,
+      .modal-sidebar-footer__delete.ui-v1-button:focus-visible {
+        color: #dd4040;
+      }
+
+      .modal-sidebar-footer__delete-icon {
+        display: block;
+        width: 24px;
+        height: 24px;
+      }
+      </style>
+
 size_rules:
   - Sidebar can use 720px width.
   - Sidebar can use 416px width.
