@@ -36,6 +36,9 @@ jobs:
       - name: Build worktree
         run: yarn workspaces foreach -A --topological-dev run build
 
+      - name: Ensure root bin is generated
+        run: test -s bin/embed-ui.mjs
+
       - name: Run eslint
         run: yarn eslint
 

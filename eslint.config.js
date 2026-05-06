@@ -172,5 +172,6 @@ export default defineConfig([
   },
   { ignores: ['dist/*'] },
   { ignores: ['**/dist/*'] },
+  { ignores: ['bin/embed-ui.mjs'] },
   { ignores: ['packages/**/generated/**'] },
 ])
