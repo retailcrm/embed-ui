@@ -201,6 +201,7 @@ describe('embed-ui CLI', () => {
       build: 'vite build',
       lint: 'eslint .',
       'lint:fix': 'eslint --fix .',
+      'publish-extension': 'node scripts/publish-extension.mjs',
     })
     expect(packageJson.dependencies).toMatchObject({
       '@retailcrm/embed-ui': '^1.2.3',
@@ -214,27 +215,82 @@ describe('embed-ui CLI', () => {
       'vue-i18n': '^11',
     })
     expect(packageJson.devDependencies).toMatchObject({
-      '@eslint/js': '^9',
-      '@omnicajs/eslint-plugin-dependencies': '^0.0',
-      '@types/node': '^22',
-      '@vitejs/plugin-vue': '^6',
-      '@vue/language-server': '^3',
-      eslint: '^9',
-      'eslint-plugin-vue': '^10',
-      globals: '^16',
-      typescript: '^5',
-      'typescript-eslint': '^8',
-      vite: '^7',
-      'vue-eslint-parser': '^10',
+      '@eslint/js': '^9.39',
+      '@intlify/eslint-plugin-vue-i18n': '~4.3.0',
+      '@intlify/unplugin-vue-i18n': '^11.1',
+      '@omnicajs/eslint-plugin-dependencies': '^0.0.2',
+      '@types/node': '^22.19',
+      '@vitejs/plugin-vue': '^6.0',
+      '@vue/language-server': '^3.2',
+      eslint: '^9.39',
+      'eslint-plugin-vue': '^10.9',
+      globals: '^16.5',
+      less: '^4.6',
+      typescript: '^5.9',
+      'typescript-eslint': '^8.59',
+      vite: '^7.3',
+      'vite-svg-loader': '^5.1',
+      'vue-eslint-parser': '^10.4',
     })
 
     expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(true)
     expect(fs.readFileSync(path.join(tempDir, 'tsconfig.json'), 'utf8')).toContain('"resolveJsonModule": true')
-    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain('static-translation-keys')
+    expect(fs.readFileSync(path.join(tempDir, 'env.d.ts'), 'utf8')).toContain('declare module \'*.svg\'')
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain(
+      '@intlify/vue-i18n/no-dynamic-keys'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain(
+      'pluginVueI18n.configs.recommended'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain('value-vue-components')
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain('partitions: {')
+    expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain(
+      '@intlify/unplugin-vue-i18n/vite'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('vite-svg-loader')
+    expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('defaultImport: \'component\'')
+    expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('vueI18n({')
+    expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain(
+      '\'@\': path.resolve(root, \'web\')'
+    )
     expect(fs.readFileSync(path.join(tempDir, 'web/i18n/index.ts'), 'utf8')).toContain('./locales/en-GB.json')
     expect(fs.existsSync(path.join(tempDir, 'web/i18n/locales/ru-RU.json'))).toBe(true)
     expect(fs.readFileSync(path.join(tempDir, 'web/endpoint/endpoint.worker.ts'), 'utf8')).toContain(
       '\'order/card:common.after\': defineWidgetRunner(OrderCommonAfterWidget, setupApp)'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/endpoint/endpoint.worker.ts'), 'utf8')).toContain(
+      'const settings = useSettingsContext()'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/endpoint/endpoint.worker.ts'), 'utf8')).toContain(
+      'i18n.global.locale.value = locale.value'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+      '<script lang="ts" setup>'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+      '<style lang="less" module>'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+      ':class="$style.settingsPage"'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+      'import ExtensionIcon from \'@/shared/assets/extension.svg\''
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+      '<i18n locale="ru-RU" lang="json">'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/widgets/OrderCommonAfterWidget.vue'), 'utf8')).toContain(
+      'useI18n({ useScope: \'local\' })'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/widgets/OrderCommonAfterWidget.vue'), 'utf8')).toContain(
+      '<style lang="less" module>'
+    )
+    expect(fs.existsSync(path.join(tempDir, 'web/shared/assets/extension.svg'))).toBe(true)
+    expect(fs.readFileSync(path.join(tempDir, 'extensionrc.json'), 'utf8')).toContain(
+      '"runner": "worker"'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'scripts/publish-extension.mjs'), 'utf8')).toContain(
+      'extensionrc.json'
     )
   })
 })
