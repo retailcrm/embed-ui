@@ -12,6 +12,7 @@ generated
 node_modules
 coverage
 artifacts/
+bin/
 packages/v1-endpoint/docs/targets/
 
 .codex

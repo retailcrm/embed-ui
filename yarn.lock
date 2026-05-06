@@ -1494,7 +1494,7 @@ __metadata:
     pinia: ^2.2
     vue: ^3.5
   bin:
-    embed-ui: ./bin/embed-ui-update.mjs
+    embed-ui: ./bin/embed-ui.mjs
   languageName: unknown
   linkType: soft
 

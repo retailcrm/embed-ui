@@ -12,16 +12,22 @@ import {
   vi,
 } from 'vitest'
 
-import { parseArgs, runAdd, runUpdate } from '../bin/embed-ui-update.mjs'
+import {
+  parseArgs,
+  parseInitArgs,
+  runAdd,
+  runInit,
+  runUpdate,
+} from '../src/cmd/embed-ui'
 
-const createTempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'embed-ui-update-'))
+const createTempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'embed-ui-'))
 
 const writeFile = (filePath: string, content: string) => {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   fs.writeFileSync(filePath, content, 'utf8')
 }
 
-describe('embed-ui update CLI', () => {
+describe('embed-ui CLI', () => {
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -65,6 +71,7 @@ describe('embed-ui update CLI', () => {
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
 
     runUpdate({
+      command: 'update',
       target: tempDir,
       version: '1.2.3',
       dryRun: false,
@@ -102,6 +109,7 @@ describe('embed-ui update CLI', () => {
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
 
     await runAdd({
+      command: 'update',
       target: tempDir,
       version: '2.0.0',
       dryRun: false,
@@ -132,6 +140,101 @@ describe('embed-ui update CLI', () => {
   test('parseArgs rejects --packages without --add', () => {
     expect(() => parseArgs(['--packages', 'components'])).toThrow(
       'Option --packages can only be used together with --add'
+    )
+  })
+
+  test('parseArgs supports init command with cwd and frontend target', () => {
+    const options = parseArgs([
+      'init',
+      './web',
+      '--cwd',
+      '/tmp/module',
+      '--package-manager',
+      'yarn',
+      '--no-install',
+      '--no-agents',
+    ])
+
+    expect(options.command).toBe('init')
+    if (options.command !== 'init') {
+      throw new Error('Expected init options')
+    }
+
+    expect(options.target).toBe('./web')
+    expect(options.cwd).toBe('/tmp/module')
+    expect(options.packageManager).toBe('yarn')
+    expect(options.noInstall).toBe(true)
+    expect(options.noAgents).toBe(true)
+  })
+
+  test('parseInitArgs rejects testing package in init mode', async () => {
+    const tempDir = createTempDir()
+
+    await expect(runInit({
+      ...parseInitArgs(['--cwd', tempDir, '--packages', 'testing', '--no-install', '--no-agents']),
+      version: '1.2.3',
+    })).rejects.toThrow('@retailcrm/embed-ui-v1-testing is not published for public init yet')
+  })
+
+  test('init mode creates package.json, configs and starter template without install', async () => {
+    const tempDir = createTempDir()
+
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+      ]),
+      version: '1.2.3',
+    })
+
+    const packageJson = JSON.parse(fs.readFileSync(path.join(tempDir, 'package.json'), 'utf8'))
+
+    expect(packageJson.type).toBe('module')
+    expect(packageJson.scripts).toMatchObject({
+      build: 'vite build',
+      lint: 'eslint .',
+      'lint:fix': 'eslint --fix .',
+    })
+    expect(packageJson.dependencies).toMatchObject({
+      '@retailcrm/embed-ui': '^1.2.3',
+      '@retailcrm/embed-ui-v1-components': '^1.2.3',
+      '@retailcrm/embed-ui-v1-contexts': '^1.2.3',
+      '@retailcrm/embed-ui-v1-endpoint': '^1.2.3',
+      '@retailcrm/embed-ui-v1-types': '^1.2.3',
+      '@omnicajs/vue-remote': '^0.2.23',
+      pinia: '^2.2',
+      vue: '^3.5',
+      'vue-i18n': '^11',
+    })
+    expect(packageJson.devDependencies).toMatchObject({
+      '@eslint/js': '^9',
+      '@omnicajs/eslint-plugin-dependencies': '^0.0',
+      '@types/node': '^22',
+      '@vitejs/plugin-vue': '^6',
+      '@vue/language-server': '^3',
+      eslint: '^9',
+      'eslint-plugin-vue': '^10',
+      globals: '^16',
+      typescript: '^5',
+      'typescript-eslint': '^8',
+      vite: '^7',
+      'vue-eslint-parser': '^10',
+    })
+
+    expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(true)
+    expect(fs.readFileSync(path.join(tempDir, 'tsconfig.json'), 'utf8')).toContain('"resolveJsonModule": true')
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain('static-translation-keys')
+    expect(fs.readFileSync(path.join(tempDir, 'web/i18n/index.ts'), 'utf8')).toContain('./locales/en-GB.json')
+    expect(fs.existsSync(path.join(tempDir, 'web/i18n/locales/ru-RU.json'))).toBe(true)
+    expect(fs.readFileSync(path.join(tempDir, 'web/endpoint/endpoint.worker.ts'), 'utf8')).toContain(
+      '\'order/card:common.after\': defineWidgetRunner(OrderCommonAfterWidget, setupApp)'
     )
   })
 })
