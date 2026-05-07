@@ -20,6 +20,7 @@ export * from '@/remote/components/modal-window'
 export * from '@/remote/components/modal-window-surface'
 export * from '@/remote/components/number-stepper'
 export * from '@/remote/components/page-header'
+export * from '@/remote/components/popconfirm'
 export * from '@/remote/components/popper'
 export * from '@/remote/components/radio'
 export * from '@/remote/components/radio-switch'
@@ -47,6 +48,14 @@ export { usePreview } from '@/common/preview'
 
 export { ImageWorkersKey } from '@/common/preview'
 export * from '@/common/components/table'
+export {
+  type UiPopconfirmMethods,
+  type UiPopconfirmPopperMethods,
+  type UiPopconfirmPopperOptions,
+  type UiPopconfirmPopperProperties,
+  type UiPopconfirmProperties,
+  type UiPopconfirmTriggerProperties,
+} from '@/common/components/popconfirm'
 export * from '@/common/components/toggle-button'
 export * from '@/common/components/toggle-group'
 export {

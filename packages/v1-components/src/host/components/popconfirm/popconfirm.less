@@ -1,0 +1,30 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/typography.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-popconfirm-anchor {
+  display: inline-block;
+}
+
+.ui-v1-popconfirm {
+  --ui-v1-popper-width-max: var(--ui-v1-popconfirm-width-max, 255px);
+  --ui-v1-popper-padding: 20px @spacing-m;
+  --ui-v1-popper-roundings: @border-radius-lg;
+
+  &__title {
+    .text-regular-accent();
+    margin-bottom: calc(@spacing-m / 2);
+  }
+
+  &__content {
+    color: @black-500;
+  }
+
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: @spacing-xs;
+    margin-top: calc(@spacing-m / 2);
+  }
+}

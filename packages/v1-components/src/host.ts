@@ -2,6 +2,14 @@ import '@/host/components/field/field.less'
 
 export * from '@/host/components'
 export * from '@/host/provider'
+export {
+  type UiPopconfirmMethods,
+  type UiPopconfirmPopperMethods,
+  type UiPopconfirmPopperOptions,
+  type UiPopconfirmPopperProperties,
+  type UiPopconfirmProperties,
+  type UiPopconfirmTriggerProperties,
+} from '@/common/components/popconfirm'
 export * from '@/common/components/table'
 export {
   ANIMATION as SKELETON_ANIMATION,
