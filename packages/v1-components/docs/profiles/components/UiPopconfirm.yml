@@ -1,0 +1,164 @@
+component: UiPopconfirm
+summary: >
+  UiPopconfirm is a non-modal floating confirmation dialog anchored to a trigger.
+  Use it for short action confirmations where a modal would be too heavy.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiPopconfirm
+
+related_components:
+  - UiButton
+  - UiPopper
+  - UiModalWindow
+
+examples:
+  - title: Basic confirmation
+    code: |
+      <template>
+        <UiPopconfirm title="Confirm action?">
+          <template #trigger="{ open }">
+            <UiButton :active="open">
+              Archive
+            </UiButton>
+          </template>
+
+          The item will be moved to the archive.
+        </UiPopconfirm>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiButton, UiPopconfirm } from '@retailcrm/embed-ui-v1-components/remote'
+      </script>
+  - title: Destructive action
+    code: |
+      <template>
+        <UiPopconfirm title="Delete item?" ok-variant="danger">
+          <template #trigger="{ open }">
+            <UiButton :active="open" variant="danger">
+              Delete
+            </UiButton>
+          </template>
+
+          This action cannot be undone.
+        </UiPopconfirm>
+      </template>
+
+      <script lang="ts" setup>
+      import { UiButton, UiPopconfirm } from '@retailcrm/embed-ui-v1-components/remote'
+      </script>
+
+use_when:
+  - You need a short confirmation for a single nearby action.
+  - You need confirm and cancel events without blocking the whole page.
+  - You need a destructive confirmation through okVariant="danger".
+
+avoid_when:
+  - You need a form, long explanation, or multi-step confirmation.
+  - You need to block page interaction; use UiModalWindow instead.
+  - You only need helper text; use UiTooltip instead.
+
+api:
+  key_props:
+    - name: title
+      notes: Text title shown above the description.
+    - name: okVariant
+      notes: Confirmation button variant; use danger for destructive actions.
+    - name: placement
+      notes: Preferred floating position relative to the trigger.
+    - name: visible
+      notes: Controlled open state for v-model:visible.
+  props:
+    - name: okTitle
+      notes: Confirmation button text.
+    - name: cancelTitle
+      notes: Cancel button text.
+    - name: cancelAppearance
+      notes: Cancel button appearance.
+    - name: cancelVariant
+      notes: Cancel button variant.
+    - name: buttonSize
+      notes: Size of both action buttons.
+    - name: popperClass
+      notes: Extra class for the floating popper root.
+    - name: popperOptions
+      notes: Additional UiPopper options.
+  slots:
+    - name: trigger
+      zone: trigger
+      creates: Target element that opens the confirmation.
+      notes: Receives open for active trigger styling when supported.
+    - name: title
+      zone: header
+      creates: Custom title content.
+    - name: default
+      zone: body
+      creates: Confirmation description.
+    - name: cancel-text
+      zone: footer
+      creates: Cancel button content.
+    - name: ok-text
+      zone: footer
+      creates: Confirmation button content.
+  emits:
+    - name: ok
+      payload: undefined
+      notes: Fired when the confirmation button is clicked.
+    - name: cancel
+      payload: undefined
+      notes: Fired when the cancel button is clicked or the popup closes by outside click.
+    - name: toggle
+      payload: boolean
+      notes: Fired when open state changes.
+    - name: update:visible
+      payload: boolean
+      notes: v-model:visible update channel.
+
+rendered_structure:
+  descriptive_only: true
+  root:
+    shape: div.ui-v1-popper.ui-v1-popconfirm via UiPopper
+    tag: div
+  zones:
+    - .ui-v1-popconfirm__title
+    - .ui-v1-popconfirm__content
+    - .ui-v1-popconfirm__footer
+
+geometry:
+  layout: floating dialog outside normal document flow
+  root_display: block
+  width_behavior: content-sized with max width
+  notes:
+    - Defaults to bottom-start placement.
+    - The layer is anchored to the component trigger wrapper.
+
+ai_notes:
+  do:
+    - Use UiPopconfirm for short confirmations instead of building UiPopper and UiButton manually.
+    - Pass open from the trigger slot into UiButton active when possible.
+    - Use okVariant="danger" for destructive actions.
+  avoid:
+    - Do not put forms or complex flows into UiPopconfirm.
+    - Do not use it as a tooltip or notification.
+
+accessibility:
+  notes:
+    - Renders a non-modal dialog with aria-modal="false".
+    - Title content is connected through aria-labelledby when present.
+    - Use an accessible trigger component such as UiButton.
+
+styling:
+  notes:
+    - Use props and slots first; use popperClass only for local layout integrations.
+    - CSS variables can tune the floating surface width.
+  root_classes:
+    - .ui-v1-popconfirm
+  zones:
+    - .ui-v1-popconfirm__title
+    - .ui-v1-popconfirm__content
+    - .ui-v1-popconfirm__footer
+  css_variables:
+    public_theme_variables:
+      - name: --ui-v1-popconfirm-width-max
+        effect: Maximum width of the floating confirmation.

@@ -38,6 +38,8 @@ export const createEndpointRoot = async (
     'UiPageHeader',
     'UiPageHeaderLayout',
     'UiPageHeaderTitle',
+    'UiPopconfirmPopper',
+    'UiPopconfirmTrigger',
     'UiPopper',
     'UiPopperConnector',
     'UiPopperTarget',

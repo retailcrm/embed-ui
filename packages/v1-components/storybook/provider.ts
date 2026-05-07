@@ -12,7 +12,7 @@ type StorybookHostProviderComponents = Record<HostComponentName, Component>
 
 const storybookHostProviderComponents = Object.fromEntries(
   hostComponentNames.map((name) => [name, hostComponents[name]])
-) as StorybookHostProviderComponents
+) as unknown as StorybookHostProviderComponents
 
 export const createStorybookHostProvider = () => createRemoteHostProvider(storybookHostProviderComponents)
 

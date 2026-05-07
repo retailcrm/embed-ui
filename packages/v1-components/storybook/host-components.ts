@@ -16,6 +16,8 @@ export const hostComponentNames = [
   'UiPopperTarget',
   'UiRadioSwitchOptionShell',
   'UiRadioSwitchRoot',
+  'UiPopconfirmPopper',
+  'UiPopconfirmTrigger',
   'UiSelectPopper',
   'UiSelectTrigger',
   'UiTab',

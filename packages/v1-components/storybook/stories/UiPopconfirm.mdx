@@ -1,0 +1,77 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+import ToReact from '../ToReact.ts'
+
+import ExampleBasic from './UiPopconfirm.basic.example.vue'
+import ExampleDanger from './UiPopconfirm.danger.example.vue'
+
+# UiPopconfirm
+
+`UiPopconfirm` - немодальное плавающее окно для короткого подтверждения действия рядом с элементом-триггером.
+
+## Когда использовать
+
+* подтверждение удаления, архивации, сброса или другого короткого действия;
+* действие должно оставаться в контексте конкретной кнопки или ссылки;
+* сценарий не требует формы, большого текста или нескольких шагов.
+
+Для сложных сценариев, форм и блокирующих подтверждений используйте `UiModalWindow`.
+
+## Импорт
+
+```ts
+import { UiPopconfirm } from '@retailcrm/embed-ui-v1-components/remote'
+```
+
+## Базовое использование
+
+<ToReact is={ExampleBasic} />
+
+## Опасное действие
+
+<ToReact is={ExampleDanger} />
+
+## Сценарии
+
+### Активное состояние триггера
+
+Слот `trigger` получает значение `open`. Передайте его в `active`, если компонент-триггер поддерживает нажатое состояние.
+
+```vue
+<UiPopconfirm>
+  <template #trigger="{ open }">
+      <UiButton :active="open" variant="danger">
+        Удалить
+      </UiButton>
+  </template>
+</UiPopconfirm>
+```
+
+### Позиционирование
+
+`placement` принимает значения `UiPopper`, например `bottom-start`, `top`, `right-end`.
+
+### Тексты кнопок
+
+Используйте свойства `cancelTitle` и `okTitle` или слоты `cancel-text` и `ok-text`.
+
+## Слоты
+
+Компонент поддерживает:
+
+* `trigger` - целевой элемент;
+* `title` - заголовок;
+* `default` - описание действия;
+* `cancel-text` - текст кнопки отмены;
+* `ok-text` - текст кнопки подтверждения.
+
+## События
+
+* `ok` - нажата кнопка подтверждения;
+* `cancel` - нажата кнопка отмены или окно закрыто кликом вне него;
+* `toggle` - изменилась видимость окна;
+* `update:visible` - канал для `v-model:visible`.
+
+## Полный API
+
+<ArgTypes />

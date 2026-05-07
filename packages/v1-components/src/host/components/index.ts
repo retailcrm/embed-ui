@@ -30,6 +30,8 @@ export { default as UiNumberStepper } from '@/host/components/number-stepper/UiN
 export { default as UiPageHeader } from '@/host/components/page-header/UiPageHeader.vue'
 export { default as UiPageHeaderLayout } from '@/host/components/page-header/UiPageHeaderLayout.vue'
 export { default as UiPageHeaderTitle } from '@/host/components/page-header/UiPageHeaderTitle.vue'
+export { default as UiPopconfirmPopper } from '@/host/components/popconfirm/UiPopconfirmPopper.vue'
+export { default as UiPopconfirmTrigger } from '@/host/components/popconfirm/UiPopconfirmTrigger.vue'
 export { default as UiPopper } from '@/host/components/popper/UiPopper.vue'
 export { default as UiPopperConnector } from '@/host/components/popper/UiPopperConnector.vue'
 export { default as UiPopperTarget } from '@/host/components/popper/UiPopperTarget.vue'

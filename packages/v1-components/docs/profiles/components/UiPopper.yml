@@ -12,6 +12,7 @@ public_import:
 related_components:
   - UiPopperConnector
   - UiPopperTarget
+  - UiPopconfirm
   - UiSelect
   - UiTooltip
 
@@ -87,6 +88,7 @@ use_when:
 avoid_when:
   - You need a regular block in normal document flow.
   - You need a high-level dropdown or tooltip and do not need low-level control.
+  - You need a short action confirmation; use UiPopconfirm instead.
 
 api:
   key_props:
