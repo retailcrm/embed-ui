@@ -1,0 +1,67 @@
+import { ArgTypes } from '@storybook/addon-docs/blocks'
+
+# UiPageFooter
+
+`UiPageFooter` - нижняя панель действий для embed-страниц JS API.
+Компонент отвечает только за внешний вид и раскладку футера; фиксацию к нижней границе окна или области содержимого должна выполнять страница CRM.
+
+## Когда использовать
+
+* на отдельной странице JS-модуля есть основное действие сохранения;
+* рядом нужно показать вторичное действие, например «Сохранить и выйти»;
+* справа нужно отделить опасное действие, например удаление.
+
+## Пример
+
+```html
+<template>
+    <UiPageFooter>
+        <template #actions>
+            <UiButton variant="success" @click="save">
+                Сохранить
+            </UiButton>
+
+            <UiButton appearance="secondary" @click="saveAndExit">
+                Сохранить и выйти
+            </UiButton>
+        </template>
+
+        <template #aside>
+            <UiButton
+                aria-label="Удалить"
+                appearance="tertiary"
+                variant="danger"
+                @click="remove"
+            >
+                <IconDelete aria-hidden="true" />
+            </UiButton>
+        </template>
+    </UiPageFooter>
+</template>
+
+<script lang="ts" setup>
+import IconDelete from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete-outlined.svg'
+import {
+  UiButton,
+  UiPageFooter,
+} from '@retailcrm/embed-ui-v1-components/remote'
+
+const save = () => {}
+const saveAndExit = () => {}
+const remove = () => {}
+</script>
+```
+
+## Слоты
+
+* `actions` - основные действия слева.
+* `aside` - отделенная зона справа, обычно для опасного или второстепенного одиночного действия.
+
+## Поведение
+
+`UiPageFooter` не создает кнопки самостоятельно. Для состояний `disabled`, `locked`, обработчиков клика и иконок передавайте внутрь слотов обычные `UiButton`.
+
+## API
+
+<ArgTypes />
+
