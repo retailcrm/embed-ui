@@ -1,0 +1,53 @@
+@import (reference) '../../../../assets/stylesheets/geometry.less';
+@import (reference) '../../../../assets/stylesheets/palette.less';
+@import (reference) '../../../../assets/stylesheets/variables.less';
+
+.ui-v1-page-footer {
+  .reset-box-sizing();
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 40px 10px 64px;
+  background-color: white;
+  border-top: 1px solid @grey-500;
+  gap: @spacing-s;
+
+  &__actions,
+  &__aside {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: @spacing-s;
+  }
+
+  &__actions {
+    flex: 1 1 auto;
+  }
+
+  &__aside {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .ui-v1-page-footer {
+    align-items: stretch;
+    flex-direction: column;
+    padding-right: @spacing-s;
+    padding-left: @spacing-s;
+
+    &__actions,
+    &__aside {
+      flex-wrap: wrap;
+    }
+
+    &__aside {
+      margin-left: 0;
+    }
+  }
+}
+
