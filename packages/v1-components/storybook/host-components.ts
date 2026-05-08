@@ -10,6 +10,7 @@ export const hostComponentNames = [
   'UiLogicTreeRoot',
   'UiMenuItem',
   'UiMenuItemGroup',
+  'UiPageFooter',
   'UiPageHeaderTitle',
   'UiPopper',
   'UiPopperConnector',
