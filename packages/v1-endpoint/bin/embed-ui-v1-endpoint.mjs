@@ -7,18 +7,44 @@ import process from 'node:process'
 const PACKAGE_NAME = '@retailcrm/embed-ui-v1-endpoint'
 const DEFAULT_NEWLINE = '\n'
 const AGENTS_SECTION_HEADER = '## @retailcrm/embed-ui-v1-endpoint'
+const README_MCP_SECTION_HEADER = '## MCP For AI Assistants'
+const README_MCP_MARKER = 'embed-ui-v1-endpoint://targets'
+const MCP_SERVER_NAME = 'retailcrm-embed-ui-v1-endpoint'
+const MCP_SERVER_CONFIG = {
+  command: 'npx',
+  args: ['-y', '-p', PACKAGE_NAME, 'embed-ui-v1-endpoint-mcp'],
+}
+const MCP_CLIENT_CONFIGS = {
+  cursor: {
+    filePath: '.cursor/mcp.json',
+    rootField: 'mcpServers',
+  },
+  junie: {
+    filePath: '.junie/mcp/mcp.json',
+    rootField: 'mcpServers',
+  },
+  vscode: {
+    filePath: '.vscode/mcp.json',
+    rootField: 'servers',
+  },
+}
 
 const HELP_TEXT = `Usage:
   npx ${PACKAGE_NAME} init-agents [target] [options]
+  npx ${PACKAGE_NAME} init-config [target] [options]
 
 Options:
-  -f, --force           Replace existing package section in AGENTS.md
-  -h, --help            Show this help
+  -f, --force                  Replace existing managed sections and MCP server entries
+      --mcp-client-configs     Comma-separated MCP client configs to create (cursor,junie,vscode)
+      --dry-run                Print planned config changes without writing files
+  -h, --help                   Show this help
 
 Examples:
   npx ${PACKAGE_NAME} init-agents
   npx ${PACKAGE_NAME} init-agents ./my-project
   npx ${PACKAGE_NAME} init-agents --force
+  npx ${PACKAGE_NAME} init-config ./my-project
+  npx ${PACKAGE_NAME} init-config ./my-project --mcp-client-configs cursor,junie,vscode
 `
 
 const parseArgs = (argv) => {
@@ -26,6 +52,8 @@ const parseArgs = (argv) => {
     command: null,
     target: process.cwd(),
     force: false,
+    dryRun: false,
+    mcpClientConfigs: [],
   }
 
   const positionals = []
@@ -40,6 +68,25 @@ const parseArgs = (argv) => {
 
     if (argument === '-f' || argument === '--force') {
       options.force = true
+      continue
+    }
+
+    if (argument === '--dry-run') {
+      options.dryRun = true
+      continue
+    }
+
+    if (argument === '--mcp-client-configs') {
+      const value = argv[index + 1]
+      if (!value || value.startsWith('-')) {
+        throw new Error('--mcp-client-configs requires a comma-separated value')
+      }
+
+      options.mcpClientConfigs = value
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+      index++
       continue
     }
 
@@ -95,6 +142,54 @@ Suggested MCP stdio server configuration:
 `
 }
 
+const createMcpReadmeSection = (clientConfigs) => {
+  const clientConfigText = clientConfigs.length
+    ? `Client MCP configs were also requested: ${clientConfigs.map((clientConfig) => `\`${clientConfig}\``).join(', ')}. Review the generated files and restart the AI client if it is already open.`
+    : 'Client MCP configs are not created by default. For supported project-level configs, rerun init with `--mcp-client-configs cursor,junie,vscode`.'
+
+  return `${README_MCP_SECTION_HEADER}
+
+The project has an MCP server configuration for \`${PACKAGE_NAME}\`.
+It exposes AI-friendly widget target descriptions as MCP resources.
+
+Basic check:
+
+\`\`\`bash
+npx -p ${PACKAGE_NAME} embed-ui-v1-endpoint-mcp
+\`\`\`
+
+Primary resources:
+
+- \`${README_MCP_MARKER}\` is the widget target index.
+- \`embed-ui-v1-endpoint://targets/<encoded-target>\` is a YAML profile for one target.
+
+${clientConfigText}
+
+### User-Level MCP Clients
+
+Some clients store MCP servers in a user-level config outside this repository. Init does not edit
+those files. Add the same server manually and restart the client.
+
+Claude Desktop config paths:
+
+- macOS: \`~/Library/Application Support/Claude/claude_desktop_config.json\`
+- Windows: \`%APPDATA%\\Claude\\claude_desktop_config.json\`
+
+Config snippet:
+
+\`\`\`json
+{
+  "mcpServers": {
+    "${MCP_SERVER_NAME}": {
+      "command": "npx",
+      "args": ["-y", "-p", "${PACKAGE_NAME}", "embed-ui-v1-endpoint-mcp"]
+    }
+  }
+}
+\`\`\`
+`
+}
+
 const createAgentsTemplate = () => {
   return `# AGENTS.md
 
@@ -124,6 +219,56 @@ const replaceSection = (content, section) => {
   return content
     .replace(sectionPattern, section.trimEnd())
     .replace(/\s+$/u, '') + DEFAULT_NEWLINE
+}
+
+const replaceReadmeMcpSection = (content, section) => {
+  const escapedHeader = README_MCP_SECTION_HEADER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const sectionPattern = new RegExp(`${escapedHeader}[\\s\\S]*?(?=\\n##\\s|$)`, 'u')
+
+  if (!sectionPattern.test(content)) {
+    return appendSection(content, section)
+  }
+
+  return content
+    .replace(sectionPattern, section.trimEnd())
+    .replace(/\s+$/u, '') + DEFAULT_NEWLINE
+}
+
+const readJsonObject = (filePath) => {
+  if (!fs.existsSync(filePath)) {
+    return {}
+  }
+
+  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`${filePath} must contain a JSON object`)
+  }
+
+  return parsed
+}
+
+const ensureObjectField = (object, field, filePath) => {
+  const value = object[field]
+
+  if (!value) {
+    object[field] = {}
+    return object[field]
+  }
+
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`${filePath} field "${field}" must be a JSON object`)
+  }
+
+  return value
+}
+
+const writeJson = (filePath, value, dryRun) => {
+  if (dryRun) {
+    return
+  }
+
+  fs.mkdirSync(path.dirname(filePath), { recursive: true })
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}${DEFAULT_NEWLINE}`, 'utf8')
 }
 
 const initAgents = (target, force) => {
@@ -169,15 +314,97 @@ const initAgents = (target, force) => {
   console.log(`The ${PACKAGE_NAME} instructions were appended to the end of the file.`)
 }
 
+const writeMcpServerConfig = (target, relativePath, rootField, options) => {
+  const filePath = path.join(target, relativePath)
+  const fileExists = fs.existsSync(filePath)
+  const config = readJsonObject(filePath)
+  const servers = ensureObjectField(config, rootField, filePath)
+
+  if (servers[MCP_SERVER_NAME] && !options.force) {
+    console.log(`${relativePath} already contains ${MCP_SERVER_NAME}`)
+    console.log('Nothing was changed. Re-run with --force to refresh that server entry.')
+    return
+  }
+
+  servers[MCP_SERVER_NAME] = MCP_SERVER_CONFIG
+  writeJson(filePath, config, options.dryRun)
+
+  const action = fileExists ? 'updated' : 'created'
+  console.log(`${relativePath} ${options.dryRun ? `would be ${action}` : `was ${action}`}`)
+}
+
+const resolveMcpClientConfigs = (tokens) => {
+  for (const token of tokens) {
+    if (!(token in MCP_CLIENT_CONFIGS)) {
+      throw new Error(`Unknown MCP client config: ${token}`)
+    }
+  }
+
+  return tokens
+}
+
+const updateMcpReadmeNotes = (target, clientConfigs, options) => {
+  const readmePath = path.join(target, 'README.md')
+  const fileExists = fs.existsSync(readmePath)
+  const currentContent = fileExists
+    ? fs.readFileSync(readmePath, 'utf8')
+    : '# README.md\n'
+  const section = createMcpReadmeSection(clientConfigs)
+
+  if (currentContent.includes(README_MCP_MARKER) && !options.force) {
+    console.log(`README.md already contains MCP setup notes at ${readmePath}`)
+    console.log('Nothing was changed. Re-run with --force to refresh that section.')
+    return
+  }
+
+  const nextContent = replaceReadmeMcpSection(currentContent, section)
+
+  if (!options.dryRun) {
+    fs.writeFileSync(readmePath, nextContent, 'utf8')
+  }
+
+  const action = fileExists ? 'updated' : 'created'
+  console.log(`README.md ${options.dryRun ? `would be ${action}` : `was ${action}`} with MCP setup notes`)
+}
+
+const initConfig = (target, options) => {
+  if (!fs.existsSync(target)) {
+    throw new Error(`Target path does not exist: ${target}`)
+  }
+
+  const stat = fs.statSync(target)
+
+  if (!stat.isDirectory()) {
+    throw new Error(`Target path is not a directory: ${target}`)
+  }
+
+  const clientConfigs = resolveMcpClientConfigs(options.mcpClientConfigs)
+
+  writeMcpServerConfig(target, '.mcp.json', 'mcpServers', options)
+
+  for (const clientConfig of clientConfigs) {
+    const config = MCP_CLIENT_CONFIGS[clientConfig]
+    writeMcpServerConfig(target, config.filePath, config.rootField, options)
+  }
+
+  updateMcpReadmeNotes(target, clientConfigs, options)
+}
+
 const main = () => {
   try {
     const options = parseArgs(process.argv.slice(2))
 
-    if (options.command !== 'init-agents') {
-      throw new Error(`Unknown command: ${options.command}`)
+    if (options.command === 'init-agents') {
+      initAgents(options.target, options.force)
+      return
     }
 
-    initAgents(options.target, options.force)
+    if (options.command === 'init-config') {
+      initConfig(options.target, options)
+      return
+    }
+
+    throw new Error(`Unknown command: ${options.command}`)
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))
     console.error('')
