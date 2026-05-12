@@ -83,3 +83,23 @@ npx @retailcrm/embed-ui-v1-endpoint init-agents
 допишет в конец английский блок для `@retailcrm/embed-ui-v1-endpoint`, если
 такого блока там ещё нет. С `--force` можно обновить уже существующий блок
 пакета.
+
+## Инициализация MCP-конфига
+
+Пакет также может сам добавить project-level MCP-настройки в целевой проект:
+
+```bash
+npx @retailcrm/embed-ui-v1-endpoint init-config
+```
+
+Команда создаёт или дополняет корневой `.mcp.json`, добавляет заметку в
+`README.md` и не дублирует уже существующую настройку. Клиентские project-level
+конфиги создаются только явно:
+
+```bash
+npx @retailcrm/embed-ui-v1-endpoint init-config --mcp-client-configs cursor,junie,vscode
+```
+
+С `--force` можно обновить уже существующие управляемые записи. Команда
+обновляет только запись `retailcrm-embed-ui-v1-endpoint`, а остальные серверы и
+пользовательские настройки клиентских конфигов оставляет без изменений.
