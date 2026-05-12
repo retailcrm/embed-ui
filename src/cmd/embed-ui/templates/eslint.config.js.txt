@@ -6,69 +6,67 @@ import pluginDependencies from '@omnicajs/eslint-plugin-dependencies'
 import pluginJs from '@eslint/js'
 import pluginTs from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
+import pluginVueI18n from '@intlify/eslint-plugin-vue-i18n'
 
 export default defineConfig([
-  { files: ['**/*.{js,mjs,cjs,ts}'] },
+  { files: ['**/*.{js,mjs,cjs,ts,vue}'] },
   {
+    settings: {
+      'vue-i18n': {
+        localeDir: {
+          pattern: '__LOCALE_DIR_PATTERN__',
+          localeKey: 'file',
+        },
+        messageSyntaxVersion: '^11.0.0',
+      },
+    },
+  },
+  pluginJs.configs.recommended,
+  ...pluginTs.configs.recommended,
+  ...pluginVue.configs['flat/essential'],
+  ...pluginVueI18n.configs.recommended,
+  {
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
     plugins: {
+      '@intlify/vue-i18n': pluginVueI18n,
       dependencies: pluginDependencies,
     },
     languageOptions: {
       globals: {
-        ymaps3: true,
         ...globals.browser,
         ...globals.node,
       },
     },
     rules: {
-      'brace-style': ['error', '1tbs', {
-        allowSingleLine: true,
-      }],
-      'comma-dangle': ['error', {
-        arrays: 'always-multiline',
-        exports: 'always-multiline',
-        functions: 'never',
-        imports: 'always-multiline',
-        objects: 'always-multiline',
-      }],
+      'comma-dangle': ['error', 'always-multiline'],
       'eqeqeq': ['error', 'always'],
-      'indent': ['error', 2, {
-        ignoreComments: true,
-        SwitchCase: 1,
-      }],
-      'keyword-spacing': ['error', {
-        before: true,
-        after: true,
-        overrides: {
-          catch: { before: true, after: true },
-        },
-      }],
-      'linebreak-style': [2, 'unix'],
+      'indent': ['error', 2, { SwitchCase: 1 }],
       'no-debugger': 'error',
-      'no-empty': 'off',
-      'no-multiple-empty-lines': ['error', {
-        max: 1,
-        maxBOF: 0,
-        maxEOF: 0,
-      }],
-      'no-new-wrappers': 'error',
-      'no-prototype-builtins': 'error',
-      'no-shadow-restricted-names': 'error',
-      'no-throw-literal': 'error',
-      'no-trailing-spaces': ['error'],
-      'no-unsafe-optional-chaining': 'off',
-      'no-useless-escape': 'off',
+      'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
+      'no-trailing-spaces': 'error',
       'object-curly-spacing': ['error', 'always'],
-      'padded-blocks': ['error', 'never'],
       'quotes': ['error', 'single'],
       'semi': ['error', 'never'],
-      'space-infix-ops': ['error', { 'int32Hint': false }],
 
       '@typescript-eslint/consistent-type-imports': ['error', {
         prefer: 'type-imports',
         fixStyle: 'separate-type-imports',
       }],
-      '@typescript-eslint/naming-convention': 'off',
+
+      '@intlify/vue-i18n/key-format-style': ['error', 'camelCase', {
+        allowArray: true,
+      }],
+      '@intlify/vue-i18n/no-duplicate-keys-in-locale': 'error',
+      '@intlify/vue-i18n/no-dynamic-keys': 'error',
+      '@intlify/vue-i18n/no-missing-keys': 'error',
+      '@intlify/vue-i18n/no-missing-keys-in-other-locales': 'error',
+      '@intlify/vue-i18n/no-raw-text': ['warn', {
+        ignorePattern: '^[-–—~+#:()&=×%/\\d\\s\\u00A0\\n,.<>•]+$',
+        ignoreText: ['API', 'CRM', ''],
+      }],
+      '@intlify/vue-i18n/no-unknown-locale': 'error',
+      '@intlify/vue-i18n/no-unused-keys': 'error',
+      '@intlify/vue-i18n/sfc-locale-attr': 'error',
 
       'dependencies/import-style': ['error', {
         maxSingleLineLength: 90,
@@ -126,29 +124,23 @@ export default defineConfig([
       }],
     },
   },
-  pluginJs.configs.recommended,
-  ...pluginTs.configs.recommended,
-  ...pluginVue.configs['flat/essential'],
   {
     files: ['**/*.vue'],
     languageOptions: {
       parserOptions: { parser: pluginTs.parser },
     },
     rules: {
+      'vue/block-order': ['error', {
+        order: ['template', 'script', 'i18n', 'style'],
+      }],
       'vue/attributes-order': 'error',
       'vue/component-definition-name-casing': ['error', 'PascalCase'],
       'vue/component-name-in-template-casing': ['error', 'PascalCase'],
-      'vue/first-attribute-linebreak': 'error',
-      'vue/html-closing-bracket-newline': ['error', {
-        multiline: 'always',
-        singleline: 'never',
-      }],
-      'vue/html-closing-bracket-spacing': 'error',
       'vue/html-indent': ['error', 4, {
         attribute: 1,
+        baseIndent: 1,
         closeBracket: 0,
-        alignAttributesVertically: true,
-        ignores: [],
+        switchCase: 1,
       }],
       'vue/html-self-closing': ['error', {
         html: {
@@ -159,20 +151,17 @@ export default defineConfig([
         math: 'always',
         svg: 'always',
       }],
-      'vue/no-required-prop-with-default': 'error',
       'vue/max-attributes-per-line': ['error', {
         singleline: 4,
-        multiline: {
-          max: 1,
-        },
+        multiline: { max: 1 },
       }],
-      'vue/one-component-per-file': 'off',
-      'indent': ['error', 2, { ignoreComments: true, SwitchCase: 1 }],
+      'vue/script-indent': ['error', 2, {
+        baseIndent: 0,
+        switchCase: 1,
+      }],
+
+      'indent': 'off',
     },
   },
-  { ignores: ['dist/*'] },
-  { ignores: ['**/dist/*'] },
-  { ignores: ['bin/embed-ui.mjs'] },
-  { ignores: ['src/cmd/embed-ui/templates/**'] },
-  { ignores: ['packages/**/generated/**'] },
+  { ignores: ['dist/**', 'coverage/**'] },
 ])

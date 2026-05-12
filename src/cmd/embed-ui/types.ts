@@ -21,6 +21,15 @@ export interface InstallablePackage {
   name: string;
   section: DependencySection;
   description: string;
+  hooks?: InstallablePackageHook[];
+}
+
+export interface InstallablePackageHook {
+  type: 'agents' | 'config';
+  binName: string;
+  command: 'init-agents' | 'init-config';
+  failureMode: 'advisory' | 'required';
+  requiresMcp?: boolean;
 }
 
 export interface PackageChange {
@@ -32,10 +41,12 @@ export interface PackageChange {
 }
 
 export interface InitChanges {
+  preflight: string[];
   packageJson: PackageChange[];
   directories: string[];
   files: string[];
   agents: string[];
+  mcp: string[];
   hooks: string[];
   install: string | null;
   skipped: string[];

@@ -1,12 +1,13 @@
 import type { InitChanges } from './types'
 import type { InitOptions } from './args'
-import type { InstallablePackage } from './types'
+import type { InstallablePackage, InstallablePackageHook } from './types'
+import type { PackageManager } from './args'
 
-import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 
 import { DEFAULT_NEWLINE } from './package-json'
+import { runPackageHookCommand } from './package-hook-runner'
 
 const ROOT_AGENTS_SECTION_HEADER = '## @retailcrm/embed-ui'
 
@@ -66,37 +67,33 @@ const runInitAgentsHook = (
   packageName: string,
   binName: string,
   cwd: string,
+  packageManager: PackageManager,
+  failureMode: InstallablePackageHook['failureMode'],
   options: InitOptions,
   changes: InitChanges
 ): void => {
-  const args: string[] = [
-    '-y',
-    '-p',
-    packageName,
-    binName,
-    'init-agents',
-    cwd,
-  ]
+  const args: string[] = ['init-agents', cwd]
 
   if (options.force || options.forceAgents) {
     args.push('--force')
   }
 
-  changes.hooks.push(`npx ${args.join(' ')}`)
-
-  if (options.dryRun) {
-    return
-  }
-
-  execFileSync('npx', args, {
+  runPackageHookCommand(
     cwd,
-    stdio: 'inherit',
-  })
+    packageName,
+    binName,
+    packageManager,
+    args,
+    failureMode,
+    options,
+    changes
+  )
 }
 
 export const applyInitAgents = (
   cwd: string,
   selectedPackages: InstallablePackage[],
+  packageManager: PackageManager,
   options: InitOptions,
   changes: InitChanges
 ): void => {
@@ -106,30 +103,26 @@ export const applyInitAgents = (
 
   updateRootAgents(cwd, options, changes)
 
-  const selectedIds = new Set(selectedPackages.map((entry) => entry.id))
+  for (const selectedPackage of selectedPackages) {
+    for (const hook of selectedPackage.hooks ?? []) {
+      if (hook.type !== 'agents') {
+        continue
+      }
 
-  if (selectedIds.has('components')) {
-    runInitAgentsHook(
-      '@retailcrm/embed-ui-v1-components',
-      'embed-ui-v1-components',
-      cwd,
-      options,
-      changes
-    )
-  }
+      if (hook.requiresMcp && options.noMcp) {
+        changes.warnings.push(`Skipping ${selectedPackage.id} ${hook.command} because it currently includes MCP instructions`)
+        continue
+      }
 
-  if (selectedIds.has('endpoint')) {
-    if (options.noMcp) {
-      changes.warnings.push('Skipping v1-endpoint init-agents because it currently includes MCP instructions')
-      return
+      runInitAgentsHook(
+        selectedPackage.name,
+        hook.binName,
+        cwd,
+        packageManager,
+        hook.failureMode,
+        options,
+        changes
+      )
     }
-
-    runInitAgentsHook(
-      '@retailcrm/embed-ui-v1-endpoint',
-      'embed-ui-v1-endpoint',
-      cwd,
-      options,
-      changes
-    )
   }
 }

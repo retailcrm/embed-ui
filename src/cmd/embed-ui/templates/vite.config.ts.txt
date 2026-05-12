@@ -1,0 +1,38 @@
+import { fileURLToPath } from 'node:url'
+
+import path from 'node:path'
+
+import { defineConfig } from 'vite'
+
+import vue from '@vitejs/plugin-vue'
+import vueRemoteVitePlugin from '@omnicajs/vue-remote/vite-plugin'
+
+import vueI18n from '@intlify/unplugin-vue-i18n/vite'
+
+import svgLoader from 'vite-svg-loader'
+
+const root = path.dirname(fileURLToPath(import.meta.url))
+
+export default defineConfig({
+  plugins: [
+    svgLoader({
+      defaultImport: 'component',
+    }),
+    vueRemoteVitePlugin(),
+    vue(),
+    vueI18n({
+      defaultSFCLang: 'json',
+      include: path.resolve(root, '__LOCALE_INCLUDE_PATTERN__/**/*.{json,json5,yaml,yml}'),
+    }),
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(root, __SOURCE_ROOT_PATH__),
+    },
+  },
+  build: {
+    rollupOptions: {
+      input: path.resolve(root, __ENTRY_PATH__),
+    },
+  },
+})

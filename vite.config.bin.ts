@@ -1,4 +1,5 @@
 import { builtinModules } from 'node:module'
+import { chmodSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { defineConfig } from 'vite'
@@ -9,6 +10,14 @@ const nodeBuiltins = new Set([
 ])
 
 export default defineConfig({
+  plugins: [
+    {
+      name: 'embed-ui-bin-permissions',
+      closeBundle() {
+        chmodSync(resolve(__dirname, './bin/embed-ui.mjs'), 0o755)
+      },
+    },
+  ],
   build: {
     emptyOutDir: false,
     lib: {

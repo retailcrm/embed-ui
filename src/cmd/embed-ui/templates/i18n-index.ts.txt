@@ -1,0 +1,21 @@
+import { createI18n } from 'vue-i18n'
+
+import enGB from './locales/en-GB.json'
+import esES from './locales/es-ES.json'
+import ruRU from './locales/ru-RU.json'
+
+const messages = {
+  'en-GB': enGB,
+  'es-ES': esES,
+  'ru-RU': ruRU,
+} as const
+
+export type Locale = keyof typeof messages
+export type MessageSchema = typeof enGB
+
+export const i18n = createI18n<[MessageSchema], Locale>({
+  legacy: false,
+  locale: 'ru-RU',
+  fallbackLocale: 'en-GB',
+  messages,
+})

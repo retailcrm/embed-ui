@@ -1,0 +1,287 @@
+#!/usr/bin/env node
+
+import { fileURLToPath } from 'node:url'
+
+import fs from 'node:fs'
+
+import path from 'node:path'
+
+import { spawnSync } from 'node:child_process'
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.resolve(scriptDir, '..')
+const args = new Set(process.argv.slice(2))
+const archiveOnly = args.has('--archive-only')
+
+const readJsonFile = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+const loadEnvFile = (filePath) => {
+  if (!fs.existsSync(filePath)) {
+    return
+  }
+
+  for (const line of fs.readFileSync(filePath, 'utf8').split(/\r?\n/u)) {
+    const trimmed = line.trim()
+
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue
+    }
+
+    const separatorIndex = trimmed.indexOf('=')
+
+    if (separatorIndex === -1) {
+      continue
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim()
+    let value = trimmed.slice(separatorIndex + 1).trim()
+
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith('\'') && value.endsWith('\''))) {
+      value = value.slice(1, -1)
+    }
+
+    process.env[key] ??= value
+  }
+}
+
+const assertNonEmptyString = (value, field) => {
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error('Field "' + field + '" must be a non-empty string')
+  }
+
+  return value
+}
+
+const assertStringArray = (value, field) => {
+  if (value === undefined) {
+    return []
+  }
+
+  if (!Array.isArray(value) || value.some(item => typeof item !== 'string' || item.trim() === '')) {
+    throw new Error('Field "' + field + '" must be an array of non-empty strings')
+  }
+
+  return value
+}
+
+const listFiles = (directoryPath, basePath = directoryPath) => {
+  const result = []
+
+  for (const entry of fs.readdirSync(directoryPath, { withFileTypes: true })) {
+    const entryPath = path.join(directoryPath, entry.name)
+    const relativePath = path.relative(basePath, entryPath).split(path.sep).join('/')
+
+    if (entry.isDirectory()) {
+      result.push(...listFiles(entryPath, basePath))
+      continue
+    }
+
+    if (entry.isFile()) {
+      result.push(relativePath)
+    }
+  }
+
+  return result
+}
+
+const normalizeManifestPath = (value) => typeof value === 'string' && value.startsWith('./')
+  ? value.slice(2)
+  : value
+
+const pickBuildArtifacts = (distDir, code) => {
+  const files = listFiles(distDir)
+    .filter(file => file !== 'manifest.json')
+    .filter(file => file !== code + '.zip')
+    .filter(file => !file.endsWith('.map'))
+
+  const viteManifestPath = path.join(distDir, '.vite/manifest.json')
+
+  if (fs.existsSync(viteManifestPath)) {
+    const viteManifest = readJsonFile(viteManifestPath)
+    const entries = Object.values(viteManifest)
+    const entry = entries.find(item => item && item.isEntry) ?? entries[0]
+
+    if (entry?.file) {
+      return {
+        files,
+        scriptFile: normalizeManifestPath(entry.file),
+        styleFile: Array.isArray(entry.css) ? normalizeManifestPath(entry.css[0]) : null,
+      }
+    }
+  }
+
+  return {
+    files,
+    scriptFile: files.find(file => file.endsWith('.js')) ?? null,
+    styleFile: files.find(file => file.endsWith('.css')) ?? null,
+  }
+}
+
+const zipExtension = (distDir, code, extensionManifest, files) => {
+  const archivePath = path.join(distDir, 'extension.zip')
+  const manifestPath = path.join(distDir, 'manifest.json')
+  const previousManifest = fs.existsSync(manifestPath) ? fs.readFileSync(manifestPath) : null
+
+  fs.writeFileSync(manifestPath, JSON.stringify(extensionManifest), 'utf8')
+
+  try {
+    const zipResult = spawnSync('zip', ['-rFS', archivePath, ...files, 'manifest.json'], {
+      cwd: distDir,
+      stdio: 'inherit',
+    })
+
+    if (zipResult.error) {
+      throw new Error('Zip command failed: ' + zipResult.error.message)
+    }
+
+    if (zipResult.status !== 0) {
+      throw new Error('Zip archive creation failed')
+    }
+  } finally {
+    if (previousManifest) {
+      fs.writeFileSync(manifestPath, previousManifest)
+    } else {
+      fs.rmSync(manifestPath, { force: true })
+    }
+  }
+
+  return archivePath
+}
+
+loadEnvFile(path.join(projectRoot, '.env'))
+
+const configPath = path.join(projectRoot, 'extensionrc.json')
+
+if (!fs.existsSync(configPath)) {
+  console.error('Config not found: ' + configPath)
+  process.exit(1)
+}
+
+let config
+
+try {
+  config = readJsonFile(configPath)
+} catch (error) {
+  console.error('Cannot read extensionrc.json:', error)
+  process.exit(1)
+}
+
+try {
+  const code = config.code ?? 'retailcrm-extension-frontend'
+  const uuid = assertNonEmptyString(config.uuid, 'uuid')
+  const version = assertNonEmptyString(config.version, 'version')
+  const targets = assertStringArray(config.targets, 'targets')
+  const pages = assertStringArray(config.pages, 'pages')
+  const runner = config.runner ?? 'worker'
+
+  if (targets.length === 0 && pages.length === 0) {
+    throw new Error('Specify at least one target or page in extensionrc.json')
+  }
+
+  const distDir = path.join(projectRoot, 'dist')
+
+  if (!fs.existsSync(distDir)) {
+    throw new Error('Build directory not found: ' + distDir)
+  }
+
+  const { files, scriptFile, styleFile } = pickBuildArtifacts(distDir, code)
+
+  if (!scriptFile) {
+    throw new Error('Missing JS build artifact. Run npm run build before publishing.')
+  }
+
+  const extensionManifest = {
+    code,
+    version,
+    entrypoint: scriptFile,
+    scripts: [scriptFile],
+    runner,
+  }
+
+  if (targets.length > 0) {
+    extensionManifest.targets = targets
+  }
+
+  if (pages.length > 0) {
+    extensionManifest.pages = pages
+  }
+
+  if (styleFile) {
+    extensionManifest.stylesheet = styleFile
+  }
+
+  const archivePath = zipExtension(distDir, code, extensionManifest, files)
+
+  console.log('Archive created: ' + archivePath)
+
+  if (archiveOnly) {
+    process.exit(0)
+  }
+
+  const crmHost = process.env.CRM_API_HOST
+  const crmKey = process.env.CRM_API_KEY
+  const baseUrl = config.baseUrl || process.env.MODULE_URL || process.env.EXTENSION_BASE_URL
+
+  if (!crmHost || !crmKey) {
+    throw new Error('Missing CRM_API_HOST or CRM_API_KEY in .env')
+  }
+
+  if (!baseUrl) {
+    throw new Error('Missing MODULE_URL or EXTENSION_BASE_URL in .env or baseUrl in extensionrc.json')
+  }
+
+  const embedJs = {
+    entrypoint: config.entrypoint || '/extension/' + uuid + '/script',
+    runner,
+  }
+
+  if (targets.length > 0) {
+    embedJs.targets = targets
+  }
+
+  if (pages.length > 0) {
+    embedJs.pages = pages
+  }
+
+  if (styleFile && config.stylesheet !== false) {
+    embedJs.stylesheet = typeof config.stylesheet === 'string'
+      ? config.stylesheet
+      : '/extension/' + uuid + '/stylesheet'
+  }
+
+  const integrationModule = {
+    code,
+    integrationCode: code,
+    active: true,
+    name: config.name || code,
+    clientId: config.clientId || 'client-id-xxx',
+    baseUrl,
+    integrations: {
+      embedJs,
+    },
+  }
+
+  const form = new FormData()
+  form.append('integrationModule', JSON.stringify(integrationModule))
+
+  const response = await fetch(new URL('/api/v5/integration-modules/' + code + '/edit', crmHost), {
+    method: 'POST',
+    headers: {
+      'X-Api-Key': crmKey,
+    },
+    body: form,
+  })
+
+  const text = await response.text()
+
+  if (!response.ok) {
+    console.error('Request failed: ' + response.status + ' ' + response.statusText)
+    console.error(text)
+    process.exit(1)
+  }
+
+  console.log(text)
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error)
+  process.exit(1)
+}

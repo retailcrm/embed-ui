@@ -20,6 +20,15 @@
     "./types/*": "./types/*"
   },
   "bin": "./bin/embed-ui.mjs",
+  "files": [
+    "bin",
+    "dist",
+    "index.d.ts",
+    "types",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
   "types": "index.d.ts",
   "workspaces": [
     "packages/*"

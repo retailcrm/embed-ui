@@ -42,5 +42,8 @@
     "src/shims-*.d.ts",
     "tests/**/*.ts",
     "types/**/*.ts"
+  ],
+  "exclude": [
+    "src/cmd/embed-ui/templates/**"
   ]
 }

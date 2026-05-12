@@ -29,6 +29,8 @@ export interface InitOptions {
   packageManager: PackageManager | null;
   noInstall: boolean;
   force: boolean;
+  forceDeps: boolean;
+  fixSections: boolean;
   forceFiles: boolean;
   noDirs: boolean;
   dirs: string[] | null;
@@ -42,6 +44,7 @@ export interface InitOptions {
   agentsOnly: boolean;
   noMcp: boolean;
   forceMcp: boolean;
+  mcpClientConfigs: string[] | null;
 }
 
 export type CliOptions = InitOptions | UpdateOptions
@@ -60,8 +63,11 @@ Options:
       --cwd <path>        Project working directory for init
       --package-manager   Package manager for init installs
       --no-install        Do not run package manager install in init mode
+      --force-deps        Replace incompatible existing init dependencies
+      --fix-sections      Move init dependencies to expected package.json sections
       --no-agents         Do not create or update AGENTS.md in init mode
       --no-mcp            Do not add package MCP instructions in init mode
+      --mcp-client-configs Comma-separated MCP client configs to create (cursor,junie,vscode)
   -h, --help              Show this help
 
 Examples:
@@ -169,6 +175,8 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     .option('exact', { type: 'boolean', default: false })
     .option('install', { type: 'boolean', default: true })
     .option('force', { type: 'boolean', default: false })
+    .option('force-deps', { type: 'boolean', default: false })
+    .option('fix-sections', { type: 'boolean', default: false })
     .option('force-files', { type: 'boolean', default: false })
     .option('dirs-enabled', { type: 'boolean', default: true })
     .option('template-enabled', { type: 'boolean', default: true })
@@ -177,6 +185,11 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     .option('agents-only', { type: 'boolean', default: false })
     .option('mcp', { type: 'boolean', default: true })
     .option('force-mcp', { type: 'boolean', default: false })
+    .option('mcp-client-configs', {
+      type: 'string',
+      coerce: parsePackageList,
+      describe: 'Comma-separated MCP client config ids',
+    })
     .parseSync()
 
   if (parsed.help || parsed.h) {
@@ -187,6 +200,10 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
   const positionals = parsed._.map(String)
   if (positionals.length > 1) {
     throw new Error('Too many positional arguments')
+  }
+
+  if (!parsed.mcp && parsed.mcpClientConfigs?.length) {
+    throw new Error('Option --mcp-client-configs cannot be used together with --no-mcp')
   }
 
   return {
@@ -201,6 +218,8 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     packageManager: parsed.packageManager ?? null,
     noInstall: !parsed.install,
     force: parsed.force,
+    forceDeps: parsed.forceDeps,
+    fixSections: parsed.fixSections,
     forceFiles: parsed.forceFiles,
     noDirs: !parsed.dirsEnabled,
     dirs: parsed.dirs ?? null,
@@ -214,6 +233,7 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     agentsOnly: parsed.agentsOnly,
     noMcp: !parsed.mcp,
     forceMcp: parsed.forceMcp,
+    mcpClientConfigs: parsed.mcpClientConfigs ?? null,
   }
 }
 
