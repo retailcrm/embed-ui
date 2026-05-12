@@ -1,0 +1,303 @@
+<template>
+    <main :class="$style['settings-page']">
+        <UiPageHeader :value="t('title')">
+            <template #addon>
+                <div :class="$style['settings-page-addon']">
+                    <ExtensionIcon
+                        :class="$style['settings-page-addon__icon']"
+                        aria-hidden="true"
+                    />
+                    <span :class="$style['settings-page-addon__subtitle']">{{ t('subtitle') }}</span>
+                </div>
+            </template>
+
+            <template #actions>
+                <UiButton @click="saveSettings">
+                    {{ t('save') }}
+                </UiButton>
+            </template>
+        </UiPageHeader>
+
+        <section :class="$style['settings-form']">
+            <div :class="$style['settings-form__intro']">
+                <h2 :class="$style['settings-form__heading']">{{ t('workspaceTitle') }}</h2>
+                <p :class="$style['settings-form__description']">{{ t('workspaceDescription') }}</p>
+            </div>
+
+            <div :class="$style['settings-form__grid']">
+                <UiField
+                    :id="fieldIds.assistantName"
+                    v-slot="{ id, ariaInvalid, ariaLabelledby }"
+                    :hint="t('assistantNameHint')"
+                    :hint-aria-label="t('hint')"
+                    :label="t('assistantName')"
+                >
+                    <UiTextbox
+                        :id="id"
+                        v-model:value="assistantName"
+                        :input-attributes="{
+                            'aria-invalid': ariaInvalid,
+                            'aria-labelledby': ariaLabelledby,
+                        }"
+                        width="100%"
+                        @update:value="resetSaved"
+                    />
+                </UiField>
+
+                <UiField
+                    :id="fieldIds.owner"
+                    v-slot="{ id, ariaInvalid, ariaLabelledby }"
+                    :label="t('owner')"
+                >
+                    <UiSelect
+                        :id="id"
+                        v-model:value="owner"
+                        :aria-invalid="ariaInvalid"
+                        :aria-labelledby="ariaLabelledby"
+                        width="100%"
+                        @update:value="resetSaved"
+                    >
+                        <UiSelectOption
+                            value="sales"
+                            :label="t('ownerSales')"
+                        />
+                        <UiSelectOption
+                            value="delivery"
+                            :label="t('ownerDelivery')"
+                        />
+                    </UiSelect>
+                </UiField>
+
+                <UiField
+                    :id="fieldIds.note"
+                    v-slot="{ id, ariaInvalid, ariaLabelledby }"
+                    :class="$style['settings-form__note']"
+                    :label="t('note')"
+                >
+                    <UiTextbox
+                        :id="id"
+                        v-model:value="note"
+                        :input-attributes="{
+                            'aria-invalid': ariaInvalid,
+                            'aria-labelledby': ariaLabelledby,
+                        }"
+                        multiline
+                        rows="4"
+                        width="100%"
+                        @update:value="resetSaved"
+                    />
+                </UiField>
+
+                <UiField
+                    :id="fieldIds.enabled"
+                    v-slot="{ id, ariaInvalid, ariaLabelledby }"
+                    :label="t('enabled')"
+                >
+                    <UiSwitch
+                        :id="id"
+                        v-model:value="enabled"
+                        :aria-invalid="ariaInvalid"
+                        :aria-labelledby="ariaLabelledby"
+                        @update:value="resetSaved"
+                    />
+                </UiField>
+            </div>
+
+            <p
+                v-if="saved"
+                :class="$style['settings-form__status']"
+            >
+                {{ t('saved') }}
+            </p>
+        </section>
+    </main>
+</template>
+
+<script lang="ts" remote setup>
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import {
+  UiButton,
+  UiField,
+  UiPageHeader,
+  UiSelect,
+  UiSelectOption,
+  UiSwitch,
+  UiTextbox,
+} from '@retailcrm/embed-ui-v1-components/remote'
+
+import ExtensionIcon from '@/shared/assets/extension.svg'
+
+const { t } = useI18n({ useScope: 'local' })
+
+const assistantName = ref('Order follow-up')
+const owner = ref('sales')
+const enabled = ref(true)
+const note = ref('Check payment status and delivery date before calling the customer.')
+const saved = ref(false)
+
+const fieldIds = {
+  assistantName: 'extension-assistant-name',
+  note: 'extension-note',
+  owner: 'extension-owner',
+  enabled: 'extension-enabled',
+} as const
+
+const resetSaved = () => {
+  saved.value = false
+}
+
+const saveSettings = () => {
+  saved.value = true
+}
+</script>
+
+<i18n locale="en-GB" lang="json">
+{
+  "assistantName": "Assistant name",
+  "assistantNameHint": "Use this value as a starter label for your real setting.",
+  "enabled": "Enable order prompts",
+  "hint": "Hint",
+  "note": "Default note",
+  "owner": "Responsible team",
+  "ownerDelivery": "Delivery team",
+  "ownerSales": "Sales team",
+  "save": "Save",
+  "saved": "Settings saved",
+  "subtitle": "Starter configuration page",
+  "title": "Extension settings",
+  "workspaceDescription": "Replace these sample controls with settings that drive your embedded page and order widget.",
+  "workspaceTitle": "Order workflow defaults"
+}
+</i18n>
+
+<i18n locale="es-ES" lang="json">
+{
+  "assistantName": "Nombre del asistente",
+  "assistantNameHint": "Use este valor como etiqueta inicial para su ajuste real.",
+  "enabled": "Activar sugerencias del pedido",
+  "hint": "Ayuda",
+  "note": "Nota predeterminada",
+  "owner": "Equipo responsable",
+  "ownerDelivery": "Equipo de entrega",
+  "ownerSales": "Equipo comercial",
+  "save": "Guardar",
+  "saved": "Configuracion guardada",
+  "subtitle": "Pagina inicial de configuracion",
+  "title": "Configuracion de la extension",
+  "workspaceDescription": "Sustituya estos controles de ejemplo por ajustes que controlen su pagina integrada y el widget del pedido.",
+  "workspaceTitle": "Valores iniciales del proceso de pedidos"
+}
+</i18n>
+
+<i18n locale="ru-RU" lang="json">
+{
+  "assistantName": "Название помощника",
+  "assistantNameHint": "Используйте это значение как стартовую подпись для реальной настройки.",
+  "enabled": "Включить подсказки в заказе",
+  "hint": "Подсказка",
+  "note": "Заметка по умолчанию",
+  "owner": "Ответственная команда",
+  "ownerDelivery": "Команда доставки",
+  "ownerSales": "Отдел продаж",
+  "save": "Сохранить",
+  "saved": "Настройки сохранены",
+  "subtitle": "Стартовая страница настроек",
+  "title": "Настройки расширения",
+  "workspaceDescription": "Замените эти демонстрационные контролы настройками, которые управляют встроенной страницей и виджетом заказа.",
+  "workspaceTitle": "Настройки сценария заказа"
+}
+</i18n>
+
+<style lang="less" module>
+@import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less';
+@import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less';
+@import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less';
+@import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/typography.less';
+
+.settings-page {
+  display: grid;
+  gap: @spacing-md;
+  max-width: 960px;
+
+  @media (max-width: 720px) {
+    gap: @spacing-sm;
+  }
+}
+
+.settings-page-addon {
+  display: flex;
+  align-items: center;
+  gap: @spacing-xs;
+  min-width: 0;
+
+  &__icon {
+    .square(@line-height-regular);
+
+    flex: none;
+    color: @blue-600;
+  }
+
+  &__subtitle {
+    .ellipsis();
+    .text-tiny(18px);
+
+    color: @grey-900;
+  }
+}
+
+.settings-form {
+  display: grid;
+  gap: @spacing-sm + @spacing-xxs;
+  padding: @spacing-md;
+  border: 1px solid @grey-500;
+  border-radius: @border-radius-lg;
+  background: white;
+
+  @media (max-width: 720px) {
+    padding: @spacing-sm;
+  }
+
+  &__intro {
+    display: grid;
+    gap: @spacing-xxs + 2px;
+  }
+
+  &__heading {
+    .h4-accent(24px);
+
+    margin: 0;
+    color: @black-500;
+  }
+
+  &__description {
+    .text-small();
+
+    max-width: 640px;
+    margin: 0;
+    color: @grey-900;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+    gap: (@spacing-sm + 2px) @spacing-md;
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__note {
+    grid-column: 1 / -1;
+  }
+
+  &__status {
+    .text-tiny(18px);
+
+    margin: 0;
+    color: @green-800;
+  }
+}
+</style>

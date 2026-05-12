@@ -1,5 +1,6 @@
 // @vitest-environment node
 
+import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -12,13 +13,9 @@ import {
   vi,
 } from 'vitest'
 
-import {
-  parseArgs,
-  parseInitArgs,
-  runAdd,
-  runInit,
-  runUpdate,
-} from '../src/cmd/embed-ui'
+import { parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
+import { resolvePackageHookCommand } from '../src/cmd/embed-ui/package-hook-runner'
+import { runAdd, runInit, runUpdate } from '../src/cmd/embed-ui'
 
 const createTempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'embed-ui-'))
 
@@ -27,9 +24,13 @@ const writeFile = (filePath: string, content: string) => {
   fs.writeFileSync(filePath, content, 'utf8')
 }
 
+const readJsonFile = <T>(filePath: string): T =>
+  JSON.parse(fs.readFileSync(filePath, 'utf8')) as T
+
 describe('embed-ui CLI', () => {
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.unstubAllEnvs()
   })
 
   test('updates package.json files in the whole subtree and preserves indentation', () => {
@@ -167,6 +168,41 @@ describe('embed-ui CLI', () => {
     expect(options.noAgents).toBe(true)
   })
 
+  test('parseArgs supports init dependency conflict controls', () => {
+    const options = parseArgs([
+      'init',
+      '--force-deps',
+      '--fix-sections',
+      '--no-install',
+      '--no-agents',
+    ])
+
+    expect(options.command).toBe('init')
+    if (options.command !== 'init') {
+      throw new Error('Expected init options')
+    }
+
+    expect(options.forceDeps).toBe(true)
+    expect(options.fixSections).toBe(true)
+  })
+
+  test('parseArgs supports opt-in MCP client configs', () => {
+    const options = parseArgs([
+      'init',
+      '--mcp-client-configs',
+      'cursor,vscode',
+      '--no-install',
+      '--no-agents',
+    ])
+
+    expect(options.command).toBe('init')
+    if (options.command !== 'init') {
+      throw new Error('Expected init options')
+    }
+
+    expect(options.mcpClientConfigs).toEqual(['cursor', 'vscode'])
+  })
+
   test('parseInitArgs rejects testing package in init mode', async () => {
     const tempDir = createTempDir()
 
@@ -180,6 +216,7 @@ describe('embed-ui CLI', () => {
     const tempDir = createTempDir()
 
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
+    vi.stubEnv('LANG', 'ru_RU.UTF-8')
 
     await runInit({
       ...parseInitArgs([
@@ -190,6 +227,7 @@ describe('embed-ui CLI', () => {
         'npm',
         '--no-install',
         '--no-agents',
+        '--no-mcp',
       ]),
       version: '1.2.3',
     })
@@ -199,8 +237,8 @@ describe('embed-ui CLI', () => {
     expect(packageJson.type).toBe('module')
     expect(packageJson.scripts).toMatchObject({
       build: 'vite build',
-      lint: 'eslint .',
-      'lint:fix': 'eslint --fix .',
+      eslint: 'eslint .',
+      'eslint:fix': 'eslint --fix .',
       'publish-extension': 'node scripts/publish-extension.mjs',
     })
     expect(packageJson.dependencies).toMatchObject({
@@ -242,13 +280,26 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain(
       'pluginVueI18n.configs.recommended'
     )
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain(
+      'order: [\'template\', \'script\', \'i18n\', \'style\']'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain(
+      '\'vue/html-indent\': [\'error\', 4'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain(
+      '\'vue/script-indent\': [\'error\', 2'
+    )
     expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain('value-vue-components')
     expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain('partitions: {')
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain(
       '@intlify/unplugin-vue-i18n/vite'
     )
+    expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain(
+      '@omnicajs/vue-remote/vite-plugin'
+    )
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('vite-svg-loader')
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('defaultImport: \'component\'')
+    expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('vueRemoteVitePlugin()')
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('vueI18n({')
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain(
       '\'@\': path.resolve(root, \'web\')'
@@ -264,26 +315,84 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'web/endpoint/endpoint.worker.ts'), 'utf8')).toContain(
       'i18n.global.locale.value = locale.value'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
-      '<script lang="ts" setup>'
+    const settingsPage = fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')
+    const orderWidget = fs.readFileSync(path.join(tempDir, 'web/widgets/OrderCommonAfterWidget.vue'), 'utf8')
+
+    expect(settingsPage.indexOf('<template>')).toBeLessThan(settingsPage.indexOf('<script'))
+    expect(settingsPage.indexOf('<script')).toBeLessThan(settingsPage.indexOf('<i18n'))
+    expect(settingsPage.indexOf('<i18n')).toBeLessThan(settingsPage.indexOf('<style'))
+    expect(orderWidget.indexOf('<template>')).toBeLessThan(orderWidget.indexOf('<script'))
+    expect(orderWidget.indexOf('<script')).toBeLessThan(orderWidget.indexOf('<i18n'))
+    expect(orderWidget.indexOf('<i18n')).toBeLessThan(orderWidget.indexOf('<style'))
+
+    expect(settingsPage).toContain(
+      '<script lang="ts" remote setup>'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+    expect(settingsPage).toContain(
+      '    <main :class="$style[\'settings-page\']">'
+    )
+    expect(settingsPage).toContain(
       '<style lang="less" module>'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
-      ':class="$style.settingsPage"'
+    expect(settingsPage).toContain(
+      ':class="$style[\'settings-page\']"'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+    expect(settingsPage).toContain(
+      ':class="$style[\'settings-form\']"'
+    )
+    expect(settingsPage).toContain(
+      '@retailcrm/embed-ui-v1-components/assets/stylesheets/typography.less'
+    )
+    expect(settingsPage).toContain(
+      '&__heading {'
+    )
+    expect(settingsPage).toContain(
+      '.h4-accent(24px);'
+    )
+    expect(settingsPage).toContain(
       'import ExtensionIcon from \'@/shared/assets/extension.svg\''
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/pages/SettingsPage.vue'), 'utf8')).toContain(
+    expect(settingsPage).toContain(
+      'UiPageHeader'
+    )
+    expect(settingsPage).toContain(
+      'UiField'
+    )
+    expect(settingsPage).toContain(
       '<i18n locale="ru-RU" lang="json">'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/widgets/OrderCommonAfterWidget.vue'), 'utf8')).toContain(
+    expect(orderWidget).toContain(
+      '<script lang="ts" remote setup>'
+    )
+    expect(orderWidget).toContain(
+      '    <UiToolbarButton @click="openSidebar">'
+    )
+    expect(orderWidget).toContain(
       'useI18n({ useScope: \'local\' })'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/widgets/OrderCommonAfterWidget.vue'), 'utf8')).toContain(
+    expect(orderWidget).toContain(
       '<style lang="less" module>'
+    )
+    expect(orderWidget).toContain(
+      '@retailcrm/embed-ui-v1-components/assets/stylesheets/typography.less'
+    )
+    expect(orderWidget).toContain(
+      ':class="$style[\'order-widget-sidebar\']"'
+    )
+    expect(orderWidget).toContain(
+      '&__lead {'
+    )
+    expect(orderWidget).toContain(
+      '.text-small();'
+    )
+    expect(orderWidget).toContain(
+      'UiToolbarButton'
+    )
+    expect(orderWidget).toContain(
+      'UiModalSidebar'
+    )
+    expect(orderWidget).toContain(
+      'UiModalWindow'
     )
     expect(fs.existsSync(path.join(tempDir, 'web/shared/assets/extension.svg'))).toBe(true)
     expect(fs.readFileSync(path.join(tempDir, 'extensionrc.json'), 'utf8')).toContain(
@@ -291,6 +400,305 @@ describe('embed-ui CLI', () => {
     )
     expect(fs.readFileSync(path.join(tempDir, 'scripts/publish-extension.mjs'), 'utf8')).toContain(
       'extensionrc.json'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      '# Фронтенд расширения RetailCRM'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      'Код страницы: `settings`'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      'Цель виджета: `order/card:common.after`'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      'npm run eslint'
+    )
+  })
+
+  test('init preflight warns about incompatible dependencies without rewriting them', async () => {
+    const tempDir = createTempDir()
+    const packageJsonPath = path.join(tempDir, 'package.json')
+
+    writeFile(packageJsonPath, JSON.stringify({
+      name: 'existing-app',
+      type: 'module',
+      devDependencies: {
+        vue: '^2.7.0',
+      },
+    }, null, 2))
+
+    const logs: string[] = []
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-template',
+        '--dry-run',
+      ]),
+      version: '1.2.3',
+    })
+
+    const output = logs.join('\n')
+
+    expect(output).toContain('preflight')
+    expect(output).toContain('package.json: found')
+    expect(output).toContain('vue already exists in devDependencies; expected dependencies')
+    expect(output).toContain('vue has range ^2.7.0; expected compatible ^3.5')
+    expect(JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).devDependencies.vue).toBe('^2.7.0')
+  })
+
+  test('init delegates MCP setup to endpoint package hook', async () => {
+    const tempDir = createTempDir()
+    const logs: string[] = []
+
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--dry-run',
+        '--mcp-client-configs',
+        'cursor,vscode',
+      ]),
+      version: '1.2.3',
+    })
+
+    const output = logs.join('\n')
+
+    expect(output).toContain('v1-endpoint init-config: enabled')
+    expect(output).toContain('MCP client configs requested: cursor, vscode')
+    expect(output).toContain('npm exec --yes --package @retailcrm/embed-ui-v1-endpoint -- embed-ui-v1-endpoint init-config')
+    expect(output).toContain('--mcp-client-configs cursor,vscode')
+  })
+
+  test('package hooks prefer local bin and fall back to package-manager dlx commands', () => {
+    const tempDir = createTempDir()
+    const brokenInstallDir = createTempDir()
+    const localBinPath = path.join(
+      tempDir,
+      'node_modules',
+      '.bin',
+      process.platform === 'win32' ? 'embed-ui-v1-endpoint.cmd' : 'embed-ui-v1-endpoint'
+    )
+
+    expect(
+      resolvePackageHookCommand(
+        tempDir,
+        '@retailcrm/embed-ui-v1-endpoint',
+        'embed-ui-v1-endpoint',
+        'yarn',
+        ['init-config', tempDir]
+      ).display
+    ).toContain('yarn dlx -p @retailcrm/embed-ui-v1-endpoint embed-ui-v1-endpoint init-config')
+
+    writeFile(
+      path.join(brokenInstallDir, 'node_modules/@retailcrm/embed-ui-v1-endpoint/package.json'),
+      JSON.stringify({ name: '@retailcrm/embed-ui-v1-endpoint' })
+    )
+
+    expect(() => resolvePackageHookCommand(
+      brokenInstallDir,
+      '@retailcrm/embed-ui-v1-endpoint',
+      'embed-ui-v1-endpoint',
+      'npm',
+      ['init-config', brokenInstallDir]
+    )).toThrow('@retailcrm/embed-ui-v1-endpoint is installed, but embed-ui-v1-endpoint was not found')
+
+    writeFile(localBinPath, '')
+
+    expect(
+      resolvePackageHookCommand(
+        tempDir,
+        '@retailcrm/embed-ui-v1-endpoint',
+        'embed-ui-v1-endpoint',
+        'npm',
+        ['init-config', tempDir]
+      )
+    ).toEqual({
+      command: localBinPath,
+      args: ['init-config', tempDir],
+      display: `${localBinPath} init-config ${tempDir}`,
+      source: 'local',
+    })
+  })
+
+  test('endpoint MCP force updates only managed client entries', () => {
+    const tempDir = createTempDir()
+    const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
+    const cursorConfigPath = path.join(tempDir, '.cursor/mcp.json')
+    const vscodeConfigPath = path.join(tempDir, '.vscode/mcp.json')
+
+    writeFile(cursorConfigPath, JSON.stringify({
+      mcpServers: {
+        'retailcrm-embed-ui-v1-endpoint': {
+          command: 'old-command',
+          args: ['old-args'],
+        },
+        'custom-user-server': {
+          command: 'node',
+          args: ['custom-server.mjs'],
+        },
+      },
+    }, null, 2))
+
+    writeFile(vscodeConfigPath, JSON.stringify({
+      inputs: [
+        {
+          id: 'custom-token',
+          type: 'promptString',
+        },
+      ],
+      servers: {
+        'retailcrm-embed-ui-v1-endpoint': {
+          command: 'old-command',
+          args: ['old-args'],
+        },
+        'custom-vscode-server': {
+          command: 'node',
+          args: ['vscode-server.mjs'],
+        },
+      },
+    }, null, 2))
+
+    execFileSync('node', [
+      endpointBin,
+      'init-config',
+      tempDir,
+      '--mcp-client-configs',
+      'cursor,vscode',
+      '--force',
+    ])
+
+    const cursorConfig = readJsonFile<{
+      mcpServers: Record<string, { command: string; args: string[] }>;
+    }>(cursorConfigPath)
+    const vscodeConfig = readJsonFile<{
+      inputs: Array<{ id: string; type: string }>;
+      servers: Record<string, { command: string; args: string[] }>;
+    }>(vscodeConfigPath)
+
+    expect(cursorConfig.mcpServers['retailcrm-embed-ui-v1-endpoint']).toEqual({
+      command: 'npx',
+      args: ['-y', '-p', '@retailcrm/embed-ui-v1-endpoint', 'embed-ui-v1-endpoint-mcp'],
+    })
+    expect(cursorConfig.mcpServers['custom-user-server']).toEqual({
+      command: 'node',
+      args: ['custom-server.mjs'],
+    })
+    expect(vscodeConfig.inputs).toEqual([
+      {
+        id: 'custom-token',
+        type: 'promptString',
+      },
+    ])
+    expect(vscodeConfig.servers['retailcrm-embed-ui-v1-endpoint']).toEqual({
+      command: 'npx',
+      args: ['-y', '-p', '@retailcrm/embed-ui-v1-endpoint', 'embed-ui-v1-endpoint-mcp'],
+    })
+    expect(vscodeConfig.servers['custom-vscode-server']).toEqual({
+      command: 'node',
+      args: ['vscode-server.mjs'],
+    })
+  })
+
+  test('init can force dependency ranges and fix dependency sections', async () => {
+    const tempDir = createTempDir()
+    const packageJsonPath = path.join(tempDir, 'package.json')
+
+    writeFile(packageJsonPath, JSON.stringify({
+      name: 'existing-app',
+      type: 'module',
+      devDependencies: {
+        vue: '^2.7.0',
+      },
+    }, null, 2))
+
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-template',
+        '--force-deps',
+        '--fix-sections',
+      ]),
+      version: '1.2.3',
+    })
+
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+
+    expect(packageJson.dependencies.vue).toBe('^3.5')
+    expect(packageJson.devDependencies.vue).toBeUndefined()
+  })
+
+  test('init skips existing vue-i18n dependency setup', async () => {
+    const tempDir = createTempDir()
+    const packageJsonPath = path.join(tempDir, 'package.json')
+
+    writeFile(packageJsonPath, JSON.stringify({
+      name: 'existing-i18n-app',
+      type: 'module',
+      devDependencies: {
+        'vue-i18n': '^10.0.0',
+      },
+    }, null, 2))
+
+    const logs: string[] = []
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-template',
+        '--force-deps',
+        '--fix-sections',
+      ]),
+      version: '1.2.3',
+    })
+
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+    const output = logs.join('\n')
+
+    expect(packageJson.devDependencies['vue-i18n']).toBe('^10.0.0')
+    expect(packageJson.dependencies?.['vue-i18n']).toBeUndefined()
+    expect(output).toContain(
+      'vue-i18n: found; i18n dependency setup will be skipped to avoid conflicts with existing project configuration'
+    )
+    expect(output).toContain(
+      'vue-i18n already exists; i18n dependency setup skipped to avoid conflicts with existing project configuration'
     )
   })
 })

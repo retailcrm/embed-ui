@@ -4,10 +4,12 @@ import type { PackageChange } from './types'
 import type { PackageManager } from './args'
 
 export const createInitChanges = (): InitChanges => ({
+  preflight: [],
   packageJson: [],
   directories: [],
   files: [],
   agents: [],
+  mcp: [],
   hooks: [],
   install: null,
   skipped: [],
@@ -45,6 +47,14 @@ export const printInitReport = (
   console.log(`Resolved version: ${version}`)
   console.log(`Package manager: ${packageManager}`)
 
+  if (changes.preflight.length > 0) {
+    console.log('')
+    console.log('preflight')
+    for (const item of changes.preflight) {
+      console.log(`  ${item}`)
+    }
+  }
+
   if (changes.packageJson.length > 0) {
     console.log('')
     console.log('package.json')
@@ -75,6 +85,14 @@ export const printInitReport = (
     }
   }
 
+  if (changes.mcp.length > 0) {
+    console.log('')
+    console.log('MCP')
+    for (const mcpChange of changes.mcp) {
+      console.log(`  ${mcpChange}`)
+    }
+  }
+
   if (changes.hooks.length > 0) {
     console.log('')
     console.log('package hooks')
@@ -100,7 +118,7 @@ export const printInitReport = (
   if (changes.warnings.length > 0) {
     console.log('')
     console.log('warnings')
-    for (const warning of changes.warnings) {
+    for (const warning of new Set(changes.warnings)) {
       console.log(`  ${warning}`)
     }
   }

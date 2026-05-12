@@ -38,6 +38,11 @@ export const INIT_DEV_DEPENDENCIES: Array<{ name: string; range: string }> = [
   { name: 'vue-eslint-parser', range: '^10.4' },
 ]
 
+export const I18N_RUNTIME_DEPENDENCY = 'vue-i18n'
+
+export const hasExistingDependency = (packageJson: PackageJson, name: string): boolean =>
+  findDependencySection(packageJson, name) !== null
+
 export const detectFormatting = (source: string): Formatting => {
   const newline = source.includes('\r\n') ? '\r\n' : DEFAULT_NEWLINE
   const indentMatch = source.match(/\n([ \t]+)"/)
@@ -94,8 +99,8 @@ export const readOrCreatePackageJson = (
       type: 'module',
       scripts: {
         build: 'vite build',
-        lint: 'eslint .',
-        'lint:fix': 'eslint --fix .',
+        eslint: 'eslint .',
+        'eslint:fix': 'eslint --fix .',
       },
       dependencies: {},
       devDependencies: {},
@@ -109,6 +114,19 @@ const ensureObjectField = (object: PackageJson, field: string): PackageJson => {
   }
 
   return object[field] as PackageJson
+}
+
+const resolveRangeMajor = (range: string): number | null => {
+  const match = range.match(/\d+/u)
+
+  return match ? Number(match[0]) : null
+}
+
+const isCompatibleRange = (currentRange: string, expectedRange: string): boolean => {
+  const currentMajor = resolveRangeMajor(currentRange)
+  const expectedMajor = resolveRangeMajor(expectedRange)
+
+  return currentMajor !== null && expectedMajor !== null && currentMajor === expectedMajor
 }
 
 export const setMissingScript = (
@@ -142,13 +160,35 @@ export const setDependency = (
   section: DependencySection,
   name: string,
   range: string,
-  changes: InitChanges
+  changes: InitChanges,
+  options: {
+    fixSections?: boolean;
+    forceDeps?: boolean;
+  } = {}
 ): void => {
-  const currentSection = findDependencySection(packageJson, name)
+  let currentSection = findDependencySection(packageJson, name)
 
   if (currentSection && currentSection !== section) {
-    changes.warnings.push(`${name} already exists in ${currentSection}; expected ${section}`)
-    return
+    if (options.fixSections) {
+      const previousSection = currentSection
+      const currentDependencyMap = packageJson[currentSection] as Record<string, unknown>
+      const nextDependencyMap = ensureObjectField(packageJson, section)
+
+      nextDependencyMap[name] = currentDependencyMap[name]
+      delete currentDependencyMap[name]
+      currentSection = section
+
+      changes.packageJson.push({
+        type: 'update',
+        section,
+        name,
+        currentRange: `in ${previousSection}`,
+        nextRange: `move to ${section}`,
+      })
+    } else {
+      changes.warnings.push(`${name} already exists in ${currentSection}; expected ${section}. Use --fix-sections to move it.`)
+      return
+    }
   }
 
   const dependencyMap = ensureObjectField(packageJson, section)
@@ -159,8 +199,14 @@ export const setDependency = (
   }
 
   if (typeof currentRange === 'string' && !isTargetPackage(name)) {
-    changes.warnings.push(`${name} already exists with range ${currentRange}; expected ${range}`)
-    return
+    if (isCompatibleRange(currentRange, range) && !options.forceDeps) {
+      return
+    }
+
+    if (!options.forceDeps) {
+      changes.warnings.push(`${name} has range ${currentRange}; expected compatible ${range}. Use --force-deps to replace it.`)
+      return
+    }
   }
 
   dependencyMap[name] = typeof currentRange === 'string'

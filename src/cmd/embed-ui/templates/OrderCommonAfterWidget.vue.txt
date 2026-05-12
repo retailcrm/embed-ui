@@ -1,0 +1,272 @@
+<template>
+    <UiToolbarButton @click="openSidebar">
+        {{ t('openSidebar') }}
+    </UiToolbarButton>
+
+    <UiToolbarLink
+        dotted
+        href="javascript:void(0);"
+        @click="openWindow"
+    >
+        {{ t('openWindow') }}
+    </UiToolbarLink>
+
+    <UiModalSidebar v-model:opened="sidebarOpened">
+        <template #title>
+            {{ t('sidebarTitle') }}
+        </template>
+
+        <div :class="$style['order-widget-sidebar']">
+            <p :class="$style['order-widget-sidebar__lead']">{{ t('sidebarLead') }}</p>
+
+            <div :class="$style['order-widget-summary']">
+                <span :class="$style['order-widget-summary__label']">{{ t('sampleTarget') }}</span>
+                <strong :class="$style['order-widget-summary__value']">{{ props.target }}</strong>
+            </div>
+
+            <div :class="$style['order-widget-summary']">
+                <span :class="$style['order-widget-summary__label']">{{ t('sampleCustomer') }}</span>
+                <strong :class="$style['order-widget-summary__value']">{{ t('sampleCustomerValue') }}</strong>
+            </div>
+
+            <UiField
+                :id="fieldIds.followUpNote"
+                v-slot="{ id, ariaInvalid, ariaLabelledby }"
+                :label="t('followUpNote')"
+            >
+                <UiTextbox
+                    :id="id"
+                    v-model:value="followUpNote"
+                    :input-attributes="{
+                        'aria-invalid': ariaInvalid,
+                        'aria-labelledby': ariaLabelledby,
+                    }"
+                    multiline
+                    rows="4"
+                    width="100%"
+                />
+            </UiField>
+
+            <UiField
+                :id="fieldIds.createTask"
+                v-slot="{ id, ariaInvalid, ariaLabelledby }"
+                :label="t('createTask')"
+            >
+                <UiSwitch
+                    :id="id"
+                    v-model:value="createTask"
+                    :aria-invalid="ariaInvalid"
+                    :aria-labelledby="ariaLabelledby"
+                />
+            </UiField>
+        </div>
+
+        <template #footer>
+            <div :class="$style['order-widget-footer']">
+                <UiButton @click="saveDraft">
+                    {{ t('saveDraft') }}
+                </UiButton>
+
+                <UiButton
+                    appearance="secondary"
+                    @click="closeSidebar"
+                >
+                    {{ t('close') }}
+                </UiButton>
+            </div>
+        </template>
+    </UiModalSidebar>
+
+    <UiModalWindow v-model:opened="windowOpened">
+        <template #title>
+            {{ t('windowTitle') }}
+        </template>
+
+        <div :class="$style['order-widget-window']">
+            <p :class="$style['order-widget-window__lead']">{{ t('windowLead') }}</p>
+        </div>
+
+        <template #footer>
+            <div :class="$style['order-widget-footer']">
+                <UiButton @click="saveWindow">
+                    {{ t('save') }}
+                </UiButton>
+
+                <UiButton
+                    appearance="secondary"
+                    @click="windowOpened = false"
+                >
+                    {{ t('cancel') }}
+                </UiButton>
+            </div>
+        </template>
+    </UiModalWindow>
+</template>
+
+<script lang="ts" remote setup>
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+import {
+  UiButton,
+  UiField,
+  UiModalSidebar,
+  UiModalWindow,
+  UiSwitch,
+  UiTextbox,
+  UiToolbarButton,
+  UiToolbarLink,
+} from '@retailcrm/embed-ui-v1-components/remote'
+
+const props = defineProps<{
+  target: string
+}>()
+
+const { t } = useI18n({ useScope: 'local' })
+
+const sidebarOpened = ref(false)
+const windowOpened = ref(false)
+const followUpNote = ref('Call after payment confirmation.')
+const createTask = ref(true)
+
+const fieldIds = {
+  followUpNote: 'order-follow-up-note',
+  createTask: 'order-create-task',
+} as const
+
+const openSidebar = () => {
+  sidebarOpened.value = true
+}
+
+const openWindow = () => {
+  windowOpened.value = true
+}
+
+const closeSidebar = () => {
+  sidebarOpened.value = false
+}
+
+const saveDraft = () => {
+  sidebarOpened.value = false
+}
+
+const saveWindow = () => {
+  windowOpened.value = false
+}
+</script>
+
+<i18n locale="en-GB" lang="json">
+{
+  "cancel": "Cancel",
+  "close": "Close",
+  "createTask": "Create task after save",
+  "followUpNote": "Follow-up note",
+  "openSidebar": "Prepare follow-up",
+  "openWindow": "Quick action",
+  "sampleCustomer": "Sample customer",
+  "sampleCustomerValue": "Maria Garcia, paid order",
+  "sampleTarget": "Current target",
+  "save": "Save",
+  "saveDraft": "Save draft",
+  "sidebarLead": "Use this sidebar as a compact place for real order controls.",
+  "sidebarTitle": "Order follow-up",
+  "windowLead": "Use a modal window for a focused confirmation or a short blocking action.",
+  "windowTitle": "Quick order action"
+}
+</i18n>
+
+<i18n locale="es-ES" lang="json">
+{
+  "cancel": "Cancelar",
+  "close": "Cerrar",
+  "createTask": "Crear tarea al guardar",
+  "followUpNote": "Nota de seguimiento",
+  "openSidebar": "Preparar seguimiento",
+  "openWindow": "Accion rapida",
+  "sampleCustomer": "Cliente de ejemplo",
+  "sampleCustomerValue": "Maria Garcia, pedido pagado",
+  "sampleTarget": "Target actual",
+  "save": "Guardar",
+  "saveDraft": "Guardar borrador",
+  "sidebarLead": "Use esta barra lateral como lugar compacto para controles reales del pedido.",
+  "sidebarTitle": "Seguimiento del pedido",
+  "windowLead": "Use una ventana modal para una confirmacion enfocada o una accion bloqueante breve.",
+  "windowTitle": "Accion rapida del pedido"
+}
+</i18n>
+
+<i18n locale="ru-RU" lang="json">
+{
+  "cancel": "Отменить",
+  "close": "Закрыть",
+  "createTask": "Создать задачу после сохранения",
+  "followUpNote": "Заметка для связи",
+  "openSidebar": "Подготовить связь",
+  "openWindow": "Быстрое действие",
+  "sampleCustomer": "Демонстрационный клиент",
+  "sampleCustomerValue": "Мария Гарсия, оплаченный заказ",
+  "sampleTarget": "Текущая цель",
+  "save": "Сохранить",
+  "saveDraft": "Сохранить черновик",
+  "sidebarLead": "Используйте эту боковую панель как компактное место для реальных контролов заказа.",
+  "sidebarTitle": "Связь по заказу",
+  "windowLead": "Используйте модальное окно для точечного подтверждения или короткого блокирующего действия.",
+  "windowTitle": "Быстрое действие с заказом"
+}
+</i18n>
+
+<style lang="less" module>
+@import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less';
+@import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/typography.less';
+
+.order-widget-sidebar {
+  display: grid;
+  gap: 18px;
+
+  &__lead {
+    .text-small();
+
+    margin: 0;
+    color: @grey-900;
+  }
+}
+
+.order-widget-window {
+  display: grid;
+  gap: 18px;
+
+  &__lead {
+    .text-small();
+
+    margin: 0;
+    color: @grey-900;
+  }
+}
+
+.order-widget-summary {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid @grey-500;
+  border-radius: 6px;
+  background: @grey-100;
+
+  &__label {
+    .text-tiny();
+
+    color: @grey-800;
+  }
+
+  &__value {
+    .text-small-accent();
+
+    color: @black-500;
+  }
+}
+
+.order-widget-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+</style>

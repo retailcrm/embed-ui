@@ -1,0 +1,47 @@
+import type { App } from 'vue'
+
+import { watch } from 'vue'
+
+import { useField } from '@retailcrm/embed-ui'
+
+import {
+  definePageRunner,
+  defineRunner,
+  defineWidgetRunner,
+  runEndpoint,
+} from '@retailcrm/embed-ui-v1-endpoint/remote'
+import {
+  useContext as useSettingsContext,
+} from '@retailcrm/embed-ui-v1-contexts/remote/settings'
+
+import OrderCommonAfterWidget from '../widgets/OrderCommonAfterWidget.vue'
+
+import SettingsPage from '../pages/SettingsPage.vue'
+
+import { i18n } from '../i18n'
+
+const setupApp = async (app: App) => {
+  app.use(i18n)
+
+  const settings = useSettingsContext()
+  await settings.initialize()
+
+  const locale = useField(settings, 'system.locale')
+
+  i18n.global.locale.value = locale.value
+
+  watch(locale, value => {
+    i18n.global.locale.value = value
+  })
+}
+
+const runner = defineRunner({
+  pages: [{
+    __PAGE_CODE__: definePageRunner(SettingsPage, setupApp),
+  }],
+  widgets: [{
+    __WIDGET_TARGET__: defineWidgetRunner(OrderCommonAfterWidget, setupApp),
+  }],
+})
+
+runEndpoint(runner)

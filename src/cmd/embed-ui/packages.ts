@@ -26,6 +26,14 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
     name: '@retailcrm/embed-ui-v1-components',
     section: 'dependencies',
     description: 'UI-компоненты для host/remote приложений.',
+    hooks: [
+      {
+        type: 'agents',
+        binName: 'embed-ui-v1-components',
+        command: 'init-agents',
+        failureMode: 'advisory',
+      },
+    ],
   },
   {
     id: 'contexts',
@@ -50,6 +58,22 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
     name: '@retailcrm/embed-ui-v1-endpoint',
     section: 'dependencies',
     description: 'Endpoint API для интеграций в RetailCRM.',
+    hooks: [
+      {
+        type: 'agents',
+        binName: 'embed-ui-v1-endpoint',
+        command: 'init-agents',
+        failureMode: 'advisory',
+        requiresMcp: true,
+      },
+      {
+        type: 'config',
+        binName: 'embed-ui-v1-endpoint',
+        command: 'init-config',
+        failureMode: 'advisory',
+        requiresMcp: true,
+      },
+    ],
   },
 ]
 
