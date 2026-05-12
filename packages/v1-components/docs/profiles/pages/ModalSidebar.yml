@@ -36,7 +36,7 @@ examples:
                       <div class="modal-sidebar-footer">
                           <div class="modal-sidebar-footer__main">
                               <UiButton @click="save">
-                                  Open
+                                  Save
                               </UiButton>
 
                               <UiButton appearance="secondary" @click="open = false">
