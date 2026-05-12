@@ -1,10 +1,8 @@
 import type { Component, CreateAppFunction } from 'vue'
 
-import type { Channel } from '@omnicajs/vue-remote/dist/remote'
+import type { Channel, RemoteRoot, SchemaOf } from '@omnicajs/vue-remote/dist/remote'
 
 import type { Pinia } from 'pinia'
-
-import type { RemoteRoot, SchemaOf } from '@omnicajs/vue-remote/remote'
 
 import type {
   TargetList,
