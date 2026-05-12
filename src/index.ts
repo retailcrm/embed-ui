@@ -70,7 +70,7 @@ export const createWidgetEndpoint = (
     async run (channel: Channel, target: WidgetTarget) {
       retain(channel)
 
-      const root = await mountEndpointRoot(channel)
+      const root = (await mountEndpointRoot(channel)) as Parameters<typeof createRemoteRenderer>[0]
 
       const { createApp } = createRemoteRenderer(root)
 
