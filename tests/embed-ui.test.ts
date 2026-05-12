@@ -456,6 +456,63 @@ describe('embed-ui CLI', () => {
     expect(JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')).devDependencies.vue).toBe('^2.7.0')
   })
 
+  test('init preflight explains existing config and template gaps', async () => {
+    const tempDir = createTempDir()
+
+    writeFile(path.join(tempDir, 'tsconfig.json'), JSON.stringify({
+      compilerOptions: {
+        moduleResolution: 'Node',
+        paths: {
+          '@/*': ['./src/*'],
+        },
+      },
+    }, null, 2))
+    writeFile(path.join(tempDir, 'vite.config.ts'), [
+      'import { defineConfig } from \'vite\'',
+      '',
+      'export default defineConfig({})',
+      '',
+    ].join('\n'))
+    writeFile(path.join(tempDir, 'eslint.config.js'), 'export default []\n')
+    writeFile(path.join(tempDir, 'web/pages/SettingsPage.vue'), '<template />\n')
+    writeFile(path.join(tempDir, 'README.md'), '# Existing project\n')
+
+    const logs: string[] = []
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--dry-run',
+      ]),
+      version: '1.2.3',
+    })
+
+    const output = logs.join('\n')
+
+    expect(output).toContain('tsconfig.json: moduleResolution is not "Bundler"')
+    expect(output).toContain('tsconfig.json: resolveJsonModule is not enabled')
+    expect(output).toContain('tsconfig.json: @/* path alias does not point to web/*')
+    expect(output).toContain('@omnicajs/vue-remote/tooling plugin is missing')
+    expect(output).toContain('vite.config.ts: @omnicajs/vue-remote/vite-plugin is missing')
+    expect(output).toContain('vite.config.ts: vue-i18n Vite plugin is missing')
+    expect(output).toContain('vite.config.ts: SVG component loader is missing')
+    expect(output).toContain('vite.config.ts: @ alias is missing')
+    expect(output).toContain('eslint.config.js: @intlify/eslint-plugin-vue-i18n is missing')
+    expect(output).toContain('eslint.config.js: @omnicajs/eslint-plugin-dependencies is missing')
+    expect(output).toContain('web/pages/SettingsPage.vue already exists; starter settings page will not be generated')
+    expect(output).toContain('README.md already exists; generated project-level starter file will be skipped')
+  })
+
   test('init delegates MCP setup to endpoint package hook', async () => {
     const tempDir = createTempDir()
     const logs: string[] = []
