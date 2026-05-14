@@ -65,7 +65,7 @@ examples:
       <script lang="ts" setup>
       import { ref } from 'vue'
 
-      import IconDelete from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete.svg'
+      import IconDelete from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete-outlined.svg'
       import {
         UiButton,
         UiModalSidebar,

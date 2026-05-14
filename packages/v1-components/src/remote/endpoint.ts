@@ -35,6 +35,7 @@ export const createEndpointRoot = async (
     'UiModalWindow',
     'UiModalWindowSurface',
     'UiNumberStepper',
+    'UiPageFooter',
     'UiPageHeader',
     'UiPageHeaderLayout',
     'UiPageHeaderTitle',

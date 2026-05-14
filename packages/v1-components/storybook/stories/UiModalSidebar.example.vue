@@ -66,7 +66,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 
-import IconDelete from '~assets/sprites/ui/delete.svg'
+import IconDelete from '~assets/sprites/ui/delete-outlined.svg'
 
 import UiButton from '@/host/components/button/UiButton.vue'
 import UiModalSidebar from '@/host/components/modal-sidebar/UiModalSidebar.vue'

@@ -27,6 +27,7 @@ export { default as UiModalSidebar } from '@/host/components/modal-sidebar/UiMod
 export { default as UiModalWindow } from '@/host/components/modal-window/UiModalWindow.vue'
 export { default as UiModalWindowSurface } from '@/host/components/modal-window/UiModalWindowSurface.vue'
 export { default as UiNumberStepper } from '@/host/components/number-stepper/UiNumberStepper.vue'
+export { default as UiPageFooter } from '@/host/components/page-footer/UiPageFooter.vue'
 export { default as UiPageHeader } from '@/host/components/page-header/UiPageHeader.vue'
 export { default as UiPageHeaderLayout } from '@/host/components/page-header/UiPageHeaderLayout.vue'
 export { default as UiPageHeaderTitle } from '@/host/components/page-header/UiPageHeaderTitle.vue'

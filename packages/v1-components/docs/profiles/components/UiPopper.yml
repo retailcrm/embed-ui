@@ -77,7 +77,7 @@ examples:
       </template>
 
       <script lang="ts" setup>
-      import IconTrash from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete.svg'
+      import IconTrash from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete-outlined.svg'
       import { UiButton, UiPopper, UiPopperConnector, UiPopperTarget } from '@retailcrm/embed-ui-v1-components/remote'
       </script>
 use_when:
