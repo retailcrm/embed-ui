@@ -27,6 +27,7 @@ import { createMessages, createOrderWidget, createPublishScript } from './templa
 import { createRange } from './packages'
 import { createReadme } from './templates'
 import { createSettingsPage, createTsConfig, createViteConfig } from './templates'
+import { DEFAULT_INIT_PACKAGE_IDS } from './packages'
 import { ensureDirectory } from './filesystem'
 import { hasExistingDependency } from './package-json'
 import {
@@ -39,7 +40,9 @@ import { PACKAGE_MANAGERS, parseArgs, parseInitArgs } from './args'
 import { printChanges, printInitReport } from './report'
 import { promptForInstallSelection } from './packages'
 import { readOrCreatePackageJson, readPackageJson } from './package-json'
-import { resolveInstallPackages, resolveLatestVersion } from './packages'
+import { resolveInstallPackages } from './packages'
+import { resolveInteractiveInitOptions } from './interactive'
+import { resolveLatestVersion } from './packages'
 import { resolvePackageJsonPath } from './filesystem'
 import { ROOT_PACKAGE } from './packages'
 import { setDependency, setMissingScript } from './package-json'
@@ -50,7 +53,6 @@ import { writePackageJson } from './package-json'
 export type { CliOptions, InitOptions, UpdateOptions } from './args'
 export { parseArgs, parseInitArgs }
 
-const DEFAULT_INIT_PACKAGE_IDS = ['embed-ui', 'components', 'contexts', 'types', 'endpoint']
 const DEFAULT_INIT_DIRS = ['endpoint', 'pages', 'widgets', 'shared', 'i18n']
 
 const detectPackageManagerByLockfile = (cwd: string): PackageManager | null => {
@@ -350,7 +352,7 @@ const applyInitConfigs = (
   options: InitOptions,
   changes: InitChanges
 ): void => {
-  if (options.agentsOnly) {
+  if (options.noConfigs || options.agentsOnly) {
     return
   }
 
@@ -424,35 +426,40 @@ const runInstall = (
 
 export const runInit = async (options: InitOptions): Promise<void> => {
   const cwd = resolveInitCwd(options)
-  const sourceRoot = resolveInitSourceRoot(cwd, options)
+  const interactiveOptions = await resolveInteractiveInitOptions(
+    cwd,
+    options,
+    detectPackageManagerByLockfile(cwd)
+  )
+  const sourceRoot = resolveInitSourceRoot(cwd, interactiveOptions)
 
   if (fs.existsSync(sourceRoot) && !fs.statSync(sourceRoot).isDirectory()) {
     throw new Error(`Target path is not a directory: ${sourceRoot}`)
   }
 
-  const selectedPackages = resolveInitPackages(options.packages, options.with)
-  const version = options.agentsOnly
-    ? options.version ?? 'not used'
-    : options.version ?? resolveLatestVersion()
-  const packageManager = options.agentsOnly
-    ? options.packageManager ?? detectPackageManagerByLockfile(cwd) ?? 'npm'
-    : await resolvePackageManager(cwd, options.packageManager)
+  const selectedPackages = resolveInitPackages(interactiveOptions.packages, interactiveOptions.with)
+  const version = interactiveOptions.agentsOnly
+    ? interactiveOptions.version ?? 'not used'
+    : interactiveOptions.version ?? resolveLatestVersion()
+  const packageManager = interactiveOptions.agentsOnly
+    ? interactiveOptions.packageManager ?? detectPackageManagerByLockfile(cwd) ?? 'npm'
+    : await resolvePackageManager(cwd, interactiveOptions.packageManager)
   const changes = createInitChanges()
 
-  applyInitPreflight(cwd, sourceRoot, packageManager, selectedPackages, version, options, changes)
+  applyInitPreflight(cwd, sourceRoot, packageManager, selectedPackages, version, interactiveOptions, changes)
 
   let packageJsonPath: string | null = null
-  if (!options.agentsOnly) {
-    packageJsonPath = applyInitPackageJson(cwd, selectedPackages, version, packageManager, options, changes)
-    applyInitDirectories(sourceRoot, options, changes)
-    applyInitConfigs(cwd, sourceRoot, options, changes)
-    applyInitTemplate(cwd, sourceRoot, packageManager, options, changes)
-    applyInitPackageConfigHooks(cwd, selectedPackages, packageManager, options, changes)
+  if (!interactiveOptions.agentsOnly) {
+    packageJsonPath = applyInitPackageJson(cwd, selectedPackages, version, packageManager, interactiveOptions, changes)
+    applyInitDirectories(sourceRoot, interactiveOptions, changes)
+    applyInitConfigs(cwd, sourceRoot, interactiveOptions, changes)
+    applyInitTemplate(cwd, sourceRoot, packageManager, interactiveOptions, changes)
+    applyInitPackageConfigHooks(cwd, selectedPackages, packageManager, interactiveOptions, changes)
   }
 
-  applyInitAgents(cwd, selectedPackages, packageManager, options, changes)
-  runInstall(cwd, packageManager, options, changes, Boolean(packageJsonPath && changes.packageJson.length > 0))
-  printInitReport(cwd, sourceRoot, version, packageManager, changes, options)
+  applyInitAgents(cwd, selectedPackages, packageManager, interactiveOptions, changes)
+  runInstall(cwd, packageManager, interactiveOptions, changes, Boolean(packageJsonPath && changes.packageJson.length > 0))
+  printInitReport(cwd, sourceRoot, version, packageManager, changes, interactiveOptions)
 }
 
 export const main = async (argv: string[] = process.argv.slice(2)): Promise<void> => {

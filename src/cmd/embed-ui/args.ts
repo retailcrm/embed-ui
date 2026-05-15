@@ -27,11 +27,13 @@ export interface InitOptions {
   packages: string[] | null;
   with: string[] | null;
   packageManager: PackageManager | null;
+  interactive: boolean;
   noInstall: boolean;
   force: boolean;
   forceDeps: boolean;
   fixSections: boolean;
   forceFiles: boolean;
+  noConfigs: boolean;
   noDirs: boolean;
   dirs: string[] | null;
   srcDir: string | null;
@@ -62,7 +64,9 @@ Options:
       --packages <list>   Comma-separated package ids or names for --add/init
       --cwd <path>        Project working directory for init
       --package-manager   Package manager for init installs
+      --interactive       Ask init questions in TTY instead of using every default
       --no-install        Do not run package manager install in init mode
+      --no-configs        Do not create root TypeScript, Vite, ESLint and env config files
       --force-deps        Replace incompatible existing init dependencies
       --fix-sections      Move init dependencies to expected package.json sections
       --no-agents         Do not create or update AGENTS.md in init mode
@@ -78,6 +82,7 @@ Examples:
   npx @retailcrm/embed-ui --add
   npx @retailcrm/embed-ui --add --packages components,contexts
   npx @retailcrm/embed-ui init ./web --package-manager yarn
+  npx @retailcrm/embed-ui init --interactive
 `
 
 const isSemverLike = (value: string): boolean => /^v?\d+\.\d+\.\d+/.test(value)
@@ -173,11 +178,13 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     })
     .option('dry-run', { type: 'boolean', default: false })
     .option('exact', { type: 'boolean', default: false })
+    .option('interactive', { type: 'boolean', default: false })
     .option('install', { type: 'boolean', default: true })
     .option('force', { type: 'boolean', default: false })
     .option('force-deps', { type: 'boolean', default: false })
     .option('fix-sections', { type: 'boolean', default: false })
     .option('force-files', { type: 'boolean', default: false })
+    .option('configs', { type: 'boolean', default: true })
     .option('dirs-enabled', { type: 'boolean', default: true })
     .option('template-enabled', { type: 'boolean', default: true })
     .option('agents', { type: 'boolean', default: true })
@@ -216,11 +223,13 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     packages: parsed.packages ?? null,
     with: parsed.with ?? null,
     packageManager: parsed.packageManager ?? null,
+    interactive: parsed.interactive,
     noInstall: !parsed.install,
     force: parsed.force,
     forceDeps: parsed.forceDeps,
     fixSections: parsed.fixSections,
     forceFiles: parsed.forceFiles,
+    noConfigs: !parsed.configs,
     noDirs: !parsed.dirsEnabled,
     dirs: parsed.dirs ?? null,
     srcDir: parsed.srcDir ?? null,

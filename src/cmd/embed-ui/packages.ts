@@ -13,6 +13,7 @@ import { parsePackageList } from './args'
 import { TARGET_SECTIONS } from './types'
 
 export const ROOT_PACKAGE = '@retailcrm/embed-ui'
+export const DEFAULT_INIT_PACKAGE_IDS = ['embed-ui', 'components', 'contexts', 'types', 'endpoint']
 
 export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
   {

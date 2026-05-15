@@ -173,6 +173,8 @@ describe('embed-ui CLI', () => {
       'init',
       '--force-deps',
       '--fix-sections',
+      '--interactive',
+      '--no-configs',
       '--no-install',
       '--no-agents',
     ])
@@ -184,6 +186,27 @@ describe('embed-ui CLI', () => {
 
     expect(options.forceDeps).toBe(true)
     expect(options.fixSections).toBe(true)
+    expect(options.interactive).toBe(true)
+    expect(options.noConfigs).toBe(true)
+  })
+
+  test('interactive init mode requires a TTY', async () => {
+    const tempDir = createTempDir()
+
+    await expect(runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--interactive',
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+      ]),
+      version: '1.2.3',
+    })).rejects.toThrow('Interactive init mode requires a TTY')
   })
 
   test('parseArgs supports opt-in MCP client configs', () => {
@@ -511,6 +534,39 @@ describe('embed-ui CLI', () => {
     expect(output).toContain('eslint.config.js: @omnicajs/eslint-plugin-dependencies is missing')
     expect(output).toContain('web/pages/SettingsPage.vue already exists; starter settings page will not be generated')
     expect(output).toContain('README.md already exists; generated project-level starter file will be skipped')
+  })
+
+  test('init can skip generated root configs', async () => {
+    const tempDir = createTempDir()
+    const logs: string[] = []
+
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-configs',
+        '--no-template',
+      ]),
+      version: '1.2.3',
+    })
+
+    const output = logs.join('\n')
+
+    expect(output).toContain('configs: disabled')
+    expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(false)
+    expect(fs.existsSync(path.join(tempDir, 'vite.config.ts'))).toBe(false)
+    expect(fs.existsSync(path.join(tempDir, 'eslint.config.js'))).toBe(false)
+    expect(fs.existsSync(path.join(tempDir, 'env.d.ts'))).toBe(false)
   })
 
   test('init delegates MCP setup to endpoint package hook', async () => {
