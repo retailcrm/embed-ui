@@ -376,15 +376,19 @@ export const applyInitPreflight = (
   changes.preflight.push(describePathState(cwd, 'src'))
   changes.preflight.push(describePathState(cwd, 'web'))
 
-  for (const configFile of CONFIG_FILES) {
-    if (fs.existsSync(path.join(cwd, configFile))) {
-      changes.preflight.push(`${configFile}: found; generated config will be skipped unless --force-files is used`)
+  if (options.noConfigs) {
+    changes.preflight.push('configs: disabled')
+  } else {
+    for (const configFile of CONFIG_FILES) {
+      if (fs.existsSync(path.join(cwd, configFile))) {
+        changes.preflight.push(`${configFile}: found; generated config will be skipped unless --force-files is used`)
+      }
     }
-  }
 
-  analyzeTsConfig(cwd, sourceRoot, changes)
-  analyzeViteConfig(cwd, sourceRoot, changes)
-  analyzeEslintConfig(cwd, changes)
+    analyzeTsConfig(cwd, sourceRoot, changes)
+    analyzeViteConfig(cwd, sourceRoot, changes)
+    analyzeEslintConfig(cwd, changes)
+  }
   analyzeTemplateFileSkips(cwd, sourceRoot, options, changes)
 
   if (hasEnabledMcpConfigHook(selectedPackages, options)) {

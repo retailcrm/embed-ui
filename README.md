@@ -73,12 +73,14 @@ npx @retailcrm/embed-ui init ./web --cwd ./my-project --package-manager npm
 Полезные флаги:
 
 - `--no-install` — не запускать установку зависимостей после изменения `package.json`.
+- `--interactive` — задать основные параметры через вопросы в TTY, сохранив флаги как явные ограничения.
 - `--version 0.9.21` — использовать указанную версию пакетов вместо последней версии из npm.
 - `--exact` — записывать точные версии вместо диапазонов.
 - `--packages embed-ui,components,contexts,types,endpoint` — явно выбрать пакеты для установки и настройки.
 - `--force-deps` — заменить несовместимые версии зависимостей.
 - `--fix-sections` — перенести зависимости в ожидаемые секции `dependencies`/`devDependencies`.
 - `--force-files` — перезаписать генерируемые стартовые файлы.
+- `--no-configs` — не создавать `tsconfig.json`, `vite.config.ts`, `eslint.config.js` и `env.d.ts`.
 - `--no-template` — не создавать стартовые Vue-файлы и `extensionrc.json`.
 - `--no-agents` — не создавать и не дополнять `AGENTS.md`.
 - `--no-mcp` — не добавлять MCP-настройки пакетов.
