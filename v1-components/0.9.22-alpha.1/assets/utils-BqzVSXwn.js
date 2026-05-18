@@ -1,0 +1,1 @@
+const o=e=>({toBeOneOf(t){return Object.values(t).includes(e)}}),r=(e,t)=>{const c={...e};for(const n of t)delete c[n];return c},u=(e,t)=>Object.keys(e).filter(t).reduce((c,n)=>({...c,[n]:e[n]}),{}),i=(e,t)=>{const c={};return Object.entries(e).forEach(([n,s])=>{t.includes(n)||(c[n]=s)}),c};export{o as e,r as o,u as p,i as w};
