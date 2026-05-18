@@ -5,9 +5,9 @@ import type { PackageManager, UpdateOptions } from './args'
 
 import { createInterface } from 'node:readline/promises'
 import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
 import process from 'node:process'
 
 import { applyInitAgents } from './agents'
@@ -478,6 +478,14 @@ export const main = async (argv: string[] = process.argv.slice(2)): Promise<void
   runUpdate(options)
 }
 
+export const isSameExecutablePath = (entryPath: string, moduleUrl: string): boolean => {
+  try {
+    return fs.realpathSync(entryPath) === fs.realpathSync(fileURLToPath(moduleUrl))
+  } catch {
+    return false
+  }
+}
+
 const isExecutedDirectly = (): boolean => {
   const entryPath = process.argv[1]
 
@@ -485,7 +493,7 @@ const isExecutedDirectly = (): boolean => {
     return false
   }
 
-  return pathToFileURL(path.resolve(entryPath)).href === import.meta.url
+  return isSameExecutablePath(path.resolve(entryPath), import.meta.url)
 }
 
 if (isExecutedDirectly()) {
