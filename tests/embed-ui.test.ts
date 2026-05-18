@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 import {
   afterEach,
@@ -13,7 +14,7 @@ import {
   vi,
 } from 'vitest'
 
-import { parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
+import { isSameExecutablePath, parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
 import { resolvePackageHookCommand } from '../src/cmd/embed-ui/package-hook-runner'
 import { runAdd, runInit, runUpdate } from '../src/cmd/embed-ui'
 
@@ -90,6 +91,18 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(ignoredPackageJsonPath, 'utf8')).toContain(
       '"@retailcrm/embed-ui-v1-types": "^0.1.0"'
     )
+  })
+
+  test('direct execution check accepts symlinked bin paths', () => {
+    const tempDir = createTempDir()
+    const realPath = path.join(tempDir, 'embed-ui.mjs')
+    const symlinkPath = path.join(tempDir, 'embed-ui')
+
+    writeFile(realPath, '#!/usr/bin/env node\n')
+    fs.symlinkSync(realPath, symlinkPath)
+
+    expect(isSameExecutablePath(symlinkPath, pathToFileURL(realPath).href)).toBe(true)
+    expect(isSameExecutablePath(path.join(tempDir, 'missing'), pathToFileURL(realPath).href)).toBe(false)
   })
 
   test('add mode updates only the target package.json and preserves CRLF', async () => {
