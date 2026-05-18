@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [0.9.22-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.21...v0.9.22-alpha.1) (2026-05-18)
+
+### Features
+
+* Embed UI init interactive mode added ([76d04fc](https://github.com/retailcrm/embed-ui/commit/76d04fc29755e03fd3ea56c2a5b495c854d8024f))
+* Embed UI initialization CLI added ([2770cfd](https://github.com/retailcrm/embed-ui/commit/2770cfde193b3816b20bd19705bf8c86bfcb20f4))
+* Embed UI project initialization added ([b6ec6ba](https://github.com/retailcrm/embed-ui/commit/b6ec6bae6cde10f8720b64568133f396b199ea67))
+* Endpoint target metadata generation added ([b52632d](https://github.com/retailcrm/embed-ui/commit/b52632d311b22ccc42199e99d5e543e7473e0050))
+* Init preflight diagnostics expanded ([771485a](https://github.com/retailcrm/embed-ui/commit/771485a8b52fad233162745bc257e7bee6fae982))
+* **v1-components:** UiLogicTree component was added ([63d46b9](https://github.com/retailcrm/embed-ui/commit/63d46b990339e00377c1d862b9831c8c7f86282b))
+* **v1-components:** UiPopconfirm component was added ([0999220](https://github.com/retailcrm/embed-ui/commit/09992203cd300c363419d4321aca8ba3ff91d261))
+* **v1-endpoint:** MCP project config initialization added ([a79082b](https://github.com/retailcrm/embed-ui/commit/a79082b963abf66e5dd2dd4246c6a1323d6da7c6))
+* **v1-endpoint:** MCP target resources and agent setup added ([8d7b620](https://github.com/retailcrm/embed-ui/commit/8d7b62026500b328fc3d199dbefb9e52c907924a))
+
+### Bug Fixes
+
+* Generated init project lint issues corrected ([d7d80f2](https://github.com/retailcrm/embed-ui/commit/d7d80f29264b57b71bcf7354ee0aa10c5335113e))
+* resolved embed-ui agents docs path ([7117caf](https://github.com/retailcrm/embed-ui/commit/7117caf92b0efc8c9ee43176162da36e5d47f21c))
+* **v1-components:** Storybook serve allowed hosts were updated ([259f493](https://github.com/retailcrm/embed-ui/commit/259f49315ae5388fd74da3c4faf0fef5d099b5bc))
+* Vue remote peer dependency ownership corrected ([cebeaa0](https://github.com/retailcrm/embed-ui/commit/cebeaa00d725035e69381e5cd9a1013b4b8db914))
+* Vue remote runtime dependency restored ([0ec71e0](https://github.com/retailcrm/embed-ui/commit/0ec71e0991451bbad9b3fa8f545ff5e5d97b691a))
 ## [0.9.21](https://github.com/retailcrm/embed-ui/compare/v0.9.20...v0.9.21) (2026-04-30)
 
 ### Bug Fixes
