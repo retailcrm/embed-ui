@@ -30,11 +30,13 @@ const priorityOf = (type: ReleaseType | undefined) => type
     preminor: -1,
     prepatch: -1,
     prerelease: -1,
+    release: -1,
   }[type] ?? -1
   : -1
 
 const isKnown = (type: unknown): type is ReleaseType => semver.RELEASE_TYPES.includes(type as ReleaseType)
-const isStable = (type: ReleaseType): type is StableReleaseType => !type.startsWith('pre')
+const isStable = (type: ReleaseType): type is StableReleaseType =>
+  type === 'major' || type === 'minor' || type === 'patch'
 
 const normalize = (
   prerelease: 'alpha' | 'beta' | 'rc' | undefined,
@@ -82,10 +84,16 @@ export default class VersionGenerator {
 
     return {
       type,
-      version: isKnown(type) && semver.valid(version, undefined)
-        ? semver.inc(version, type, this.prerelease, '1')
+      version: isKnown(type) && semver.valid(version)
+        ? this.increment(version, type)
         : version,
     }
+  }
+
+  private increment (version: string, type: ReleaseType) {
+    return typeof this.prerelease === 'string'
+      ? semver.inc(version, type, {}, this.prerelease, '1')
+      : semver.inc(version, type)
   }
 
   async bump (

@@ -1,11 +1,14 @@
 import type Logger from './Logger'
 
-import type { ExecOptions, PromiseWithChild } from 'node:child_process'
-
-import type { ObjectEncodingOptions } from 'node:fs'
+import type {
+  ExecFileOptionsWithStringEncoding,
+  PromiseWithChild,
+} from 'node:child_process'
 
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
+
+type RunnerExecOptions = Omit<ExecFileOptionsWithStringEncoding, 'encoding'>
 
 export default class Runner {
   private readonly dry: boolean
@@ -19,9 +22,12 @@ export default class Runner {
   async run (
     command: string,
     args: string[],
-    options: ObjectEncodingOptions & ExecOptions = {}
+    options: RunnerExecOptions = {}
   ) {
-    return await this.call(() => promisify(execFile)(command, args, options))
+    return await this.call(() => promisify(execFile)(command, args, {
+      ...options,
+      encoding: 'utf8',
+    }))
   }
 
   async call (thread: () => PromiseWithChild<{
