@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.22-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.1...v0.9.22-alpha.2) (2026-05-18)
+
+### Bug Fixes
+
+* Embed UI bin symlink execution corrected ([fae3464](https://github.com/retailcrm/embed-ui/commit/fae346498546496c7407a724769dcbe96ecd6191))
 ## [0.9.22-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.21...v0.9.22-alpha.1) (2026-05-18)
 
 ### Features
