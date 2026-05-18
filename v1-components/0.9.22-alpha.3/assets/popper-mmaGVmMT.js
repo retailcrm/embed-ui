@@ -1,0 +1,1 @@
+import{d as e}from"./createRemoteStoryRender-DbfDIKnd.js";const o="UiPopper";e(o,{emits:["attached","dispose","hide","hidden","show","shown","update:visible"]});const p="UiPopperConnector",i=e(p),t="UiPopperTarget",n=e(t);export{n as U,i as a};
