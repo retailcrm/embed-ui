@@ -14,6 +14,7 @@ export const DEFAULT_NEWLINE = '\n'
 
 export const INIT_RUNTIME_DEPENDENCIES: Array<{ name: string; range: string }> = [
   { name: '@omnicajs/vue-remote', range: '^0.2.23' },
+  { name: '@remote-ui/rpc', range: '^1.4.7' },
   { name: 'pinia', range: '^2.2' },
   { name: 'vue', range: '^3.5' },
   { name: 'vue-i18n', range: '^11' },
@@ -30,12 +31,14 @@ export const INIT_DEV_DEPENDENCIES: Array<{ name: string; range: string }> = [
   { name: 'eslint', range: '^9.39' },
   { name: 'eslint-plugin-vue', range: '^10.9' },
   { name: 'globals', range: '^16.5' },
+  { name: 'jsonc-eslint-parser', range: '^3.1' },
   { name: 'less', range: '^4.6' },
   { name: 'typescript', range: '^5.9' },
   { name: 'typescript-eslint', range: '^8.59' },
   { name: 'vite', range: '^7.3' },
   { name: 'vite-svg-loader', range: '^5.1' },
   { name: 'vue-eslint-parser', range: '^10.4' },
+  { name: 'yaml-eslint-parser', range: '^2.0' },
 ]
 
 export const I18N_RUNTIME_DEPENDENCY = 'vue-i18n'

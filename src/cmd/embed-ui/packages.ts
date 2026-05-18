@@ -7,6 +7,9 @@ import type {
 
 import { createInterface } from 'node:readline/promises'
 import { execFileSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+import fs from 'node:fs'
+import path from 'node:path'
 import process from 'node:process'
 
 import { parsePackageList } from './args'
@@ -94,6 +97,37 @@ export const resolveLatestVersion = (): string => {
 
   return output
 }
+
+export const resolveCurrentPackageVersion = (startPath = fileURLToPath(import.meta.url)): string | null => {
+  let currentDir = fs.existsSync(startPath) && fs.statSync(startPath).isDirectory()
+    ? startPath
+    : path.dirname(startPath)
+
+  while (true) {
+    const packageJsonPath = path.join(currentDir, 'package.json')
+
+    if (fs.existsSync(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {
+        name?: unknown;
+        version?: unknown;
+      }
+
+      if (packageJson.name === ROOT_PACKAGE && typeof packageJson.version === 'string') {
+        return packageJson.version
+      }
+    }
+
+    const parentDir = path.dirname(currentDir)
+    if (parentDir === currentDir) {
+      return null
+    }
+
+    currentDir = parentDir
+  }
+}
+
+export const resolveDefaultInitVersion = (): string =>
+  resolveCurrentPackageVersion() ?? resolveLatestVersion()
 
 export const isTargetPackage = (name: string): boolean =>
   name === ROOT_PACKAGE || name.startsWith(`${ROOT_PACKAGE}-`)

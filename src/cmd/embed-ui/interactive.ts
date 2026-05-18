@@ -1,15 +1,32 @@
 import type { InitOptions, PackageManager } from './args'
 
-import { createInterface } from 'node:readline/promises'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
+import { checkbox, input, select } from '@inquirer/prompts'
+
 import { DEFAULT_INIT_PACKAGE_IDS, INSTALLABLE_PACKAGES } from './packages'
-import { PACKAGE_MANAGERS, parsePackageList } from './args'
+import { PACKAGE_MANAGERS } from './args'
 import { resolveInstallPackages } from './packages'
 
-const INIT_PACKAGE_IDS = new Set(DEFAULT_INIT_PACKAGE_IDS)
+type InitAction = 'configs' | 'template' | 'agents' | 'mcp' | 'install'
+
+const INIT_ACTION_LABELS = {
+  configs: 'Создать базовые конфиги',
+  template: 'Создать стартовый шаблон',
+  agents: 'Обновить AGENTS.md',
+  mcp: 'Добавить MCP-настройки',
+  install: 'Запустить установку зависимостей',
+} satisfies Record<InitAction, string>
+
+const INIT_ACTION_DESCRIPTIONS = {
+  configs: 'tsconfig.json, vite.config.ts, eslint.config.js и env.d.ts',
+  template: 'Vue-точка входа, страница настроек, виджет заказа, i18n и publish script',
+  agents: 'Общие и пакетные инструкции для AI-агентов',
+  mcp: '.mcp.json и MCP-инструкции пакетов',
+  install: 'Запуск выбранного package manager после изменения package.json',
+} satisfies Record<InitAction, string>
 
 const resolveDefaultSourceRoot = (cwd: string, options: InitOptions): string => {
   if (options.srcDir) {
@@ -23,50 +40,89 @@ const resolveDefaultSourceRoot = (cwd: string, options: InitOptions): string => 
   return fs.existsSync(path.join(cwd, 'src')) ? './web' : './src'
 }
 
-const normalizeOptionalAnswer = (value: string): string | null => {
-  const trimmed = value.trim()
-
-  return trimmed.length ? trimmed : null
-}
-
-const askString = async (
-  readline: ReturnType<typeof createInterface>,
-  question: string,
-  defaultValue: string
-): Promise<string> => {
-  const answer = normalizeOptionalAnswer(await readline.question(`${question} [${defaultValue}]: `))
-
-  return answer ?? defaultValue
-}
-
-const askBoolean = async (
-  readline: ReturnType<typeof createInterface>,
-  question: string,
-  defaultValue: boolean
-): Promise<boolean> => {
-  const suffix = defaultValue ? 'Y/n' : 'y/N'
-
-  while (true) {
-    const answer = normalizeOptionalAnswer(await readline.question(`${question} [${suffix}]: `))
-
-    if (answer === null) {
-      return defaultValue
-    }
-
-    if (/^(y|yes|д|да)$/iu.test(answer)) {
-      return true
-    }
-
-    if (/^(n|no|н|нет)$/iu.test(answer)) {
-      return false
-    }
-
-    console.error('Введите yes/no или нажмите Enter для значения по умолчанию.')
+const resolvePromptedPackages = async (options: InitOptions): Promise<string[] | null> => {
+  if (options.packages) {
+    return options.packages
   }
+
+  const defaultPackageIds = [...DEFAULT_INIT_PACKAGE_IDS, ...(options.with ?? [])]
+  if (defaultPackageIds.includes('testing')) {
+    throw new Error('@retailcrm/embed-ui-v1-testing is not published for public init yet')
+  }
+
+  const selectedPackageIds = await checkbox<string>({
+    message: 'Пакеты для init',
+    choices: INSTALLABLE_PACKAGES
+      .filter((selectedPackage) => selectedPackage.id !== 'testing')
+      .map((selectedPackage) => ({
+        name: `${selectedPackage.id}: ${selectedPackage.name}`,
+        value: selectedPackage.id,
+        checked: defaultPackageIds.includes(selectedPackage.id),
+        description: selectedPackage.description,
+      })),
+    required: true,
+  })
+
+  resolveInstallPackages(selectedPackageIds)
+
+  return selectedPackageIds
 }
 
-const askPackageManager = async (
-  readline: ReturnType<typeof createInterface>,
+const resolveAvailableActions = (options: InitOptions): InitAction[] => {
+  const actions: InitAction[] = []
+
+  if (!options.agentsOnly && !options.noConfigs) {
+    actions.push('configs')
+  }
+
+  if (!options.agentsOnly && !options.noTemplate) {
+    actions.push('template')
+  }
+
+  if (!options.noAgents) {
+    actions.push('agents')
+  }
+
+  if (!options.noMcp) {
+    actions.push('mcp')
+  }
+
+  if (!options.agentsOnly && !options.noInstall) {
+    actions.push('install')
+  }
+
+  return actions
+}
+
+const applyPromptedActions = (options: InitOptions, selectedActions: InitAction[]): void => {
+  const selectedActionSet = new Set(selectedActions)
+
+  options.noConfigs = options.noConfigs || !selectedActionSet.has('configs')
+  options.noTemplate = options.noTemplate || !selectedActionSet.has('template')
+  options.noAgents = options.noAgents || !selectedActionSet.has('agents')
+  options.noMcp = options.noMcp || !selectedActionSet.has('mcp')
+  options.noInstall = options.noInstall || !selectedActionSet.has('install')
+}
+
+const resolvePromptedActions = async (options: InitOptions): Promise<InitAction[]> => {
+  const availableActions = resolveAvailableActions(options)
+
+  if (availableActions.length === 0) {
+    return []
+  }
+
+  return checkbox<InitAction>({
+    message: 'Действия init',
+    choices: availableActions.map((action) => ({
+      name: INIT_ACTION_LABELS[action],
+      value: action,
+      checked: true,
+      description: INIT_ACTION_DESCRIPTIONS[action],
+    })),
+  })
+}
+
+const resolvePromptedPackageManager = async (
   detectedPackageManager: PackageManager | null,
   explicitPackageManager: PackageManager | null
 ): Promise<PackageManager | null> => {
@@ -76,57 +132,14 @@ const askPackageManager = async (
 
   const defaultPackageManager = detectedPackageManager ?? 'npm'
 
-  while (true) {
-    const answer = await askString(
-      readline,
-      `Package manager (${PACKAGE_MANAGERS.join('/')})`,
-      defaultPackageManager
-    )
-
-    if (PACKAGE_MANAGERS.includes(answer as PackageManager)) {
-      return answer as PackageManager
-    }
-
-    console.error(`Unknown package manager: ${answer}`)
-  }
-}
-
-const askPackages = async (
-  readline: ReturnType<typeof createInterface>,
-  options: InitOptions
-): Promise<string[] | null> => {
-  if (options.packages) {
-    return options.packages
-  }
-
-  const defaultPackageIds = [...DEFAULT_INIT_PACKAGE_IDS, ...(options.with ?? [])]
-
-  console.log('Пакеты для init:')
-  for (const selectedPackage of INSTALLABLE_PACKAGES.filter((entry) => INIT_PACKAGE_IDS.has(entry.id))) {
-    console.log(`  - ${selectedPackage.id}: ${selectedPackage.name}`)
-    console.log(`    ${selectedPackage.description}`)
-  }
-
-  while (true) {
-    const answer = await askString(
-      readline,
-      'Пакеты через запятую',
-      defaultPackageIds.join(',')
-    )
-    const tokens = parsePackageList(answer)
-
-    try {
-      const selectedPackages = resolveInstallPackages(tokens)
-
-      if (selectedPackages.some((selectedPackage) => selectedPackage.id === 'testing')) {
-        throw new Error('@retailcrm/embed-ui-v1-testing is not published for public init yet')
-      }
-
-      return tokens
-    } catch (error) {
-      console.error(error instanceof Error ? error.message : String(error))
-    }
-  }
+  return select<PackageManager>({
+    message: 'Package manager',
+    default: defaultPackageManager,
+    choices: PACKAGE_MANAGERS.map((packageManager) => ({
+      name: packageManager,
+      value: packageManager,
+    })),
+  })
 }
 
 export const resolveInteractiveInitOptions = async (
@@ -142,43 +155,32 @@ export const resolveInteractiveInitOptions = async (
     throw new Error('Interactive init mode requires a TTY. Use explicit flags or omit --interactive.')
   }
 
-  const readline = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  })
+  const nextOptions: InitOptions = { ...options }
 
-  try {
-    const nextOptions: InitOptions = { ...options }
+  if (!nextOptions.agentsOnly) {
+    const defaultSourceRoot = resolveDefaultSourceRoot(cwd, nextOptions)
+    const sourceRoot = await input({
+      message: 'Frontend source root',
+      default: defaultSourceRoot,
+      validate: (value) => value.trim().length > 0 || 'Укажите каталог фронтенда.',
+    })
 
-    if (!nextOptions.agentsOnly) {
-      const defaultSourceRoot = resolveDefaultSourceRoot(cwd, nextOptions)
-      const sourceRoot = await askString(readline, 'Frontend source root', defaultSourceRoot)
-
-      if (nextOptions.srcDir) {
-        nextOptions.srcDir = sourceRoot
-      } else {
-        nextOptions.target = sourceRoot
-      }
-
-      nextOptions.packages = await askPackages(readline, nextOptions)
-      nextOptions.noConfigs = nextOptions.noConfigs || !(await askBoolean(readline, 'Создать базовые конфиги', true))
-      nextOptions.noTemplate = nextOptions.noTemplate || !(await askBoolean(readline, 'Создать стартовый шаблон', true))
+    if (nextOptions.srcDir) {
+      nextOptions.srcDir = sourceRoot
+    } else {
+      nextOptions.target = sourceRoot
     }
 
-    nextOptions.packageManager = await askPackageManager(
-      readline,
-      detectedPackageManager,
-      nextOptions.packageManager
-    )
-    nextOptions.noAgents = nextOptions.noAgents || !(await askBoolean(readline, 'Обновить AGENTS.md', true))
-    nextOptions.noMcp = nextOptions.noMcp || !(await askBoolean(readline, 'Добавить MCP-настройки', true))
-
-    if (!nextOptions.agentsOnly) {
-      nextOptions.noInstall = nextOptions.noInstall || !(await askBoolean(readline, 'Запустить установку зависимостей', true))
-    }
-
-    return nextOptions
-  } finally {
-    readline.close()
+    nextOptions.packages = await resolvePromptedPackages(nextOptions)
   }
+
+  const selectedActions = await resolvePromptedActions(nextOptions)
+  applyPromptedActions(nextOptions, selectedActions)
+
+  nextOptions.packageManager = await resolvePromptedPackageManager(
+    detectedPackageManager,
+    nextOptions.packageManager
+  )
+
+  return nextOptions
 }
