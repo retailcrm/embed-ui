@@ -57,14 +57,14 @@ export const HELP_TEXT = `Usage:
 
 Options:
   -t, --target <path>     Target path (default: current directory)
-  -v, --version <ver>     Target version. If omitted, latest npm version is used
+  -v, --version <ver>     Target version. In init mode, defaults to the current CLI version
       --exact             Use exact version instead of range
       --dry-run           Show changes without writing package.json
       --add               Add selected embed-ui packages into one package.json
       --packages <list>   Comma-separated package ids or names for --add/init
       --cwd <path>        Project working directory for init
       --package-manager   Package manager for init installs
-      --interactive       Ask init questions in TTY instead of using every default
+      --interactive       Ask init questions with TTY selection prompts
       --no-install        Do not run package manager install in init mode
       --no-configs        Do not create root TypeScript, Vite, ESLint and env config files
       --force-deps        Replace incompatible existing init dependencies

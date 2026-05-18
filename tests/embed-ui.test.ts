@@ -15,6 +15,7 @@ import {
 } from 'vitest'
 
 import { isSameExecutablePath, parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
+import { resolveCurrentPackageVersion } from '../src/cmd/embed-ui/packages'
 import { resolvePackageHookCommand } from '../src/cmd/embed-ui/package-hook-runner'
 import { runAdd, runInit, runUpdate } from '../src/cmd/embed-ui'
 
@@ -103,6 +104,19 @@ describe('embed-ui CLI', () => {
 
     expect(isSameExecutablePath(symlinkPath, pathToFileURL(realPath).href)).toBe(true)
     expect(isSameExecutablePath(path.join(tempDir, 'missing'), pathToFileURL(realPath).href)).toBe(false)
+  })
+
+  test('current package version can be resolved from a bundled bin location', () => {
+    const tempDir = createTempDir()
+    const binPath = path.join(tempDir, 'bin/embed-ui.mjs')
+
+    writeFile(binPath, '#!/usr/bin/env node\n')
+    writeFile(
+      path.join(tempDir, 'package.json'),
+      JSON.stringify({ name: '@retailcrm/embed-ui', version: '1.2.3' })
+    )
+
+    expect(resolveCurrentPackageVersion(binPath)).toBe('1.2.3')
   })
 
   test('add mode updates only the target package.json and preserves CRLF', async () => {
@@ -284,6 +298,7 @@ describe('embed-ui CLI', () => {
       '@retailcrm/embed-ui-v1-endpoint': '^1.2.3',
       '@retailcrm/embed-ui-v1-types': '^1.2.3',
       '@omnicajs/vue-remote': '^0.2.23',
+      '@remote-ui/rpc': '^1.4.7',
       pinia: '^2.2',
       vue: '^3.5',
       'vue-i18n': '^11',
@@ -299,12 +314,14 @@ describe('embed-ui CLI', () => {
       eslint: '^9.39',
       'eslint-plugin-vue': '^10.9',
       globals: '^16.5',
+      'jsonc-eslint-parser': '^3.1',
       less: '^4.6',
       typescript: '^5.9',
       'typescript-eslint': '^8.59',
       vite: '^7.3',
       'vite-svg-loader': '^5.1',
       'vue-eslint-parser': '^10.4',
+      'yaml-eslint-parser': '^2.0',
     })
 
     expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(true)
@@ -610,11 +627,11 @@ describe('embed-ui CLI', () => {
 
     expect(output).toContain('v1-endpoint init-config: enabled')
     expect(output).toContain('MCP client configs requested: cursor, vscode')
-    expect(output).toContain('npm exec --yes --package @retailcrm/embed-ui-v1-endpoint -- embed-ui-v1-endpoint init-config')
+    expect(output).toContain('npm exec --yes --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-config')
     expect(output).toContain('--mcp-client-configs cursor,vscode')
   })
 
-  test('package hooks prefer local bin and fall back to package-manager dlx commands', () => {
+  test('package hooks prefer local bin and pick compatible transient commands', () => {
     const tempDir = createTempDir()
     const brokenInstallDir = createTempDir()
     const localBinPath = path.join(
@@ -630,9 +647,23 @@ describe('embed-ui CLI', () => {
         '@retailcrm/embed-ui-v1-endpoint',
         'embed-ui-v1-endpoint',
         'yarn',
-        ['init-config', tempDir]
+        ['init-config', tempDir],
+        '1.2.3',
+        () => '4.12.0'
       ).display
-    ).toContain('yarn dlx -p @retailcrm/embed-ui-v1-endpoint embed-ui-v1-endpoint init-config')
+    ).toContain('yarn dlx -p @retailcrm/embed-ui-v1-endpoint@1.2.3 embed-ui-v1-endpoint init-config')
+
+    expect(
+      resolvePackageHookCommand(
+        tempDir,
+        '@retailcrm/embed-ui-v1-endpoint',
+        'embed-ui-v1-endpoint',
+        'yarn',
+        ['init-config', tempDir],
+        '1.2.3',
+        () => '1.22.22'
+      ).display
+    ).toContain('npx -y -p @retailcrm/embed-ui-v1-endpoint@1.2.3 embed-ui-v1-endpoint init-config')
 
     writeFile(
       path.join(brokenInstallDir, 'node_modules/@retailcrm/embed-ui-v1-endpoint/package.json'),

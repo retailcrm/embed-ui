@@ -23,25 +23,62 @@ const resolveLocalBinPath = (cwd: string, binName: string): string | null => {
 const hasLocalPackage = (cwd: string, packageName: string): boolean =>
   fs.existsSync(path.join(cwd, 'node_modules', packageName, 'package.json'))
 
+const createPackageSpec = (packageName: string, version: string | null): string =>
+  version && version !== 'not used' ? `${packageName}@${version}` : packageName
+
+const resolvePackageManagerVersion = (packageManager: PackageManager): string | null => {
+  try {
+    return execFileSync(packageManager, ['--version'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+  } catch {
+    return null
+  }
+}
+
+const resolveMajorVersion = (version: string | null): number | null => {
+  const major = version?.match(/^\d+/u)?.[0]
+
+  return major ? Number(major) : null
+}
+
 const resolveDownloadCommand = (
   packageName: string,
   binName: string,
   packageManager: PackageManager,
-  args: string[]
+  args: string[],
+  packageVersion: string | null,
+  versionResolver: (packageManager: PackageManager) => string | null
 ): ResolvedHookCommand => {
+  const packageSpec = createPackageSpec(packageName, packageVersion)
+
   if (packageManager === 'yarn') {
-    const commandArgs = ['dlx', '-p', packageName, binName, ...args]
+    const yarnMajor = resolveMajorVersion(versionResolver('yarn'))
+
+    if (yarnMajor !== null && yarnMajor >= 2) {
+      const commandArgs = ['dlx', '-p', packageSpec, binName, ...args]
+
+      return {
+        command: 'yarn',
+        args: commandArgs,
+        display: `yarn ${commandArgs.join(' ')}`,
+        source: 'transient',
+      }
+    }
+
+    const commandArgs = ['-y', '-p', packageSpec, binName, ...args]
 
     return {
-      command: 'yarn',
+      command: 'npx',
       args: commandArgs,
-      display: `yarn ${commandArgs.join(' ')}`,
+      display: `npx ${commandArgs.join(' ')}`,
       source: 'transient',
     }
   }
 
   if (packageManager === 'pnpm') {
-    const commandArgs = ['dlx', '--package', packageName, binName, ...args]
+    const commandArgs = ['dlx', '--package', packageSpec, binName, ...args]
 
     return {
       command: 'pnpm',
@@ -52,7 +89,7 @@ const resolveDownloadCommand = (
   }
 
   if (packageManager === 'bun') {
-    const commandArgs = ['x', '--package', packageName, binName, ...args]
+    const commandArgs = ['x', '--package', packageSpec, binName, ...args]
 
     return {
       command: 'bun',
@@ -62,7 +99,7 @@ const resolveDownloadCommand = (
     }
   }
 
-  const commandArgs = ['exec', '--yes', '--package', packageName, '--', binName, ...args]
+  const commandArgs = ['exec', '--yes', '--package', packageSpec, '--', binName, ...args]
 
   return {
     command: 'npm',
@@ -77,7 +114,9 @@ export const resolvePackageHookCommand = (
   packageName: string,
   binName: string,
   packageManager: PackageManager,
-  args: string[]
+  args: string[],
+  packageVersion: string | null = null,
+  versionResolver: (packageManager: PackageManager) => string | null = resolvePackageManagerVersion
 ): ResolvedHookCommand => {
   const localBinPath = resolveLocalBinPath(cwd, binName)
 
@@ -97,7 +136,7 @@ export const resolvePackageHookCommand = (
     )
   }
 
-  return resolveDownloadCommand(packageName, binName, packageManager, args)
+  return resolveDownloadCommand(packageName, binName, packageManager, args, packageVersion, versionResolver)
 }
 
 const getExecErrorMessage = (error: unknown): string => {
@@ -118,7 +157,14 @@ export const runPackageHookCommand = (
   options: InitOptions,
   changes: InitChanges
 ): void => {
-  const command = resolvePackageHookCommand(cwd, packageName, binName, packageManager, args)
+  const command = resolvePackageHookCommand(
+    cwd,
+    packageName,
+    binName,
+    packageManager,
+    args,
+    options.version
+  )
 
   changes.hooks.push(command.display)
 

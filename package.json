@@ -50,6 +50,7 @@
   "dependencies": {
     "@floating-ui/core": "^1.6.9",
     "@floating-ui/dom": "^1.6.13",
+    "@inquirer/prompts": "^8.4.3",
     "@omnicajs/symfony-router": "^1.0.0",
     "@omnicajs/vue-remote": "^0.2.23",
     "@remote-ui/rpc": "^1.4.5",
