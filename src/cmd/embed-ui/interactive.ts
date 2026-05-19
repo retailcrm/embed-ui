@@ -1,5 +1,6 @@
 import type { InitOptions, PackageManager } from './args'
 
+import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -7,16 +8,18 @@ import process from 'node:process'
 import { checkbox, input, select } from '@inquirer/prompts'
 
 import { DEFAULT_INIT_PACKAGE_IDS, INSTALLABLE_PACKAGES } from './packages'
+import { isPackageManagerAvailable } from './package-manager'
 import { PACKAGE_MANAGERS } from './args'
 import { resolveInstallPackages } from './packages'
 
-type InitAction = 'configs' | 'template' | 'agents' | 'mcp' | 'install'
+type InitAction = 'configs' | 'template' | 'agents' | 'mcp' | 'git' | 'install'
 
 const INIT_ACTION_LABELS = {
   configs: 'Создать базовые конфиги',
   template: 'Создать стартовый шаблон',
   agents: 'Обновить AGENTS.md',
   mcp: 'Добавить MCP-настройки',
+  git: 'Инициализировать Git',
   install: 'Запустить установку зависимостей',
 } satisfies Record<InitAction, string>
 
@@ -25,8 +28,22 @@ const INIT_ACTION_DESCRIPTIONS = {
   template: 'Vue-точка входа, страница настроек, виджет заказа, i18n и publish script',
   agents: 'Общие и пакетные инструкции для AI-агентов',
   mcp: '.mcp.json и MCP-инструкции пакетов',
+  git: 'git init в каталоге проекта, если Git еще не настроен',
   install: 'Запуск выбранного package manager после изменения package.json',
 } satisfies Record<InitAction, string>
+
+const isGitWorkTree = (cwd: string): boolean => {
+  try {
+    execFileSync('git', ['rev-parse', '--is-inside-work-tree'], {
+      cwd,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+
+    return true
+  } catch {
+    return false
+  }
+}
 
 const resolveDefaultSourceRoot = (cwd: string, options: InitOptions): string => {
   if (options.srcDir) {
@@ -87,6 +104,10 @@ const resolveAvailableActions = (options: InitOptions): InitAction[] => {
     actions.push('mcp')
   }
 
+  if (!options.agentsOnly && !isGitWorkTree(options.cwd)) {
+    actions.push('git')
+  }
+
   if (!options.agentsOnly && !options.noInstall) {
     actions.push('install')
   }
@@ -101,6 +122,7 @@ const applyPromptedActions = (options: InitOptions, selectedActions: InitAction[
   options.noTemplate = options.noTemplate || !selectedActionSet.has('template')
   options.noAgents = options.noAgents || !selectedActionSet.has('agents')
   options.noMcp = options.noMcp || !selectedActionSet.has('mcp')
+  options.initGit = options.initGit || selectedActionSet.has('git')
   options.noInstall = options.noInstall || !selectedActionSet.has('install')
 }
 
@@ -131,13 +153,26 @@ const resolvePromptedPackageManager = async (
   }
 
   const defaultPackageManager = detectedPackageManager ?? 'npm'
+  const availablePackageManagers = PACKAGE_MANAGERS.filter(isPackageManagerAvailable)
+
+  if (availablePackageManagers.length === 0) {
+    throw new Error('No supported package manager binary was found in PATH. Install npm, yarn, pnpm, or bun and rerun init.')
+  }
 
   return select<PackageManager>({
     message: 'Package manager',
-    default: defaultPackageManager,
+    default: availablePackageManagers.includes(defaultPackageManager)
+      ? defaultPackageManager
+      : availablePackageManagers[0],
     choices: PACKAGE_MANAGERS.map((packageManager) => ({
       name: packageManager,
       value: packageManager,
+      description: isPackageManagerAvailable(packageManager)
+        ? 'found in PATH'
+        : 'not found in PATH',
+      disabled: isPackageManagerAvailable(packageManager)
+        ? false
+        : 'not found in PATH',
     })),
   })
 }

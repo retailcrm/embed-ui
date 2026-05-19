@@ -5,13 +5,13 @@ import type { PackageManager } from './args'
 
 import { runPackageHookCommand } from './package-hook-runner'
 
-export const applyInitPackageConfigHooks = (
+export const applyInitPackageConfigHooks = async (
   cwd: string,
   selectedPackages: InstallablePackage[],
   packageManager: PackageManager,
   options: InitOptions,
   changes: InitChanges
-): void => {
+): Promise<void> => {
   for (const selectedPackage of selectedPackages) {
     for (const hook of selectedPackage.hooks ?? []) {
       if (hook.type !== 'config') {
@@ -32,7 +32,7 @@ export const applyInitPackageConfigHooks = (
         args.push('--mcp-client-configs', options.mcpClientConfigs.join(','))
       }
 
-      runPackageHookCommand(
+      await runPackageHookCommand(
         cwd,
         selectedPackage.name,
         hook.binName,

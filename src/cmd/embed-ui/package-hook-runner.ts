@@ -3,9 +3,11 @@ import type { InitOptions } from './args'
 import type { InstallablePackageHook } from './types'
 import type { PackageManager } from './args'
 
-import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+
+import { resolvePackageManagerVersion } from './package-manager'
+import { runCommandWithTerminalStatus } from './terminal'
 
 interface ResolvedHookCommand {
   command: string;
@@ -25,17 +27,6 @@ const hasLocalPackage = (cwd: string, packageName: string): boolean =>
 
 const createPackageSpec = (packageName: string, version: string | null): string =>
   version && version !== 'not used' ? `${packageName}@${version}` : packageName
-
-const resolvePackageManagerVersion = (packageManager: PackageManager): string | null => {
-  try {
-    return execFileSync(packageManager, ['--version'], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim()
-  } catch {
-    return null
-  }
-}
 
 const resolveMajorVersion = (version: string | null): number | null => {
   const major = version?.match(/^\d+/u)?.[0]
@@ -162,7 +153,7 @@ const getExecErrorMessage = (error: unknown): string => {
   return String(error)
 }
 
-export const runPackageHookCommand = (
+export const runPackageHookCommand = async (
   cwd: string,
   packageName: string,
   binName: string,
@@ -171,7 +162,7 @@ export const runPackageHookCommand = (
   failureMode: InstallablePackageHook['failureMode'],
   options: InitOptions,
   changes: InitChanges
-): void => {
+): Promise<void> => {
   const command = resolvePackageHookCommand(
     cwd,
     packageName,
@@ -188,10 +179,12 @@ export const runPackageHookCommand = (
   }
 
   try {
-    execFileSync(command.command, command.args, {
-      cwd,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
+    await runCommandWithTerminalStatus(
+      command.command,
+      command.args,
+      { cwd },
+      `Running ${packageName} ${args[0]}`
+    )
   } catch (error) {
     if (command.source === 'transient' && failureMode === 'advisory') {
       changes.warnings.push(`Package hook ${command.display} was skipped: ${getExecErrorMessage(error)}`)

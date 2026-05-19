@@ -63,7 +63,7 @@ const updateRootAgents = (cwd: string, options: InitOptions, changes: InitChange
   changes.agents.push(`update ${agentsPath}`)
 }
 
-const runInitAgentsHook = (
+const runInitAgentsHook = async (
   packageName: string,
   binName: string,
   cwd: string,
@@ -71,14 +71,14 @@ const runInitAgentsHook = (
   failureMode: InstallablePackageHook['failureMode'],
   options: InitOptions,
   changes: InitChanges
-): void => {
+): Promise<void> => {
   const args: string[] = ['init-agents', cwd]
 
   if (options.force || options.forceAgents) {
     args.push('--force')
   }
 
-  runPackageHookCommand(
+  await runPackageHookCommand(
     cwd,
     packageName,
     binName,
@@ -90,13 +90,13 @@ const runInitAgentsHook = (
   )
 }
 
-export const applyInitAgents = (
+export const applyInitAgents = async (
   cwd: string,
   selectedPackages: InstallablePackage[],
   packageManager: PackageManager,
   options: InitOptions,
   changes: InitChanges
-): void => {
+): Promise<void> => {
   if (options.noAgents) {
     return
   }
@@ -114,7 +114,7 @@ export const applyInitAgents = (
         continue
       }
 
-      runInitAgentsHook(
+      await runInitAgentsHook(
         selectedPackage.name,
         hook.binName,
         cwd,

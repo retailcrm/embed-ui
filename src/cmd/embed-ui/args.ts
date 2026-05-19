@@ -48,6 +48,7 @@ export interface InitOptions {
   noMcp: boolean;
   forceMcp: boolean;
   mcpClientConfigs: string[] | null;
+  initGit: boolean;
 }
 
 export type CliOptions = InitOptions | UpdateOptions
@@ -74,6 +75,7 @@ Options:
       --no-agents         Do not create or update AGENTS.md in init mode
       --no-mcp            Do not add package MCP instructions in init mode
       --mcp-client-configs Comma-separated MCP client configs to create (cursor,junie,vscode)
+      --git               Initialize Git repository in init mode when cwd is not a Git work tree
   -h, --help              Show this help
 
 Examples:
@@ -200,6 +202,11 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
       coerce: parsePackageList,
       describe: 'Comma-separated MCP client config ids',
     })
+    .option('git', {
+      type: 'boolean',
+      default: false,
+      describe: 'Initialize Git repository when cwd is not a Git work tree',
+    })
     .parseSync()
 
   if (parsed.help || parsed.h) {
@@ -247,6 +254,7 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     noMcp: !parsed.mcp,
     forceMcp: parsed.forceMcp,
     mcpClientConfigs: parsed.mcpClientConfigs ?? null,
+    initGit: parsed.git,
   }
 }
 

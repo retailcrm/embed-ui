@@ -128,8 +128,9 @@ When working with \`${PACKAGE_NAME}\` in this project:
 5. When the task involves widget targets, target placement, target contexts, target metadata, or choosing a target, use the package MCP server if it is available.
 6. First read \`embed-ui-v1-endpoint://targets\` to discover available target profiles.
 7. Then read the relevant \`embed-ui-v1-endpoint://targets/<encoded-target>\` resource before answering or changing code related to that target.
-8. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
-9. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
+8. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
+9. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
+10. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
 
 Suggested MCP stdio server configuration:
 
@@ -151,6 +152,8 @@ const createMcpReadmeSection = (clientConfigs) => {
 
 The project has an MCP server configuration for \`${PACKAGE_NAME}\`.
 It exposes AI-friendly widget target descriptions as MCP resources.
+If the AI client was already running, restart or reconnect it before expecting these resources
+to appear in that session.
 
 Basic check:
 

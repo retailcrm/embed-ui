@@ -47,6 +47,7 @@ export interface InitChanges {
   files: string[];
   agents: string[];
   mcp: string[];
+  git: string[];
   hooks: string[];
   install: string | null;
   skipped: string[];
