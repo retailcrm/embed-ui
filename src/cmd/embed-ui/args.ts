@@ -28,6 +28,7 @@ export interface InitOptions {
   with: string[] | null;
   packageManager: PackageManager | null;
   interactive: boolean;
+  verbose: boolean;
   noInstall: boolean;
   force: boolean;
   forceDeps: boolean;
@@ -65,6 +66,7 @@ Options:
       --cwd <path>        Project working directory for init
       --package-manager   Package manager for init installs
       --interactive       Ask init questions with TTY selection prompts
+      --verbose           Print detailed init change lists
       --no-install        Do not run package manager install in init mode
       --no-configs        Do not create root TypeScript, Vite, ESLint and env config files
       --force-deps        Replace incompatible existing init dependencies
@@ -179,6 +181,7 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     .option('dry-run', { type: 'boolean', default: false })
     .option('exact', { type: 'boolean', default: false })
     .option('interactive', { type: 'boolean', default: false })
+    .option('verbose', { type: 'boolean', default: false })
     .option('install', { type: 'boolean', default: true })
     .option('force', { type: 'boolean', default: false })
     .option('force-deps', { type: 'boolean', default: false })
@@ -224,6 +227,7 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     with: parsed.with ?? null,
     packageManager: parsed.packageManager ?? null,
     interactive: parsed.interactive,
+    verbose: parsed.verbose,
     noInstall: !parsed.install,
     force: parsed.force,
     forceDeps: parsed.forceDeps,

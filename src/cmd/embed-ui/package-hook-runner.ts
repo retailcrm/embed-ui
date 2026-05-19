@@ -67,7 +67,7 @@ const resolveDownloadCommand = (
       }
     }
 
-    const commandArgs = ['-y', '-p', packageSpec, binName, ...args]
+    const commandArgs = ['-y', '--loglevel=error', '-p', packageSpec, binName, ...args]
 
     return {
       command: 'npx',
@@ -99,7 +99,7 @@ const resolveDownloadCommand = (
     }
   }
 
-  const commandArgs = ['exec', '--yes', '--package', packageSpec, '--', binName, ...args]
+  const commandArgs = ['exec', '--yes', '--loglevel=error', '--package', packageSpec, '--', binName, ...args]
 
   return {
     command: 'npm',
@@ -140,6 +140,21 @@ export const resolvePackageHookCommand = (
 }
 
 const getExecErrorMessage = (error: unknown): string => {
+  if (error && typeof error === 'object') {
+    const output = [
+      'stderr' in error ? error.stderr : null,
+      'stdout' in error ? error.stdout : null,
+    ]
+      .map((value) => value instanceof Buffer ? value.toString('utf8') : value)
+      .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+      .map((value) => value.trim())
+      .join('\n')
+
+    if (output) {
+      return output
+    }
+  }
+
   if (error instanceof Error && error.message) {
     return error.message
   }
@@ -175,7 +190,7 @@ export const runPackageHookCommand = (
   try {
     execFileSync(command.command, command.args, {
       cwd,
-      stdio: 'inherit',
+      stdio: ['ignore', 'pipe', 'pipe'],
     })
   } catch (error) {
     if (command.source === 'transient' && failureMode === 'advisory') {

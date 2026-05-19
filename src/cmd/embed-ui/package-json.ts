@@ -18,12 +18,13 @@ export const INIT_RUNTIME_DEPENDENCIES: Array<{ name: string; range: string }> =
   { name: 'pinia', range: '^2.2' },
   { name: 'vue', range: '^3.5' },
   { name: 'vue-i18n', range: '^11' },
+  { name: 'zod', range: '^4.4' },
 ]
 
 export const INIT_DEV_DEPENDENCIES: Array<{ name: string; range: string }> = [
   { name: '@eslint/js', range: '^9.39' },
-  { name: '@intlify/eslint-plugin-vue-i18n', range: '~4.3.0' },
-  { name: '@intlify/unplugin-vue-i18n', range: '^11.1' },
+  { name: '@intlify/eslint-plugin-vue-i18n', range: '^4.4' },
+  { name: '@intlify/unplugin-vue-i18n', range: '^11.2' },
   { name: '@omnicajs/eslint-plugin-dependencies', range: '^0.0.2' },
   { name: '@types/node', range: '^22.19' },
   { name: '@vitejs/plugin-vue', range: '^6.0' },

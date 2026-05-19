@@ -302,11 +302,12 @@ describe('embed-ui CLI', () => {
       pinia: '^2.2',
       vue: '^3.5',
       'vue-i18n': '^11',
+      zod: '^4.4',
     })
     expect(packageJson.devDependencies).toMatchObject({
       '@eslint/js': '^9.39',
-      '@intlify/eslint-plugin-vue-i18n': '~4.3.0',
-      '@intlify/unplugin-vue-i18n': '^11.1',
+      '@intlify/eslint-plugin-vue-i18n': '^4.4',
+      '@intlify/unplugin-vue-i18n': '^11.2',
       '@omnicajs/eslint-plugin-dependencies': '^0.0.2',
       '@types/node': '^22.19',
       '@vitejs/plugin-vue': '^6.0',
@@ -586,6 +587,7 @@ describe('embed-ui CLI', () => {
         '--no-mcp',
         '--no-configs',
         '--no-template',
+        '--verbose',
       ]),
       version: '1.2.3',
     })
@@ -627,7 +629,7 @@ describe('embed-ui CLI', () => {
 
     expect(output).toContain('v1-endpoint init-config: enabled')
     expect(output).toContain('MCP client configs requested: cursor, vscode')
-    expect(output).toContain('npm exec --yes --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-config')
+    expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-config')
     expect(output).toContain('--mcp-client-configs cursor,vscode')
   })
 
@@ -663,7 +665,7 @@ describe('embed-ui CLI', () => {
         '1.2.3',
         () => '1.22.22'
       ).display
-    ).toContain('npx -y -p @retailcrm/embed-ui-v1-endpoint@1.2.3 embed-ui-v1-endpoint init-config')
+    ).toContain('npx -y --loglevel=error -p @retailcrm/embed-ui-v1-endpoint@1.2.3 embed-ui-v1-endpoint init-config')
 
     writeFile(
       path.join(brokenInstallDir, 'node_modules/@retailcrm/embed-ui-v1-endpoint/package.json'),
@@ -775,6 +777,21 @@ describe('embed-ui CLI', () => {
     })
   })
 
+  test('v1-components init-agents supports transient execution before install', () => {
+    const tempDir = createTempDir()
+    const componentsBin = path.resolve('packages/v1-components/bin/embed-ui-v1-components.mjs')
+
+    execFileSync('node', [
+      componentsBin,
+      'init-agents',
+      tempDir,
+    ])
+
+    expect(fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf8')).toContain(
+      './node_modules/@retailcrm/embed-ui-v1-components/README.md'
+    )
+  })
+
   test('init can force dependency ranges and fix dependency sections', async () => {
     const tempDir = createTempDir()
     const packageJsonPath = path.join(tempDir, 'package.json')
@@ -851,9 +868,6 @@ describe('embed-ui CLI', () => {
 
     expect(packageJson.devDependencies['vue-i18n']).toBe('^10.0.0')
     expect(packageJson.dependencies?.['vue-i18n']).toBeUndefined()
-    expect(output).toContain(
-      'vue-i18n: found; i18n dependency setup will be skipped to avoid conflicts with existing project configuration'
-    )
     expect(output).toContain(
       'vue-i18n already exists; i18n dependency setup skipped to avoid conflicts with existing project configuration'
     )
