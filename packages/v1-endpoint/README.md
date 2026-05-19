@@ -100,6 +100,10 @@ npx @retailcrm/embed-ui-v1-endpoint init-config
 npx @retailcrm/embed-ui-v1-endpoint init-config --mcp-client-configs cursor,junie,vscode
 ```
 
+Для Codex CLI можно добавить `codex` в список. В этом случае будет создана или
+обновлена запись в `.codex/config.toml`; user-level `codex mcp add` команда не
+запускается автоматически.
+
 С `--force` можно обновить уже существующие управляемые записи. Команда
 обновляет только запись `retailcrm-embed-ui-v1-endpoint`, а остальные серверы и
 пользовательские настройки клиентских конфигов оставляет без изменений.
