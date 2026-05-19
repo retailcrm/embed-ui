@@ -79,7 +79,9 @@ export const printInitReport = (
     console.log('')
     console.log('files')
     for (const filePath of changes.files) {
-      console.log(`  create ${filePath}`)
+      const hasAction = /^(create|update)\s/u.test(filePath)
+
+      console.log(`  ${hasAction ? filePath : `create ${filePath}`}`)
     }
   }
 
@@ -158,7 +160,7 @@ const printInitSummary = (
   const summary = [
     changes.packageJson.length ? `package.json updated (${changes.packageJson.length} change(s))` : null,
     changes.directories.length ? `directories created: ${changes.directories.length}` : null,
-    changes.files.length ? `files created: ${changes.files.length}` : null,
+    changes.files.length ? `files changed: ${changes.files.length}` : null,
     changes.agents.length ? 'AGENTS.md updated' : null,
     changes.mcp.length ? 'MCP config updated' : null,
     changes.git.length ? `git: ${changes.git.join(', ')}` : null,

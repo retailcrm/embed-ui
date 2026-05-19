@@ -74,7 +74,7 @@ Options:
       --fix-sections      Move init dependencies to expected package.json sections
       --no-agents         Do not create or update AGENTS.md in init mode
       --no-mcp            Do not add package MCP instructions in init mode
-      --mcp-client-configs Comma-separated MCP client configs to create (cursor,junie,vscode)
+      --mcp-client-configs Comma-separated MCP client configs to create (codex,cursor,junie,vscode)
       --git               Initialize Git repository in init mode when cwd is not a Git work tree
   -h, --help              Show this help
 

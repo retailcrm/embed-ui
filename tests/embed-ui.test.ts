@@ -328,6 +328,9 @@ describe('embed-ui CLI', () => {
     })
 
     expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(true)
+    expect(fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8')).toContain('node_modules/')
+    expect(fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8')).toContain('dist/')
+    expect(fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8')).toContain('.env')
     expect(fs.readFileSync(path.join(tempDir, 'tsconfig.json'), 'utf8')).toContain('"resolveJsonModule": true')
     expect(fs.readFileSync(path.join(tempDir, 'env.d.ts'), 'utf8')).toContain('declare module \'*.svg\'')
     expect(fs.readFileSync(path.join(tempDir, 'eslint.config.js'), 'utf8')).toContain(
@@ -497,6 +500,43 @@ describe('embed-ui CLI', () => {
       cwd: tempDir,
       encoding: 'utf8',
     }).trim()).toBe('true')
+  })
+
+  test('init mode appends missing gitignore entries without replacing existing content', async () => {
+    const tempDir = createTempDir()
+    const gitignorePath = path.join(tempDir, '.gitignore')
+
+    writeFile(gitignorePath, [
+      '# Existing rules',
+      'custom-cache/',
+      'dist/',
+      '',
+    ].join('\n'))
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-configs',
+        '--no-template',
+      ]),
+      version: '1.2.3',
+    })
+
+    const gitignore = fs.readFileSync(gitignorePath, 'utf8')
+
+    expect(gitignore).toContain('custom-cache/')
+    expect(gitignore.match(/^dist\/$/gmu)).toHaveLength(1)
+    expect(gitignore).toContain('# RetailCRM embed-ui init')
+    expect(gitignore).toContain('node_modules/')
+    expect(gitignore).toContain('coverage/')
   })
 
   test('init preflight warns about incompatible dependencies without rewriting them', async () => {
@@ -736,6 +776,12 @@ describe('embed-ui CLI', () => {
     const cursorConfigPath = path.join(tempDir, '.cursor/mcp.json')
     const vscodeConfigPath = path.join(tempDir, '.vscode/mcp.json')
     const readmePath = path.join(tempDir, 'README.md')
+    const localMcpBinPath = path.join(
+      tempDir,
+      'node_modules',
+      '.bin',
+      process.platform === 'win32' ? 'embed-ui-v1-endpoint-mcp.cmd' : 'embed-ui-v1-endpoint-mcp'
+    )
 
     writeFile(cursorConfigPath, JSON.stringify({
       mcpServers: {
@@ -787,8 +833,7 @@ describe('embed-ui CLI', () => {
     }>(vscodeConfigPath)
 
     expect(cursorConfig.mcpServers['retailcrm-embed-ui-v1-endpoint']).toEqual({
-      command: 'npx',
-      args: ['-y', '-p', '@retailcrm/embed-ui-v1-endpoint', 'embed-ui-v1-endpoint-mcp'],
+      command: localMcpBinPath,
     })
     expect(cursorConfig.mcpServers['custom-user-server']).toEqual({
       command: 'node',
@@ -801,8 +846,7 @@ describe('embed-ui CLI', () => {
       },
     ])
     expect(vscodeConfig.servers['retailcrm-embed-ui-v1-endpoint']).toEqual({
-      command: 'npx',
-      args: ['-y', '-p', '@retailcrm/embed-ui-v1-endpoint', 'embed-ui-v1-endpoint-mcp'],
+      command: localMcpBinPath,
     })
     expect(vscodeConfig.servers['custom-vscode-server']).toEqual({
       command: 'node',
@@ -811,6 +855,50 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(readmePath, 'utf8')).toContain(
       'restart or reconnect it before expecting these resources'
     )
+    expect(fs.readFileSync(readmePath, 'utf8')).toContain(
+      'codex mcp add retailcrm-embed-ui-v1-endpoint'
+    )
+    expect(fs.readFileSync(readmePath, 'utf8')).toContain(
+      '[mcp_servers.retailcrm-embed-ui-v1-endpoint]'
+    )
+  })
+
+  test('endpoint MCP codex setup reports unavailable client command', () => {
+    const tempDir = createTempDir()
+    const emptyPathDir = createTempDir()
+    const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
+    const localMcpBinPath = path.join(
+      tempDir,
+      'node_modules',
+      '.bin',
+      process.platform === 'win32' ? 'embed-ui-v1-endpoint-mcp.cmd' : 'embed-ui-v1-endpoint-mcp'
+    )
+
+    writeFile(localMcpBinPath, '')
+
+    const output = execFileSync(process.execPath, [
+      endpointBin,
+      'init-config',
+      tempDir,
+      '--mcp-client-configs',
+      'codex',
+    ], {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: emptyPathDir,
+      },
+    })
+
+    const projectMcpConfig = readJsonFile<{
+      mcpServers: Record<string, { command: string }>;
+    }>(path.join(tempDir, '.mcp.json'))
+
+    expect(projectMcpConfig.mcpServers['retailcrm-embed-ui-v1-endpoint']).toEqual({
+      command: localMcpBinPath,
+    })
+    expect(output).toContain('MCP: Codex MCP auto-connect skipped')
+    expect(output).toContain('codex mcp add retailcrm-embed-ui-v1-endpoint')
   })
 
   test('endpoint init-agents explains MCP session refresh', () => {

@@ -50,6 +50,7 @@ import { resolvePackageManagerVersion } from './package-manager'
 import { ROOT_PACKAGE } from './packages'
 import { runCommandWithTerminalStatus } from './terminal'
 import { setDependency, setMissingScript } from './package-json'
+import { updateGitignore } from './gitignore'
 import { updatePackageJson } from './packages'
 import { writeFileIfAllowed } from './filesystem'
 import { writePackageJson } from './package-json'
@@ -553,6 +554,7 @@ export const runInit = async (options: InitOptions): Promise<void> => {
   let packageJsonPath: string | null = null
   if (!resolvedOptions.agentsOnly) {
     packageJsonPath = applyInitPackageJson(cwd, selectedPackages, version, packageManager, resolvedOptions, changes)
+    updateGitignore(cwd, resolvedOptions, changes)
     applyInitDirectories(sourceRoot, resolvedOptions, changes)
     applyInitConfigs(cwd, sourceRoot, resolvedOptions, changes)
     applyInitTemplate(cwd, sourceRoot, packageManager, resolvedOptions, changes)
