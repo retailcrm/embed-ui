@@ -206,7 +206,7 @@ import type {
 import type { WidthValue } from '@/common/components/width'
 
 import { computed, h, inject } from 'vue'
-import isEqual from 'lodash.isequal'
+import isEqual from 'fast-deep-equal'
 import { ref, watch } from 'vue'
 
 import IconAdd from '~assets/sprites/actions/add.svg'

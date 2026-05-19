@@ -11,7 +11,7 @@ export default defineConfig({
     include: [
       'pinia',
       '@omnicajs/vue-remote/remote',
-      'lodash.isequal',
+      'fast-deep-equal',
       '@retailcrm/image-preview',
       'date-fns',
     ],

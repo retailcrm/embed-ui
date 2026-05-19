@@ -64,7 +64,7 @@
 import type { Option } from '@/common/components/select'
 import type { PropType, Ref } from 'vue'
 
-import isEqual from 'lodash.isequal'
+import isEqual from 'fast-deep-equal'
 
 import {
   computed,
