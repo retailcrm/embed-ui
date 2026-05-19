@@ -79,6 +79,12 @@ const resolvePackageManagerVersion = (packageManager: PackageManager): string | 
   }
 }
 
+const resolvePackageManagerMajorVersion = (packageManager: PackageManager): number | null => {
+  const major = resolvePackageManagerVersion(packageManager)?.match(/^\d+/u)?.[0]
+
+  return major ? Number(major) : null
+}
+
 const promptForPackageManager = async (): Promise<PackageManager> => {
   const readline = createInterface({
     input: process.stdin,
@@ -412,17 +418,59 @@ const runInstall = (
     return
   }
 
-  const args = ['install']
+  const args = resolveInstallArgs(packageManager)
   changes.install = `${packageManager} ${args.join(' ')}`
 
   if (options.dryRun) {
     return
   }
 
-  execFileSync(packageManager, args, {
-    cwd,
-    stdio: 'inherit',
-  })
+  try {
+    execFileSync(packageManager, args, {
+      cwd,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    })
+  } catch (error) {
+    printExecErrorOutput(error)
+    throw error
+  }
+}
+
+const resolveInstallArgs = (packageManager: PackageManager): string[] => {
+  if (packageManager === 'yarn' && resolvePackageManagerMajorVersion(packageManager) === 1) {
+    return ['install', '--silent']
+  }
+
+  if (packageManager === 'npm') {
+    return ['install', '--loglevel=error']
+  }
+
+  if (packageManager === 'pnpm') {
+    return ['install', '--loglevel=error']
+  }
+
+  if (packageManager === 'bun') {
+    return ['install', '--silent']
+  }
+
+  return ['install']
+}
+
+const printExecErrorOutput = (error: unknown): void => {
+  if (!error || typeof error !== 'object') {
+    return
+  }
+
+  const execError = error as Partial<Record<'stdout' | 'stderr', unknown>>
+
+  for (const field of ['stdout', 'stderr'] as const) {
+    const value = execError[field]
+    const output = value instanceof Buffer ? value.toString('utf8') : value
+
+    if (typeof output === 'string' && output.trim().length > 0) {
+      console.error(output.trim())
+    }
+  }
 }
 
 export const runInit = async (options: InitOptions): Promise<void> => {

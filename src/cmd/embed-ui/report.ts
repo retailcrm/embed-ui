@@ -42,6 +42,11 @@ export const printInitReport = (
   changes: InitChanges,
   options: InitOptions
 ): void => {
+  if (!options.verbose && !options.dryRun) {
+    printInitSummary(cwd, sourceRoot, version, packageManager, changes)
+    return
+  }
+
   console.log(`CWD: ${cwd}`)
   console.log(`Target: ${sourceRoot}`)
   console.log(`Resolved version: ${version}`)
@@ -126,5 +131,52 @@ export const printInitReport = (
   if (options.dryRun) {
     console.log('')
     console.log('Dry run enabled, no files were modified.')
+  }
+}
+
+const printInitSummary = (
+  cwd: string,
+  sourceRoot: string,
+  version: string,
+  packageManager: PackageManager,
+  changes: InitChanges
+): void => {
+  console.log(`Initialized ${cwd}`)
+  console.log(`  source root: ${sourceRoot}`)
+  console.log(`  version: ${version}`)
+  console.log(`  package manager: ${packageManager}`)
+
+  const summary = [
+    changes.packageJson.length ? `package.json updated (${changes.packageJson.length} change(s))` : null,
+    changes.directories.length ? `directories created: ${changes.directories.length}` : null,
+    changes.files.length ? `files created: ${changes.files.length}` : null,
+    changes.agents.length ? 'AGENTS.md updated' : null,
+    changes.mcp.length ? 'MCP config updated' : null,
+    changes.hooks.length ? `package hooks ran: ${changes.hooks.length}` : null,
+    changes.install ? `install: ${changes.install}` : null,
+  ].filter((item): item is string => typeof item === 'string')
+
+  if (summary.length > 0) {
+    console.log('')
+    console.log('changes')
+    for (const item of summary) {
+      console.log(`  ${item}`)
+    }
+  }
+
+  if (changes.skipped.length > 0) {
+    console.log('')
+    console.log('skipped')
+    for (const skipped of changes.skipped) {
+      console.log(`  ${skipped}`)
+    }
+  }
+
+  if (changes.warnings.length > 0) {
+    console.log('')
+    console.log('warnings')
+    for (const warning of new Set(changes.warnings)) {
+      console.log(`  ${warning}`)
+    }
   }
 }
