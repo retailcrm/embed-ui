@@ -241,6 +241,7 @@ describe('embed-ui CLI', () => {
       'init',
       '--mcp-client-configs',
       'cursor,vscode',
+      '--git',
       '--no-install',
       '--no-agents',
     ])
@@ -251,6 +252,7 @@ describe('embed-ui CLI', () => {
     }
 
     expect(options.mcpClientConfigs).toEqual(['cursor', 'vscode'])
+    expect(options.initGit).toBe(true)
   })
 
   test('parseInitArgs rejects testing package in init mode', async () => {
@@ -469,6 +471,34 @@ describe('embed-ui CLI', () => {
     )
   })
 
+  test('init mode can initialize Git metadata', async () => {
+    const tempDir = createTempDir()
+
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-configs',
+        '--no-template',
+        '--git',
+      ]),
+      version: '1.2.3',
+    })
+
+    expect(execFileSync('git', ['rev-parse', '--is-inside-work-tree'], {
+      cwd: tempDir,
+      encoding: 'utf8',
+    }).trim()).toBe('true')
+  })
+
   test('init preflight warns about incompatible dependencies without rewriting them', async () => {
     const tempDir = createTempDir()
     const packageJsonPath = path.join(tempDir, 'package.json')
@@ -513,6 +543,7 @@ describe('embed-ui CLI', () => {
   test('init preflight explains existing config and template gaps', async () => {
     const tempDir = createTempDir()
 
+    fs.mkdirSync(path.join(tempDir, '.git'))
     writeFile(path.join(tempDir, 'tsconfig.json'), JSON.stringify({
       compilerOptions: {
         moduleResolution: 'Node',
@@ -553,6 +584,7 @@ describe('embed-ui CLI', () => {
 
     const output = logs.join('\n')
 
+    expect(output).toContain('.git exists, but Git does not recognize this directory as a repository')
     expect(output).toContain('tsconfig.json: moduleResolution is not "Bundler"')
     expect(output).toContain('tsconfig.json: resolveJsonModule is not enabled')
     expect(output).toContain('tsconfig.json: @/* path alias does not point to web/*')
@@ -703,6 +735,7 @@ describe('embed-ui CLI', () => {
     const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
     const cursorConfigPath = path.join(tempDir, '.cursor/mcp.json')
     const vscodeConfigPath = path.join(tempDir, '.vscode/mcp.json')
+    const readmePath = path.join(tempDir, 'README.md')
 
     writeFile(cursorConfigPath, JSON.stringify({
       mcpServers: {
@@ -775,6 +808,24 @@ describe('embed-ui CLI', () => {
       command: 'node',
       args: ['vscode-server.mjs'],
     })
+    expect(fs.readFileSync(readmePath, 'utf8')).toContain(
+      'restart or reconnect it before expecting these resources'
+    )
+  })
+
+  test('endpoint init-agents explains MCP session refresh', () => {
+    const tempDir = createTempDir()
+    const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
+
+    execFileSync('node', [
+      endpointBin,
+      'init-agents',
+      tempDir,
+    ])
+
+    expect(fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf8')).toContain(
+      'A project `.mcp.json` may require restarting or reconnecting the AI client'
+    )
   })
 
   test('v1-components init-agents supports transient execution before install', () => {

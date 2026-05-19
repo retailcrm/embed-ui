@@ -3,6 +3,7 @@ import type { InitOptions } from './args'
 import type { InstallablePackage, PackageJson } from './types'
 import type { PackageManager } from './args'
 
+import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -104,6 +105,42 @@ const describePathState = (cwd: string, relativePath: string): string => {
   }
 
   return `${relativePath}: found`
+}
+
+const isGitWorkTree = (cwd: string): boolean => {
+  try {
+    execFileSync('git', ['rev-parse', '--is-inside-work-tree'], {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+
+    return true
+  } catch {
+    return false
+  }
+}
+
+const analyzeGitDirectory = (cwd: string, options: InitOptions, changes: InitChanges): void => {
+  const gitPath = path.join(cwd, '.git')
+
+  if (!fs.existsSync(gitPath)) {
+    if (options.initGit) {
+      changes.preflight.push('git: missing; git init enabled')
+    }
+
+    return
+  }
+
+  if (isGitWorkTree(cwd)) {
+    return
+  }
+
+  if (options.initGit) {
+    changes.preflight.push('git: invalid .git metadata; git init enabled')
+  } else {
+    changes.warnings.push('.git exists, but Git does not recognize this directory as a repository; initialize or repair Git metadata before relying on git context')
+  }
 }
 
 const readExistingPackageJson = (
@@ -372,6 +409,8 @@ export const applyInitPreflight = (
   if (!options.target && !options.srcDir && fs.existsSync(path.join(cwd, 'src')) && path.basename(sourceRoot) === 'web') {
     changes.warnings.push('src/ already exists; generated frontend source root resolved to web/')
   }
+
+  analyzeGitDirectory(cwd, options, changes)
 
   changes.preflight.push(describePathState(cwd, 'src'))
   changes.preflight.push(describePathState(cwd, 'web'))

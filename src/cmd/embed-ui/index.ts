@@ -13,6 +13,7 @@ import process from 'node:process'
 import { applyInitAgents } from './agents'
 import { applyInitPackageConfigHooks } from './package-hooks'
 import { applyInitPreflight } from './preflight'
+import { assertPackageManagerAvailable } from './package-manager'
 import { collectPackageJsonPaths } from './filesystem'
 import {
   createEndpointWorker,
@@ -45,7 +46,9 @@ import { resolveInstallPackages } from './packages'
 import { resolveInteractiveInitOptions } from './interactive'
 import { resolveLatestVersion } from './packages'
 import { resolvePackageJsonPath } from './filesystem'
+import { resolvePackageManagerVersion } from './package-manager'
 import { ROOT_PACKAGE } from './packages'
+import { runCommandWithTerminalStatus } from './terminal'
 import { setDependency, setMissingScript } from './package-json'
 import { updatePackageJson } from './packages'
 import { writeFileIfAllowed } from './filesystem'
@@ -66,17 +69,6 @@ const detectPackageManagerByLockfile = (cwd: string): PackageManager | null => {
   const lockfiles = knownLockfiles.filter(({ file }) => fs.existsSync(path.join(cwd, file)))
 
   return lockfiles.length === 1 ? lockfiles[0].packageManager : null
-}
-
-const resolvePackageManagerVersion = (packageManager: PackageManager): string | null => {
-  try {
-    return execFileSync(packageManager, ['--version'], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim()
-  } catch {
-    return null
-  }
 }
 
 const resolvePackageManagerMajorVersion = (packageManager: PackageManager): number | null => {
@@ -145,6 +137,25 @@ const resolveInitPackages = (
   return packages
 }
 
+const hasEnabledPackageHook = (selectedPackages: InstallablePackage[], options: InitOptions): boolean =>
+  selectedPackages.some((selectedPackage) => selectedPackage.hooks?.some((hook) => {
+    if (hook.type === 'agents') {
+      return !options.noAgents && (!hook.requiresMcp || !options.noMcp)
+    }
+
+    if (hook.type === 'config') {
+      return !options.agentsOnly && (!hook.requiresMcp || !options.noMcp)
+    }
+
+    return false
+  }) ?? false)
+
+const shouldRequirePackageManagerBinary = (
+  selectedPackages: InstallablePackage[],
+  options: InitOptions
+): boolean =>
+  !options.dryRun && (!options.noInstall || hasEnabledPackageHook(selectedPackages, options))
+
 const resolveInitCwd = (options: InitOptions): string => {
   const cwd = path.resolve(options.cwd)
 
@@ -174,6 +185,19 @@ const resolveInitSourceRoot = (cwd: string, options: InitOptions): string => {
   }
 
   return path.join(cwd, 'web')
+}
+
+const isGitWorkTree = (cwd: string): boolean => {
+  try {
+    execFileSync('git', ['rev-parse', '--is-inside-work-tree'], {
+      cwd,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+
+    return true
+  } catch {
+    return false
+  }
 }
 
 export const runUpdate = (options: UpdateOptions): void => {
@@ -402,13 +426,13 @@ const applyInitTemplate = (
   writeFileIfAllowed(path.join(cwd, 'README.md'), createReadme(cwd, sourceRoot, options, packageManager), options, changes)
 }
 
-const runInstall = (
+const runInstall = async (
   cwd: string,
   packageManager: PackageManager,
   options: InitOptions,
   changes: InitChanges,
   packageJsonChanged: boolean
-): void => {
+): Promise<void> => {
   if (options.noInstall || options.agentsOnly) {
     return
   }
@@ -426,14 +450,35 @@ const runInstall = (
   }
 
   try {
-    execFileSync(packageManager, args, {
-      cwd,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    })
+    await runCommandWithTerminalStatus(
+      packageManager,
+      args,
+      { cwd },
+      `Installing dependencies with ${packageManager}`
+    )
   } catch (error) {
     printExecErrorOutput(error)
     throw error
   }
+}
+
+const applyInitGit = async (cwd: string, options: InitOptions, changes: InitChanges): Promise<void> => {
+  if (!options.initGit) {
+    return
+  }
+
+  if (isGitWorkTree(cwd)) {
+    changes.skipped.push('git init skipped because cwd is already inside a Git work tree')
+    return
+  }
+
+  changes.git.push('git init')
+
+  if (options.dryRun) {
+    return
+  }
+
+  await runCommandWithTerminalStatus('git', ['init'], { cwd }, 'Initializing Git repository')
 }
 
 const resolveInstallArgs = (packageManager: PackageManager): string[] => {
@@ -498,7 +543,12 @@ export const runInit = async (options: InitOptions): Promise<void> => {
     : await resolvePackageManager(cwd, interactiveOptions.packageManager)
   const changes = createInitChanges()
 
+  if (shouldRequirePackageManagerBinary(selectedPackages, resolvedOptions)) {
+    assertPackageManagerAvailable(packageManager)
+  }
+
   applyInitPreflight(cwd, sourceRoot, packageManager, selectedPackages, version, resolvedOptions, changes)
+  await applyInitGit(cwd, resolvedOptions, changes)
 
   let packageJsonPath: string | null = null
   if (!resolvedOptions.agentsOnly) {
@@ -506,11 +556,11 @@ export const runInit = async (options: InitOptions): Promise<void> => {
     applyInitDirectories(sourceRoot, resolvedOptions, changes)
     applyInitConfigs(cwd, sourceRoot, resolvedOptions, changes)
     applyInitTemplate(cwd, sourceRoot, packageManager, resolvedOptions, changes)
-    applyInitPackageConfigHooks(cwd, selectedPackages, packageManager, resolvedOptions, changes)
   }
 
-  applyInitAgents(cwd, selectedPackages, packageManager, resolvedOptions, changes)
-  runInstall(cwd, packageManager, resolvedOptions, changes, Boolean(packageJsonPath && changes.packageJson.length > 0))
+  await runInstall(cwd, packageManager, resolvedOptions, changes, Boolean(packageJsonPath && changes.packageJson.length > 0))
+  await applyInitPackageConfigHooks(cwd, selectedPackages, packageManager, resolvedOptions, changes)
+  await applyInitAgents(cwd, selectedPackages, packageManager, resolvedOptions, changes)
   printInitReport(cwd, sourceRoot, version, packageManager, changes, resolvedOptions)
 }
 

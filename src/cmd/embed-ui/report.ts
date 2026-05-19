@@ -10,6 +10,7 @@ export const createInitChanges = (): InitChanges => ({
   files: [],
   agents: [],
   mcp: [],
+  git: [],
   hooks: [],
   install: null,
   skipped: [],
@@ -106,6 +107,14 @@ export const printInitReport = (
     }
   }
 
+  if (changes.git.length > 0) {
+    console.log('')
+    console.log('git')
+    for (const gitChange of changes.git) {
+      console.log(`  ${gitChange}`)
+    }
+  }
+
   if (changes.install) {
     console.log('')
     console.log('install')
@@ -152,6 +161,7 @@ const printInitSummary = (
     changes.files.length ? `files created: ${changes.files.length}` : null,
     changes.agents.length ? 'AGENTS.md updated' : null,
     changes.mcp.length ? 'MCP config updated' : null,
+    changes.git.length ? `git: ${changes.git.join(', ')}` : null,
     changes.hooks.length ? `package hooks ran: ${changes.hooks.length}` : null,
     changes.install ? `install: ${changes.install}` : null,
   ].filter((item): item is string => typeof item === 'string')
