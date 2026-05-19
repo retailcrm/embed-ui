@@ -61,7 +61,7 @@ npx @retailcrm/embed-ui init ./web --package-manager yarn
 - каталоги — создаются `endpoint`, `pages`, `widgets`, `shared`, `i18n` и `i18n/locales` внутри frontend-каталога;
 - `AGENTS.md` — создается или дополняется инструкциями корневого пакета и выбранных пакетов;
 - MCP — добавляется `.mcp.json` для `v1-endpoint`;
-- client configs для Codex CLI, Cursor, Junie и VS Code — не создаются без `--mcp-client-configs`;
+- project-level client configs для Codex CLI, Cursor, Junie и VS Code — не создаются без `--mcp-client-configs`;
 - Git — в неинтерактивном режиме не инициализируется без `--git`, а в интерактивном режиме предлагается, если корень проекта не является Git-репозиторием;
 - существующие файлы не перезаписываются, а зависимости с потенциальным конфликтом не заменяются без явных force-флагов.
 
@@ -89,7 +89,7 @@ npx @retailcrm/embed-ui init ./web --cwd ./my-project --package-manager npm
 - `--no-template` — не создавать стартовые Vue-файлы и `extensionrc.json`.
 - `--no-agents` — не создавать и не дополнять `AGENTS.md`.
 - `--no-mcp` — не добавлять MCP-настройки пакетов.
-- `--mcp-client-configs codex,cursor,junie,vscode` — дополнительно подключить или создать конфиги поддерживаемых AI-клиентов.
+- `--mcp-client-configs codex,cursor,junie,vscode` — дополнительно создать project-level конфиги поддерживаемых AI-клиентов.
 - `--git` — выполнить `git init` в корне проекта, если каталог еще не является Git-репозиторием.
 
 `--force` включает силовой режим для управляемых частей, но учитывает флаги `--no-*`. Например, можно обновить только
@@ -118,6 +118,11 @@ npx @retailcrm/embed-ui init ./web --force --no-install --no-template
 ```bash
 npx @retailcrm/embed-ui init ./web --no-install --mcp-client-configs codex,cursor,junie,vscode
 ```
+
+Для Codex CLI создается `.codex/config.toml`. Codex подхватывает его только в trusted project, поэтому после генерации
+проект нужно открыть/перезапустить в Codex и доверить ему проект, если клиент спросит. User-level подключение через
+`codex mcp add` намеренно не выполняется автоматически: на одной машине могут быть проекты с разными версиями
+`@retailcrm/embed-ui-v1-endpoint`, а user-level серверы с одинаковыми MCP resource URI могут конфликтовать между собой.
 
 Повторный запуск без `--force` не дублирует управляемые секции и записи MCP. При `--force` обновляются только записи
 этого пакета, ручные серверы и соседние разделы не удаляются.

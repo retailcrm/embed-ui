@@ -3,7 +3,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { spawnSync } from 'node:child_process'
 
 const PACKAGE_NAME = '@retailcrm/embed-ui-v1-endpoint'
 const DEFAULT_NEWLINE = '\n'
@@ -12,9 +11,11 @@ const README_MCP_SECTION_HEADER = '## MCP For AI Assistants'
 const README_MCP_MARKER = 'embed-ui-v1-endpoint://targets'
 const MCP_SERVER_NAME = 'retailcrm-embed-ui-v1-endpoint'
 const MCP_BIN_NAME = process.platform === 'win32' ? 'embed-ui-v1-endpoint-mcp.cmd' : 'embed-ui-v1-endpoint-mcp'
+const RELATIVE_MCP_BIN_PATH = `./node_modules/.bin/${MCP_BIN_NAME}`
 const MCP_CLIENT_CONFIGS = {
   codex: {
-    type: 'codex',
+    type: 'codex-file',
+    filePath: '.codex/config.toml',
   },
   cursor: {
     type: 'file',
@@ -39,7 +40,7 @@ const HELP_TEXT = `Usage:
 
 Options:
   -f, --force                  Replace existing managed sections and MCP server entries
-      --mcp-client-configs     Comma-separated MCP client configs to create (codex,cursor,junie,vscode)
+      --mcp-client-configs     Comma-separated project-level MCP client configs to create (codex,cursor,junie,vscode)
       --dry-run                Print planned config changes without writing files
   -h, --help                   Show this help
 
@@ -53,20 +54,9 @@ Examples:
 
 const resolveLocalMcpBinPath = (target) => path.join(target, 'node_modules', '.bin', MCP_BIN_NAME)
 
-const createMcpServerConfig = (target) => ({
-  command: resolveLocalMcpBinPath(target),
+const createMcpServerConfig = () => ({
+  command: RELATIVE_MCP_BIN_PATH,
 })
-
-const formatShellCommand = (command, args = []) => [command, ...args].map((part) => part.includes(' ') ? `"${part}"` : part).join(' ')
-
-const createCodexAddCommand = (target) => [
-  'codex',
-  'mcp',
-  'add',
-  MCP_SERVER_NAME,
-  '--',
-  resolveLocalMcpBinPath(target),
-]
 
 const printMcpNotice = (message) => {
   console.log(`MCP: ${message}`)
@@ -170,7 +160,7 @@ Suggested MCP stdio server configuration:
 const createMcpReadmeSection = (clientConfigs) => {
   const clientConfigText = clientConfigs.length
     ? `Client MCP configs were also requested: ${clientConfigs.map((clientConfig) => `\`${clientConfig}\``).join(', ')}. Review the generated files and restart the AI client if it is already open.`
-    : 'Client MCP configs are not created by default. For supported configs, rerun init with `--mcp-client-configs codex,cursor,junie,vscode`.'
+    : 'Client MCP configs are not created by default. For supported project-level configs, rerun init with `--mcp-client-configs codex,cursor,junie,vscode`.'
 
   return `${README_MCP_SECTION_HEADER}
 
@@ -192,12 +182,28 @@ Primary resources:
 
 ${clientConfigText}
 
+### Codex CLI
+
+Codex supports project-scoped MCP config in \`.codex/config.toml\` for trusted projects.
+Create it with:
+
+\`\`\`bash
+npx ${PACKAGE_NAME} init-config --mcp-client-configs codex
+codex mcp list
+\`\`\`
+
+If the server does not appear, trust the project in Codex and restart the session. The
+project-level config keeps this repository pinned to its own local
+\`./node_modules/.bin/embed-ui-v1-endpoint-mcp\` binary.
+
 ### User-Level MCP Clients
 
 Some clients store MCP servers in a user-level config outside this repository. Init does not edit
-those files. Add the same server manually and restart the client.
+those files. Add the same server manually and restart the client. Use this only when this machine
+works with one Embed UI project/version, because multiple user-level servers from different
+projects can expose the same resource URIs and confuse the AI client.
 
-Codex CLI:
+Codex CLI user-level setup:
 
 \`\`\`bash
 codex mcp add ${MCP_SERVER_NAME} -- "$(realpath ./node_modules/.bin/embed-ui-v1-endpoint-mcp)"
@@ -312,6 +318,44 @@ const writeJson = (filePath, value, dryRun) => {
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}${DEFAULT_NEWLINE}`, 'utf8')
 }
 
+const createCodexMcpTomlSection = (serverConfig) => {
+  return `[mcp_servers.${MCP_SERVER_NAME}]
+command = "${serverConfig.command.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"
+`
+}
+
+const writeCodexMcpServerConfig = (target, options, serverConfig) => {
+  const relativePath = MCP_CLIENT_CONFIGS.codex.filePath
+  const filePath = path.join(target, relativePath)
+  const fileExists = fs.existsSync(filePath)
+  const currentContent = fileExists ? fs.readFileSync(filePath, 'utf8') : ''
+  const section = createCodexMcpTomlSection(serverConfig)
+  const escapedServerName = MCP_SERVER_NAME.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const sectionPattern = new RegExp(`(^|\\n)\\[mcp_servers\\.${escapedServerName}\\][\\s\\S]*?(?=\\n\\[|$)`, 'u')
+  const hasServerSection = sectionPattern.test(currentContent)
+
+  if (hasServerSection && !options.force) {
+    console.log(`${relativePath} already contains ${MCP_SERVER_NAME}`)
+    console.log('Nothing was changed. Re-run with --force to refresh that server entry.')
+    return false
+  }
+
+  const nextContent = hasServerSection
+    ? currentContent
+      .replace(sectionPattern, (match, prefix) => `${prefix}${section.trimEnd()}`)
+      .replace(/\s+$/u, '') + DEFAULT_NEWLINE
+    : appendSection(currentContent, section)
+
+  if (!options.dryRun) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true })
+    fs.writeFileSync(filePath, nextContent, 'utf8')
+  }
+
+  const action = fileExists ? 'updated' : 'created'
+  console.log(`${relativePath} ${options.dryRun ? `would be ${action}` : `was ${action}`}`)
+  return true
+}
+
 const initAgents = (target, force) => {
   if (!fs.existsSync(target)) {
     throw new Error(`Target path does not exist: ${target}`)
@@ -375,57 +419,10 @@ const writeMcpServerConfig = (target, relativePath, rootField, options, serverCo
   return true
 }
 
-const isCodexMcpAddAvailable = () => {
-  const result = spawnSync('codex', ['mcp', 'add', '--help'], {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
-
-  return !result.error && result.status === 0
-}
-
-const runCodexMcpAdd = (target, options) => {
-  const localMcpBinPath = resolveLocalMcpBinPath(target)
-  const codexCommand = createCodexAddCommand(target)
-  const codexCommandText = formatShellCommand(codexCommand[0], codexCommand.slice(1))
-
-  if (!fs.existsSync(localMcpBinPath)) {
-    printMcpNotice(`Codex MCP auto-connect skipped: local MCP binary was not found at ${localMcpBinPath}. Run package install, then run: ${codexCommandText}`)
-    return
-  }
-
-  if (!isCodexMcpAddAvailable()) {
-    printMcpNotice(`Codex MCP auto-connect skipped: "codex mcp add" is not available. Run manually after installing Codex CLI support: ${codexCommandText}`)
-    return
-  }
-
-  if (options.dryRun) {
-    printMcpNotice(`Codex MCP server would be registered with local binary: ${codexCommandText}`)
-    return
-  }
-
-  const result = spawnSync(codexCommand[0], codexCommand.slice(1), {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
-
-  if (result.error || result.status !== 0) {
-    const output = [result.stderr, result.stdout]
-      .filter((value) => typeof value === 'string' && value.trim())
-      .map((value) => value.trim())
-      .join(' ')
-
-    printMcpNotice(`Codex MCP auto-connect failed${output ? `: ${output}` : ''}. Run manually: ${codexCommandText}`)
-    return
-  }
-
-  printMcpNotice('Codex MCP server was registered with the local v1-endpoint binary. Restart Codex session to use new resources.')
-}
-
 const printFileClientMcpNotice = (clientConfig, target) => {
   const config = MCP_CLIENT_CONFIGS[clientConfig]
 
-  printMcpNotice(`${clientConfig} MCP config points to local binary ${resolveLocalMcpBinPath(target)}. Restart or reconnect the client to use new resources.`)
+  printMcpNotice(`${clientConfig} MCP config points to local binary ${RELATIVE_MCP_BIN_PATH}. Restart or reconnect the client to use new resources.`)
   printMcpNotice(`${clientConfig} config file: ${path.join(target, config.filePath)}`)
 }
 
@@ -475,19 +472,21 @@ const initConfig = (target, options) => {
   }
 
   const clientConfigs = resolveMcpClientConfigs(options.mcpClientConfigs)
-  const serverConfig = createMcpServerConfig(target)
+  const serverConfig = createMcpServerConfig()
+  const absoluteMcpBinPath = resolveLocalMcpBinPath(target)
 
   writeMcpServerConfig(target, '.mcp.json', 'mcpServers', options, serverConfig)
   printMcpNotice(`Project MCP config points to local binary ${serverConfig.command}. Restart or reconnect MCP clients to use new resources.`)
-  if (!fs.existsSync(serverConfig.command)) {
-    printMcpNotice(`Local MCP binary is not available yet. Install project dependencies before starting MCP clients: ${serverConfig.command}`)
+  if (!fs.existsSync(absoluteMcpBinPath)) {
+    printMcpNotice(`Local MCP binary is not available yet. Install project dependencies before starting MCP clients: ${absoluteMcpBinPath}`)
   }
 
   for (const clientConfig of clientConfigs) {
     const config = MCP_CLIENT_CONFIGS[clientConfig]
 
-    if (config.type === 'codex') {
-      runCodexMcpAdd(target, options)
+    if (config.type === 'codex-file') {
+      writeCodexMcpServerConfig(target, options, serverConfig)
+      printMcpNotice(`codex project config points to local binary ${RELATIVE_MCP_BIN_PATH}. Trust the project and restart Codex to use new resources.`)
       continue
     }
 
