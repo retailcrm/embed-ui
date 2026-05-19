@@ -13,6 +13,7 @@ import { PACKAGE_MANAGERS } from './args'
 import { resolveInstallPackages } from './packages'
 
 type InitAction = 'configs' | 'template' | 'agents' | 'mcp' | 'git' | 'install'
+type McpClientConfig = 'codex' | 'cursor' | 'junie' | 'vscode'
 
 const INIT_ACTION_LABELS = {
   configs: 'Создать базовые конфиги',
@@ -31,6 +32,22 @@ const INIT_ACTION_DESCRIPTIONS = {
   git: 'git init в каталоге проекта, если Git еще не настроен',
   install: 'Запуск выбранного package manager после изменения package.json',
 } satisfies Record<InitAction, string>
+
+const MCP_CLIENT_CONFIG_LABELS = {
+  codex: 'Codex CLI',
+  cursor: 'Cursor',
+  junie: 'Junie',
+  vscode: 'VS Code',
+} satisfies Record<McpClientConfig, string>
+
+const MCP_CLIENT_CONFIG_DESCRIPTIONS = {
+  codex: '.codex/config.toml for trusted Codex projects',
+  cursor: '.cursor/mcp.json with ${workspaceFolder}',
+  junie: '.junie/mcp/mcp.json',
+  vscode: '.vscode/mcp.json with ${workspaceFolder}',
+} satisfies Record<McpClientConfig, string>
+
+const MCP_CLIENT_CONFIGS = Object.keys(MCP_CLIENT_CONFIG_LABELS) as McpClientConfig[]
 
 const isGitWorkTree = (cwd: string): boolean => {
   try {
@@ -177,6 +194,22 @@ const resolvePromptedPackageManager = async (
   })
 }
 
+const resolvePromptedMcpClientConfigs = async (options: InitOptions): Promise<string[] | null> => {
+  if (options.noMcp || options.mcpClientConfigs) {
+    return options.mcpClientConfigs
+  }
+
+  return checkbox<McpClientConfig>({
+    message: 'MCP client configs',
+    choices: MCP_CLIENT_CONFIGS.map((clientConfig) => ({
+      name: MCP_CLIENT_CONFIG_LABELS[clientConfig],
+      value: clientConfig,
+      checked: false,
+      description: MCP_CLIENT_CONFIG_DESCRIPTIONS[clientConfig],
+    })),
+  })
+}
+
 export const resolveInteractiveInitOptions = async (
   cwd: string,
   options: InitOptions,
@@ -211,6 +244,8 @@ export const resolveInteractiveInitOptions = async (
 
   const selectedActions = await resolvePromptedActions(nextOptions)
   applyPromptedActions(nextOptions, selectedActions)
+
+  nextOptions.mcpClientConfigs = await resolvePromptedMcpClientConfigs(nextOptions)
 
   nextOptions.packageManager = await resolvePromptedPackageManager(
     detectedPackageManager,

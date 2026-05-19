@@ -12,25 +12,34 @@ const README_MCP_MARKER = 'embed-ui-v1-endpoint://targets'
 const MCP_SERVER_NAME = 'retailcrm-embed-ui-v1-endpoint'
 const MCP_BIN_NAME = process.platform === 'win32' ? 'embed-ui-v1-endpoint-mcp.cmd' : 'embed-ui-v1-endpoint-mcp'
 const RELATIVE_MCP_BIN_PATH = `./node_modules/.bin/${MCP_BIN_NAME}`
+const CLAUDE_PROJECT_MCP_BIN_PATH = `\${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/${MCP_BIN_NAME}`
+const WORKSPACE_MCP_BIN_PATH = `\${workspaceFolder}/node_modules/.bin/${MCP_BIN_NAME}`
 const MCP_CLIENT_CONFIGS = {
   codex: {
     type: 'codex-file',
     filePath: '.codex/config.toml',
+    command: RELATIVE_MCP_BIN_PATH,
   },
   cursor: {
     type: 'file',
     filePath: '.cursor/mcp.json',
     rootField: 'mcpServers',
+    command: WORKSPACE_MCP_BIN_PATH,
   },
   junie: {
     type: 'file',
     filePath: '.junie/mcp/mcp.json',
     rootField: 'mcpServers',
+    command: RELATIVE_MCP_BIN_PATH,
   },
   vscode: {
     type: 'file',
     filePath: '.vscode/mcp.json',
     rootField: 'servers',
+    command: WORKSPACE_MCP_BIN_PATH,
+    config: {
+      type: 'stdio',
+    },
   },
 }
 
@@ -54,8 +63,9 @@ Examples:
 
 const resolveLocalMcpBinPath = (target) => path.join(target, 'node_modules', '.bin', MCP_BIN_NAME)
 
-const createMcpServerConfig = () => ({
-  command: RELATIVE_MCP_BIN_PATH,
+const createMcpServerConfig = (command, config = {}) => ({
+  ...config,
+  command,
 })
 
 const printMcpNotice = (message) => {
@@ -151,7 +161,7 @@ Suggested MCP stdio server configuration:
 
 \`\`\`json
 {
-  "command": "./node_modules/.bin/embed-ui-v1-endpoint-mcp"
+  "command": "${CLAUDE_PROJECT_MCP_BIN_PATH}"
 }
 \`\`\`
 `
@@ -181,6 +191,11 @@ Primary resources:
 - \`embed-ui-v1-endpoint://targets/<encoded-target>\` is a YAML profile for one target.
 
 ${clientConfigText}
+
+The root \`.mcp.json\` is compatible with Claude Code project scope and uses
+\`${CLAUDE_PROJECT_MCP_BIN_PATH}\` so the server is resolved from the project directory.
+Cursor and VS Code project configs use \`${WORKSPACE_MCP_BIN_PATH}\`. Codex and Junie use
+\`${RELATIVE_MCP_BIN_PATH}\`.
 
 ### Codex CLI
 
@@ -419,10 +434,10 @@ const writeMcpServerConfig = (target, relativePath, rootField, options, serverCo
   return true
 }
 
-const printFileClientMcpNotice = (clientConfig, target) => {
+const printFileClientMcpNotice = (clientConfig, target, serverConfig) => {
   const config = MCP_CLIENT_CONFIGS[clientConfig]
 
-  printMcpNotice(`${clientConfig} MCP config points to local binary ${RELATIVE_MCP_BIN_PATH}. Restart or reconnect the client to use new resources.`)
+  printMcpNotice(`${clientConfig} MCP config points to local binary ${serverConfig.command}. Restart or reconnect the client to use new resources.`)
   printMcpNotice(`${clientConfig} config file: ${path.join(target, config.filePath)}`)
 }
 
@@ -472,7 +487,7 @@ const initConfig = (target, options) => {
   }
 
   const clientConfigs = resolveMcpClientConfigs(options.mcpClientConfigs)
-  const serverConfig = createMcpServerConfig()
+  const serverConfig = createMcpServerConfig(CLAUDE_PROJECT_MCP_BIN_PATH)
   const absoluteMcpBinPath = resolveLocalMcpBinPath(target)
 
   writeMcpServerConfig(target, '.mcp.json', 'mcpServers', options, serverConfig)
@@ -485,13 +500,17 @@ const initConfig = (target, options) => {
     const config = MCP_CLIENT_CONFIGS[clientConfig]
 
     if (config.type === 'codex-file') {
-      writeCodexMcpServerConfig(target, options, serverConfig)
-      printMcpNotice(`codex project config points to local binary ${RELATIVE_MCP_BIN_PATH}. Trust the project and restart Codex to use new resources.`)
+      const codexServerConfig = createMcpServerConfig(config.command)
+
+      writeCodexMcpServerConfig(target, options, codexServerConfig)
+      printMcpNotice(`codex project config points to local binary ${codexServerConfig.command}. Trust the project and restart Codex to use new resources.`)
       continue
     }
 
-    writeMcpServerConfig(target, config.filePath, config.rootField, options, serverConfig)
-    printFileClientMcpNotice(clientConfig, target)
+    const clientServerConfig = createMcpServerConfig(config.command, config.config)
+
+    writeMcpServerConfig(target, config.filePath, config.rootField, options, clientServerConfig)
+    printFileClientMcpNotice(clientConfig, target, clientServerConfig)
   }
 
   updateMcpReadmeNotes(target, clientConfigs, options)
