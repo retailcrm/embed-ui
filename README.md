@@ -38,6 +38,7 @@ npx @retailcrm/embed-ui --help
 - добавляет `package.json`, если его еще нет;
 - добавляет зависимости `@retailcrm/embed-ui*`, `vue`, `pinia`, `vue-i18n` и dev-зависимости для Vite, TypeScript и ESLint;
 - создает `tsconfig.json`, `vite.config.ts`, `eslint.config.js`, `env.d.ts`;
+- создает или дополняет `.gitignore` типовыми правилами для `node_modules`, `dist`, `coverage`, `.env` и логов;
 - создает стартовые файлы во frontend-каталоге: endpoint worker, страницу настроек, виджет заказа, i18n JSON-сообщения;
 - добавляет `extensionrc.json` и `scripts/publish-extension.mjs`;
 - добавляет `AGENTS.md` и MCP-настройки пакетов, если они не отключены флагами;
@@ -60,7 +61,7 @@ npx @retailcrm/embed-ui init ./web --package-manager yarn
 - каталоги — создаются `endpoint`, `pages`, `widgets`, `shared`, `i18n` и `i18n/locales` внутри frontend-каталога;
 - `AGENTS.md` — создается или дополняется инструкциями корневого пакета и выбранных пакетов;
 - MCP — добавляется `.mcp.json` для `v1-endpoint`;
-- client configs для Cursor, Junie и VS Code — не создаются без `--mcp-client-configs`;
+- client configs для Codex CLI, Cursor, Junie и VS Code — не создаются без `--mcp-client-configs`;
 - Git — в неинтерактивном режиме не инициализируется без `--git`, а в интерактивном режиме предлагается, если корень проекта не является Git-репозиторием;
 - существующие файлы не перезаписываются, а зависимости с потенциальным конфликтом не заменяются без явных force-флагов.
 
@@ -88,7 +89,7 @@ npx @retailcrm/embed-ui init ./web --cwd ./my-project --package-manager npm
 - `--no-template` — не создавать стартовые Vue-файлы и `extensionrc.json`.
 - `--no-agents` — не создавать и не дополнять `AGENTS.md`.
 - `--no-mcp` — не добавлять MCP-настройки пакетов.
-- `--mcp-client-configs cursor,junie,vscode` — дополнительно создать project-level конфиги поддерживаемых AI-клиентов.
+- `--mcp-client-configs codex,cursor,junie,vscode` — дополнительно подключить или создать конфиги поддерживаемых AI-клиентов.
 - `--git` — выполнить `git init` в корне проекта, если каталог еще не является Git-репозиторием.
 
 `--force` включает силовой режим для управляемых частей, но учитывает флаги `--no-*`. Например, можно обновить только
@@ -115,7 +116,7 @@ npx @retailcrm/embed-ui init ./web --force --no-install --no-template
 Чтобы добавить только поддерживаемые project-level конфиги, укажите:
 
 ```bash
-npx @retailcrm/embed-ui init ./web --no-install --mcp-client-configs cursor,junie,vscode
+npx @retailcrm/embed-ui init ./web --no-install --mcp-client-configs codex,cursor,junie,vscode
 ```
 
 Повторный запуск без `--force` не дублирует управляемые секции и записи MCP. При `--force` обновляются только записи

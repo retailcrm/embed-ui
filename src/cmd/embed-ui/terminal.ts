@@ -45,9 +45,11 @@ export const runCommandWithTerminalStatus = async (
   args: string[],
   options: SpawnOptionsWithoutStdio,
   message: string
-): Promise<void> => {
+): Promise<{ stdout: string; stderr: string }> => {
   const stopSpinner = createSpinner(message)
   const displayCommand = [command, ...args].join(' ')
+  let stdoutResult = ''
+  let stderrResult = ''
 
   try {
     await new Promise<void>((resolve, reject) => {
@@ -64,6 +66,8 @@ export const runCommandWithTerminalStatus = async (
       child.on('close', (exitCode) => {
         const stdoutBuffer = Buffer.concat(stdout)
         const stderrBuffer = Buffer.concat(stderr)
+        stdoutResult = stdoutBuffer.toString('utf8')
+        stderrResult = stderrBuffer.toString('utf8')
 
         if (exitCode === 0) {
           resolve()
@@ -75,6 +79,11 @@ export const runCommandWithTerminalStatus = async (
     })
 
     finishSpinner(message, 'OK')
+
+    return {
+      stdout: stdoutResult,
+      stderr: stderrResult,
+    }
   } catch (error) {
     finishSpinner(message, 'FAIL')
     throw error

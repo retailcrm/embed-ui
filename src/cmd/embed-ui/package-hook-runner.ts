@@ -153,6 +153,16 @@ const getExecErrorMessage = (error: unknown): string => {
   return String(error)
 }
 
+const appendMcpHookNotices = (output: string, changes: InitChanges): void => {
+  for (const line of output.split(/\r?\n/u)) {
+    const trimmedLine = line.trim()
+
+    if (trimmedLine.startsWith('MCP: ')) {
+      changes.mcp.push(trimmedLine.slice('MCP: '.length))
+    }
+  }
+}
+
 export const runPackageHookCommand = async (
   cwd: string,
   packageName: string,
@@ -179,12 +189,14 @@ export const runPackageHookCommand = async (
   }
 
   try {
-    await runCommandWithTerminalStatus(
+    const result = await runCommandWithTerminalStatus(
       command.command,
       command.args,
       { cwd },
       `Running ${packageName} ${args[0]}`
     )
+
+    appendMcpHookNotices(result.stdout, changes)
   } catch (error) {
     if (command.source === 'transient' && failureMode === 'advisory') {
       changes.warnings.push(`Package hook ${command.display} was skipped: ${getExecErrorMessage(error)}`)
