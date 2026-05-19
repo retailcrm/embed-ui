@@ -101,6 +101,8 @@ try {
       'git push --follow-tags origin ' + String(brunch ?? '%branch%').trim(),
     ], chalk.blue(figures.info))
   }
+
+  process.exit(0)
 } catch (error) {
   console.error(error)
   process.exit(1)
