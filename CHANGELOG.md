@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.9.22-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.4...v0.9.22-alpha.5) (2026-05-19)
+
+### Features
+
+* Embed UI init flow improved ([50357d6](https://github.com/retailcrm/embed-ui/commit/50357d647d5288c9794e46ef91a36d2da6620101))
+* Embed UI init MCP setup completed ([749c87a](https://github.com/retailcrm/embed-ui/commit/749c87a64bab67b6ed72aed7391ccf24403943ff))
 ## [0.9.22-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.3...v0.9.22-alpha.4) (2026-05-19)
 
 ### Bug Fixes
