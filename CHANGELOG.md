@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.9.22-alpha.4](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.3...v0.9.22-alpha.4) (2026-05-19)
+
+### Bug Fixes
+
+* Deprecated deep equality dependency removed ([32abfbc](https://github.com/retailcrm/embed-ui/commit/32abfbc540609b4b3e611ca7dd5331d92be56d83))
+* Embed UI init output noise reduced ([d8d8c7b](https://github.com/retailcrm/embed-ui/commit/d8d8c7b99e1e0201fc4a4a8753931c799fdc005a))
+* Release job hang prevented ([17ca586](https://github.com/retailcrm/embed-ui/commit/17ca5861c2227936bf8ea2b24e2670a17a1e7295))
 ## [0.9.22-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.2...v0.9.22-alpha.3) (2026-05-18)
 
 ### Features
