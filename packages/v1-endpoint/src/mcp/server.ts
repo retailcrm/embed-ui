@@ -76,6 +76,19 @@ export const createEndpointMcpServer = (): McpServer => {
     version: readPackageVersion(),
   })
 
+  const compatibilityTool = server.registerTool('mcp-compatibility-noop', {
+    description: 'Disabled compatibility tool used only to make tools/list return an empty list for clients that probe it.',
+  }, () => ({
+    content: [],
+  }))
+  const compatibilityPrompt = server.registerPrompt('mcp-compatibility-noop', {
+    description: 'Disabled compatibility prompt used only to make prompts/list return an empty list for clients that probe it.',
+  }, () => ({
+    messages: [],
+  }))
+  compatibilityTool.disable()
+  compatibilityPrompt.disable()
+
   const targets = readTargetProfiles()
 
   server.registerResource('v1-endpoint targets index', 'embed-ui-v1-endpoint://targets', {
