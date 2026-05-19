@@ -51,7 +51,7 @@ import {
   watch,
 } from 'vue'
 
-import isEqual from 'lodash.isequal'
+import isEqual from 'fast-deep-equal'
 
 import { autoUpdate } from '@floating-ui/dom'
 

@@ -18,7 +18,7 @@ export default mergeConfig(
         '@remote-ui/rpc',
         '@retailcrm/image-preview',
         'date-fns',
-        'lodash.isequal',
+        'fast-deep-equal',
         'pinia',
         'vue3-perfect-scrollbar',
       ],

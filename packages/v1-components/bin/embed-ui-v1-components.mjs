@@ -148,7 +148,14 @@ const findPackageRoot = (target) => {
 }
 
 const createPackageDocsPath = (target) => {
-  const packageRoot = findPackageRoot(target)
+  let packageRoot = null
+
+  try {
+    packageRoot = findPackageRoot(target)
+  } catch {
+    return `./node_modules/${PACKAGE_NAME}`
+  }
+
   const relativePath = path.relative(target, packageRoot)
 
   return withDotPrefix(toPosixPath(relativePath))

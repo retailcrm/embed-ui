@@ -1,6 +1,6 @@
 import type { Trigger, TriggerHandler, TriggerSchema } from '@/common/components/popper'
 
-import isEqual from 'lodash.isequal'
+import isEqual from 'fast-deep-equal'
 
 const isArray = Array.isArray
 const normalize = (triggers: Trigger[] | TriggerSchema): Required<TriggerSchema> => {
