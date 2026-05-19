@@ -106,8 +106,9 @@ npx @retailcrm/embed-ui init ./web --force --no-install --no-template
 - `@retailcrm/embed-ui-v1-components` — добавляет порядок чтения README, AI-документации и YAML-профилей компонентов.
 - `@retailcrm/embed-ui-v1-endpoint` — добавляет инструкции по целям виджетов и MCP-ресурсам.
 
-Для `v1-endpoint` также создается `.mcp.json` с сервером `retailcrm-embed-ui-v1-endpoint`. Он отдает AI-friendly
-описания целей виджетов через ресурсы:
+Для `v1-endpoint` также создается `.mcp.json` с сервером `retailcrm-embed-ui-v1-endpoint`. Этот файл рассчитан на
+Claude Code project scope и использует `${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/embed-ui-v1-endpoint-mcp`, чтобы
+сервер резолвился относительно открытого проекта. MCP отдает AI-friendly описания целей виджетов через ресурсы:
 
 - `embed-ui-v1-endpoint://targets`;
 - `embed-ui-v1-endpoint://targets/<encoded-target>`.
@@ -123,6 +124,8 @@ npx @retailcrm/embed-ui init ./web --no-install --mcp-client-configs codex,curso
 проект нужно открыть/перезапустить в Codex и доверить ему проект, если клиент спросит. User-level подключение через
 `codex mcp add` намеренно не выполняется автоматически: на одной машине могут быть проекты с разными версиями
 `@retailcrm/embed-ui-v1-endpoint`, а user-level серверы с одинаковыми MCP resource URI могут конфликтовать между собой.
+Для Cursor и VS Code CLI генерирует project-level конфиги с `${workspaceFolder}/node_modules/.bin/...`; для Junie
+остается относительный `./node_modules/.bin/...`.
 
 Повторный запуск без `--force` не дублирует управляемые секции и записи MCP. При `--force` обновляются только записи
 этого пакета, ручные серверы и соседние разделы не удаляются.

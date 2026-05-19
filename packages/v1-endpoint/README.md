@@ -104,6 +104,10 @@ npx @retailcrm/embed-ui-v1-endpoint init-config --mcp-client-configs cursor,juni
 обновлена запись в `.codex/config.toml`; user-level `codex mcp add` команда не
 запускается автоматически.
 
+Корневой `.mcp.json` рассчитан на Claude Code project scope и использует
+`${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/embed-ui-v1-endpoint-mcp`. Для Cursor
+и VS Code генерируются client-specific project configs с `${workspaceFolder}`.
+
 С `--force` можно обновить уже существующие управляемые записи. Команда
 обновляет только запись `retailcrm-embed-ui-v1-endpoint`, а остальные серверы и
 пользовательские настройки клиентских конфигов оставляет без изменений.
