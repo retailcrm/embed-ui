@@ -1605,7 +1605,7 @@ __metadata:
   peerDependencies:
     vue: ^3.5
   bin:
-    embed-ui-v1-components: ./bin/embed-ui-v1-components.mjs
+    embed-ui-v1-components: bin/embed-ui-v1-components.mjs
   languageName: unknown
   linkType: soft
 
@@ -1655,8 +1655,8 @@ __metadata:
     pinia: ^2.2
     vue: ^3.5
   bin:
-    embed-ui-v1-endpoint: ./bin/embed-ui-v1-endpoint.mjs
-    embed-ui-v1-endpoint-mcp: ./bin/embed-ui-v1-endpoint-mcp.mjs
+    embed-ui-v1-endpoint: bin/embed-ui-v1-endpoint.mjs
+    embed-ui-v1-endpoint-mcp: bin/embed-ui-v1-endpoint-mcp.mjs
   languageName: unknown
   linkType: soft
 
@@ -1735,7 +1735,7 @@ __metadata:
     pinia: ^2.2
     vue: ^3.5
   bin:
-    embed-ui: ./bin/embed-ui.mjs
+    embed-ui: bin/embed-ui.mjs
   languageName: unknown
   linkType: soft
 
