@@ -1,11 +1,14 @@
 {
   "name": "@retailcrm/embed-ui-v1-components",
-  "bin": "./bin/embed-ui-v1-components.mjs",
+  "bin": "bin/embed-ui-v1-components.mjs",
   "type": "module",
   "version": "0.9.22-alpha.6",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
-  "repository": "git@github.com:retailcrm/embed-ui.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/retailcrm/embed-ui.git"
+  },
   "exports": {
     ".": {
       "import": "./index.js",

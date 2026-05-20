@@ -1,15 +1,18 @@
 {
   "name": "@retailcrm/embed-ui-v1-endpoint",
   "bin": {
-    "embed-ui-v1-endpoint": "./bin/embed-ui-v1-endpoint.mjs",
-    "embed-ui-v1-endpoint-mcp": "./bin/embed-ui-v1-endpoint-mcp.mjs"
+    "embed-ui-v1-endpoint": "bin/embed-ui-v1-endpoint.mjs",
+    "embed-ui-v1-endpoint-mcp": "bin/embed-ui-v1-endpoint-mcp.mjs"
   },
   "type": "module",
   "version": "0.9.22-alpha.6",
   "description": "Endpoint API for integrations in RetailCRM",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
-  "repository": "git@github.com:retailcrm/embed-ui.git",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/retailcrm/embed-ui.git"
+  },
   "exports": {
     ".": {
       "types": "./dist/remote.d.ts",
