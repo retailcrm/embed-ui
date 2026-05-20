@@ -13,7 +13,7 @@ export const DEFAULT_INDENT = '  '
 export const DEFAULT_NEWLINE = '\n'
 
 export const INIT_RUNTIME_DEPENDENCIES: Array<{ name: string; range: string }> = [
-  { name: '@omnicajs/vue-remote', range: '^0.2.23' },
+  { name: '@omnicajs/vue-remote', range: '^0.2.24' },
   { name: '@remote-ui/rpc', range: '^1.4.7' },
   { name: 'pinia', range: '^2.2' },
   { name: 'vue', range: '^3.5' },
