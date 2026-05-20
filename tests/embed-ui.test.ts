@@ -776,13 +776,6 @@ describe('embed-ui CLI', () => {
     const cursorConfigPath = path.join(tempDir, '.cursor/mcp.json')
     const vscodeConfigPath = path.join(tempDir, '.vscode/mcp.json')
     const readmePath = path.join(tempDir, 'README.md')
-    const localMcpBinPath = path.join(
-      tempDir,
-      'node_modules',
-      '.bin',
-      process.platform === 'win32' ? 'embed-ui-v1-endpoint-mcp.cmd' : 'embed-ui-v1-endpoint-mcp'
-    )
-
     writeFile(cursorConfigPath, JSON.stringify({
       mcpServers: {
         'retailcrm-embed-ui-v1-endpoint': {
@@ -825,15 +818,15 @@ describe('embed-ui CLI', () => {
     ])
 
     const cursorConfig = readJsonFile<{
-      mcpServers: Record<string, { command: string; args: string[] }>;
+      mcpServers: Record<string, { command: string; args?: string[] }>;
     }>(cursorConfigPath)
     const vscodeConfig = readJsonFile<{
       inputs: Array<{ id: string; type: string }>;
-      servers: Record<string, { command: string; args: string[] }>;
+      servers: Record<string, { command: string; args?: string[]; type?: string }>;
     }>(vscodeConfigPath)
 
     expect(cursorConfig.mcpServers['retailcrm-embed-ui-v1-endpoint']).toEqual({
-      command: localMcpBinPath,
+      command: '${workspaceFolder}/node_modules/.bin/embed-ui-v1-endpoint-mcp',
     })
     expect(cursorConfig.mcpServers['custom-user-server']).toEqual({
       command: 'node',
@@ -846,7 +839,8 @@ describe('embed-ui CLI', () => {
       },
     ])
     expect(vscodeConfig.servers['retailcrm-embed-ui-v1-endpoint']).toEqual({
-      command: localMcpBinPath,
+      type: 'stdio',
+      command: '${workspaceFolder}/node_modules/.bin/embed-ui-v1-endpoint-mcp',
     })
     expect(vscodeConfig.servers['custom-vscode-server']).toEqual({
       command: 'node',
@@ -863,7 +857,7 @@ describe('embed-ui CLI', () => {
     )
   })
 
-  test('endpoint MCP codex setup reports unavailable client command', () => {
+  test('endpoint MCP codex setup creates project config without user-level registration', () => {
     const tempDir = createTempDir()
     const emptyPathDir = createTempDir()
     const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
@@ -893,12 +887,15 @@ describe('embed-ui CLI', () => {
     const projectMcpConfig = readJsonFile<{
       mcpServers: Record<string, { command: string }>;
     }>(path.join(tempDir, '.mcp.json'))
+    const codexConfig = fs.readFileSync(path.join(tempDir, '.codex/config.toml'), 'utf8')
 
     expect(projectMcpConfig.mcpServers['retailcrm-embed-ui-v1-endpoint']).toEqual({
-      command: localMcpBinPath,
+      command: '${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/embed-ui-v1-endpoint-mcp',
     })
-    expect(output).toContain('MCP: Codex MCP auto-connect skipped')
-    expect(output).toContain('codex mcp add retailcrm-embed-ui-v1-endpoint')
+    expect(codexConfig).toContain('[mcp_servers.retailcrm-embed-ui-v1-endpoint]')
+    expect(codexConfig).toContain('command = "./node_modules/.bin/embed-ui-v1-endpoint-mcp"')
+    expect(output).toContain('MCP: codex project config points to local binary ./node_modules/.bin/embed-ui-v1-endpoint-mcp')
+    expect(output).not.toContain('codex mcp add retailcrm-embed-ui-v1-endpoint')
   })
 
   test('endpoint init-agents explains MCP session refresh', () => {
