@@ -299,7 +299,7 @@ describe('embed-ui CLI', () => {
       '@retailcrm/embed-ui-v1-contexts': '^1.2.3',
       '@retailcrm/embed-ui-v1-endpoint': '^1.2.3',
       '@retailcrm/embed-ui-v1-types': '^1.2.3',
-      '@omnicajs/vue-remote': '^0.2.23',
+      '@omnicajs/vue-remote': '^0.2.24',
       '@remote-ui/rpc': '^1.4.7',
       pinia: '^2.2',
       vue: '^3.5',
