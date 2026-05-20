@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.22-alpha.7](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.6...v0.9.22-alpha.7) (2026-05-20)
+
+### Bug Fixes
+
+* Package manifests normalized for npm publish ([c612b50](https://github.com/retailcrm/embed-ui/commit/c612b5040ba79bab6c88360554b8f156b48e3721))
 ## [0.9.22-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.5...v0.9.22-alpha.6) (2026-05-20)
 
 ### Features
