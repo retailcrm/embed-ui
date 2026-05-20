@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [0.9.22-alpha.6](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.5...v0.9.22-alpha.6) (2026-05-20)
+
+### Features
+
+* MCP client config selection added ([e46fccd](https://github.com/retailcrm/embed-ui/commit/e46fccde382e6d0af2550932e00d41f8a3bcc1af))
+
+### Bug Fixes
+
+* **v1-endpoint:** MCP startup probes handled ([9695b77](https://github.com/retailcrm/embed-ui/commit/9695b779de22fdd73c977546e592e327db4f5f1a))
+* **v1-endpoint:** Project-level MCP config generated ([16ff7a2](https://github.com/retailcrm/embed-ui/commit/16ff7a2a0321ba01c186da0f6ad3664930bd1de4))
 ## [0.9.22-alpha.5](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.4...v0.9.22-alpha.5) (2026-05-19)
 
 ### Features
