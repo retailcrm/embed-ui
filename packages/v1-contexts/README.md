@@ -29,6 +29,23 @@ Generated profiles появляются в пакетных docs при сбор
 - `docs/custom-contexts/*.yml` — profiles custom context entities, например `order`;
 - `docs/*/index.json` — индексы generated resources.
 
+Пакет также поставляет MCP stdio server `embed-ui-v1-contexts-mcp`, который отдает generated profiles как
+MCP resources:
+
+- `embed-ui-v1-contexts://contexts`;
+- `embed-ui-v1-contexts://contexts/<encoded-context>`;
+- `embed-ui-v1-contexts://actions`;
+- `embed-ui-v1-contexts://actions/<encoded-scope>`;
+- `embed-ui-v1-contexts://custom-contexts`;
+- `embed-ui-v1-contexts://custom-contexts/<encoded-entity>`.
+
+Пример Codex project-level MCP config:
+
+```toml
+[mcp_servers.v1-contexts]
+command = "embed-ui-v1-contexts-mcp"
+```
+
 Локальная генерация:
 
 ```bash
