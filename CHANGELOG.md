@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.23-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.22...v0.9.23-alpha.1) (2026-05-22)
+
+### Features
+
+* **v1-components:** UiPageFooter component was added ([7ba5f70](https://github.com/retailcrm/embed-ui/commit/7ba5f70537b1ee159977af3d936509bf8ac4e3aa))
 ## [0.9.22](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.7...v0.9.22) (2026-05-20)
 ## [0.9.22-alpha.7](https://github.com/retailcrm/embed-ui/compare/v0.9.22-alpha.6...v0.9.22-alpha.7) (2026-05-20)
 
