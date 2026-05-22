@@ -93,8 +93,9 @@
     "README.md"
   ],
   "scripts": {
-    "build": "yarn prepare && yarn build:code && yarn build:meta",
+    "build": "yarn prepare && yarn build:docs && yarn build:code && yarn build:meta",
     "build:code": "vite build",
+    "build:docs": "npx tsx scripts/build.docs.ts",
     "build:meta": "npx tsx scripts/build.meta.ts",
     "generate:known-types": "npx tsx scripts/generate.known-types.ts",
     "prepare": "yarn generate:known-types",

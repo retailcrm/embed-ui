@@ -14,6 +14,9 @@ coverage
 artifacts/
 /bin/
 packages/v1-endpoint/docs/targets/
+packages/v1-contexts/docs/actions/
+packages/v1-contexts/docs/contexts/
+packages/v1-contexts/docs/custom-contexts/
 
 .codex
 .npmrc
