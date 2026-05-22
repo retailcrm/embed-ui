@@ -1,5 +1,8 @@
 {
   "name": "@retailcrm/embed-ui-v1-contexts",
+  "bin": {
+    "embed-ui-v1-contexts-mcp": "bin/embed-ui-v1-contexts-mcp.mjs"
+  },
   "description": "Reactive contexts for RetailCRM JS API",
   "type": "module",
   "version": "0.9.23-alpha.1",
@@ -22,6 +25,12 @@
       "import": "./dist/remote.js",
       "require": "./dist/remote.cjs",
       "default": "./dist/remote.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/server.d.ts",
+      "import": "./dist/mcp/server.js",
+      "require": "./dist/mcp/server.cjs",
+      "default": "./dist/mcp/server.js"
     },
     "./remote/customer/*": {
       "types": "./dist/remote/customer/*.d.ts",
@@ -63,6 +72,9 @@
       "remote": [
         "./dist/remote.d.ts"
       ],
+      "mcp": [
+        "./dist/mcp/server.d.ts"
+      ],
       "remote/customer/card": [
         "./dist/remote/customer/card.d.ts"
       ],
@@ -87,25 +99,28 @@
     }
   },
   "files": [
+    "bin",
     "dist",
     "docs",
     "types",
     "README.md"
   ],
   "scripts": {
-    "build": "yarn prepare && yarn build:docs && yarn build:code && yarn build:meta",
+    "build": "yarn prepare && yarn build:docs && yarn build:code && yarn build:mcp && yarn build:meta",
     "build:code": "vite build",
     "build:docs": "npx tsx scripts/build.docs.ts",
+    "build:mcp": "vite build -c ./vite.config.mcp.ts",
     "build:meta": "npx tsx scripts/build.meta.ts",
     "generate:known-types": "npx tsx scripts/generate.known-types.ts",
     "prepare": "yarn generate:known-types",
-    "test": "yarn prepare && vitest --run"
+    "test": "yarn prepare && yarn build:docs && vitest --run"
   },
   "peerDependencies": {
     "@remote-ui/rpc": "^1.4",
     "pinia": "^2.2"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@omnicajs/symfony-router": "^1.0.0",
     "@retailcrm/embed-ui-v1-types": "^0.9.23-alpha.1"
   },

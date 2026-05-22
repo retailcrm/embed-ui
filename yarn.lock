@@ -1639,6 +1639,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts"
   dependencies:
+    "@modelcontextprotocol/sdk": "npm:^1.29.0"
     "@omnicajs/symfony-router": "npm:^1.0.0"
     "@remote-ui/rpc": "npm:^1.4.7"
     "@retailcrm/embed-ui-v1-testing": "npm:^0.9.23-alpha.1"
@@ -1652,6 +1653,8 @@ __metadata:
   peerDependencies:
     "@remote-ui/rpc": ^1.4
     pinia: ^2.2
+  bin:
+    embed-ui-v1-contexts-mcp: bin/embed-ui-v1-contexts-mcp.mjs
   languageName: unknown
   linkType: soft
 
