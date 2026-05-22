@@ -39,6 +39,7 @@ When building UI in an extension, start with imports like:
 import {
   UiButton,
   UiField,
+  UiPageFooter,
   UiPageHeader,
   UiSelect,
   UiTextbox,
@@ -54,7 +55,7 @@ Commonly used exports from `remote` include:
 - selection and date controls:
   `UiSelect`, `UiSelectOption`, `UiSelectOptionGroup`, `UiDatePicker`, `UiTimePicker`, `UiCalendar`
 - layout and structure:
-  `UiField`, `UiPageHeader`, `UiCollapse`, `UiCollapseBox`, `UiScrollBox`
+  `UiField`, `UiPageHeader`, `UiPageFooter`, `UiCollapse`, `UiCollapseBox`, `UiScrollBox`
 - actions and links:
   `UiButton`, `UiAddButton`, `UiCopyButton`, `UiToolbarButton`, `UiToolbarLink`, `UiLink`
 - feedback and overlays:
@@ -93,9 +94,13 @@ Commonly used exports from `remote` include:
     <UiTextbox v-model="comment" placeholder="Введите текст" />
   </UiField>
 
-  <UiButton @click="save">
-    Сохранить
-  </UiButton>
+  <UiPageFooter>
+    <template #actions>
+      <UiButton @click="save">
+        Сохранить
+      </UiButton>
+    </template>
+  </UiPageFooter>
 </template>
 
 <script lang="ts" setup>
@@ -104,6 +109,7 @@ import { ref } from 'vue'
 import {
   UiButton,
   UiField,
+  UiPageFooter,
   UiPageHeader,
   UiTextbox,
 } from '@retailcrm/embed-ui-v1-components/remote'

@@ -43,6 +43,7 @@ Current high-signal core profiles:
 - [`UiToggleButton`](./profiles/components/UiToggleButton.yml)
 - [`UiToggleGroup`](./profiles/components/UiToggleGroup.yml)
 - [`UiPageHeader`](./profiles/components/UiPageHeader.yml)
+- [`UiPageFooter`](./profiles/components/UiPageFooter.yml)
 - [`UiSelect`](./profiles/components/UiSelect.yml)
 - [`UiRadioSwitch`](./profiles/components/UiRadioSwitch.yml)
 - [`UiTabGroup`](./profiles/components/UiTabGroup.yml)

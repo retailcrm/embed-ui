@@ -1,0 +1,166 @@
+component: UiPageFooter
+summary: >
+  UiPageFooter is a page-level action footer for extension screens. It provides
+  visual structure and spacing for primary actions on the left and an optional
+  aside action area on the right. The component does not create buttons by itself;
+  compose it with UiButton or other public action components in its slots.
+
+public_import:
+  from: '@retailcrm/embed-ui-v1-components/remote'
+  named:
+    - UiPageFooter
+
+related_components:
+  - UiButton
+  - UiPageHeader
+
+examples:
+  - title: Settings page footer
+    code: |
+      <template>
+          <UiPageFooter>
+              <template #actions>
+                  <UiButton variant="success" @click="save">
+                      Save
+                  </UiButton>
+
+                  <UiButton appearance="secondary" @click="saveAndExit">
+                      Save and exit
+                  </UiButton>
+              </template>
+
+              <template #aside>
+                  <UiButton
+                      aria-label="Delete"
+                      appearance="tertiary"
+                      variant="danger"
+                      @click="remove"
+                  >
+                      <IconDelete aria-hidden="true" />
+                  </UiButton>
+              </template>
+          </UiPageFooter>
+      </template>
+
+      <script lang="ts" setup>
+      import IconDelete from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete-outlined.svg'
+      import {
+        UiButton,
+        UiPageFooter,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const save = () => {}
+      const saveAndExit = () => {}
+      const remove = () => {}
+      </script>
+
+use_when:
+  - You need a page-level action strip for a settings or edit screen.
+  - You need primary and secondary actions grouped on the left.
+  - You need a separate right-side zone for a destructive or secondary standalone action.
+  - You want CRM footer spacing and border styling instead of custom footer markup.
+
+avoid_when:
+  - You need a modal footer, use the modal component footer slot instead.
+  - You need a table footer, use UiTable footer slots and table footer primitives.
+  - You need the component to be fixed to the viewport bottom by itself.
+  - You need automatic button creation from props.
+
+api:
+  key_props: []
+  props: []
+  slots:
+    - name: actions
+      zone: left-side action group
+      creates: Primary action area.
+      accepts:
+        recommended:
+          - UiButton
+          - UiToolbarButton
+          - UiToolbarLink
+          - compact action components
+        avoid:
+          - full form layouts
+          - wide content blocks
+          - nested page sections
+      layout_effect: Renders as the flexible left area and can contain multiple actions.
+      notes: Use this slot for save, apply, cancel, or save-and-exit actions.
+    - name: aside
+      zone: right-side aside action group
+      creates: Separate aside action area.
+      accepts:
+        recommended:
+          - UiButton
+          - one compact destructive action
+          - one compact secondary action
+        avoid:
+          - main save actions
+          - wide content blocks
+          - multi-row form content
+      layout_effect: Renders at the right edge on desktop and below the actions area on narrow screens.
+      notes: Commonly used for delete or another separated secondary action.
+  emits: []
+  methods: []
+
+rendered_structure:
+  descriptive_only: true
+  notes: >
+    This structure is useful for reasoning and debugging, not as a public styling API.
+  root:
+    shape: footer.ui-v1-page-footer
+    tag: footer
+  zones:
+    - .ui-v1-page-footer__actions
+    - .ui-v1-page-footer__aside
+
+geometry:
+  layout: page action footer
+  root_display: flex
+  width_behavior: stretches to container width by default
+  notes:
+    - Root uses flex layout with space between the actions and aside zones.
+    - The actions zone flexes and the aside zone stays content-sized on desktop.
+    - On narrow screens the root switches to a vertical layout and action groups can wrap.
+    - The component renders where it is called and does not fix itself to the bottom of the viewport.
+
+styling:
+  notes:
+    - UiPageFooter provides the visual footer shell: spacing, border, background, and action grouping.
+    - The CRM shell may position the root footer according to page layout needs.
+    - Internal classes are descriptive hooks, not a stable public selector API unless documented by the host integration.
+  root_classes:
+    - .ui-v1-page-footer
+  zones:
+    - .ui-v1-page-footer__actions
+    - .ui-v1-page-footer__aside
+  css_variables: {}
+  typography:
+    notes:
+      - The footer itself does not impose action text typography.
+      - Typography comes from slotted components such as UiButton.
+
+behavior:
+  states: []
+  notes:
+    - UiPageFooter has no own state props.
+    - It does not create, disable, lock, or submit actions by itself.
+    - Pass disabled, locked, click handlers, icons, and labels to the slotted UiButton or action component.
+    - It renders as a regular footer in place and does not apply fixed or sticky positioning by itself.
+
+accessibility:
+  notes:
+    - The root uses a semantic footer element.
+    - Slotted action components are responsible for accessible labels, disabled state, and click behavior.
+
+ai_notes:
+  do:
+    - Import UiPageFooter from @retailcrm/embed-ui-v1-components/remote.
+    - Use the actions slot for primary and secondary page actions.
+    - Use the aside slot for a separated destructive or secondary action.
+    - Put UiButton or another public action component inside slots.
+    - Add page-level positioning only in the host/page layout when the footer must stick to a specific shell area.
+  avoid:
+    - Do not recreate a local footer when UiPageFooter is available.
+    - Do not import UiPageFooter from internal package paths.
+    - Do not expect UiPageFooter to create buttons from props.
+    - Do not expect UiPageFooter to be fixed to the bottom of the window automatically.

@@ -62,6 +62,7 @@ When building a basic form or settings screen, start from patterns like:
 import {
   UiButton,
   UiField,
+  UiPageFooter,
   UiPageHeader,
   UiSelect,
   UiTextbox,
@@ -85,6 +86,7 @@ Default screen rules:
 - use [`PageComposition.yml`](./profiles/pages/PageComposition.yml) to choose between an entity list,
   card/settings page, multi-column page, collapse-block page, modal sidebar, or modal window;
 - use `UiPageHeader` for page identity and top-level actions;
+- use `UiPageFooter` for page-level save/cancel/delete actions instead of recreating a local footer;
 - keep filters and controls near the content they affect;
 - use `UiField` around labeled form controls;
 - use `UiTable` for structured result lists;
@@ -168,6 +170,7 @@ The preferred styling signal is:
 - [`UiTextbox`](./profiles/components/UiTextbox.yml)
 - [`UiButton`](./profiles/components/UiButton.yml)
 - [`UiPageHeader`](./profiles/components/UiPageHeader.yml)
+- [`UiPageFooter`](./profiles/components/UiPageFooter.yml)
 - [`UiSelect`](./profiles/components/UiSelect.yml)
 - [`UiRadioSwitch`](./profiles/components/UiRadioSwitch.yml)
 - [`UiTabGroup`](./profiles/components/UiTabGroup.yml)

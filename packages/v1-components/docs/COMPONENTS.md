@@ -45,6 +45,7 @@ Detailed AI-friendly profiles are collected in [`PROFILES.md`](./PROFILES.md).
 ## Layout And Structure
 
 - [`UiPageHeader`](./profiles/components/UiPageHeader.yml): page or section header with an editable title and action zone
+- [`UiPageFooter`](./profiles/components/UiPageFooter.yml): page action footer with primary action and aside zones
 - [`UiCollapse`](./profiles/components/UiCollapse.yml): collapsible section
 - [`UiCollapseBox`](./profiles/components/UiCollapseBox.yml): collapsible container
 - [`UiCollapseGroup`](./profiles/components/UiCollapseGroup.yml): multiple collapse coordination
