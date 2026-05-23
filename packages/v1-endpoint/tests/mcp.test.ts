@@ -37,4 +37,21 @@ test('supports Codex startup probes without tools or prompts', async () => {
       }),
     ]),
   })
+
+  await expect(client.readResource({
+    uri: 'embed-ui-v1-endpoint://targets/order%2Fmg%3Alist.after',
+  })).resolves.toMatchObject({
+    contents: [{
+      mimeType: 'application/yaml',
+      text: expect.stringContaining('embed-ui-v1-contexts://contexts/order%2Fcard'),
+    }],
+  })
+  await expect(client.readResource({
+    uri: 'embed-ui-v1-endpoint://targets/order%2Fmg%3Alist.after',
+  })).resolves.toMatchObject({
+    contents: [{
+      mimeType: 'application/yaml',
+      text: expect.stringContaining('embed-ui-v1-contexts://actions/order%2Fcard'),
+    }],
+  })
 })

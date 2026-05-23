@@ -29,6 +29,14 @@ const list = (values: readonly string[], indent = '  '): string => values.length
   ? ' []'
   : `\n${values.map(value => `${indent}- ${quote(value)}`).join('\n')}`
 
+const resourceList = (
+  values: readonly string[],
+  uriKind: 'actions' | 'contexts' | 'custom-contexts',
+  indent = '  '
+): string => values.length === 0
+  ? ' []'
+  : `\n${values.map(value => `${indent}- id: ${quote(value)}\n${indent}  uri: ${quote(`embed-ui-v1-contexts://${uriKind}/${encodeURIComponent(value)}`)}`).join('\n')}`
+
 const fileNameOf = (target: string): string => `${target.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.yml`
 
 const pageOf = (target: string): string => target.split(':')[0]
@@ -75,6 +83,10 @@ target_config:
   custom_contexts:${list(config.customContexts, '    ')}
   action_scopes:${list(config.actions, '    ')}
 
+context_resources:${resourceList(config.contexts, 'contexts')}
+custom_context_resources:${resourceList(config.customContexts, 'custom-contexts')}
+action_resources:${resourceList(config.actions, 'actions')}
+
 use_when:
   - ${quote(`Place a widget exactly at ${target}.`)}
   - ${quote(`The widget belongs to the ${pageLabel} and should appear at this location: ${location}.`)}
@@ -87,6 +99,9 @@ avoid_when:
 ai_notes:
   - ${quote('Use the target id as the runner registration key.')}
   - ${quote('Use targets[target].contexts as the source of truth for context availability.')}
+  - ${quote('Read linked context_resources, action_resources, and custom_context_resources before reasoning about fields, mutations, or custom data.')}
+  - ${quote('Do not infer context field shape from the target id, page name, or widget placement.')}
+  - ${quote('For mutation scenarios, check the linked action profile before writing fields directly.')}
   - ${quote('Do not duplicate target context lists in generated widget code.')}
 ${target.startsWith('order/')
     ? `  - ${quote('Order card and chat order form targets share the same order form data contract.')}\n`
