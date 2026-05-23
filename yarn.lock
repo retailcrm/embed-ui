@@ -1654,6 +1654,7 @@ __metadata:
     "@remote-ui/rpc": ^1.4
     pinia: ^2.2
   bin:
+    embed-ui-v1-contexts: bin/embed-ui-v1-contexts.mjs
     embed-ui-v1-contexts-mcp: bin/embed-ui-v1-contexts-mcp.mjs
   languageName: unknown
   linkType: soft

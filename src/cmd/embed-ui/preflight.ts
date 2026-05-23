@@ -431,7 +431,14 @@ export const applyInitPreflight = (
   analyzeTemplateFileSkips(cwd, sourceRoot, options, changes)
 
   if (hasEnabledMcpConfigHook(selectedPackages, options)) {
-    changes.preflight.push('v1-endpoint init-config: enabled')
+    const packageNames = selectedPackages
+      .filter((selectedPackage) =>
+        selectedPackage.hooks?.some((hook) => hook.type === 'config' && hook.requiresMcp) ?? false
+      )
+      .map((selectedPackage) => selectedPackage.id)
+      .join(', ')
+
+    changes.preflight.push(`package MCP init-config: enabled for ${packageNames}`)
 
     if (options.mcpClientConfigs?.length) {
       changes.preflight.push(`MCP client configs requested: ${options.mcpClientConfigs.join(', ')}`)

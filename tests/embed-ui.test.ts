@@ -673,7 +673,7 @@ describe('embed-ui CLI', () => {
     expect(fs.existsSync(path.join(tempDir, 'env.d.ts'))).toBe(false)
   })
 
-  test('init delegates MCP setup to endpoint package hook', async () => {
+  test('init delegates MCP setup to installed package hooks', async () => {
     const tempDir = createTempDir()
     const logs: string[] = []
 
@@ -699,8 +699,9 @@ describe('embed-ui CLI', () => {
 
     const output = logs.join('\n')
 
-    expect(output).toContain('v1-endpoint init-config: enabled')
+    expect(output).toContain('package MCP init-config: enabled for contexts, endpoint')
     expect(output).toContain('MCP client configs requested: cursor, vscode')
+    expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-contexts@1.2.3 -- embed-ui-v1-contexts init-config')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-config')
     expect(output).toContain('--mcp-client-configs cursor,vscode')
   })
@@ -911,6 +912,80 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf8')).toContain(
       'A project `.mcp.json` may require restarting or reconnecting the AI client'
     )
+    expect(fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf8')).toContain(
+      '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-endpoint:start -->'
+    )
+  })
+
+  test('contexts init-agents and init-config add package-specific MCP setup', () => {
+    const tempDir = createTempDir()
+    const contextsBin = path.resolve('packages/v1-contexts/bin/embed-ui-v1-contexts.mjs')
+
+    execFileSync(process.execPath, [
+      contextsBin,
+      'init-agents',
+      tempDir,
+    ])
+    execFileSync(process.execPath, [
+      contextsBin,
+      'init-config',
+      tempDir,
+      '--mcp-client-configs',
+      'codex,cursor',
+    ])
+
+    const agentsContent = fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf8')
+    const readmeContent = fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')
+    const projectMcpConfig = readJsonFile<{
+      mcpServers: Record<string, { command: string }>;
+    }>(path.join(tempDir, '.mcp.json'))
+    const cursorConfig = readJsonFile<{
+      mcpServers: Record<string, { command: string }>;
+    }>(path.join(tempDir, '.cursor/mcp.json'))
+    const codexConfig = fs.readFileSync(path.join(tempDir, '.codex/config.toml'), 'utf8')
+
+    expect(agentsContent).toContain('<!-- embed-ui-agents:@retailcrm/embed-ui-v1-contexts:start -->')
+    expect(agentsContent).toContain('embed-ui-v1-contexts://custom-contexts/<encoded-entity>')
+    expect(projectMcpConfig.mcpServers['retailcrm-embed-ui-v1-contexts']).toEqual({
+      command: '${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/embed-ui-v1-contexts-mcp',
+    })
+    expect(cursorConfig.mcpServers['retailcrm-embed-ui-v1-contexts']).toEqual({
+      command: '${workspaceFolder}/node_modules/.bin/embed-ui-v1-contexts-mcp',
+    })
+    expect(codexConfig).toContain('[mcp_servers.retailcrm-embed-ui-v1-contexts]')
+    expect(readmeContent).toContain('## MCP For AI Assistants: @retailcrm/embed-ui-v1-contexts')
+    expect(readmeContent).toContain('embed-ui-v1-contexts://contexts')
+  })
+
+  test('endpoint and contexts init-config keep separate MCP entries and README sections', () => {
+    const tempDir = createTempDir()
+    const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
+    const contextsBin = path.resolve('packages/v1-contexts/bin/embed-ui-v1-contexts.mjs')
+
+    execFileSync(process.execPath, [
+      endpointBin,
+      'init-config',
+      tempDir,
+    ])
+    execFileSync(process.execPath, [
+      contextsBin,
+      'init-config',
+      tempDir,
+    ])
+
+    const projectMcpConfig = readJsonFile<{
+      mcpServers: Record<string, { command: string }>;
+    }>(path.join(tempDir, '.mcp.json'))
+    const readmeContent = fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')
+
+    expect(projectMcpConfig.mcpServers['retailcrm-embed-ui-v1-endpoint']).toEqual({
+      command: '${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/embed-ui-v1-endpoint-mcp',
+    })
+    expect(projectMcpConfig.mcpServers['retailcrm-embed-ui-v1-contexts']).toEqual({
+      command: '${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/embed-ui-v1-contexts-mcp',
+    })
+    expect(readmeContent).toContain('## MCP For AI Assistants: @retailcrm/embed-ui-v1-endpoint')
+    expect(readmeContent).toContain('## MCP For AI Assistants: @retailcrm/embed-ui-v1-contexts')
   })
 
   test('v1-components init-agents supports transient execution before install', () => {

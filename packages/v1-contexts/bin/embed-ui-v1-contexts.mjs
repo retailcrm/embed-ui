@@ -4,16 +4,15 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
-const PACKAGE_NAME = '@retailcrm/embed-ui-v1-endpoint'
+const PACKAGE_NAME = '@retailcrm/embed-ui-v1-contexts'
 const DEFAULT_NEWLINE = '\n'
-const AGENTS_SECTION_HEADER = '## @retailcrm/embed-ui-v1-endpoint'
-const AGENTS_SECTION_START = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-endpoint:start -->'
-const AGENTS_SECTION_END = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-endpoint:end -->'
-const README_MCP_SECTION_HEADER = '## MCP For AI Assistants: @retailcrm/embed-ui-v1-endpoint'
-const LEGACY_README_MCP_SECTION_HEADER = '## MCP For AI Assistants'
-const README_MCP_MARKER = 'embed-ui-v1-endpoint://targets'
-const MCP_SERVER_NAME = 'retailcrm-embed-ui-v1-endpoint'
-const MCP_BIN_NAME = process.platform === 'win32' ? 'embed-ui-v1-endpoint-mcp.cmd' : 'embed-ui-v1-endpoint-mcp'
+const AGENTS_SECTION_HEADER = '## @retailcrm/embed-ui-v1-contexts'
+const AGENTS_SECTION_START = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-contexts:start -->'
+const AGENTS_SECTION_END = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-contexts:end -->'
+const README_MCP_SECTION_HEADER = '## MCP For AI Assistants: @retailcrm/embed-ui-v1-contexts'
+const README_MCP_MARKER = 'embed-ui-v1-contexts://contexts'
+const MCP_SERVER_NAME = 'retailcrm-embed-ui-v1-contexts'
+const MCP_BIN_NAME = process.platform === 'win32' ? 'embed-ui-v1-contexts-mcp.cmd' : 'embed-ui-v1-contexts-mcp'
 const RELATIVE_MCP_BIN_PATH = `./node_modules/.bin/${MCP_BIN_NAME}`
 const CLAUDE_PROJECT_MCP_BIN_PATH = `\${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/${MCP_BIN_NAME}`
 const WORKSPACE_MCP_BIN_PATH = `\${workspaceFolder}/node_modules/.bin/${MCP_BIN_NAME}`
@@ -149,17 +148,28 @@ ${AGENTS_SECTION_HEADER}
 When working with \`${PACKAGE_NAME}\` in this project:
 
 1. Read \`./node_modules/${PACKAGE_NAME}/README.md\`.
-2. Then read the relevant guide from \`./node_modules/${PACKAGE_NAME}/docs/README.md\`.
-3. Use documented public entrypoints instead of package internals:
+2. Then read \`./node_modules/${PACKAGE_NAME}/docs/ru/CONCEPT.md\`.
+3. Then read \`./node_modules/${PACKAGE_NAME}/docs/ru/CUSTOM.md\` if custom fields or custom dictionaries are involved.
+4. Use documented public entrypoints instead of package internals:
    - \`${PACKAGE_NAME}/remote\`
-   - \`${PACKAGE_NAME}/common/targets\`
-4. Do not import from \`${PACKAGE_NAME}/dist/*\`, source files, or repository-only paths.
-5. When the task involves widget targets, target placement, target contexts, target metadata, or choosing a target, use the package MCP server if it is available.
-6. First read \`embed-ui-v1-endpoint://targets\` to discover available target profiles.
-7. Then read the relevant \`embed-ui-v1-endpoint://targets/<encoded-target>\` resource before answering or changing code related to that target.
-8. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
-9. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
-10. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
+   - \`${PACKAGE_NAME}/remote/settings\`
+   - \`${PACKAGE_NAME}/remote/user/current\`
+   - \`${PACKAGE_NAME}/remote/order/card\`
+   - \`${PACKAGE_NAME}/remote/order/card-settings\`
+   - \`${PACKAGE_NAME}/remote/customer/card\`
+   - \`${PACKAGE_NAME}/remote/customer/card-phone\`
+   - \`${PACKAGE_NAME}/remote/custom\`
+   - \`${PACKAGE_NAME}/host\`
+5. Do not import from \`${PACKAGE_NAME}/dist/*\`, source files, or repository-only paths.
+6. When the task involves available contexts, context fields, actions, action scopes, custom contexts, custom fields, or dictionaries, use the package MCP server if it is available.
+7. First read \`embed-ui-v1-contexts://contexts\`, \`embed-ui-v1-contexts://actions\`, or \`embed-ui-v1-contexts://custom-contexts\` to discover available profiles.
+8. Then read the relevant resource before answering or changing code:
+   - \`embed-ui-v1-contexts://contexts/<encoded-context>\`
+   - \`embed-ui-v1-contexts://actions/<encoded-scope>\`
+   - \`embed-ui-v1-contexts://custom-contexts/<encoded-entity>\`
+9. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
+10. If MCP resources are not available, use generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/contexts/*.yml\`, \`./node_modules/${PACKAGE_NAME}/docs/actions/*.yml\`, and \`./node_modules/${PACKAGE_NAME}/docs/custom-contexts/*.yml\` as fallback sources.
+11. Prefer generated profiles over guessing context shape, field names, action scopes, or semantic intent from names alone.
 
 Suggested MCP stdio server configuration:
 
@@ -180,20 +190,24 @@ const createMcpReadmeSection = (clientConfigs) => {
   return `${README_MCP_SECTION_HEADER}
 
 The project has an MCP server configuration for \`${PACKAGE_NAME}\`.
-It exposes AI-friendly widget target descriptions as MCP resources.
+It exposes AI-friendly context, action, and custom context descriptions as MCP resources.
 If the AI client was already running, restart or reconnect it before expecting these resources
 to appear in that session.
 
 Basic check:
 
 \`\`\`bash
-./node_modules/.bin/embed-ui-v1-endpoint-mcp
+./node_modules/.bin/embed-ui-v1-contexts-mcp
 \`\`\`
 
 Primary resources:
 
-- \`${README_MCP_MARKER}\` is the widget target index.
-- \`embed-ui-v1-endpoint://targets/<encoded-target>\` is a YAML profile for one target.
+- \`${README_MCP_MARKER}\` is the context profile index.
+- \`embed-ui-v1-contexts://contexts/<encoded-context>\` is a YAML profile for one context.
+- \`embed-ui-v1-contexts://actions\` is the action scope profile index.
+- \`embed-ui-v1-contexts://actions/<encoded-scope>\` is a YAML profile for one action scope.
+- \`embed-ui-v1-contexts://custom-contexts\` is the custom context profile index.
+- \`embed-ui-v1-contexts://custom-contexts/<encoded-entity>\` is a YAML profile for one custom context entity.
 
 ${clientConfigText}
 
@@ -214,7 +228,7 @@ codex mcp list
 
 If the server does not appear, trust the project in Codex and restart the session. The
 project-level config keeps this repository pinned to its own local
-\`./node_modules/.bin/embed-ui-v1-endpoint-mcp\` binary.
+\`./node_modules/.bin/embed-ui-v1-contexts-mcp\` binary.
 
 ### User-Level MCP Clients
 
@@ -226,7 +240,7 @@ projects can expose the same resource URIs and confuse the AI client.
 Codex CLI user-level setup:
 
 \`\`\`bash
-codex mcp add ${MCP_SERVER_NAME} -- "$(realpath ./node_modules/.bin/embed-ui-v1-endpoint-mcp)"
+codex mcp add ${MCP_SERVER_NAME} -- "$(realpath ./node_modules/.bin/embed-ui-v1-contexts-mcp)"
 codex mcp list
 codex mcp get ${MCP_SERVER_NAME}
 \`\`\`
@@ -235,7 +249,7 @@ Equivalent \`~/.codex/config.toml\` block:
 
 \`\`\`toml
 [mcp_servers.${MCP_SERVER_NAME}]
-command = "/absolute/path/to/project/node_modules/.bin/embed-ui-v1-endpoint-mcp"
+command = "/absolute/path/to/project/node_modules/.bin/embed-ui-v1-contexts-mcp"
 \`\`\`
 
 Claude Desktop config paths:
@@ -249,7 +263,7 @@ Config snippet:
 {
   "mcpServers": {
     "${MCP_SERVER_NAME}": {
-      "command": "/absolute/path/to/project/node_modules/.bin/embed-ui-v1-endpoint-mcp"
+      "command": "/absolute/path/to/project/node_modules/.bin/embed-ui-v1-contexts-mcp"
     }
   }
 }
@@ -319,16 +333,6 @@ const replaceReadmeMcpSection = (content, section) => {
   const sectionPattern = new RegExp(`${escapedHeader}[\\s\\S]*?(?=\\n##\\s|$)`, 'u')
 
   if (!sectionPattern.test(content)) {
-    const escapedLegacyHeader = LEGACY_README_MCP_SECTION_HEADER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const escapedMarker = README_MCP_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const legacySectionPattern = new RegExp(`(^|\\n)${escapedLegacyHeader}\\n[\\s\\S]*?${escapedMarker}[\\s\\S]*?(?=\\n##\\s|$)`, 'u')
-
-    if (legacySectionPattern.test(content)) {
-      return content
-        .replace(legacySectionPattern, (match, prefix) => `${prefix}${section.trimEnd()}`)
-        .replace(/\s+$/u, '') + DEFAULT_NEWLINE
-    }
-
     return appendSection(content, section)
   }
 
