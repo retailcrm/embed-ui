@@ -62,6 +62,50 @@ export type CustomContextDocumentation = {
 }
 
 export const contextDocumentation: Record<string, ContextDocumentation> = {
+  'customer/card': {
+    summary: {
+      'en-GB': 'Readonly customer card context with customer identifiers, primary email, and phone list.',
+    },
+    fields: {
+      id: {
+        sourceOfTruth: {
+          'en-GB': 'CRM customer identifier for the opened customer card.',
+        },
+      },
+      externalId: {
+        sourceOfTruth: {
+          'en-GB': 'External customer identifier from the source system.',
+        },
+      },
+      email: {
+        aiNotes: [{
+          'en-GB': 'Use as the current customer email shown on the customer card; it is not a writable order-form field.',
+        }],
+      },
+      phones: {
+        aiNotes: [{
+          'en-GB': 'Use for customer-card phone display and selection logic. For a widget attached to one phone row, prefer the customer/card:phone context.',
+        }],
+      },
+    },
+  },
+  'customer/card:phone': {
+    summary: {
+      'en-GB': 'Readonly context for a single customer phone row target with phone value and row index.',
+    },
+    fields: {
+      value: {
+        sourceOfTruth: {
+          'en-GB': 'Phone number value for the phone row where the widget is mounted.',
+        },
+      },
+      index: {
+        sourceOfTruth: {
+          'en-GB': 'Zero-based position of the phone row inside the customer phone list.',
+        },
+      },
+    },
+  },
   'order/card': {
     summary: {
       'en-GB': 'Order card context with order identity, customer data, company fields, order items, delivery address, discount and status.',
@@ -272,22 +316,37 @@ export const contextDocumentation: Record<string, ContextDocumentation> = {
   },
   settings: {
     summary: {
-      'en-GB': 'Readonly CRM settings context with locale, routing data and image processing workers.',
+      'en-GB': 'Readonly CRM settings context with UI locale, Symfony router data, and image preview worker hosts.',
     },
     fields: {
       'system.locale': {
+        sourceOfTruth: {
+          'en-GB': 'Current CRM UI locale for the opened account session.',
+        },
         aiNotes: [{
           'en-GB': 'Use this locale for extension UI localization.',
         }],
       },
       'system.routing': {
+        sourceOfTruth: {
+          'en-GB': 'Symfony router dump for CRM routes available to the extension.',
+        },
         aiNotes: [{
           'en-GB': 'Use this Symfony router data to build CRM route URLs.',
+        }, {
+          'en-GB': 'Pass the routing data to @omnicajs/symfony-router instead of concatenating CRM URLs manually.',
         }],
       },
       'image.workers': {
+        sourceOfTruth: {
+          'en-GB': 'List of image preview worker hosts used to build resized or cropped image URLs.',
+        },
         aiNotes: [{
-          'en-GB': 'Use these worker endpoints for image processing flows.',
+          'en-GB': 'Pass these workers to usePreview or @retailcrm/image-preview preview().',
+        }, {
+          'en-GB': 'If the list is empty, preview helpers return the original image URL.',
+        }, {
+          'en-GB': 'Workers are used for image preview resizing and cropping, not for uploading or storing images.',
         }],
       },
     },
