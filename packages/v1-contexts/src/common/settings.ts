@@ -104,9 +104,9 @@ export const schema: Schema = {
 export const description: ContextSchemaDescription<Schema> = {
   'image.workers': {
     description: {
-      'en-GB': 'A list of servers that process images.',
-      'es-ES': 'Una lista de servidores que procesan imágenes.',
-      'ru-RU': 'Список серверов, обрабатывающих изображения.',
+      'en-GB': 'List of image preview worker hosts used to build resized or cropped image URLs.',
+      'es-ES': 'Lista de hosts de workers de previsualización de imágenes usados para crear URLs de imágenes redimensionadas o recortadas.',
+      'ru-RU': 'Список host-ов image preview workers для построения URL уменьшенных или обрезанных изображений.',
     },
   },
   'system.locale': {
