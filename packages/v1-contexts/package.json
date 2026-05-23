@@ -6,7 +6,7 @@
   },
   "description": "Reactive contexts for RetailCRM JS API",
   "type": "module",
-  "version": "0.9.23-alpha.3",
+  "version": "0.9.23",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
   "repository": {
@@ -123,11 +123,11 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@omnicajs/symfony-router": "^1.0.0",
-    "@retailcrm/embed-ui-v1-types": "^0.9.23-alpha.3"
+    "@retailcrm/embed-ui-v1-types": "^0.9.23"
   },
   "devDependencies": {
     "@remote-ui/rpc": "^1.4.7",
-    "@retailcrm/embed-ui-v1-testing": "^0.9.23-alpha.3",
+    "@retailcrm/embed-ui-v1-testing": "^0.9.23",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.2",
