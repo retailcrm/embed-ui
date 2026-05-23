@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.9.23-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.9.23-alpha.2...v0.9.23-alpha.3) (2026-05-23)
+
+### Features
+
+* Contexts MCP init support added ([ff151f4](https://github.com/retailcrm/embed-ui/commit/ff151f47f2cef4d3a8ab0812c481cc5d9ae5ccf9))
+* **v1-contexts:** MCP server for context profiles added ([9f5184b](https://github.com/retailcrm/embed-ui/commit/9f5184bb52e48e5165a12490089d761a4fd5a6cd))
+* **v1-endpoint:** Context profile links added ([996903f](https://github.com/retailcrm/embed-ui/commit/996903fcbea45bd6012bf3f2d2f84426c09f6756))
 ## [0.9.23-alpha.2](https://github.com/retailcrm/embed-ui/compare/v0.9.23-alpha.1...v0.9.23-alpha.2) (2026-05-22)
 ## [0.9.23-alpha.1](https://github.com/retailcrm/embed-ui/compare/v0.9.22...v0.9.23-alpha.1) (2026-05-22)
 
