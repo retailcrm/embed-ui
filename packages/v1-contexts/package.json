@@ -1,6 +1,7 @@
 {
   "name": "@retailcrm/embed-ui-v1-contexts",
   "bin": {
+    "embed-ui-v1-contexts": "bin/embed-ui-v1-contexts.mjs",
     "embed-ui-v1-contexts-mcp": "bin/embed-ui-v1-contexts-mcp.mjs"
   },
   "description": "Reactive contexts for RetailCRM JS API",

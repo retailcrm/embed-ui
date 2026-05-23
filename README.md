@@ -60,7 +60,7 @@ npx @retailcrm/embed-ui init ./web --package-manager yarn
 - шаблон — создается стартовая конфигурация для страницы настроек и виджета `order/card:common.after`;
 - каталоги — создаются `endpoint`, `pages`, `widgets`, `shared`, `i18n` и `i18n/locales` внутри frontend-каталога;
 - `AGENTS.md` — создается или дополняется инструкциями корневого пакета и выбранных пакетов;
-- MCP — добавляется `.mcp.json` для `v1-endpoint`;
+- MCP — добавляется `.mcp.json` для выбранных пакетов с MCP (`v1-contexts` и `v1-endpoint`);
 - project-level client configs для Codex CLI, Cursor, Junie и VS Code — не создаются без `--mcp-client-configs`;
 - Git — в неинтерактивном режиме не инициализируется без `--git`, а в интерактивном режиме предлагается, если корень проекта не является Git-репозиторием;
 - существующие файлы не перезаписываются, а зависимости с потенциальным конфликтом не заменяются без явных force-флагов.
@@ -104,12 +104,20 @@ npx @retailcrm/embed-ui init ./web --force --no-install --no-template
 При `init` CLI добавляет общий раздел в `AGENTS.md`, а пакеты могут добавить свои инструкции. Сейчас это используют:
 
 - `@retailcrm/embed-ui-v1-components` — добавляет порядок чтения README, AI-документации и YAML-профилей компонентов.
+- `@retailcrm/embed-ui-v1-contexts` — добавляет инструкции по контекстам, actions, custom contexts и MCP-ресурсам.
 - `@retailcrm/embed-ui-v1-endpoint` — добавляет инструкции по целям виджетов и MCP-ресурсам.
 
-Для `v1-endpoint` также создается `.mcp.json` с сервером `retailcrm-embed-ui-v1-endpoint`. Этот файл рассчитан на
-Claude Code project scope и использует `${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/embed-ui-v1-endpoint-mcp`, чтобы
-сервер резолвился относительно открытого проекта. MCP отдает AI-friendly описания целей виджетов через ресурсы:
+Для `v1-contexts` и `v1-endpoint`, если эти пакеты выбраны для установки, также создается `.mcp.json` с серверами
+`retailcrm-embed-ui-v1-contexts` и `retailcrm-embed-ui-v1-endpoint`. Этот файл рассчитан на Claude Code project scope
+и использует `${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/...`, чтобы серверы резолвились относительно открытого проекта.
+MCP отдает AI-friendly описания через ресурсы:
 
+- `embed-ui-v1-contexts://contexts`;
+- `embed-ui-v1-contexts://contexts/<encoded-context>`;
+- `embed-ui-v1-contexts://actions`;
+- `embed-ui-v1-contexts://actions/<encoded-scope>`;
+- `embed-ui-v1-contexts://custom-contexts`;
+- `embed-ui-v1-contexts://custom-contexts/<encoded-entity>`;
 - `embed-ui-v1-endpoint://targets`;
 - `embed-ui-v1-endpoint://targets/<encoded-target>`.
 
@@ -123,7 +131,7 @@ npx @retailcrm/embed-ui init ./web --no-install --mcp-client-configs codex,curso
 Для Codex CLI создается `.codex/config.toml`. Codex подхватывает его только в trusted project, поэтому после генерации
 проект нужно открыть/перезапустить в Codex и доверить ему проект, если клиент спросит. User-level подключение через
 `codex mcp add` намеренно не выполняется автоматически: на одной машине могут быть проекты с разными версиями
-`@retailcrm/embed-ui-v1-endpoint`, а user-level серверы с одинаковыми MCP resource URI могут конфликтовать между собой.
+`@retailcrm/embed-ui*`, а user-level серверы с одинаковыми MCP resource URI могут конфликтовать между собой.
 Для Cursor и VS Code CLI генерирует project-level конфиги с `${workspaceFolder}/node_modules/.bin/...`; для Junie
 остается относительный `./node_modules/.bin/...`.
 

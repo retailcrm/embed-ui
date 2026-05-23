@@ -44,6 +44,22 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
     name: '@retailcrm/embed-ui-v1-contexts',
     section: 'dependencies',
     description: 'Реактивные контексты RetailCRM JS API.',
+    hooks: [
+      {
+        type: 'agents',
+        binName: 'embed-ui-v1-contexts',
+        command: 'init-agents',
+        failureMode: 'advisory',
+        requiresMcp: true,
+      },
+      {
+        type: 'config',
+        binName: 'embed-ui-v1-contexts',
+        command: 'init-config',
+        failureMode: 'advisory',
+        requiresMcp: true,
+      },
+    ],
   },
   {
     id: 'types',
