@@ -91,6 +91,7 @@ Default screen rules:
 - use `UiPageFooter` for page-level save/cancel/delete actions instead of recreating a local footer;
 - use one `Success Primary` button for the strongest save/apply/create action that commits a result; use `Default Primary`
   only for another important action with a different meaning;
+- apply the 24px top and 32px side/bottom padding rule to white content surfaces, not to the page root wrapper;
 - keep filters and controls near the content they affect;
 - use `UiField` around labeled form controls;
 - use `UiTable` for structured result lists;
@@ -105,6 +106,8 @@ When building a registry, catalog, journal, search result, order list, customer 
 screen where users scan and refine datasets:
 
 - put search and filters directly above `UiTable`;
+- do not wrap `UiTable` in an extra white card or padded content surface;
+- use a plain layout or scroll wrapper around `UiTable` only when width or overflow control is needed;
 - use `UiTextbox` for free-text search and `UiSelect` or compact toggle controls for finite filters;
 - keep filters, sorting, page, and page size in GET query parameters when the host app has routing;
 - hydrate initial filter and pagination state from the current query;

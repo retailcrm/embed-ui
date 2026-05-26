@@ -421,6 +421,7 @@ use_when:
 
 avoid_when:
   - You need a simple list or card layout.
+  - You need content inside a generic white card surface instead of a table.
 
 api:
   key_props:
@@ -491,6 +492,7 @@ geometry:
     - Root fills available width.
     - fixed=true switches table-layout from auto to fixed.
     - bordered=true adds border and corner rounding through CSS variables.
+    - Do not wrap UiTable in an extra white content surface; use a plain layout or scroll wrapper only when needed.
     - Filters and search controls should usually be placed above the table, not in the table root.
     - Table-scoped pagination belongs in footer slots when custom controls are needed.
 
@@ -605,6 +607,7 @@ ai_notes:
     - Use UiTableSorter for sortable headers.
   avoid:
     - Do not hide table filters in page header actions.
+    - Do not wrap UiTable in an additional white card, panel, or content-surface container.
     - Do not use UiButton inside table footer pagination.
     - Do not put pagination only in local state when the screen has routable result sets.
     - Do not import table internals from host or src paths.

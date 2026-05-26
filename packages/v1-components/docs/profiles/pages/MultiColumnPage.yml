@@ -14,6 +14,7 @@ examples_from_design:
 layout_rules:
   - Content is placed on surfaces.
   - The most common surface spans the full screen width.
+  - Surface padding belongs to each content surface, not to the page root wrapper.
   - Semantic blocks can be arranged vertically and horizontally.
   - Distance between blocks is 24px.
   - Allowed width distributions are 100%, 50% / 50%, and 30% / 70%.
@@ -25,3 +26,4 @@ ai_notes:
   avoid:
     - Do not use marketing-style layouts.
     - Do not split content into columns when a single linear form is easier to complete.
+    - Do not duplicate content-surface padding on the page root wrapper.

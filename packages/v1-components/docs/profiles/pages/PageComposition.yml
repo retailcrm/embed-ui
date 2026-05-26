@@ -29,6 +29,8 @@ shared_rules:
   - Components inside pages and blocks should be spaced by values divisible by 4px.
   - Common spacing values are 4, 8, 12, 16, 20, 24, 28, and 32px.
   - Content blocks commonly use 32px left, right, and bottom padding and 24px top padding.
+  - The 24px top and 32px side/bottom padding rule belongs to white content surfaces, not to the page root wrapper.
+  - Do not duplicate content-surface padding on the page root; outer page spacing is controlled by the CRM host layout.
   - Prefer public components from @retailcrm/embed-ui-v1-components/remote.
   - Do not invent custom chrome for pages, forms, tables, tabs, buttons, modals, or sidebars when a documented component fits.
 
@@ -62,3 +64,4 @@ ai_notes:
     - Do not turn internal CRM work screens into marketing-style layouts.
     - Do not hide filters or primary workflow controls away from the content they affect.
     - Do not place multiple Success Primary, Default Primary, or Danger Primary actions with the same variant in the page-level scope or inside one collapse-box scope.
+    - Do not add page-surface padding to both the page root and the white content surface.

@@ -20,6 +20,8 @@ expected_structure:
   - Header actions can be accompanied by text information or status labels.
   - Optional top tabs.
   - Main content sits on a white content surface.
+  - The white content surface owns the 24px top and 32px side/bottom padding.
+  - The page root wrapper should not repeat that padding.
   - Content can include text, buttons, fields, checkboxes, radio groups, switches, and other form controls.
   - A bottom save panel is optional.
   - If a bottom save panel is used, its main save or apply action should be Success Primary.
@@ -58,3 +60,4 @@ ai_notes:
     - Keep save/apply as the strongest footer action and move neighboring actions to secondary or tertiary appearances unless their variant has a distinct page-level meaning.
   avoid:
     - Do not create a decorative landing page for operational settings.
+    - Do not put content-surface padding on the root page wrapper.
