@@ -32,27 +32,29 @@ When generating UI code, use this order:
 3. open a detailed profile from [`PROFILES.md`](./PROFILES.md) if one exists;
 4. read the relevant page profile from [`PROFILES.md`](./PROFILES.md) when the task is about complete
    pages, modals, sidebars, filters, tables, or settings layouts;
-5. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
-6. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
-7. if no profile exists yet, fall back to public type declarations and state any inference explicitly.
+5. read [`WidgetComposition.yml`](./profiles/widgets/WidgetComposition.yml) when the task is about UI
+   mounted through `defineWidgetRunner`;
+6. use [`FORMAT.md`](./FORMAT.md) as the schema for what information is considered reliable;
+7. read [`STYLING.md`](./STYLING.md) when the task is about classes, variables, typography, or visual zones;
+8. if no profile exists yet, fall back to public type declarations and state any inference explicitly.
 
 ## Runtime Embedding References
 
 When generating code for a CRM extension, separate UI component choice from runtime placement:
 
-- [`targets` and contexts](../../v1-endpoint/docs/targets.md): explains that `target` is the CRM
+- In `@retailcrm/embed-ui-v1-endpoint`, `docs/targets.md` explains that `target` is the CRM
   embedding point, while `context` is the reactive CRM data available at that point.
-- [`menu placements`](../../v1-endpoint/docs/menu-placements.md): explains how host/manifest menu
+- In `@retailcrm/embed-ui-v1-endpoint`, `docs/menu-placements.md` explains how host/manifest menu
   items map to remote page codes.
-- [`page routes`](../../v1-endpoint/docs/page-routes.md): explains how page `code`, CRM route names,
-  and `definePageRunner` are connected.
-- [`defineWidgetRunner`](../../v1-endpoint/docs/define-widget-runner.md): shows how a widget receives
+- In `@retailcrm/embed-ui-v1-endpoint`, `docs/page-routes.md` explains how page `code`, CRM route
+  names, and `definePageRunner` are connected.
+- In `@retailcrm/embed-ui-v1-endpoint`, `docs/define-widget-runner.md` shows how a widget receives
   the current `target` prop.
-- [`definePageRunner`](../../v1-endpoint/docs/define-page-runner.md): shows how a page receives the
+- In `@retailcrm/embed-ui-v1-endpoint`, `docs/define-page-runner.md` shows how a page receives the
   current `code` prop.
-- [`context concept`](../../v1-contexts/docs/ru/CONCEPT.md): explains predefined CRM contexts such as
-  `order/card`, `customer/card`, `user/current`, and `settings`.
-- [`custom context`](../../v1-contexts/docs/ru/CUSTOM.md): explains custom-field contexts.
+- In `@retailcrm/embed-ui-v1-contexts`, `docs/ru/CONCEPT.md` explains predefined CRM contexts such
+  as `order/card`, `customer/card`, `user/current`, and `settings`.
+- In `@retailcrm/embed-ui-v1-contexts`, `docs/ru/CUSTOM.md` explains custom-field contexts.
 
 ## Default Recommendation For Common Forms
 
@@ -122,6 +124,16 @@ Suggested query names:
 - `status`, `managerId`, `dateFrom`, `dateTo` for filters;
 - `sort` and `direction` for sorting;
 - `page` and `pageSize` for pagination.
+
+## Default Recommendation For Widgets
+
+When building a widget mounted into a CRM target, keep the inline target UI compact and predictable:
+
+- read [`WidgetComposition.yml`](./profiles/widgets/WidgetComposition.yml) before composing widget UI;
+- render only simple inline UI in the target: `UiToolbarButton`, `UiToolbarLink`, short text, and icons;
+- move forms, tables, maps, filters, summaries, and multi-step flows into `UiModalSidebar` or `UiModalWindow`;
+- avoid custom panels, page headers, page footers, wide fixed layouts, or standalone screens inside the target slot;
+- read the endpoint target profile before choosing labels, modal type, or data access.
 
 ## External Documentation Patterns
 

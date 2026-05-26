@@ -1,0 +1,113 @@
+widget_profile: WidgetComposition
+summary: >
+  Composition rules for RetailCRM embedded widgets mounted into CRM target slots.
+  A widget should add a small predictable inline control to the host page and move
+  complex workflows into UiModalSidebar or UiModalWindow.
+
+use_when:
+  - You are building a component for defineWidgetRunner.
+  - You are rendering UI directly inside a widget target.
+  - You need to decide whether widget content belongs inline, in a modal sidebar, or in a modal window.
+
+inline_target_rules:
+  - Keep the UI rendered directly in the widget target simple and predictable.
+  - Prefer UiToolbarButton for compact widget actions.
+  - Prefer UiToolbarLink for compact navigation or link-shaped actions.
+  - Simple text is allowed when the widget only needs to show a short status, value, or hint.
+  - Icons are allowed when they clarify the toolbar action or compact status.
+  - Keep inline controls close to the target's existing density and spacing.
+  - Use one or a few compact controls; avoid turning the target slot into a standalone screen.
+
+complex_ui_rules:
+  - Put forms, tables, filters, maps, summaries, and multi-step workflows inside UiModalSidebar or UiModalWindow.
+  - Use UiModalSidebar for contextual editing, narrow forms, short lists, and side-panel workflows.
+  - Use UiModalWindow for wider workflows, maps, previews, or content that needs more horizontal room.
+  - The inline widget control should usually open the modal/sidebar and pass the relevant target/context data into that workflow.
+  - The modal/sidebar can use regular page-like components such as UiField, UiButton, UiTable, UiYandexMap, UiAlert, and UiLoader.
+
+avoid_inline:
+  - large cards
+  - full forms
+  - full tables
+  - filter panels
+  - nested page layouts
+  - custom panels that visually compete with the CRM page
+  - page-level headers or footers
+  - heavy custom spacing or wrappers that can break the host page layout
+
+recommended_components:
+  inline:
+    - name: UiToolbarButton
+      profile: ../components/UiToolbarButton.yml
+    - name: UiToolbarLink
+      profile: ../components/UiToolbarLink.yml
+  overlay:
+    - name: UiModalSidebar
+      profile: ../components/UiModalSidebar.yml
+    - name: UiModalWindow
+      profile: ../components/UiModalWindow.yml
+    - name: UiButton
+      profile: ../components/UiButton.yml
+    - name: UiField
+      profile: ../components/UiField.yml
+    - name: UiTable
+      profile: ../components/UiTable.yml
+
+examples:
+  - title: Compact widget action that opens a sidebar
+    code: |
+      <template>
+        <UiToolbarButton @click="opened = true">
+          Show details
+        </UiToolbarButton>
+
+        <UiModalSidebar v-model:opened="opened">
+          <template #title>Widget details</template>
+
+          <UiField id="note" label="Note">
+            <UiTextbox v-model:value="note" />
+          </UiField>
+
+          <template #footer>
+            <UiButton @click="save">Save</UiButton>
+            <UiButton appearance="secondary" @click="opened = false">Cancel</UiButton>
+          </template>
+        </UiModalSidebar>
+      </template>
+
+      <script lang="ts" setup>
+      import { ref } from 'vue'
+
+      import {
+        UiButton,
+        UiField,
+        UiModalSidebar,
+        UiTextbox,
+        UiToolbarButton,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const opened = ref(false)
+      const note = ref('')
+
+      const save = () => {
+        opened.value = false
+      }
+      </script>
+
+target_awareness:
+  - Read the endpoint target profile before choosing inline text, button labels, or modal type.
+  - Match the inline affordance to the target placement; field-level targets need especially compact UI.
+  - Do not infer data availability from the target name; read the linked context profiles.
+  - Avoid adding repeated or noisy controls to targets that can appear many times on one CRM page.
+
+ai_notes:
+  do:
+    - Render only compact, predictable UI directly in the widget target.
+    - Start inline widget UI with UiToolbarButton, UiToolbarLink, simple text, or an icon-enhanced compact action.
+    - Move complex UI into UiModalSidebar or UiModalWindow.
+    - Keep the host CRM page layout stable; the widget should enhance the target, not reshape the page.
+  avoid:
+    - Do not build a full page, dashboard, large card, form, or table directly inside a widget target.
+    - Do not use UiPageHeader or UiPageFooter for inline widget content.
+    - Do not add custom layout chrome around the widget unless the target profile explicitly calls for it.
+    - Do not make the target slot depend on wide fixed dimensions.

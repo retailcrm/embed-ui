@@ -7,6 +7,7 @@ The current profile layer is structured like this:
 - the index stays in markdown so both humans and agents can navigate it easily;
 - component profiles live in `docs/profiles/components/*.yml`;
 - page-composition profiles live in `docs/profiles/pages/*.yml`;
+- widget-composition profiles live in `docs/profiles/widgets/*.yml`;
 - YAML is the source of truth for structure, props, slots, emits, composition, page patterns, and AI rules.
 
 ## Table Of Contents
@@ -34,6 +35,7 @@ Use these entrypoints:
 - [`COMPONENTS.md`](./COMPONENTS.md) for the full linked component index
 - `docs/profiles/components/*.yml` for per-component machine-readable profiles
 - `docs/profiles/pages/*.yml` for page, modal, sidebar, filter, table, and settings-layout profiles
+- `docs/profiles/widgets/*.yml` for embedded widget composition profiles
 
 Current high-signal core profiles:
 
@@ -62,6 +64,10 @@ Current page profiles:
 - [`ModalSidebar`](./profiles/pages/ModalSidebar.yml)
 - [`ModalWindow`](./profiles/pages/ModalWindow.yml)
 
+Current widget profiles:
+
+- [`WidgetComposition`](./profiles/widgets/WidgetComposition.yml)
+
 ## What To Read First
 
 - `key_props` if you need to choose a component quickly.
@@ -71,6 +77,7 @@ Current page profiles:
 - `examples` if you need copyable usage snippets.
 - `ai_notes` if the agent needs safe defaults and anti-patterns.
 - `profiles/pages/*.yml` if the task is about a full page, modal, sidebar, filter, table, or settings layout.
+- `profiles/widgets/*.yml` if the task is about UI mounted through `defineWidgetRunner`.
 
 ## Styling Reads
 
@@ -82,3 +89,4 @@ Current page profiles:
 - All new updates should be made in YAML profiles.
 - Keep component-level details in `profiles/components`.
 - Keep page-composition details in `profiles/pages`.
+- Keep widget-composition details in `profiles/widgets`.

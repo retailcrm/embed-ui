@@ -62,7 +62,9 @@ If you need to generate UI quickly:
 5. the relevant profile from [`PROFILES.md`](./PROFILES.md)
 6. the relevant page profile from [`PROFILES.md`](./PROFILES.md) if the task is about complete pages,
    modals, sidebars, filters, tables, or settings layouts
-7. [`STYLING.md`](./STYLING.md) if the task is about classes, variables, typography, or layout tuning
+7. the widget composition profile from [`PROFILES.md`](./PROFILES.md) if the task is about UI mounted
+   through `defineWidgetRunner`
+8. [`STYLING.md`](./STYLING.md) if the task is about classes, variables, typography, or layout tuning
 
 If you are extending the docs:
 
