@@ -16,9 +16,15 @@ scope:
 shared_rules:
   - Page title uses the large accent text style, Text large Accent 24.
   - Page-level actions sit to the right of the title.
-  - A page can have only one Default Primary button and one Success Primary button.
-  - Additional page actions can use secondary or tertiary variants when the task needs them.
-  - When a group has multiple buttons, the primary action should represent the main flow.
+  - A full page should have at most one page-level primary button of each variant, Success Primary, Default Primary, and Danger Primary.
+  - Use Success Primary for the page's strongest call to action when it creates or commits a result, such as Save, Apply, or Create.
+  - Place the page-level Success Primary action in UiPageFooter for save or apply workflows.
+  - Use Default Primary for an important action that is secondary to the Success Primary or does not commit a result.
+  - Use Danger Primary only for one critical destructive action when the page needs it.
+  - If several actions compete for attention, choose the main one for Success Primary and move the rest to Default Primary, secondary, tertiary, or dropdown actions by meaning.
+  - UiPageHeader actions and UiPageFooter actions belong to the same page-level action scope.
+  - Treat each UiCollapseBox footer as a separate local action scope with the same rules scoped to that section.
+  - A page can have several Default Primary buttons when each one belongs to a different UiCollapseBox footer.
   - Secondary actions should support or cancel the primary flow.
   - Components inside pages and blocks should be spaced by values divisible by 4px.
   - Common spacing values are 4, 8, 12, 16, 20, 24, 28, and 32px.
@@ -51,6 +57,8 @@ ai_notes:
     - Choose ModalSidebar only when the flow is compact.
     - Choose ModalWindow or a full page when content needs wide tables, several sections, or complex controls.
     - Keep operational CRM screens dense, scannable, and work-focused.
+    - Prefer variant="success" for the main save/apply/create action and keep it visually dominant.
   avoid:
     - Do not turn internal CRM work screens into marketing-style layouts.
     - Do not hide filters or primary workflow controls away from the content they affect.
+    - Do not place multiple Success Primary, Default Primary, or Danger Primary actions with the same variant in the page-level scope or inside one collapse-box scope.

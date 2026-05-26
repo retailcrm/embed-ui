@@ -15,6 +15,9 @@ expected_structure:
   - Multiple collapsible blocks with their own content and local actions.
   - If the page contains only collapse blocks, the white page surface is not needed.
   - If every collapse block has its own save action, the bottom save panel is not needed.
+  - Treat each collapse block as a local mini-page with its own action priority.
+  - Each collapse block footer can have one Default Primary action for the main local action.
+  - If a block has a stronger create/save/apply action, make that local action Success Primary and move other actions to Default Primary, secondary, or tertiary by meaning.
   - Collapse blocks can contain text, buttons, fields, controls, and small tables.
 
 avoid_inside_blocks:
@@ -41,6 +44,9 @@ ai_notes:
   do:
     - Use collapses for optional or separable sections.
     - Keep required critical actions visible enough for the workflow.
+    - Put local section actions in the UiCollapseBox footer or footer-content slot.
+    - Apply primary-button limits inside each collapse block independently from the page-level footer.
   avoid:
     - Do not nest collapses inside collapses.
     - Do not hide complex tables inside collapse blocks.
+    - Do not add a global bottom save panel when each collapse block already has its own local save action.

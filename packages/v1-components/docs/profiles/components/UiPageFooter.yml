@@ -84,7 +84,7 @@ api:
           - wide content blocks
           - nested page sections
       layout_effect: Renders as the flexible left area and can contain multiple actions.
-      notes: Use this slot for save, apply, cancel, or save-and-exit actions.
+      notes: Use this slot for save, apply, cancel, or save-and-exit actions. The main save/apply action is usually a Success Primary UiButton.
     - name: aside
       zone: right-side aside action group
       creates: Separate aside action area.
@@ -156,6 +156,8 @@ ai_notes:
   do:
     - Import UiPageFooter from @retailcrm/embed-ui-v1-components/remote.
     - Use the actions slot for primary and secondary page actions.
+    - Use UiButton variant="success" for the strongest save/apply/create action in the footer.
+    - Keep neighboring footer actions less dominant unless they are the page's single Default Primary or Danger Primary by meaning.
     - Use the aside slot for a separated destructive or secondary action.
     - Put UiButton or another public action component inside slots.
     - Add page-level positioning only in the host/page layout when the footer must stick to a specific shell area.
@@ -164,3 +166,4 @@ ai_notes:
     - Do not import UiPageFooter from internal package paths.
     - Do not expect UiPageFooter to create buttons from props.
     - Do not expect UiPageFooter to be fixed to the bottom of the window automatically.
+    - Do not put multiple Success Primary, Default Primary, or Danger Primary actions with the same variant in the footer.

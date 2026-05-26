@@ -17,7 +17,7 @@ expected_structure:
   - UiPageHeader with a page title.
   - One or more 48px page buttons on the right side of the header.
   - If there are multiple header buttons, one should be primary and the rest can be secondary or tertiary.
-  - The main primary button usually creates a new entity for the list.
+  - The main Default Primary button usually creates a new entity for the list when there is no stronger Success Primary action on the page.
   - Filters above the table, built from controls such as select, textbox, and combobox-like selection components.
   - Filter controls should run in rows of roughly 4-5 fields, then wrap to the next row.
   - Filters can be collapsible.

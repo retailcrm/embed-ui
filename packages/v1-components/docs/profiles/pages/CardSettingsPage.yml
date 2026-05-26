@@ -22,6 +22,7 @@ expected_structure:
   - Main content sits on a white content surface.
   - Content can include text, buttons, fields, checkboxes, radio groups, switches, and other form controls.
   - A bottom save panel is optional.
+  - If a bottom save panel is used, its main save or apply action should be Success Primary.
 
 recommended_components:
   - name: UiPageHeader
@@ -54,5 +55,6 @@ ai_notes:
     - Keep form controls grouped by task or semantic section.
     - Use UiField around labelled form controls.
     - Use tabs only when they reduce visible complexity without hiding required work.
+    - Keep save/apply as the strongest footer action and move neighboring actions to secondary or tertiary appearances unless their variant has a distinct page-level meaning.
   avoid:
     - Do not create a decorative landing page for operational settings.

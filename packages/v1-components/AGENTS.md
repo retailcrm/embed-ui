@@ -96,7 +96,7 @@ Commonly used exports from `remote` include:
 
   <UiPageFooter>
     <template #actions>
-      <UiButton @click="save">
+      <UiButton variant="success" @click="save">
         Сохранить
       </UiButton>
     </template>
@@ -119,6 +119,14 @@ const comment = ref('')
 const save = () => {}
 </script>
 ```
+
+For page actions, use `Success Primary` for the strongest save/apply/create action, usually in
+`UiPageFooter`. Use `Default Primary` for another important action with a different meaning, and
+move neighboring actions to secondary or tertiary appearances.
+`UiPageHeader` and `UiPageFooter` share the same page-level action scope. When a page is split into
+`UiCollapseBox` sections, each collapse footer starts a local action scope: it can have its own
+single `Default Primary` action, while neighboring local actions should still use secondary or
+tertiary appearances.
 
 ## If You Need More Context
 

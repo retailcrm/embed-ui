@@ -87,6 +87,8 @@ Default screen rules:
   card/settings page, multi-column page, collapse-block page, modal sidebar, or modal window;
 - use `UiPageHeader` for page identity and top-level actions;
 - use `UiPageFooter` for page-level save/cancel/delete actions instead of recreating a local footer;
+- use one `Success Primary` button for the strongest save/apply/create action that commits a result; use `Default Primary`
+  only for another important action with a different meaning;
 - keep filters and controls near the content they affect;
 - use `UiField` around labeled form controls;
 - use `UiTable` for structured result lists;

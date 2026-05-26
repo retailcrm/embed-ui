@@ -76,6 +76,26 @@ examples:
       import MyCustomIcon from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/info.svg'
       import { UiCollapseBox } from '@retailcrm/embed-ui-v1-components/remote'
       </script>
+  - title: Section with local action
+    code: |
+      <template>
+        <UiCollapseBox>
+          <template #title>Connection settings</template>
+          <template #body-content>Section form content</template>
+          <template #footer-content>
+            <UiButton @click="saveSection">Save section</UiButton>
+          </template>
+        </UiCollapseBox>
+      </template>
+
+      <script lang="ts" setup>
+      import {
+        UiButton,
+        UiCollapseBox,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const saveSection = () => {}
+      </script>
 use_when:
   - You need a ready-to-use collapsible box.
   - You need grouped expandable sections with consistent visuals.
@@ -112,8 +132,12 @@ ai_notes:
   do:
     - Use UiCollapseBox for structured disclosure UI.
     - Put the summary in the header and details in the body; avoid hiding critical required fields.
+    - Treat the footer and footer-content slots as a local action area for the section.
+    - Use one Default Primary button in a collapse footer for the main local action when the page has several independent sections.
+    - Use Success Primary in a collapse footer only when that section's local action is the strongest create/save/apply action.
   avoid:
     - Do not rebuild collapse header UI manually when this component already fits.
+    - Do not put several primary buttons of the same variant in one collapse footer.
 
 composition:
   works_well_with:

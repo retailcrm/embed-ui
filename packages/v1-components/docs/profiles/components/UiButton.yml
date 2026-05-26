@@ -228,7 +228,9 @@ composition:
 
 ai_notes:
   do:
-    - Start with appearance=primary for the main CTA.
+    - Start with appearance=primary for the main CTA, then choose variant by meaning.
+    - Use variant="success" for the strongest create/save/apply action when it commits a result, and keep only one Success Primary on a page.
+    - Use the default variant for an important primary action that is not the strongest commit action.
     - Use secondary or tertiary for neighboring actions near titles.
   avoid:
     - Do not replace UiButton with UiLink when the action should read as a button.
