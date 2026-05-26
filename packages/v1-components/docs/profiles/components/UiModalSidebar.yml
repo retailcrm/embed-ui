@@ -44,18 +44,30 @@ examples:
                               </div>
 
                               <template #footer>
-                                  <UiButton @click="modalSidebarInner = false">
-                                      Close
-                                  </UiButton>
+                                  <div style="display: flex; align-items: center; gap: 12px;">
+                                      <UiButton @click="modalSidebarInner = false">
+                                          Save
+                                      </UiButton>
+
+                                      <UiButton appearance="secondary" @click="modalSidebarInner = false">
+                                          Close
+                                      </UiButton>
+                                  </div>
                               </template>
                           </UiModalSidebar>
                       </div>
                   </div>
 
                   <template v-if="footer" #footer>
-                      <UiButton @click="open = false">
-                          Close
-                      </UiButton>
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                          <UiButton @click="open = false">
+                              Save
+                          </UiButton>
+
+                          <UiButton appearance="secondary" @click="open = false">
+                              Close
+                          </UiButton>
+                      </div>
                   </template>
               </UiModalSidebar>
           </div>
@@ -125,6 +137,9 @@ ai_notes:
   do:
     - Use UiModalSidebar when page context should stay visually connected to the modal content.
     - Use for inspect, edit, or secondary workflows that relate to the current list or page.
+    - Group several footer buttons in flex rows; 12px and 16px are the common gaps inside a group.
+    - Footer actions may be split into left and right groups when their meanings differ.
+    - Put destructive icon-only actions on the right and confirm them with UiPopconfirm okVariant="danger"; the confirmation button is primary by default.
   avoid:
     - Do not use for short confirmations; use UiModalWindow.
 
@@ -133,6 +148,7 @@ composition:
     - UiTable
     - UiField
     - UiButton
+    - UiPopconfirm
   patterns:
     - title: Row detail side panel
       notes: Open from a table row when the user should keep list context visible.

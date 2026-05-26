@@ -60,6 +60,7 @@ ai_notes:
   do:
     - Use UiTooltip for tooltip semantics and UiPopper for lower-level floating behavior.
     - Keep tooltip content short and non-essential.
+    - For icon-only controls, keep tooltip text aligned with the control aria-label.
   avoid:
     - Do not put forms, tables, or multi-step interactions in tooltips.
 

@@ -120,7 +120,9 @@ screen where users scan and refine datasets:
 - use chevron icon assets for table footer previous/next controls instead of text glyphs;
 - add local CSS for table footer layout and states; use [`UiTable.yml`](./profiles/components/UiTable.yml)
   for the reference table footer example;
-- set `size="small"` on `UiLink` inside table cells so links match table body typography.
+- set `size="small"` on `UiLink` inside table cells so links match table body typography;
+- prefer icon-only row action buttons inside dense table rows; keep the same action text in
+  `aria-label` and `UiTooltip`.
 
 Suggested query names:
 
@@ -128,6 +130,22 @@ Suggested query names:
 - `status`, `managerId`, `dateFrom`, `dateTo` for filters;
 - `sort` and `direction` for sorting;
 - `page` and `pageSize` for pagination.
+
+## Default Recommendation For Forms
+
+When building forms with remote controls:
+
+- use `v-model:value` for value-bearing controls such as `UiTextbox`, `UiSelect`, `UiNumberStepper`,
+  and `UiSwitch`;
+- if a field looks filled but backend validation receives an empty value, check the Network payload
+  before changing the component binding;
+- use `UiField` for labeled text, select, date, and number controls;
+- forward `UiField` slot props into the actual child control when it accepts `id`, especially
+  `UiTextbox`, `UiSelect`, and `UiNumberStepper`;
+- when a component uses only the default slot, prefer `v-slot` on the component instead of
+  `<template #default>`;
+- do not wrap `UiSwitch` in `UiField`; place the switch next to a visible label and optional hint,
+  and connect `UiSwitch :id` with `label :for`.
 
 ## Default Recommendation For Widgets
 

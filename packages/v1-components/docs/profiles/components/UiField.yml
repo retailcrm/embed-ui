@@ -13,6 +13,7 @@ related_components:
   - UiTextbox
   - UiSelect
   - UiCheckbox
+  - UiNumberStepper
   - UiDatePicker
 
 examples:
@@ -58,6 +59,56 @@ examples:
 
       <script lang="ts" setup>
       import { UiField, UiTextbox } from '@retailcrm/embed-ui-v1-components/remote'
+      </script>
+  - title: Select inside a field
+    code: |
+      <template>
+          <UiField v-slot="field" id="manager-field" label="Manager">
+              <UiSelect
+                  :id="field.id"
+                  v-model:value="manager"
+                  :invalid="field.ariaInvalid === 'true'"
+                  placeholder="Select manager"
+              >
+                  <UiSelectOption value="anna" label="Anna Smith" />
+                  <UiSelectOption value="ilya" label="Ilya Johnson" />
+              </UiSelect>
+          </UiField>
+      </template>
+
+      <script lang="ts" setup>
+      import { ref } from 'vue'
+
+      import {
+        UiField,
+        UiSelect,
+        UiSelectOption,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const manager = ref<string | null>(null)
+      </script>
+  - title: Number stepper inside a field
+    code: |
+      <template>
+          <UiField v-slot="field" id="duration-field" label="Duration, minutes">
+              <UiNumberStepper
+                  :id="field.id"
+                  v-model:value="duration"
+                  :min="0"
+                  :step="15"
+              />
+          </UiField>
+      </template>
+
+      <script lang="ts" setup>
+      import { ref } from 'vue'
+
+      import {
+        UiField,
+        UiNumberStepper,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const duration = ref(30)
       </script>
 use_when:
   - You need a labeled form control with consistent field semantics.
@@ -107,6 +158,7 @@ api:
           - one form control
           - UiTextbox
           - UiSelect
+          - UiNumberStepper
           - UiDatePicker
         avoid:
           - several unrelated controls
@@ -246,6 +298,7 @@ composition:
   works_well_with:
     - UiTextbox
     - UiSelect
+    - UiNumberStepper
     - UiDatePicker
     - UiTimePicker
   patterns:
@@ -256,8 +309,10 @@ composition:
 ai_notes:
   do:
     - Forward slot props into the actual control in most form scenarios.
+    - Pass field.id to child controls that accept id, including UiTextbox, UiSelect, and UiNumberStepper.
     - Use v-slot on UiField when the field uses only the default slot.
     - Use UiField as a semantic wrapper for a single control.
   avoid:
     - Do not use UiField as a generic visual container without control semantics.
+    - Do not use UiField for UiSwitch settings rows; pair UiSwitch with a visible label and hint text instead.
     - Do not ignore id and ariaLabelledby when accessibility matters.

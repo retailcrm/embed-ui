@@ -58,11 +58,72 @@ examples:
 
       const enabled = ref(false)
       </script>
+  - title: Settings row with label and hint
+    code: |
+      <template>
+        <div class="settings-switch-row">
+          <UiSwitch
+            :id="switchId"
+            v-model:value="enabled"
+          />
+
+          <div class="settings-switch-row__content">
+            <label
+              class="settings-switch-row__label"
+              :for="switchId"
+            >
+              Enable automatic assignment
+            </label>
+
+            <div class="settings-switch-row__hint">
+              New requests will be assigned to available managers.
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <script lang="ts" setup>
+      import { ref, useId } from 'vue'
+
+      import { UiSwitch } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const enabled = ref(false)
+      const switchId = useId()
+      </script>
+
+      <style lang="less" scoped>
+      @import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less';
+      @import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less';
+      @import (reference) '@retailcrm/embed-ui-v1-components/assets/stylesheets/typography.less';
+
+      .settings-switch-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 3 * @spacing-unit;
+      }
+
+      .settings-switch-row__content {
+        display: grid;
+        gap: @spacing-xxs;
+        min-width: 0;
+      }
+
+      .settings-switch-row__label {
+        color: @black-500;
+        .text-small-accent();
+      }
+
+      .settings-switch-row__hint {
+        color: @grey-800;
+        .text-small();
+      }
+      </style>
 use_when:
   - You need a compact on or off toggle.
 
 avoid_when:
   - You need checkbox-group semantics.
+  - You need a UiField-style labeled wrapper; pair UiSwitch with a visible label and hint text instead.
 
 api:
   key_props:
@@ -93,18 +154,23 @@ behavior:
 
 composition:
   works_well_with:
-    - UiField
+    - visible label
+    - hint text
   patterns:
     - title: Settings row
-      notes: Pair with a visible label and optional description so the on or off state is unambiguous.
+      notes: Place UiSwitch on the left, label and hint on the right, and connect UiSwitch id with label for.
   avoid:
     - Do not use without a nearby label; the switch alone does not explain what will change.
+    - Do not wrap UiSwitch in UiField.
 
 ai_notes:
   do:
     - Use for compact feature toggles and enable or disable settings.
+    - Generate an id, pass it to UiSwitch, and connect the visible label with label for.
+    - Put helper text below the label in the settings row, not in UiField hint.
   avoid:
     - Do not use for multi-select lists or legal acknowledgements; use UiCheckbox.
+    - Do not use UiField around UiSwitch.
 
 accessibility:
   notes:

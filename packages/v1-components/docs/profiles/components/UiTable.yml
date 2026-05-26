@@ -10,13 +10,16 @@ public_import:
 
 related_components:
   - UiAvatar
+  - UiButton
   - UiCheckbox
   - UiLink
+  - UiPopperConnector
   - UiTableColumn
   - UiTableFooterButton
   - UiTableFooterSection
   - UiTableSorter
   - UiTag
+  - UiTooltip
 
 examples:
   - title: Basic table
@@ -62,6 +65,68 @@ examples:
       const statusBackgroundByName = {
         Scheduled: '#005EEB',
         Sent: '#1FA971',
+      }
+      </script>
+  - title: Icon-only row action with tooltip
+    notes:
+      - Use narrow action columns for row commands.
+      - Keep the visible control icon-only; put the action text in aria-label and UiTooltip.
+    code: |
+      <template>
+        <UiTable
+          bordered
+          :rows="rows"
+          row-key="id"
+        >
+          <UiTableColumn label="Name">
+            <template #cell="{ row }">
+              {{ row.name }}
+            </template>
+          </UiTableColumn>
+
+          <UiTableColumn :width="48" label="" trim>
+            <template #cell="{ row }">
+              <UiPopperConnector>
+                <UiButton
+                  :aria-label="`Edit ${row.name}`"
+                  appearance="tertiary"
+                  size="sm"
+                  @click="edit(row)"
+                >
+                  <IconEdit aria-hidden="true" />
+                </UiButton>
+
+                <UiTooltip>
+                  Edit {{ row.name }}
+                </UiTooltip>
+              </UiPopperConnector>
+            </template>
+          </UiTableColumn>
+        </UiTable>
+      </template>
+
+      <script lang="ts" setup>
+      import IconEdit from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/edit.svg'
+      import {
+        UiButton,
+        UiPopperConnector,
+        UiTable,
+        UiTableColumn,
+        UiTooltip,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      type Row = {
+        id: number
+        name: string
+      }
+
+      const rows: Row[] = [
+        { id: 101, name: 'Anna Smith' },
+        { id: 102, name: 'Ilya Johnson' },
+      ]
+
+      const edit = (row: Row) => {
+        console.log(row)
       }
       </script>
   - title: Expandable rows table
@@ -595,6 +660,12 @@ composition:
       - Add scoped CSS for footer meta height, control-row background, pagination button size, active page state, arrow icon size, and vertical dividers.
       - Persist page and page size in URL query parameters when routing is available.
       - Reset page to 1 when filters or sorting change.
+  actions:
+    notes:
+      - Prefer narrow action columns with icon-only UiButton controls for row commands.
+      - Keep visible button text out of dense table rows; provide aria-label and matching UiTooltip text.
+      - Use package sprite icons and set aria-hidden on the icon itself.
+      - Wrap action buttons and UiTooltip in UiPopperConnector. Add UiPopperTarget only for custom non-component targets.
 
 ai_notes:
   do:
@@ -605,10 +676,12 @@ ai_notes:
     - Compose footer controls with UiTableFooterSection and UiTableFooterButton.
     - Copy the Entity list table footer example when building a realistic entity-list footer.
     - Use UiTableSorter for sortable headers.
+    - Use icon-only row action buttons with aria-label and UiTooltip in action columns.
   avoid:
     - Do not hide table filters in page header actions.
     - Do not wrap UiTable in an additional white card, panel, or content-surface container.
     - Do not use UiButton inside table footer pagination.
+    - Do not put visible text buttons in dense table action columns.
     - Do not put pagination only in local state when the screen has routable result sets.
     - Do not import table internals from host or src paths.
 

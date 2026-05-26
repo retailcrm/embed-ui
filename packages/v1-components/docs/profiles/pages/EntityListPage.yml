@@ -26,6 +26,7 @@ expected_structure:
   - Entity data is shown in a table.
   - UiTable should not be wrapped in an extra white content surface.
   - A wrapper around UiTable should only handle layout, width, or scrolling, without card chrome or content-surface padding.
+  - Row action columns should use icon-only buttons with aria-label and UiTooltip instead of visible text buttons.
   - The table may scroll and may support export.
 
 recommended_components:
@@ -63,7 +64,9 @@ ai_notes:
     - Keep filters and table controls directly above the table.
     - Persist filters, sorting, page, and page size in query parameters when routing is available.
     - Reset page to 1 when filters or sorting change.
+    - Use narrow icon-only row action columns with matching aria-label and UiTooltip text.
   avoid:
     - Do not hide filters in page header actions.
     - Do not put pagination only in local state when the result set is routable.
     - Do not place UiTable inside an additional white card or padded content surface.
+    - Do not use visible text buttons for dense table row actions.

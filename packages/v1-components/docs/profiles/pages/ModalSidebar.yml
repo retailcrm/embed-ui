@@ -44,18 +44,30 @@ examples:
                               </UiButton>
                           </div>
 
-                          <UiButton
-                              aria-label="Delete"
-                              appearance="tertiary"
-                              class="modal-sidebar-footer__delete"
-                              variant="danger"
-                              @click="deleteItem"
-                          >
-                              <IconDelete
-                                  aria-hidden="true"
-                                  class="modal-sidebar-footer__delete-icon"
-                              />
-                          </UiButton>
+                          <div class="modal-sidebar-footer__aside">
+                              <UiPopconfirm
+                                  ok-variant="danger"
+                                  title="Delete item?"
+                                  @ok="deleteItem"
+                              >
+                                  <template #trigger="{ open: popconfirmOpen }">
+                                      <UiButton
+                                          :active="popconfirmOpen"
+                                          aria-label="Delete"
+                                          appearance="tertiary"
+                                          class="modal-sidebar-footer__delete"
+                                          variant="danger"
+                                      >
+                                          <IconDelete
+                                              aria-hidden="true"
+                                              class="modal-sidebar-footer__delete-icon"
+                                          />
+                                      </UiButton>
+                                  </template>
+
+                                  This action cannot be undone.
+                              </UiPopconfirm>
+                          </div>
                       </div>
                   </template>
               </UiModalSidebar>
@@ -69,6 +81,7 @@ examples:
       import {
         UiButton,
         UiModalSidebar,
+        UiPopconfirm,
       } from '@retailcrm/embed-ui-v1-components/remote'
 
       const open = ref(false)
@@ -95,6 +108,12 @@ examples:
       }
 
       .modal-sidebar-footer__main {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .modal-sidebar-footer__aside {
         display: flex;
         align-items: center;
         gap: 16px;
@@ -127,6 +146,10 @@ expected_structure:
   - Fixed footer at the bottom.
   - Footer usually contains save, cancel or close, and delete actions.
   - Footer can also contain a copy button or auxiliary text.
+  - Footer actions may be split into left and right groups.
+  - Footer action groups usually use a 12px or 16px gap between neighboring buttons.
+  - Destructive footer actions are often icon-only buttons aligned to the right edge.
+  - Destructive icon-only actions should usually open UiPopconfirm with okVariant="danger"; its confirmation button is primary by default.
   - Content can be flexible, but should stay compact.
   - Small tables can be placed in sidebars.
 
@@ -135,6 +158,8 @@ recommended_components:
     profile: ../components/UiModalSidebar.yml
   - name: UiButton
     profile: ../components/UiButton.yml
+  - name: UiPopconfirm
+    profile: ../components/UiPopconfirm.yml
   - name: UiTag
     profile: ../components/UiTag.yml
   - name: UiField
@@ -151,6 +176,9 @@ ai_notes:
   do:
     - Use for inspect, edit, or secondary workflows related to the current list or page.
     - Keep the flow compact.
+    - Split footer actions into meaningful left and right groups when secondary or destructive actions need separation.
+    - Use 12px or 16px gaps inside each footer action group.
+    - Put destructive icon-only actions on the right and confirm them with UiPopconfirm okVariant="danger"; the confirmation button is primary by default.
   avoid:
     - Do not use for bulky or complex interfaces.
     - Do not use collapse blocks inside sidebars.
