@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.24](https://github.com/retailcrm/embed-ui/compare/v0.9.23...v0.9.24) (2026-05-26)
+
+### Bug Fixes
+
+* Page manifest descriptors generated for publish ([6c6685e](https://github.com/retailcrm/embed-ui/commit/6c6685e9c52a3437febddf4fdd32b13cb01de5af))
 ## [0.9.23](https://github.com/retailcrm/embed-ui/compare/v0.9.23-alpha.3...v0.9.23) (2026-05-23)
 ## [0.9.23-alpha.3](https://github.com/retailcrm/embed-ui/compare/v0.9.23-alpha.2...v0.9.23-alpha.3) (2026-05-23)
 
