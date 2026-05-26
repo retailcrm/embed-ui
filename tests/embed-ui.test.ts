@@ -5,6 +5,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { spawnSync } from 'node:child_process'
 
 import {
   afterEach,
@@ -14,6 +15,7 @@ import {
   vi,
 } from 'vitest'
 
+import { createPublishScript } from '../src/cmd/embed-ui/templates'
 import { isSameExecutablePath, parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
 import { resolveCurrentPackageVersion } from '../src/cmd/embed-ui/packages'
 import { resolvePackageHookCommand } from '../src/cmd/embed-ui/package-hook-runner'
@@ -454,11 +456,34 @@ describe('embed-ui CLI', () => {
       'UiModalWindow'
     )
     expect(fs.existsSync(path.join(tempDir, 'web/shared/assets/extension.svg'))).toBe(true)
+    const extensionConfig = readJsonFile<{
+      pages: Array<{
+        code: string;
+        menu: string;
+        parentMenuItemCode: string;
+        menuItemTitle: Record<string, string>;
+      }>;
+    }>(path.join(tempDir, 'extensionrc.json'))
+    expect(extensionConfig.pages).toEqual([{
+      code: 'settings',
+      menu: 'private_main_menu',
+      parentMenuItemCode: 'settings',
+      menuItemOrdering: 100,
+      menuItemTitle: {
+        ru: 'Настройки',
+        en: 'Settings',
+        es: 'Configuración',
+      },
+      pageHelpLink: null,
+    }])
     expect(fs.readFileSync(path.join(tempDir, 'extensionrc.json'), 'utf8')).toContain(
       '"runner": "worker"'
     )
     expect(fs.readFileSync(path.join(tempDir, 'scripts/publish-extension.mjs'), 'utf8')).toContain(
       'extensionrc.json'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'scripts/publish-extension.mjs'), 'utf8')).toContain(
+      'uses deprecated string page form'
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       '# Фронтенд расширения RetailCRM'
@@ -468,6 +493,9 @@ describe('embed-ui CLI', () => {
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       'Цель виджета: `order/card:common.after`'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      'строковая форма не подходит для публикации через RetailCRM API'
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       'npm run eslint'
@@ -500,6 +528,29 @@ describe('embed-ui CLI', () => {
       cwd: tempDir,
       encoding: 'utf8',
     }).trim()).toBe('true')
+  })
+
+  test('generated publish script rejects string page descriptors', () => {
+    const tempDir = createTempDir()
+
+    writeFile(path.join(tempDir, 'scripts/publish-extension.mjs'), createPublishScript())
+    writeFile(path.join(tempDir, 'extensionrc.json'), JSON.stringify({
+      uuid: '11111111-1111-1111-1111-111111111111',
+      version: '1.0.0',
+      targets: [],
+      pages: ['settings'],
+    }, null, 2))
+
+    const result = spawnSync(process.execPath, [
+      path.join(tempDir, 'scripts/publish-extension.mjs'),
+      '--archive-only',
+    ], {
+      cwd: tempDir,
+      encoding: 'utf8',
+    })
+
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain('uses deprecated string page form')
   })
 
   test('init mode appends missing gitignore entries without replacing existing content', async () => {

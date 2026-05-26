@@ -20,6 +20,7 @@ Review these generated placeholders before using the project in a real integrati
 - Extension code in `extensionrc.json`: `retailcrm-extension-frontend`.
 - Extension name in `extensionrc.json`: `RetailCRM Extension Frontend`.
 - Page code: `__PAGE_CODE__`.
+- Page descriptor in `extensionrc.json`: keep `pages[]` as an object with `code`, `menu`, and `menuItemTitle`; string page form is not valid for RetailCRM API publishing.
 - Widget target: `__WIDGET_TARGET__`.
 - Sample controls and fake data in `__SOURCE_ROOT__/pages/SettingsPage.vue`.
 - Sample toolbar actions and fake order data in `__SOURCE_ROOT__/widgets/OrderCommonAfterWidget.vue`.
@@ -60,3 +61,7 @@ MODULE_URL=https://example.com
 ```
 
 Run `__PACKAGE_MANAGER_RUN__ build` before publishing. The archive-only mode creates `dist/extension.zip` without sending API requests.
+
+For local CRM checks, `MODULE_URL` must point to a dev/static server that serves
+`/extension/<uuid>/script` and `/extension/<uuid>/stylesheet`. `publish-extension` registers these URLs in CRM,
+but it does not start that server.

@@ -20,6 +20,7 @@
 - Код расширения в `extensionrc.json`: `retailcrm-extension-frontend`.
 - Название расширения в `extensionrc.json`: `RetailCRM Extension Frontend`.
 - Код страницы: `__PAGE_CODE__`.
+- Описание страницы в `extensionrc.json`: `pages[]` должен оставаться объектом с `code`, `menu` и `menuItemTitle`; строковая форма не подходит для публикации через RetailCRM API.
 - Цель виджета: `__WIDGET_TARGET__`.
 - Демонстрационные контролы и ненастоящие данные в `__SOURCE_ROOT__/pages/SettingsPage.vue`.
 - Демонстрационные toolbar-действия и ненастоящие данные заказа в `__SOURCE_ROOT__/widgets/OrderCommonAfterWidget.vue`.
@@ -60,3 +61,7 @@ MODULE_URL=https://example.com
 ```
 
 Перед публикацией выполните `__PACKAGE_MANAGER_RUN__ build`. Режим archive-only создает `dist/extension.zip` без API-запросов.
+
+Для локальной проверки в CRM `MODULE_URL` должен указывать на dev/static server, который отдаёт
+`/extension/<uuid>/script` и `/extension/<uuid>/stylesheet`. `publish-extension` регистрирует эти URL в CRM,
+но сам dev-server не запускает.

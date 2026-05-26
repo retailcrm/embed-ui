@@ -29,6 +29,38 @@
 | `route` | Имя или путь CRM-маршрута, если пункт открывается через маршрутизацию host-части. |
 | `visibility` | Условия показа: права, настройки, тариф, доступность фичи. |
 
+## Manifest `pages`
+
+В `extensionrc.json` и payload для RetailCRM API страницы нужно описывать объектами `ConfigurationPage`,
+а не строками. Строковый список page codes достаточен только для runtime runner map на фронтенде; backend API
+и меню страницы ожидают метаданные пункта меню.
+
+Минимальная рабочая форма:
+
+```json
+{
+  "pages": [
+    {
+      "code": "orders-dashboard",
+      "menu": "activity_main_menu",
+      "parentMenuItemCode": "orders",
+      "menuItemOrdering": 100,
+      "menuItemTitle": {
+        "ru": "Заказы",
+        "en": "Orders",
+        "es": "Pedidos"
+      },
+      "pageHelpLink": null
+    }
+  ]
+}
+```
+
+`menu` обязателен для опубликованной страницы: без него backend не сможет открыть route вида
+`/modules/<module-code>/<page-code>`. Для страниц в разделе настроек обычно используется
+`menu: "private_main_menu"` и `parentMenuItemCode: "settings"`. Для страниц в разделе продаж используйте
+`menu: "activity_main_menu"` и соответствующий parent menu item, например `orders`.
+
 ## Пример справочника меню
 
 Конкретные `placement`, `item code` и `route` нужно брать из host/manifest расширения.

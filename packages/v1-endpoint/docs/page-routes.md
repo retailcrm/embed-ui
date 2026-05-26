@@ -7,6 +7,11 @@
 host/manifest конкретного расширения, поэтому его нужно хранить в справочнике проекта рядом с кодом
 расширения.
 
+В runtime-коде `definePageRunner` сопоставляет page `code` с Vue-компонентом. В `extensionrc.json` этот же
+page `code` нужно описывать объектом manifest `pages[]` с `menu` и, обычно, `menuItemTitle`. Не используйте
+строковую форму `pages: ["orders-dashboard"]` для публикации через RetailCRM API: backend ожидает
+`ConfigurationPage` object, а страница без `menu` не откроется по route `/modules/<module-code>/<page-code>`.
+
 ## Что такое `page code`
 
 `page code` — стабильный идентификатор встраиваемой страницы внутри расширения.
@@ -58,6 +63,23 @@ console.log(settings['system.routing'].routes)
 | `orders-dashboard` | `embed.page.orders_dashboard` | `{}` | `main / orders-dashboard` | `OrdersDashboardPage.vue` |
 | `integration-settings` | `embed.page.integration_settings` | `{}` | `settings / integration-settings` | `IntegrationSettingsPage.vue` |
 | `customer-tools` | `embed.page.customer_tools` | `{ customerId }` | `customer/card:actions / customer-tools` | `CustomerToolsPage.vue` |
+
+Пример manifest-записи для страницы:
+
+```json
+{
+  "code": "orders-dashboard",
+  "menu": "activity_main_menu",
+  "parentMenuItemCode": "orders",
+  "menuItemOrdering": 100,
+  "menuItemTitle": {
+    "ru": "Заказы",
+    "en": "Orders",
+    "es": "Pedidos"
+  },
+  "pageHelpLink": null
+}
+```
 
 ## Переход на CRM-маршрут
 

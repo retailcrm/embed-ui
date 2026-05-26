@@ -64,6 +64,86 @@ const assertStringArray = (value, field) => {
   return value
 }
 
+const assertOptionalNonEmptyString = (value, field) => {
+  if (value === undefined || value === null) {
+    return null
+  }
+
+  return assertNonEmptyString(value, field)
+}
+
+const assertOptionalNumber = (value, field) => {
+  if (value === undefined || value === null) {
+    return null
+  }
+
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new Error('Field "' + field + '" must be a finite number')
+  }
+
+  return value
+}
+
+const assertOptionalBoolean = (value, field) => {
+  if (value === undefined || value === null) {
+    return false
+  }
+
+  if (typeof value !== 'boolean') {
+    throw new Error('Field "' + field + '" must be a boolean')
+  }
+
+  return value
+}
+
+const assertTranslation = (value, field, { nullable = false } = {}) => {
+  if (value === undefined || value === null) {
+    return nullable ? null : undefined
+  }
+
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('Field "' + field + '" must be an object with ru, en and es strings')
+  }
+
+  return {
+    ru: assertNonEmptyString(value.ru, field + '.ru'),
+    en: assertNonEmptyString(value.en, field + '.en'),
+    es: assertNonEmptyString(value.es, field + '.es'),
+  }
+}
+
+const normalizePages = (value) => {
+  if (value === undefined) {
+    return []
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error('Field "pages" must be an array of page descriptor objects')
+  }
+
+  return value.map((page, index) => {
+    const field = 'pages[' + index + ']'
+
+    if (typeof page === 'string') {
+      throw new Error('Field "' + field + '" uses deprecated string page form. Use { "code": "' + page + '", "menu": "...", "menuItemTitle": { "ru": "...", "en": "...", "es": "..." } }')
+    }
+
+    if (!page || typeof page !== 'object' || Array.isArray(page)) {
+      throw new Error('Field "' + field + '" must be a page descriptor object')
+    }
+
+    return {
+      code: assertNonEmptyString(page.code, field + '.code'),
+      menu: assertNonEmptyString(page.menu, field + '.menu'),
+      parentMenuItemCode: assertOptionalNonEmptyString(page.parentMenuItemCode, field + '.parentMenuItemCode'),
+      menuItemOrdering: assertOptionalNumber(page.menuItemOrdering, field + '.menuItemOrdering'),
+      menuItemTitle: assertTranslation(page.menuItemTitle, field + '.menuItemTitle', { nullable: true }) ?? null,
+      pageHelpLink: assertTranslation(page.pageHelpLink, field + '.pageHelpLink', { nullable: true }),
+      isSettingsMainPage: assertOptionalBoolean(page.isSettingsMainPage, field + '.isSettingsMainPage'),
+    }
+  })
+}
+
 const listFiles = (directoryPath, basePath = directoryPath) => {
   const result = []
 
@@ -171,7 +251,7 @@ try {
   const uuid = assertNonEmptyString(config.uuid, 'uuid')
   const version = assertNonEmptyString(config.version, 'version')
   const targets = assertStringArray(config.targets, 'targets')
-  const pages = assertStringArray(config.pages, 'pages')
+  const pages = normalizePages(config.pages)
   const runner = config.runner ?? 'worker'
 
   if (targets.length === 0 && pages.length === 0) {
