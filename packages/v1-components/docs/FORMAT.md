@@ -242,6 +242,7 @@ A short list of rules specifically for code generation:
 - Use short, concrete statements instead of vague praise.
 - Use the exact names of props, emits, and slots.
 - For slots, describe not only the name, but also what the slot does and which content restrictions exist.
+- In examples with only a default slot, prefer `v-slot` on the component instead of `<template #default>`.
 - For styling, distinguish between safe CSS variables and descriptive class names.
 - Keep runnable examples in YAML profiles when they clarify safe public usage.
 - Do not mix "how the component looks right now" with "what is publicly guaranteed".

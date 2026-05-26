@@ -98,6 +98,7 @@ Default screen rules:
 - use `UiLink` for navigation and inline links, `UiButton` for commands;
 - use `UiLoader` with `overlay: true` when loading should dim the covered page or module content;
 - keep public imports on `@retailcrm/embed-ui-v1-components/remote`;
+- when a component uses only the default slot, prefer `v-slot` on the component instead of `<template #default>`;
 - avoid custom markup that recreates textbox, select, button, link, or table chrome.
 
 ## Default Recommendation For Table Screens

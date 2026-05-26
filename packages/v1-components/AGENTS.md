@@ -70,6 +70,7 @@ Commonly used exports from `remote` include:
 - Prefer package public exports over reimplementing CRM-styled controls manually.
 - Match component choice to semantics:
   use `UiField` for labeled form controls, `UiAlert` for state messages, `UiPageHeader` for page-level headings.
+- When a component uses only the default slot, prefer the `v-slot` directive on the component instead of `<template #default>`.
 - For widget targets, keep inline UI compact: prefer `UiToolbarButton`, `UiToolbarLink`, short text, and icons.
 - Move complex widget UI into `UiModalSidebar` or `UiModalWindow` instead of expanding the target slot.
 - Keep imports on the public package boundary.

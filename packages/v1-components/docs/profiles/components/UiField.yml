@@ -19,16 +19,14 @@ examples:
   - title: Basic usage
     code: |
       <template>
-          <UiField id="name-field" label="Name" hint="At least 3 characters">
-              <template #default="field">
-                  <UiTextbox
-                      :id="field.id"
-                      :input-attributes="{
-                          'aria-labelledby': field.ariaLabelledby,
-                          'aria-invalid': field.ariaInvalid,
-                      }"
-                  />
-              </template>
+          <UiField v-slot="field" id="name-field" label="Name" hint="At least 3 characters">
+              <UiTextbox
+                  :id="field.id"
+                  :input-attributes="{
+                      'aria-labelledby': field.ariaLabelledby,
+                      'aria-invalid': field.ariaInvalid,
+                  }"
+              />
           </UiField>
       </template>
 
@@ -258,6 +256,7 @@ composition:
 ai_notes:
   do:
     - Forward slot props into the actual control in most form scenarios.
+    - Use v-slot on UiField when the field uses only the default slot.
     - Use UiField as a semantic wrapper for a single control.
   avoid:
     - Do not use UiField as a generic visual container without control semantics.
