@@ -98,4 +98,4 @@ const pageRunner = definePageRunner({
 - [`definePageRunner`](./define-page-runner.md) — как встраиваемая страница получает `code`.
 - [`targets`](./targets.md) — точки встраивания виджетов, не пунктов меню.
 - [`layout`](./layout.md) — когда делать полноценную страницу, а когда `modal sidebar` или `modal window`.
-- [`UiMenuItem`](../../v1-components/docs/profiles/UiMenuItem.yml) — компонент строки меню внутри UI расширения.
+- `@retailcrm/embed-ui-v1-components` `docs/profiles/components/UiMenuItem.yml` — компонент строки меню внутри UI расширения.

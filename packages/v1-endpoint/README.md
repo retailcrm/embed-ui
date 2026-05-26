@@ -41,6 +41,7 @@ runEndpoint(runner)
 - [`createEndpoint`](./docs/create-endpoint.md) — как вручную создать endpoint с transport и messenger.
 - [`runEndpoint`](./docs/run-endpoint.md) — как поднять endpoint в точке входа веб-воркера одной строкой.
 - [`targets` и `defineTarget`](./docs/targets.md) — как типизировать цели виджетов и маршрутизировать их по target.
+- `@retailcrm/embed-ui-v1-components` `docs/profiles/widgets/WidgetComposition.yml` — как оформлять inline UI виджетов и когда уносить сложность в modal/sidebar.
 - [`menu-placements`](./docs/menu-placements.md) — как описывать меню и пункты навигации для встраиваемых страниц.
 - [`page-routes`](./docs/page-routes.md) — как связывать page `code`, CRM-маршрут и `definePageRunner`.
 - [`layout`](./docs/layout.md) — как выбирать паттерны компоновки страниц, `modal sidebar` и `modal window`, и из каких `v1-components` их собирать.

@@ -98,5 +98,5 @@ const openSettings = (host: HostApi) => {
 
 - [`menu-placements`](./menu-placements.md) — как связать пункт меню, page `code` и маршрут.
 - [`definePageRunner`](./define-page-runner.md) — как page `code` попадает в компонент.
-- [`settings context`](../../v1-contexts/docs/ru/CONCEPT.md) — общий принцип работы контекстов.
-- [`HostApi`](../../v1-types/host.d.ts) — публичный тип host API с `goTo`.
+- `@retailcrm/embed-ui-v1-contexts` `docs/ru/CONCEPT.md` — общий принцип работы контекстов.
+- `@retailcrm/embed-ui-v1-types` `host.d.ts` — публичный тип host API с `goTo`.

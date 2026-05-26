@@ -24,6 +24,19 @@
 `target` не является данными заказа, клиента или пользователя. Это только место встраивания.
 Данные нужно брать из контекстов, которые привязаны к этому `target`.
 
+## Оформление виджета в target
+
+Виджет должен добавлять в target простой и предсказуемый inline UI: обычно `UiToolbarButton`,
+`UiToolbarLink`, короткий текст или компактное действие с иконкой. Это сохраняет страницу CRM
+стабильной и не раздувает место встраивания.
+
+Если сценарий требует сложной формы, таблицы, карты, фильтров, summary-блоков или многошагового UI,
+оставьте в target только компактный вход в сценарий, а основную логику перенесите в `UiModalSidebar`
+или `UiModalWindow`.
+
+Подробные правила композиции описаны в `@retailcrm/embed-ui-v1-components`
+`docs/profiles/widgets/WidgetComposition.yml`.
+
 ## Проверка контекстов для `target`
 
 ```ts
@@ -132,5 +145,5 @@ const testTarget = defineTarget('customer/card:test.after', [
 - [`defineWidgetRunner`](./define-widget-runner.md) — как `target` попадает в компонент встраиваемого виджета.
 - [`menu-placements`](./menu-placements.md) — чем пункты меню для страниц отличаются от widget `target`.
 - [`page-routes`](./page-routes.md) — как описывать page `code` и CRM-маршрут.
-- [`CONCEPT`](../../v1-contexts/docs/ru/CONCEPT.md) — общий принцип работы контекстов.
-- [`CUSTOM`](../../v1-contexts/docs/ru/CUSTOM.md) — пользовательский контекст для custom fields.
+- `@retailcrm/embed-ui-v1-contexts` `docs/ru/CONCEPT.md` — общий принцип работы контекстов.
+- `@retailcrm/embed-ui-v1-contexts` `docs/ru/CUSTOM.md` — пользовательский контекст для custom fields.

@@ -157,9 +157,11 @@ When working with \`${PACKAGE_NAME}\` in this project:
 5. When the task involves widget targets, target placement, target contexts, target metadata, or choosing a target, use the package MCP server if it is available.
 6. First read \`embed-ui-v1-endpoint://targets\` to discover available target profiles.
 7. Then read the relevant \`embed-ui-v1-endpoint://targets/<encoded-target>\` resource before answering or changing code related to that target.
-8. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
-9. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
-10. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
+8. For widget UI composition, keep inline target content compact: prefer \`UiToolbarButton\`, \`UiToolbarLink\`, short text, and icons; move complex UI into \`UiModalSidebar\` or \`UiModalWindow\`.
+9. If \`@retailcrm/embed-ui-v1-components\` is installed, read its widget composition docs before building widget UI.
+10. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
+11. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
+12. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
 
 Suggested MCP stdio server configuration:
 

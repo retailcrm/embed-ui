@@ -98,6 +98,8 @@ avoid_when:
 
 ai_notes:
   - ${quote('Use the target id as the runner registration key.')}
+  - ${quote('Keep UI rendered directly in the widget target compact and predictable: prefer UiToolbarButton, UiToolbarLink, short text, and icons.')}
+  - ${quote('Move complex widget UI such as forms, tables, maps, filters, summaries, and multi-step flows into UiModalSidebar or UiModalWindow.')}
   - ${quote('Use targets[target].contexts as the source of truth for context availability.')}
   - ${quote('Read linked context_resources, action_resources, and custom_context_resources before reasoning about fields, mutations, or custom data.')}
   - ${quote('Do not infer context field shape from the target id, page name, or widget placement.')}
