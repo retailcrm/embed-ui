@@ -61,6 +61,44 @@
 `menu: "private_main_menu"` и `parentMenuItemCode: "settings"`. Для страниц в разделе продаж используйте
 `menu: "activity_main_menu"` и соответствующий parent menu item, например `orders`.
 
+## Payload публикации
+
+При обновлении уже установленного расширения синхронизируйте существующий integration module через
+`/api/v5/integration-modules/{code}/edit`, а не создавайте новый инстанс регистрации. В payload страницы
+должны находиться внутри `integrationModule.integrations.embedJs.pages`:
+
+```json
+{
+  "integrationModule": {
+    "clientId": "client-id-xxx",
+    "integrations": {
+      "embedJs": {
+        "entrypoint": "https://example.test/extension/demo/script",
+        "stylesheet": "https://example.test/extension/demo/stylesheet",
+        "runner": "demo",
+        "pages": [
+          {
+            "code": "orders-dashboard",
+            "menu": "activity_main_menu",
+            "parentMenuItemCode": "orders",
+            "menuItemOrdering": 100,
+            "menuItemTitle": {
+              "ru": "Заказы",
+              "en": "Orders",
+              "es": "Pedidos"
+            },
+            "pageHelpLink": null
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+Если локальный API client не знает DTO для расширенного payload, используйте поддержанный custom/request
+method с обычным JSON-объектом вместо добавления локального DTO, который serializer не умеет обрабатывать.
+
 ## Пример справочника меню
 
 Конкретные `placement`, `item code` и `route` нужно брать из host/manifest расширения.
