@@ -60,6 +60,16 @@ npx @retailcrm/embed-ui-v1-contexts init-agents
 такого блока там ещё нет. С `--force` можно обновить уже существующий блок
 пакета.
 
+Для project-level skills можно создать `.agents/skills/embed-ui-v1-contexts-usage/SKILL.md`:
+
+```bash
+npx @retailcrm/embed-ui-v1-contexts init-skills
+```
+
+Skill описывает повторяемый workflow применения контекстов в коде: проверку доступности
+контекста в target, выбор public import, readonly/writable семантику, actions и fallback
+на generated YAML profiles, если MCP недоступен.
+
 ## Инициализация MCP-конфига
 
 Пакет также может сам добавить project-level MCP-настройки в целевой проект:

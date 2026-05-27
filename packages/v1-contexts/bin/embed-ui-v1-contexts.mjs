@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -12,6 +13,8 @@ const AGENTS_SECTION_END = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-contexts
 const README_MCP_SECTION_HEADER = '## MCP For AI Assistants: @retailcrm/embed-ui-v1-contexts'
 const README_MCP_MARKER = 'embed-ui-v1-contexts://contexts'
 const MCP_SERVER_NAME = 'retailcrm-embed-ui-v1-contexts'
+const SKILL_NAME = 'embed-ui-v1-contexts-usage'
+const SKILL_TEMPLATE_PATH = `templates/skills/${SKILL_NAME}/SKILL.md.txt`
 const MCP_BIN_NAME = process.platform === 'win32' ? 'embed-ui-v1-contexts-mcp.cmd' : 'embed-ui-v1-contexts-mcp'
 const RELATIVE_MCP_BIN_PATH = `./node_modules/.bin/${MCP_BIN_NAME}`
 const CLAUDE_PROJECT_MCP_BIN_PATH = `\${CLAUDE_PROJECT_DIR:-.}/node_modules/.bin/${MCP_BIN_NAME}`
@@ -48,6 +51,7 @@ const MCP_CLIENT_CONFIGS = {
 const HELP_TEXT = `Usage:
   npx ${PACKAGE_NAME} init-agents [target] [options]
   npx ${PACKAGE_NAME} init-config [target] [options]
+  npx ${PACKAGE_NAME} init-skills [target] [options]
 
 Options:
   -f, --force                  Replace existing managed sections and MCP server entries
@@ -57,6 +61,7 @@ Options:
 
 Examples:
   npx ${PACKAGE_NAME} init-agents
+  npx ${PACKAGE_NAME} init-skills
   npx ${PACKAGE_NAME} init-agents ./my-project
   npx ${PACKAGE_NAME} init-agents --force
   npx ${PACKAGE_NAME} init-config ./my-project
@@ -73,6 +78,10 @@ const createMcpServerConfig = (command, config = {}) => ({
 const printMcpNotice = (message) => {
   console.log(`MCP: ${message}`)
 }
+
+const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+
+const createSkill = () => fs.readFileSync(path.join(packageRoot, SKILL_TEMPLATE_PATH), 'utf8')
 
 const parseArgs = (argv) => {
   const options = {
@@ -459,6 +468,35 @@ const initAgents = (target, force) => {
   console.log(`The ${PACKAGE_NAME} instructions were appended to the end of the file.`)
 }
 
+const initSkills = (target, options) => {
+  if (!fs.existsSync(target)) {
+    throw new Error(`Target path does not exist: ${target}`)
+  }
+
+  const stat = fs.statSync(target)
+
+  if (!stat.isDirectory()) {
+    throw new Error(`Target path is not a directory: ${target}`)
+  }
+
+  const skillPath = path.join(target, '.agents', 'skills', SKILL_NAME, 'SKILL.md')
+  const fileExists = fs.existsSync(skillPath)
+
+  if (fileExists && !options.force) {
+    console.log(`${skillPath} already exists`)
+    console.log('Nothing was changed. Re-run with --force to refresh that skill.')
+    return
+  }
+
+  if (!options.dryRun) {
+    fs.mkdirSync(path.dirname(skillPath), { recursive: true })
+    fs.writeFileSync(skillPath, createSkill(), 'utf8')
+  }
+
+  const action = fileExists ? 'updated' : 'created'
+  console.log(`SKILL: ${options.dryRun ? `would ${action}` : action} ${skillPath}`)
+}
+
 const writeMcpServerConfig = (target, relativePath, rootField, options, serverConfig) => {
   const filePath = path.join(target, relativePath)
   const fileExists = fs.existsSync(filePath)
@@ -572,6 +610,11 @@ const main = () => {
 
     if (options.command === 'init-config') {
       initConfig(options.target, options)
+      return
+    }
+
+    if (options.command === 'init-skills') {
+      initSkills(options.target, options)
       return
     }
 

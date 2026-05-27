@@ -1,0 +1,46 @@
+---
+name: embed-ui-v1-contexts-usage
+description: Use when applying RetailCRM JS API contexts in extension code with @retailcrm/embed-ui-v1-contexts. Covers target-to-context selection, public imports, readonly versus writable fields, actions, custom contexts, dictionaries, and MCP/profile fallback.
+---
+
+# Embed UI v1 Contexts Usage
+
+Use this skill before changing code that reads CRM page data, writes context fields, calls context actions, or works with custom fields through `@retailcrm/embed-ui-v1-contexts`.
+
+## Reading order
+
+1. Read project `AGENTS.md` if it exists.
+2. Read `./node_modules/@retailcrm/embed-ui-v1-contexts/README.md`.
+3. Read `./node_modules/@retailcrm/embed-ui-v1-contexts/docs/ru/CONCEPT.md`.
+4. Read `./node_modules/@retailcrm/embed-ui-v1-contexts/docs/ru/CUSTOM.md` if custom fields or custom dictionaries are involved.
+5. If the task is tied to a widget target and endpoint MCP is available, read that target profile first; it is the source of truth for available `contexts`, `custom_contexts`, and `action_scopes`.
+6. If contexts MCP resources are available, start from:
+   - `embed-ui-v1-contexts://contexts`
+   - `embed-ui-v1-contexts://actions`
+   - `embed-ui-v1-contexts://custom-contexts`
+7. Then read the specific profile before coding:
+   - `embed-ui-v1-contexts://contexts/<encoded-context>`
+   - `embed-ui-v1-contexts://actions/<encoded-scope>`
+   - `embed-ui-v1-contexts://custom-contexts/<encoded-entity>`
+8. If MCP is not available, use generated YAML profiles from `./node_modules/@retailcrm/embed-ui-v1-contexts/docs/contexts/*.yml`, `docs/actions/*.yml`, and `docs/custom-contexts/*.yml`.
+
+## Workflow
+
+1. Identify where the code runs: CRM page, widget target, page runner, or shared remote module.
+2. Confirm that the needed context, custom context, or action scope is available there; do not infer availability from page names or target ids.
+3. Pick the exact public entrypoint from the profile `public_import` or docs, such as `@retailcrm/embed-ui-v1-contexts/remote/order/card`.
+4. Read context fields through `useContext()` and keep UI state derived from reactive store values instead of copying context data into parallel state.
+5. For writes, check the field `readonly` flag and `mutation` notes. Assign only writable fields directly.
+6. For readonly aggregates or business operations, use the documented `useActions()` method and payload shape instead of mutating nested data.
+7. For custom contexts, call `initialize()` before relying on schema-backed fields, handle rejection, and use `useCustomField()` with the expected `kind`.
+8. For custom dictionary fields, resolve the dictionary code from the schema and load options through `useDictionary()`.
+
+## High-signal checks
+
+- Do not assume all contexts are available on all targets.
+- Do not import from `@retailcrm/embed-ui-v1-contexts/dist/*`, source files, or repository-only paths.
+- Do not infer mutability from TypeScript shape alone; read the generated profile action and mutation notes.
+- Use current item identifiers from the context, such as `OrderItem.index`, when action notes require them.
+- Preserve host-mediated behavior: let CRM perform action validation, mutation, and synchronization.
+- If a field description is vague or absent, state that any business meaning is an inference.
+- Keep context usage aligned with endpoint target profiles when `@retailcrm/embed-ui-v1-endpoint` is also installed.

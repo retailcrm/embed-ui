@@ -104,7 +104,8 @@
     "dist",
     "docs",
     "types",
-    "README.md"
+    "README.md",
+    "templates"
   ],
   "scripts": {
     "build": "yarn prepare && yarn build:docs && yarn build:code && yarn build:mcp && yarn build:meta",
