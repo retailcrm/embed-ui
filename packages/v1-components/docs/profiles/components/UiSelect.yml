@@ -312,6 +312,10 @@ styling:
     - The trigger reuses the textbox visual model.
     - The dropdown reuses popper variables for padding, radius, and floating surface geometry.
     - Classes are descriptive implementation hooks, not a stable external styling contract.
+    - Selected, active, focused, pressed, invalid, and disabled states should come from UiSelect and
+      UiSelectOption implementation styles or documented CSS variables.
+    - Do not add custom outlines or borders for selected options unless the task records a
+      project-specific design requirement.
   root_classes:
     - .ui-v1-select
     - .ui-v1-select__trigger
@@ -375,6 +379,8 @@ behavior:
     - In multiple mode values are toggled inside the array model.
     - Filtering matches option labels and descriptions.
     - If nothing matches, a no-result block is shown.
+    - Selected option styling is owned by the select option implementation; do not recreate it with
+      local borders or outline styles.
   keyboard:
     - Arrow keys move the active highlight.
     - Escape closes the dropdown.
@@ -414,3 +420,5 @@ ai_notes:
     - Do not place arbitrary div wrappers inside the option tree.
     - Do not choose UiSelect when free text input is the real need.
     - Do not assume the dropdown lives in normal document flow next to the trigger.
+    - Do not add custom selected-option outlines, borders, or active-state chrome unless a
+      project-specific design requirement explicitly asks for it.

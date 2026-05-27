@@ -77,6 +77,13 @@ Base font family:
 
 - `-apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Roboto", sans-serif`
 
+Extension UI should normally not set `font-family` in local styles. Let the CRM host and Embed UI
+components inherit the shared stack.
+
+If a local style must set `font-family`, use the shared stack above exactly. Do not replace it with
+Arial, Inter, Roboto-only, or another custom stack unless the task or project `AGENTS.md` records a
+project-specific design requirement.
+
 Main sizes:
 
 - `h1`: `40px / 44px`
@@ -125,6 +132,21 @@ Profiles split CSS variables into practical groups:
 - `internal_layout_variables`
   useful for reasoning and debugging, but not recommended as external override points.
 
+## State Styling
+
+Interactive states should come from the component implementation, documented props, and documented
+CSS variables.
+
+For controls such as `UiSelect`, `UiTextbox`, and buttons:
+
+- do not add custom selected, active, focused, pressed, or invalid outlines/borders just because a
+  state is visible in Figma or CRM;
+- first check the component profile for the exact root/state classes, zones, CSS variables, and
+  notes about safe overrides;
+- use documented variables or local wrapper styles only when the profile says that pattern is safe;
+- if design review asks for a state that the profile does not document, treat it as a project-specific
+  requirement and record that requirement before changing CSS.
+
 ## Typical Safe Strategy
 
 For style-sensitive generation:
@@ -132,7 +154,21 @@ For style-sensitive generation:
 1. choose the correct component and size prop first;
 2. use documented slots to create the right visual zones;
 3. use documented CSS variables if a theme override is needed;
-4. avoid relying on internal descendant selectors unless the profile says that is safe.
+4. avoid relying on internal descendant selectors unless the profile says that is safe;
+5. state which styling source is being followed when the change was requested by design feedback.
+
+## Design Feedback Triage
+
+When design feedback does not match the current implementation, resolve the source before editing:
+
+1. check public RetailCRM docs, local package docs, the component profile, the page profile, this
+   `STYLING.md`, Figma, and CRM computed styles when available;
+2. if Embed UI docs describe the rule, follow the documented rule or update the component profile
+   before relying on source-code internals;
+3. if Embed UI docs do not describe the requested rule, treat it as a project-specific design
+   requirement;
+4. record project-specific values in the task text or project `AGENTS.md`;
+5. when sources conflict, state the chosen source before changing markup or CSS.
 
 ## How To Mention Styles In Profiles
 
