@@ -33,6 +33,9 @@ console.log(`[${PACKAGE_NAME}] Component profiles live in docs/profiles/componen
 if (!hasAgentsFile) {
   console.log(`[${PACKAGE_NAME}] To scaffold AGENTS.md for this project, run:`)
   console.log(`  npx ${PACKAGE_NAME} init-agents`)
+  console.log(`[${PACKAGE_NAME}] To install project-level skills, run:`)
+  console.log(`  npx ${PACKAGE_NAME} init-skills`)
 } else {
   console.log(`[${PACKAGE_NAME}] AGENTS.md already exists in this project, so no scaffold was created automatically`)
+  console.log(`[${PACKAGE_NAME}] Project-level skills can be installed with: npx ${PACKAGE_NAME} init-skills`)
 }

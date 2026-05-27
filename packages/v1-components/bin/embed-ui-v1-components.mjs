@@ -10,9 +10,12 @@ const DEFAULT_NEWLINE = '\n'
 const AGENTS_SECTION_HEADER = '## @retailcrm/embed-ui-v1-components'
 const AGENTS_SECTION_START = '<!-- embed-ui-agents:start -->'
 const AGENTS_SECTION_END = '<!-- embed-ui-agents:end -->'
+const SKILL_NAME = 'embed-ui-v1-components-ui'
+const SKILL_TEMPLATE_PATH = `templates/skills/${SKILL_NAME}/SKILL.md.txt`
 
 const HELP_TEXT = `Usage:
   npx ${PACKAGE_NAME} init-agents [target] [options]
+  npx ${PACKAGE_NAME} init-skills [target] [options]
 
 Options:
   -f, --force           Replace existing package section in AGENTS.md
@@ -20,6 +23,7 @@ Options:
 
 Examples:
   npx ${PACKAGE_NAME} init-agents
+  npx ${PACKAGE_NAME} init-skills
   npx ${PACKAGE_NAME} init-agents ./my-project
   npx ${PACKAGE_NAME} init-agents --force
 `
@@ -250,6 +254,14 @@ ${AGENTS_SECTION_END}
 `
 }
 
+const createSkill = (target, packageDocsPath) => {
+  const packageRoot = getCurrentPackageRoot() ?? findPackageRoot(target)
+  const templatePath = path.join(packageRoot, SKILL_TEMPLATE_PATH)
+  const template = fs.readFileSync(templatePath, 'utf8')
+
+  return template.replaceAll('__PACKAGE_DOCS_PATH__', packageDocsPath)
+}
+
 const findMarkedSectionRange = (content) => {
   const start = content.indexOf(AGENTS_SECTION_START)
   const end = content.indexOf(AGENTS_SECTION_END, start + AGENTS_SECTION_START.length)
@@ -381,15 +393,52 @@ const initAgents = (target, force) => {
   console.log(`The ${PACKAGE_NAME} instructions were appended to the end of the file.`)
 }
 
+const initSkills = (target, force) => {
+  if (!fs.existsSync(target)) {
+    throw new Error(`Target path does not exist: ${target}`)
+  }
+
+  const stat = fs.statSync(target)
+
+  if (!stat.isDirectory()) {
+    throw new Error(`Target path is not a directory: ${target}`)
+  }
+
+  const packageDocsPath = createPackageDocsPath(target)
+  const skillPath = path.join(target, '.agents', 'skills', SKILL_NAME, 'SKILL.md')
+  const fileExists = fs.existsSync(skillPath)
+
+  if (fileExists && !force) {
+    console.log(`${skillPath} already exists`)
+    console.log('Nothing was changed. Re-run with --force to refresh that skill.')
+    return
+  }
+
+  if (!fs.existsSync(path.dirname(skillPath))) {
+    fs.mkdirSync(path.dirname(skillPath), { recursive: true })
+  }
+
+  fs.writeFileSync(skillPath, createSkill(target, packageDocsPath), 'utf8')
+
+  const action = fileExists ? 'updated' : 'created'
+  console.log(`SKILL: ${action} ${skillPath}`)
+}
+
 const main = () => {
   try {
     const options = parseArgs(process.argv.slice(2))
 
-    if (options.command !== 'init-agents') {
-      throw new Error(`Unknown command: ${options.command}`)
+    if (options.command === 'init-agents') {
+      initAgents(options.target, options.force)
+      return
     }
 
-    initAgents(options.target, options.force)
+    if (options.command === 'init-skills') {
+      initSkills(options.target, options.force)
+      return
+    }
+
+    throw new Error(`Unknown command: ${options.command}`)
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error))
     console.error('')

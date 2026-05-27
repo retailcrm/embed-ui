@@ -48,7 +48,8 @@
     "docs",
     "index.cjs",
     "index.js",
-    "README.md"
+    "README.md",
+    "templates"
   ],
   "scripts": {
     "build": "yarn build:host && yarn build:remote",

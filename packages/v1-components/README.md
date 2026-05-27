@@ -68,3 +68,12 @@ npx @retailcrm/embed-ui-v1-components init-agents
 Если `AGENTS.md` уже существует, команда допишет в конец инструкции для
 `@retailcrm/embed-ui-v1-components`, если такого блока там еще нет. С `--force`
 можно обновить уже существующий блок пакета.
+
+Для project-level skills можно создать `.agents/skills/embed-ui-v1-components-ui/SKILL.md`:
+
+```bash
+npx @retailcrm/embed-ui-v1-components init-skills
+```
+
+Skill описывает повторяемый workflow для выбора page pattern, чтения профилей компонентов,
+проверки styling constraints и ревью table pagination/form/widget composition.
