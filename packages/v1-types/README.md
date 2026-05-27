@@ -16,3 +16,34 @@ yarn:
 ```bash
 yarn add @retailcrm/embed-ui-v1-types
 ```
+
+## `HostApi.httpCall`
+
+`host.httpCall(path, payload)` вызывает backend action JS-расширения. Передавайте вторым аргументом
+ровно тот POJO-объект или строку, которые ожидает backend API этого action:
+
+```ts
+await host.httpCall('/embed/api/admin/specialties/save', {
+    id: null,
+    name: 'Development',
+})
+```
+
+CRM самостоятельно отправляет POST-запрос на backend модуля и кладет второй аргумент в
+form-encoded параметр `payload`. Если передан объект, CRM сериализует его сама; если передана строка,
+CRM передает строку как есть. Отдельная упаковка и `JSON.stringify` на стороне frontend обычно не нужны.
+
+Ключ `payload` внутри второго аргумента используйте только если backend action действительно ожидает
+объект такой формы:
+
+```ts
+await host.httpCall('/embed/api/admin/specialties/save', {
+    payload: {
+        id: null,
+        name: 'Development',
+    },
+})
+```
+
+Если вызов работает не так, как ожидается, сначала проверьте Network и фактический запрос,
+который UI отправил на backend модуля: path, form-encoded параметры и значение `payload`.
