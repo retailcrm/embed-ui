@@ -45,6 +45,9 @@ export interface InitOptions {
   noAgents: boolean;
   forceAgents: boolean;
   agentsOnly: boolean;
+  noSkills: boolean;
+  forceSkills: boolean;
+  skillsOnly: boolean;
   noMcp: boolean;
   forceMcp: boolean;
   mcpClientConfigs: string[] | null;
@@ -56,6 +59,7 @@ export type CliOptions = InitOptions | UpdateOptions
 export const HELP_TEXT = `Usage:
   npx @retailcrm/embed-ui [target] [version] [options]
   npx @retailcrm/embed-ui init [target] [options]
+  npx @retailcrm/embed-ui init-skills [target] [options]
 
 Options:
   -t, --target <path>     Target path (default: current directory)
@@ -73,6 +77,8 @@ Options:
       --force-deps        Replace incompatible existing init dependencies
       --fix-sections      Move init dependencies to expected package.json sections
       --no-agents         Do not create or update AGENTS.md in init mode
+      --no-skills         Do not create or update .agents/skills in init mode
+      --skills-only       Install only project-level skills
       --no-mcp            Do not add package MCP instructions in init mode
       --mcp-client-configs Comma-separated project-level MCP client configs to create (codex,cursor,junie,vscode)
       --git               Initialize Git repository in init mode when cwd is not a Git work tree
@@ -87,6 +93,7 @@ Examples:
   npx @retailcrm/embed-ui --add --packages components,contexts
   npx @retailcrm/embed-ui init ./web --package-manager yarn
   npx @retailcrm/embed-ui init --interactive
+  npx @retailcrm/embed-ui init-skills
 `
 
 const isSemverLike = (value: string): boolean => /^v?\d+\.\d+\.\d+/.test(value)
@@ -195,6 +202,9 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     .option('agents', { type: 'boolean', default: true })
     .option('force-agents', { type: 'boolean', default: false })
     .option('agents-only', { type: 'boolean', default: false })
+    .option('skills', { type: 'boolean', default: true })
+    .option('force-skills', { type: 'boolean', default: false })
+    .option('skills-only', { type: 'boolean', default: false })
     .option('mcp', { type: 'boolean', default: true })
     .option('force-mcp', { type: 'boolean', default: false })
     .option('mcp-client-configs', {
@@ -248,10 +258,13 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
     template: parsed.template,
     pageCode: parsed.pageCode,
     widgetTarget: parsed.widgetTarget,
-    noAgents: !parsed.agents,
+    noAgents: parsed.skillsOnly ? true : !parsed.agents,
     forceAgents: parsed.forceAgents,
     agentsOnly: parsed.agentsOnly,
-    noMcp: !parsed.mcp,
+    noSkills: parsed.agentsOnly ? true : !parsed.skills,
+    forceSkills: parsed.forceSkills,
+    skillsOnly: parsed.skillsOnly,
+    noMcp: parsed.skillsOnly ? true : !parsed.mcp,
     forceMcp: parsed.forceMcp,
     mcpClientConfigs: parsed.mcpClientConfigs ?? null,
     initGit: parsed.git,
@@ -261,6 +274,27 @@ export const parseInitArgs = (argv: string[]): InitOptions => {
 export const parseArgs = (argv: string[]): CliOptions => {
   if (argv[0] === 'init') {
     return parseInitArgs(argv.slice(1))
+  }
+
+  if (argv[0] === 'init-skills') {
+    const options = parseInitArgs(argv.slice(1))
+    const hasExplicitCwd = argv.slice(1).some((argument) => argument === '--cwd' || argument.startsWith('--cwd='))
+
+    return {
+      ...options,
+      cwd: options.target && !hasExplicitCwd
+        ? path.resolve(process.cwd(), options.target)
+        : options.cwd,
+      target: null,
+      noInstall: true,
+      noConfigs: true,
+      noDirs: true,
+      noTemplate: true,
+      noAgents: true,
+      noSkills: false,
+      skillsOnly: true,
+      noMcp: true,
+    }
   }
 
   const parsed = yargs(argv)

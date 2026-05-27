@@ -9,6 +9,7 @@ export const createInitChanges = (): InitChanges => ({
   directories: [],
   files: [],
   agents: [],
+  skills: [],
   mcp: [],
   git: [],
   hooks: [],
@@ -93,6 +94,14 @@ export const printInitReport = (
     }
   }
 
+  if (changes.skills.length > 0) {
+    console.log('')
+    console.log('skills')
+    for (const skillChange of changes.skills) {
+      console.log(`  ${skillChange}`)
+    }
+  }
+
   if (changes.mcp.length > 0) {
     console.log('')
     console.log('MCP')
@@ -162,6 +171,7 @@ const printInitSummary = (
     changes.directories.length ? `directories created: ${changes.directories.length}` : null,
     changes.files.length ? `files changed: ${changes.files.length}` : null,
     changes.agents.length ? 'AGENTS.md updated' : null,
+    changes.skills.length ? `skills installed: ${changes.skills.length}` : null,
     changes.mcp.length ? 'MCP config updated' : null,
     changes.git.length ? `git: ${changes.git.join(', ')}` : null,
     changes.hooks.length ? `package hooks ran: ${changes.hooks.length}` : null,

@@ -160,6 +160,10 @@ const appendMcpHookNotices = (output: string, changes: InitChanges): void => {
     if (trimmedLine.startsWith('MCP: ')) {
       changes.mcp.push(trimmedLine.slice('MCP: '.length))
     }
+
+    if (trimmedLine.startsWith('SKILL: ')) {
+      changes.skills.push(trimmedLine.slice('SKILL: '.length))
+    }
   }
 }
 

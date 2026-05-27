@@ -12,13 +12,14 @@ import { isPackageManagerAvailable } from './package-manager'
 import { PACKAGE_MANAGERS } from './args'
 import { resolveInstallPackages } from './packages'
 
-type InitAction = 'configs' | 'template' | 'agents' | 'mcp' | 'git' | 'install'
+type InitAction = 'configs' | 'template' | 'agents' | 'skills' | 'mcp' | 'git' | 'install'
 type McpClientConfig = 'codex' | 'cursor' | 'junie' | 'vscode'
 
 const INIT_ACTION_LABELS = {
   configs: 'Создать базовые конфиги',
   template: 'Создать стартовый шаблон',
   agents: 'Обновить AGENTS.md',
+  skills: 'Установить project-level skills',
   mcp: 'Добавить MCP-настройки',
   git: 'Инициализировать Git',
   install: 'Запустить установку зависимостей',
@@ -28,6 +29,7 @@ const INIT_ACTION_DESCRIPTIONS = {
   configs: 'tsconfig.json, vite.config.ts, eslint.config.js и env.d.ts',
   template: 'Vue-точка входа, страница настроек, виджет заказа, i18n и publish script',
   agents: 'Общие и пакетные инструкции для AI-агентов',
+  skills: '.agents/skills/* с пакетными процедурами для AI-агентов',
   mcp: '.mcp.json и MCP-инструкции пакетов',
   git: 'git init в каталоге проекта, если Git еще не настроен',
   install: 'Запуск выбранного package manager после изменения package.json',
@@ -105,11 +107,11 @@ const resolvePromptedPackages = async (options: InitOptions): Promise<string[] |
 const resolveAvailableActions = (options: InitOptions): InitAction[] => {
   const actions: InitAction[] = []
 
-  if (!options.agentsOnly && !options.noConfigs) {
+  if (!options.agentsOnly && !options.skillsOnly && !options.noConfigs) {
     actions.push('configs')
   }
 
-  if (!options.agentsOnly && !options.noTemplate) {
+  if (!options.agentsOnly && !options.skillsOnly && !options.noTemplate) {
     actions.push('template')
   }
 
@@ -117,15 +119,19 @@ const resolveAvailableActions = (options: InitOptions): InitAction[] => {
     actions.push('agents')
   }
 
+  if (!options.noSkills) {
+    actions.push('skills')
+  }
+
   if (!options.noMcp) {
     actions.push('mcp')
   }
 
-  if (!options.agentsOnly && !isGitWorkTree(options.cwd)) {
+  if (!options.agentsOnly && !options.skillsOnly && !isGitWorkTree(options.cwd)) {
     actions.push('git')
   }
 
-  if (!options.agentsOnly && !options.noInstall) {
+  if (!options.agentsOnly && !options.skillsOnly && !options.noInstall) {
     actions.push('install')
   }
 
@@ -138,6 +144,7 @@ const applyPromptedActions = (options: InitOptions, selectedActions: InitAction[
   options.noConfigs = options.noConfigs || !selectedActionSet.has('configs')
   options.noTemplate = options.noTemplate || !selectedActionSet.has('template')
   options.noAgents = options.noAgents || !selectedActionSet.has('agents')
+  options.noSkills = options.noSkills || !selectedActionSet.has('skills')
   options.noMcp = options.noMcp || !selectedActionSet.has('mcp')
   options.initGit = options.initGit || selectedActionSet.has('git')
   options.noInstall = options.noInstall || !selectedActionSet.has('install')
@@ -225,7 +232,7 @@ export const resolveInteractiveInitOptions = async (
 
   const nextOptions: InitOptions = { ...options }
 
-  if (!nextOptions.agentsOnly) {
+  if (!nextOptions.agentsOnly && !nextOptions.skillsOnly) {
     const defaultSourceRoot = resolveDefaultSourceRoot(cwd, nextOptions)
     const sourceRoot = await input({
       message: 'Frontend source root',

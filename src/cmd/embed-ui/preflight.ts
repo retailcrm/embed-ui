@@ -388,8 +388,8 @@ export const applyInitPreflight = (
   options: InitOptions,
   changes: InitChanges
 ): void => {
-  if (options.agentsOnly) {
-    changes.preflight.push('agents-only mode: package.json, configs, and template files are skipped')
+  if (options.agentsOnly || options.skillsOnly) {
+    changes.preflight.push(`${options.skillsOnly ? 'skills-only' : 'agents-only'} mode: package.json, configs, and template files are skipped`)
     return
   }
 

@@ -41,7 +41,7 @@ npx @retailcrm/embed-ui --help
 - создает или дополняет `.gitignore` типовыми правилами для `node_modules`, `dist`, `coverage`, `.env` и логов;
 - создает стартовые файлы во frontend-каталоге: endpoint worker, страницу настроек, виджет заказа, i18n JSON-сообщения;
 - добавляет `extensionrc.json` и `scripts/publish-extension.mjs`;
-- добавляет `AGENTS.md` и MCP-настройки пакетов, если они не отключены флагами;
+- добавляет `AGENTS.md`, project-level skills и MCP-настройки пакетов, если они не отключены флагами;
 - может инициализировать Git-репозиторий, если включить `--git` или выбрать это действие в интерактивном режиме.
 
 ```bash
@@ -60,6 +60,7 @@ npx @retailcrm/embed-ui init ./web --package-manager yarn
 - шаблон — создается стартовая конфигурация для страницы настроек и виджета `order/card:common.after`;
 - каталоги — создаются `endpoint`, `pages`, `widgets`, `shared`, `i18n` и `i18n/locales` внутри frontend-каталога;
 - `AGENTS.md` — создается или дополняется инструкциями корневого пакета и выбранных пакетов;
+- project-level skills — создаются в `.agents/skills/*` для выбранных пакетов;
 - MCP — добавляется `.mcp.json` для выбранных пакетов с MCP (`v1-contexts` и `v1-endpoint`);
 - project-level client configs для Codex CLI, Cursor, Junie и VS Code — не создаются без `--mcp-client-configs`;
 - Git — в неинтерактивном режиме не инициализируется без `--git`, а в интерактивном режиме предлагается, если корень проекта не является Git-репозиторием;
@@ -88,6 +89,9 @@ npx @retailcrm/embed-ui init ./web --cwd ./my-project --package-manager npm
 - `--no-configs` — не создавать `tsconfig.json`, `vite.config.ts`, `eslint.config.js` и `env.d.ts`.
 - `--no-template` — не создавать стартовые Vue-файлы и `extensionrc.json`.
 - `--no-agents` — не создавать и не дополнять `AGENTS.md`.
+- `--no-skills` — не создавать и не обновлять project-level skills в `.agents/skills/*`.
+- `--force-skills` — обновить уже существующие управляемые project-level skills.
+- `--skills-only` — установить только project-level skills, без изменения зависимостей, шаблонов и `AGENTS.md`.
 - `--no-mcp` — не добавлять MCP-настройки пакетов.
 - `--mcp-client-configs codex,cursor,junie,vscode` — дополнительно создать project-level конфиги поддерживаемых AI-клиентов.
 - `--git` — выполнить `git init` в корне проекта, если каталог еще не является Git-репозиторием.
@@ -99,13 +103,27 @@ npx @retailcrm/embed-ui init ./web --cwd ./my-project --package-manager npm
 npx @retailcrm/embed-ui init ./web --force --no-install --no-template
 ```
 
-### AGENTS.md И MCP
+### AGENTS.md, Skills И MCP
 
-При `init` CLI добавляет общий раздел в `AGENTS.md`, а пакеты могут добавить свои инструкции. Сейчас это используют:
+При `init` CLI добавляет общий раздел в `AGENTS.md`, project-level skills в `.agents/skills/*`, а пакеты могут
+добавить свои инструкции. Сейчас это используют:
 
 - `@retailcrm/embed-ui-v1-components` — добавляет порядок чтения README, AI-документации и YAML-профилей компонентов.
-- `@retailcrm/embed-ui-v1-contexts` — добавляет инструкции по контекстам, actions, custom contexts и MCP-ресурсам.
+- `@retailcrm/embed-ui-v1-contexts` — добавляет workflow применения контекстов, actions, custom contexts и MCP-ресурсов.
 - `@retailcrm/embed-ui-v1-endpoint` — добавляет инструкции по целям виджетов и MCP-ресурсам.
+
+Project-level skills дополняют `AGENTS.md`: `AGENTS.md` задает базовые правила проекта, а skills описывают
+повторяемые процедуры для конкретных задач. Чтобы установить или обновить только skills, используйте:
+
+```bash
+npx @retailcrm/embed-ui init-skills
+```
+
+Или в рамках init:
+
+```bash
+npx @retailcrm/embed-ui init ./web --skills-only
+```
 
 Для `v1-contexts` и `v1-endpoint`, если эти пакеты выбраны для установки, также создается `.mcp.json` с серверами
 `retailcrm-embed-ui-v1-contexts` и `retailcrm-embed-ui-v1-endpoint`. Этот файл рассчитан на Claude Code project scope

@@ -13,6 +13,7 @@ import process from 'node:process'
 import { applyInitAgents } from './agents'
 import { applyInitPackageConfigHooks } from './package-hooks'
 import { applyInitPreflight } from './preflight'
+import { applyInitSkills } from './skills'
 import { assertPackageManagerAvailable } from './package-manager'
 import { collectPackageJsonPaths } from './filesystem'
 import {
@@ -145,7 +146,11 @@ const hasEnabledPackageHook = (selectedPackages: InstallablePackage[], options: 
     }
 
     if (hook.type === 'config') {
-      return !options.agentsOnly && (!hook.requiresMcp || !options.noMcp)
+      return !options.agentsOnly && !options.skillsOnly && (!hook.requiresMcp || !options.noMcp)
+    }
+
+    if (hook.type === 'skills') {
+      return !options.noSkills
     }
 
     return false
@@ -156,6 +161,9 @@ const shouldRequirePackageManagerBinary = (
   options: InitOptions
 ): boolean =>
   !options.dryRun && (!options.noInstall || hasEnabledPackageHook(selectedPackages, options))
+
+const isGuidanceOnlyInit = (options: InitOptions): boolean =>
+  options.agentsOnly || options.skillsOnly
 
 const resolveInitCwd = (options: InitOptions): string => {
   const cwd = path.resolve(options.cwd)
@@ -353,7 +361,7 @@ const applyInitPackageJson = (
 }
 
 const applyInitDirectories = (sourceRoot: string, options: InitOptions, changes: InitChanges): void => {
-  if (options.noDirs || options.agentsOnly) {
+  if (options.noDirs || isGuidanceOnlyInit(options)) {
     return
   }
 
@@ -384,7 +392,7 @@ const applyInitConfigs = (
   options: InitOptions,
   changes: InitChanges
 ): void => {
-  if (options.noConfigs || options.agentsOnly) {
+  if (options.noConfigs || isGuidanceOnlyInit(options)) {
     return
   }
 
@@ -401,7 +409,7 @@ const applyInitTemplate = (
   options: InitOptions,
   changes: InitChanges
 ): void => {
-  if (options.noTemplate || options.agentsOnly) {
+  if (options.noTemplate || isGuidanceOnlyInit(options)) {
     return
   }
 
@@ -434,7 +442,7 @@ const runInstall = async (
   changes: InitChanges,
   packageJsonChanged: boolean
 ): Promise<void> => {
-  if (options.noInstall || options.agentsOnly) {
+  if (options.noInstall || isGuidanceOnlyInit(options)) {
     return
   }
 
@@ -533,13 +541,13 @@ export const runInit = async (options: InitOptions): Promise<void> => {
   }
 
   const selectedPackages = resolveInitPackages(interactiveOptions.packages, interactiveOptions.with)
-  const version = interactiveOptions.agentsOnly
+  const version = isGuidanceOnlyInit(interactiveOptions)
     ? interactiveOptions.version ?? 'not used'
     : interactiveOptions.version ?? resolveDefaultInitVersion()
   const resolvedOptions = version === 'not used'
     ? interactiveOptions
     : { ...interactiveOptions, version }
-  const packageManager = interactiveOptions.agentsOnly
+  const packageManager = isGuidanceOnlyInit(interactiveOptions)
     ? interactiveOptions.packageManager ?? detectPackageManagerByLockfile(cwd) ?? 'npm'
     : await resolvePackageManager(cwd, interactiveOptions.packageManager)
   const changes = createInitChanges()
@@ -552,7 +560,7 @@ export const runInit = async (options: InitOptions): Promise<void> => {
   await applyInitGit(cwd, resolvedOptions, changes)
 
   let packageJsonPath: string | null = null
-  if (!resolvedOptions.agentsOnly) {
+  if (!isGuidanceOnlyInit(resolvedOptions)) {
     packageJsonPath = applyInitPackageJson(cwd, selectedPackages, version, packageManager, resolvedOptions, changes)
     updateGitignore(cwd, resolvedOptions, changes)
     applyInitDirectories(sourceRoot, resolvedOptions, changes)
@@ -562,6 +570,7 @@ export const runInit = async (options: InitOptions): Promise<void> => {
 
   await runInstall(cwd, packageManager, resolvedOptions, changes, Boolean(packageJsonPath && changes.packageJson.length > 0))
   await applyInitPackageConfigHooks(cwd, selectedPackages, packageManager, resolvedOptions, changes)
+  await applyInitSkills(cwd, selectedPackages, packageManager, resolvedOptions, changes)
   await applyInitAgents(cwd, selectedPackages, packageManager, resolvedOptions, changes)
   printInitReport(cwd, sourceRoot, version, packageManager, changes, resolvedOptions)
 }

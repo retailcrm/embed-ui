@@ -233,6 +233,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
       ]),
       version: '1.2.3',
     })).rejects.toThrow('Interactive init mode requires a TTY')
@@ -255,6 +256,32 @@ describe('embed-ui CLI', () => {
 
     expect(options.mcpClientConfigs).toEqual(['cursor', 'vscode'])
     expect(options.initGit).toBe(true)
+  })
+
+  test('parseArgs supports init-skills command', () => {
+    const options = parseArgs([
+      'init-skills',
+      './project',
+      '--package-manager',
+      'npm',
+      '--packages',
+      'components,endpoint',
+    ])
+
+    expect(options.command).toBe('init')
+    if (options.command !== 'init') {
+      throw new Error('Expected init options')
+    }
+
+    expect(options.target).toBe(null)
+    expect(options.cwd).toBe(path.resolve(process.cwd(), './project'))
+    expect(options.packageManager).toBe('npm')
+    expect(options.packages).toEqual(['components', 'endpoint'])
+    expect(options.skillsOnly).toBe(true)
+    expect(options.noSkills).toBe(false)
+    expect(options.noAgents).toBe(true)
+    expect(options.noMcp).toBe(true)
+    expect(options.noInstall).toBe(true)
   })
 
   test('parseInitArgs rejects testing package in init mode', async () => {
@@ -282,6 +309,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
       ]),
       version: '1.2.3',
     })
@@ -517,6 +545,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
         '--no-configs',
         '--no-template',
         '--git',
@@ -575,6 +604,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
         '--no-configs',
         '--no-template',
       ]),
@@ -668,6 +698,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
         '--dry-run',
       ]),
       version: '1.2.3',
@@ -708,6 +739,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
         '--no-configs',
         '--no-template',
         '--verbose',
@@ -755,6 +787,41 @@ describe('embed-ui CLI', () => {
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-contexts@1.2.3 -- embed-ui-v1-contexts init-config')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-config')
     expect(output).toContain('--mcp-client-configs cursor,vscode')
+  })
+
+  test('init-skills delegates project skill setup to selected packages', async () => {
+    const tempDir = createTempDir()
+    const logs: string[] = []
+    const options = parseArgs([
+      'init-skills',
+      '--cwd',
+      tempDir,
+      '--package-manager',
+      'npm',
+      '--packages',
+      'components,contexts,endpoint',
+      '--dry-run',
+    ])
+
+    if (options.command !== 'init') {
+      throw new Error('Expected init options')
+    }
+
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...options,
+      version: '1.2.3',
+    })
+
+    const output = logs.join('\n')
+
+    expect(output).toContain('skills-only mode: package.json, configs, and template files are skipped')
+    expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-components@1.2.3 -- embed-ui-v1-components init-skills')
+    expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-contexts@1.2.3 -- embed-ui-v1-contexts init-skills')
+    expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-skills')
   })
 
   test('package hooks prefer local bin and pick compatible transient commands', () => {
@@ -1054,6 +1121,30 @@ describe('embed-ui CLI', () => {
     )
   })
 
+  test('package init-skills commands create project-level skills', () => {
+    const tempDir = createTempDir()
+    const componentsBin = path.resolve('packages/v1-components/bin/embed-ui-v1-components.mjs')
+    const contextsBin = path.resolve('packages/v1-contexts/bin/embed-ui-v1-contexts.mjs')
+    const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
+
+    execFileSync(process.execPath, [componentsBin, 'init-skills', tempDir])
+    execFileSync(process.execPath, [contextsBin, 'init-skills', tempDir])
+    execFileSync(process.execPath, [endpointBin, 'init-skills', tempDir])
+
+    expect(fs.readFileSync(
+      path.join(tempDir, '.agents/skills/embed-ui-v1-components-ui/SKILL.md'),
+      'utf8'
+    )).toContain('name: embed-ui-v1-components-ui')
+    expect(fs.readFileSync(
+      path.join(tempDir, '.agents/skills/embed-ui-v1-contexts-usage/SKILL.md'),
+      'utf8'
+    )).toContain('name: embed-ui-v1-contexts-usage')
+    expect(fs.readFileSync(
+      path.join(tempDir, '.agents/skills/embed-ui-v1-endpoint-runtime/SKILL.md'),
+      'utf8'
+    )).toContain('page/menu hierarchy')
+  })
+
   test('init can force dependency ranges and fix dependency sections', async () => {
     const tempDir = createTempDir()
     const packageJsonPath = path.join(tempDir, 'package.json')
@@ -1078,6 +1169,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
         '--no-template',
         '--force-deps',
         '--fix-sections',
@@ -1118,6 +1210,7 @@ describe('embed-ui CLI', () => {
         '--no-install',
         '--no-agents',
         '--no-mcp',
+        '--no-skills',
         '--no-template',
         '--force-deps',
         '--fix-sections',

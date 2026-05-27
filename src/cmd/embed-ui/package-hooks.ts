@@ -12,6 +12,10 @@ export const applyInitPackageConfigHooks = async (
   options: InitOptions,
   changes: InitChanges
 ): Promise<void> => {
+  if (options.agentsOnly || options.skillsOnly) {
+    return
+  }
+
   for (const selectedPackage of selectedPackages) {
     for (const hook of selectedPackage.hooks ?? []) {
       if (hook.type !== 'config') {

@@ -25,9 +25,9 @@ export interface InstallablePackage {
 }
 
 export interface InstallablePackageHook {
-  type: 'agents' | 'config';
+  type: 'agents' | 'config' | 'skills';
   binName: string;
-  command: 'init-agents' | 'init-config';
+  command: 'init-agents' | 'init-config' | 'init-skills';
   failureMode: 'advisory' | 'required';
   requiresMcp?: boolean;
 }
@@ -46,6 +46,7 @@ export interface InitChanges {
   directories: string[];
   files: string[];
   agents: string[];
+  skills: string[];
   mcp: string[];
   git: string[];
   hooks: string[];

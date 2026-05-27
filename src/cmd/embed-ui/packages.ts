@@ -37,6 +37,12 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
         command: 'init-agents',
         failureMode: 'advisory',
       },
+      {
+        type: 'skills',
+        binName: 'embed-ui-v1-components',
+        command: 'init-skills',
+        failureMode: 'advisory',
+      },
     ],
   },
   {
@@ -51,6 +57,12 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
         command: 'init-agents',
         failureMode: 'advisory',
         requiresMcp: true,
+      },
+      {
+        type: 'skills',
+        binName: 'embed-ui-v1-contexts',
+        command: 'init-skills',
+        failureMode: 'advisory',
       },
       {
         type: 'config',
@@ -85,6 +97,12 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
         command: 'init-agents',
         failureMode: 'advisory',
         requiresMcp: true,
+      },
+      {
+        type: 'skills',
+        binName: 'embed-ui-v1-endpoint',
+        command: 'init-skills',
+        failureMode: 'advisory',
       },
       {
         type: 'config',
