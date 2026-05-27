@@ -1,0 +1,45 @@
+---
+name: embed-ui-v1-endpoint-runtime
+description: Use when building, editing, or reviewing RetailCRM JS module endpoint wiring with @retailcrm/embed-ui-v1-endpoint. Covers pages, widgets, runners, targets, menu hierarchy, page publishing payloads, and public Host API boundaries.
+---
+
+# Embed UI v1 Endpoint Runtime
+
+Use this skill before changing JS module endpoint wiring, page registration, widget targets, or Host API navigation.
+
+## Reading order
+
+1. Read project `AGENTS.md` if it exists.
+2. Read `./node_modules/@retailcrm/embed-ui-v1-endpoint/README.md`.
+3. Read `./node_modules/@retailcrm/embed-ui-v1-endpoint/docs/README.md`.
+4. Read the relevant endpoint docs:
+   - `docs/define-runner.md`
+   - `docs/define-page-runner.md`
+   - `docs/define-widget-runner.md`
+   - `docs/page-routes.md`
+   - `docs/menu-placements.md`
+   - `docs/targets.md`
+5. If MCP resources are available, read `embed-ui-v1-endpoint://targets` and then the target profile for the target being changed.
+6. If MCP is not available, use `./node_modules/@retailcrm/embed-ui-v1-endpoint/docs/targets/*.yml` as fallback.
+
+## Workflow
+
+1. Identify whether the task is a page, widget, or shared endpoint runner change.
+2. For pages, keep the runtime runner map and extension config page descriptors aligned by page `code`.
+3. For widgets, choose the exact target from endpoint docs or MCP resources before writing UI.
+4. Use documented public entrypoints such as `@retailcrm/embed-ui-v1-endpoint/remote`; do not import from `dist/*`, source files, or repository-only paths.
+5. Keep widget inline UI compact; use component package widget composition guidance for UI mounted into CRM targets.
+
+## Page and menu checks
+
+- Published page descriptors must be objects, not string page codes.
+- Page descriptors need `code`, `menu`, and usually `menuItemTitle`.
+- Use `parentMenuItemCode` and `menuItemOrdering` to model the intended CRM page/menu hierarchy.
+- Breadcrumb-like navigation is derived by CRM from the page/menu hierarchy passed in the extension config; do not hand-roll breadcrumbs in the page unless the product task explicitly asks for local in-page navigation.
+- For updating an already installed module, use the existing integration module edit/update flow and put pages under `integrationModule.integrations.embedJs.pages`.
+
+## Host API checks
+
+- Use public Host API for location, query state, and navigation.
+- Do not depend on internal endpoint runtime stores or private channel state.
+- Keep route names, page codes, and extension descriptor values documented in the project.

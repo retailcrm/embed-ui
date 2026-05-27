@@ -85,6 +85,15 @@ npx @retailcrm/embed-ui-v1-endpoint init-agents
 такого блока там ещё нет. С `--force` можно обновить уже существующий блок
 пакета.
 
+Для project-level skills можно создать `.agents/skills/embed-ui-v1-endpoint-runtime/SKILL.md`:
+
+```bash
+npx @retailcrm/embed-ui-v1-endpoint init-skills
+```
+
+Skill описывает повторяемый workflow для pages/widgets, runner setup, target selection,
+menu hierarchy, page publishing payloads и публичных границ Host API.
+
 ## Инициализация MCP-конфига
 
 Пакет также может сам добавить project-level MCP-настройки в целевой проект:

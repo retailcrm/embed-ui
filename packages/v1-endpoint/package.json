@@ -85,7 +85,8 @@
     "bin",
     "dist",
     "docs",
-    "README.md"
+    "README.md",
+    "templates"
   ],
   "scripts": {
     "build": "yarn build:docs && yarn build:code && yarn build:mcp && yarn build:meta",
