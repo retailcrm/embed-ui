@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.9.25](https://github.com/retailcrm/embed-ui/compare/v0.9.24...v0.9.25) (2026-05-28)
+
+### Features
+
+* Project skill initialization added ([f04caef](https://github.com/retailcrm/embed-ui/commit/f04caef7e858b3f2089cb80c9ef26daafce6c2b5))
+* **v1-components:** Project skill installer added ([8b7c61c](https://github.com/retailcrm/embed-ui/commit/8b7c61cac3704ad80582a44609e5aabba31757df))
+* **v1-contexts:** Context usage skill installer added ([b9545d6](https://github.com/retailcrm/embed-ui/commit/b9545d624e6062c136ea55c16c9220ab9d6e1b8a))
+* **v1-endpoint:** Runtime skill installer added ([f426dac](https://github.com/retailcrm/embed-ui/commit/f426dac22766002dc3df01188608f7a0f1fe6689))
 ## [0.9.24](https://github.com/retailcrm/embed-ui/compare/v0.9.23...v0.9.24) (2026-05-26)
 
 ### Bug Fixes
