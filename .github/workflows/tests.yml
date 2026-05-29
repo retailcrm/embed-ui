@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Using branch ${{ github.ref }} for repository ${{ github.repository }}.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run actionlint
         uses: devops-actions/actionlint@v0.1.10
@@ -27,11 +27,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 22.x, 24.x ]
+        node-version: [ 22.x, 24.15.0 ]
 
     steps:
       - name: Using branch ${{ github.ref }} for repository ${{ github.repository }}.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
@@ -56,11 +56,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 22.x, 24.x ]
+        node-version: [ 22.x, 24.15.0 ]
 
     steps:
       - name: Using branch ${{ github.ref }} for repository ${{ github.repository }}.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
@@ -77,23 +77,23 @@ jobs:
         run: yarn test
 
       - name: Run coverage
-        if: ${{ matrix.node-version == '24.x' }}
+        if: ${{ startsWith(matrix.node-version, '24.') }}
         run: yarn test:coverage
 
       - name: Run typecheck tests
         run: yarn vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json
 
       - name: Install Playwright Chromium
-        if: ${{ matrix.node-version == '24.x' }}
+        if: ${{ startsWith(matrix.node-version, '24.') }}
         run: yarn workspace @retailcrm/embed-ui-v1-endpoint exec playwright install --with-deps chromium
 
       - name: Run v1-endpoint e2e tests
-        if: ${{ matrix.node-version == '24.x' }}
+        if: ${{ startsWith(matrix.node-version, '24.') }}
         run: yarn workspace @retailcrm/embed-ui-v1-endpoint run test:e2e
 
       - name: Upload v1-endpoint e2e screenshots
-        if: ${{ failure() && matrix.node-version == '24.x' }}
-        uses: actions/upload-artifact@v4
+        if: ${{ failure() && startsWith(matrix.node-version, '24.') }}
+        uses: actions/upload-artifact@v6
         with:
           name: v1-endpoint-playwright-screenshots-${{ matrix.node-version }}
           path: packages/v1-endpoint/artifacts/playwright/screenshots
