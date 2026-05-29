@@ -61,6 +61,10 @@
 `menu: "private_main_menu"` и `parentMenuItemCode: "settings"`. Для страниц в разделе продаж используйте
 `menu: "activity_main_menu"` и соответствующий parent menu item, например `orders`.
 
+CRM также использует hierarchy из `pages[]` для видимой навигации и breadcrumb-like поведения. Сначала
+моделируйте нужную иерархию через `menu`, `parentMenuItemCode` и `menuItemOrdering`; локальные ссылки внутри
+страницы добавляйте только для дополнительной in-page navigation.
+
 ## Payload публикации
 
 При обновлении уже установленного расширения синхронизируйте существующий integration module через
@@ -129,6 +133,11 @@ const pageRunner = definePageRunner({
 
 Если host откроет страницу с `code`, которого нет в runner map, `definePageRunner` запишет warning
 в консоль и не смонтирует страницу.
+
+После изменения меню или pages manifest проверьте локальную CRM установку: пункт меню должен появиться,
+route `/modules/<module-code>/<page-code>` должен открываться, а `entrypoint` и `stylesheet` из extension
+config должны отдаваться локальным dev server. При runtime-ошибках в minified bundle сначала включите dev
+bundle или sourcemaps.
 
 Читайте также:
 

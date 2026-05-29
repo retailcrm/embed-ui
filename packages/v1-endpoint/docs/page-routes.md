@@ -12,6 +12,10 @@ page `code` нужно описывать объектом manifest `pages[]` с
 строковую форму `pages: ["orders-dashboard"]` для публикации через RetailCRM API: backend ожидает
 `ConfigurationPage` object, а страница без `menu` не откроется по route `/modules/<module-code>/<page-code>`.
 
+Build/lint успех не доказывает, что страница откроется в CRM. После добавления новой страницы проверьте
+runtime lifecycle в host: page descriptor, menu item, route `/modules/<module-code>/<page-code>`,
+доступность `entrypoint` и `stylesheet`, и фактический mount frontend-кода.
+
 ## Что такое `page code`
 
 `page code` — стабильный идентификатор встраиваемой страницы внутри расширения.
@@ -93,6 +97,10 @@ const openSettings = (host: HostApi) => {
   host.goTo('embed.page.integration_settings')
 }
 ```
+
+Breadcrumb-like navigation для module pages строится CRM из hierarchy в `pages[]`: `menu`,
+`parentMenuItemCode`, `menuItemOrdering` и связанных metadata. Не собирайте breadcrumbs вручную внутри
+страницы, если продуктовая задача явно не просит локальную in-page navigation.
 
 Читайте также:
 

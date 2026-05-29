@@ -29,6 +29,8 @@ Use this skill before changing JS module endpoint wiring, page registration, wid
 3. For widgets, choose the exact target from endpoint docs or MCP resources before writing UI.
 4. Use documented public entrypoints such as `@retailcrm/embed-ui-v1-endpoint/remote`; do not import from `dist/*`, source files, or repository-only paths.
 5. Keep widget inline UI compact; use component package widget composition guidance for UI mounted into CRM targets.
+6. After the first page vertical slice, verify it in the CRM host: menu item, `/modules/<moduleCode>/<pageCode>` route, entrypoint URL, stylesheet URL, and actual frontend mount.
+7. If a runtime error appears only in a minified bundle, switch to a dev bundle or sourcemaps before guessing.
 
 ## Page and menu checks
 
@@ -37,6 +39,7 @@ Use this skill before changing JS module endpoint wiring, page registration, wid
 - Use `parentMenuItemCode` and `menuItemOrdering` to model the intended CRM page/menu hierarchy.
 - Breadcrumb-like navigation is derived by CRM from the page/menu hierarchy passed in the extension config; do not hand-roll breadcrumbs in the page unless the product task explicitly asks for local in-page navigation.
 - For updating an already installed module, use the existing integration module edit/update flow and put pages under `integrationModule.integrations.embedJs.pages`.
+- Build/lint success does not prove page rendering; check the installed module in the CRM host when page routing or menu placement changed.
 
 ## Host API checks
 
