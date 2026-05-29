@@ -45,6 +45,22 @@ const pageRunner = definePageRunner({
 
 Если для `code` нет раннера, будет warning в консоль и noop-destroy.
 
+## Runtime-проверка страницы
+
+После первого минимального vertical slice проверяйте страницу внутри CRM host, а не только через build/lint.
+
+Минимальный чек:
+
+- manifest или publish payload содержит page descriptor object с `code`, `menu`, `menuItemTitle` и нужной
+  hierarchy metadata;
+- `code` в `pages[]` совпадает с ключом runner map в `definePageRunner`;
+- локальный dev server отдает `entrypoint` и `stylesheet` URL, которые указаны в extension config;
+- пункт меню появился в CRM и открывает route `/modules/<module-code>/<page-code>`;
+- frontend реально смонтировался в CRM host.
+
+Если ошибка видна только в minified bundle, соберите или отдайте dev bundle без минификации до изменения кода
+по догадке.
+
 ## `beforeMount`
 
 `beforeMount` вызывается после `app.use(pinia)` и до `app.mount(...)`.
