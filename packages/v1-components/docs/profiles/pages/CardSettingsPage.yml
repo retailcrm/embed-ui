@@ -23,6 +23,8 @@ expected_structure:
   - The white content surface owns the 24px top and 32px side/bottom padding.
   - The page root wrapper should not repeat that padding.
   - Content can include text, buttons, fields, checkboxes, radio groups, switches, and other form controls.
+  - Textbox, select, number, date, and time controls usually live inside UiField.
+  - UiSwitch and simple UiCheckbox rows should use their own row layout with a visible label and optional hint, not UiField.
   - A bottom save panel is optional.
   - If a bottom save panel is used, its main save or apply action should be Success Primary.
 
@@ -55,9 +57,14 @@ recommended_components:
 ai_notes:
   do:
     - Keep form controls grouped by task or semantic section.
-    - Use UiField around labelled form controls.
+    - Use UiField around labeled textbox, select, number, date, and time controls.
+    - Use UiSwitch for compact enable or disable settings.
+    - Use UiCheckbox for checkbox groups, table selection, acknowledgements, and checkbox-shaped boolean choices.
     - Use tabs only when they reduce visible complexity without hiding required work.
     - Keep save/apply as the strongest footer action and move neighboring actions to secondary or tertiary appearances unless their variant has a distinct page-level meaning.
+    - Prefer tertiary for low-emphasis local actions that should not compete with the settings save flow.
   avoid:
     - Do not create a decorative landing page for operational settings.
     - Do not put content-surface padding on the root page wrapper.
+    - Do not use UiCheckbox as the default replacement for UiSwitch just because a setting is boolean.
+    - Do not wrap UiSwitch or simple UiCheckbox rows in UiField.

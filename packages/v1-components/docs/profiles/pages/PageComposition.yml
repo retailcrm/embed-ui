@@ -22,6 +22,8 @@ shared_rules:
   - Use Default Primary for an important action that is secondary to the Success Primary or does not commit a result.
   - Use Danger Primary only for one critical destructive action when the page needs it.
   - If several actions compete for attention, choose the main one for Success Primary and move the rest to Default Primary, secondary, tertiary, or dropdown actions by meaning.
+  - Use secondary for a real neighboring command that should still read as a button.
+  - Use tertiary for lower-emphasis header, card, inline, configure, edit, open, cancel, and close actions that should not compete with the main flow.
   - UiPageHeader actions and UiPageFooter actions belong to the same page-level action scope.
   - Treat each UiCollapseBox footer as a separate local action scope with the same rules scoped to that section.
   - A page can have several Default Primary buttons when each one belongs to a different UiCollapseBox footer.
@@ -60,8 +62,10 @@ ai_notes:
     - Choose ModalWindow or a full page when content needs wide tables, several sections, or complex controls.
     - Keep operational CRM screens dense, scannable, and work-focused.
     - Prefer variant="success" for the main save/apply/create action and keep it visually dominant.
+    - Prefer appearance="tertiary" for supportive actions that sit near content but should stay visually quiet.
   avoid:
     - Do not turn internal CRM work screens into marketing-style layouts.
     - Do not hide filters or primary workflow controls away from the content they affect.
     - Do not place multiple Success Primary, Default Primary, or Danger Primary actions with the same variant in the page-level scope or inside one collapse-box scope.
+    - Do not default every non-primary action to appearance="secondary"; choose by local action importance.
     - Do not add page-surface padding to both the page root and the white content surface.

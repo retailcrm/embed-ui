@@ -16,7 +16,6 @@ examples:
           name="Anna Smith"
           src="https://example.com/avatar.jpg"
           size="sm"
-          status="none"
         />
       </template>
 
@@ -37,7 +36,17 @@ api:
     - name: src
     - name: name
     - name: status
+      values:
+        - busy
+        - break
+        - dinner
+        - free
+      notes: Omit status when no indicator should be shown; do not pass "none".
     - name: size
+      values:
+        - xs
+        - sm
+        - lg
     - name: href
 
 rendered_structure:
@@ -61,8 +70,10 @@ ai_notes:
   do:
     - Use UiAvatar for identity display, not for general media.
     - Provide name whenever possible so fallback identity stays meaningful.
+    - Omit optional enum-like props when no listed value applies.
   avoid:
     - Do not use it for generic content images or large media blocks.
+    - Do not pass unsupported neutral values such as status="none"; check listed values first.
 
 composition:
   works_well_with:

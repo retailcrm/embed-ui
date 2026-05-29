@@ -1,7 +1,7 @@
 component: UiCheckbox
 summary: >
-  UiCheckbox is a boolean or set-membership control. It supports single boolean-like usage
-  as well as model-plus-value patterns for checkbox groups.
+  UiCheckbox is a checkbox or set-membership control. It supports single acknowledgement-like
+  choices, table row selection, "select all" states, and model-plus-value patterns for checkbox groups.
 
 public_import:
   from: '@retailcrm/embed-ui-v1-components/remote'
@@ -37,12 +37,14 @@ examples:
       const channels = ref<string[]>([])
       </script>
 use_when:
-  - You need a yes or no control.
+  - You need a checkbox-shaped boolean choice such as an acknowledgement or confirmation.
   - You need one value inside a checkbox group model.
+  - You need row selection, mass selection, or an indeterminate "select all" control.
 
 avoid_when:
   - You need exclusive single choice, use UiRadio instead.
-  - You need a more compact toggle-like control, use UiSwitch instead.
+  - You need a compact immediate on or off setting, use UiSwitch instead.
+  - You need a settings toggle row where a switch better communicates enable or disable state.
 
 api:
   key_props:
@@ -73,26 +75,32 @@ behavior:
   notes:
     - model plus value supports group-style selection.
     - indeterminate is useful for partial selection states.
+    - For ordinary settings toggles, UiSwitch is usually the better control even when the value is boolean.
 
 ai_notes:
   do:
-    - Use for boolean choice or checkbox-group membership.
+    - Use for checkbox-group membership, acknowledgement-like boolean choices, and table row selection.
     - Use indeterminate for parent selection such as "select all visible rows".
   avoid:
     - Do not use for mutually exclusive options.
+    - Do not replace UiSwitch settings toggles with UiCheckbox just because the value is boolean.
 
 composition:
   works_well_with:
-    - UiField
+    - visible label
+    - hint text
     - UiTable
     - UiTableColumn
   patterns:
-    - title: Form boolean
-      notes: Wrap in UiField when the checkbox needs a persistent label, hint, or validation text.
+    - title: Checkbox row
+      notes: Place UiCheckbox on the left, label and optional hint on the right, similar to a UiSwitch settings row.
+    - title: Checkbox group
+      notes: Use several UiCheckbox controls with one array model and visible labels for multi-selection.
     - title: Table row selection
       notes: Use in the first narrow UiTableColumn for row selection; use indeterminate in the header checkbox for partial selection.
   avoid:
     - Do not use as a visual switch replacement when the action is an immediate on or off setting.
+    - Do not wrap simple checkbox rows in UiField; use an explicit row with visible label and optional hint.
 
 accessibility:
   notes:

@@ -28,9 +28,11 @@ examples:
 use_when:
   - You need numeric input with explicit step controls.
   - You need range constraints and nullable numeric state.
+  - You need bounded numeric settings, quantities, durations, limits, delays, or values with meaningful increments.
 
 avoid_when:
   - You need plain text or decimal input without stepper controls.
+  - You need numeric-looking text such as phone numbers, codes, identifiers, or free-form strings.
 
 api:
   key_props:
@@ -82,6 +84,7 @@ ai_notes:
     - Prefer nullable when clearing the value is a valid state.
   avoid:
     - Do not use when the value is an identifier, phone, code, or other numeric-looking text.
+    - Do not replace with UiTextbox for bounded numeric settings unless a runtime limitation is documented.
 
 accessibility:
   notes:

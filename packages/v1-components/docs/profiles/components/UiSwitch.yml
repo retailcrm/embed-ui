@@ -120,10 +120,12 @@ examples:
       </style>
 use_when:
   - You need a compact on or off toggle.
+  - You need an immediate boolean setting, feature flag, enable or disable control, or settings row.
 
 avoid_when:
   - You need checkbox-group semantics.
   - You need a UiField-style labeled wrapper; pair UiSwitch with a visible label and hint text instead.
+  - You need an acknowledgement, legal confirmation, table selection, or multi-select choice; use UiCheckbox instead.
 
 api:
   key_props:
@@ -170,6 +172,7 @@ ai_notes:
     - Put helper text below the label in the settings row, not in UiField hint.
   avoid:
     - Do not use for multi-select lists or legal acknowledgements; use UiCheckbox.
+    - Do not replace compact settings toggles with UiCheckbox just because the value is boolean.
     - Do not use UiField around UiSwitch.
 
 accessibility:

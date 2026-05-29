@@ -12,7 +12,6 @@ public_import:
 related_components:
   - UiTextbox
   - UiSelect
-  - UiCheckbox
   - UiNumberStepper
   - UiDatePicker
 
@@ -162,6 +161,8 @@ api:
           - UiDatePicker
         avoid:
           - several unrelated controls
+          - UiSwitch setting rows
+          - UiCheckbox setting rows
           - decorative layout only
           - raw content without using slot props
       layout_effect: The control sits below the headline and inherits field-level semantics through slot props.
@@ -311,8 +312,10 @@ ai_notes:
     - Forward slot props into the actual control in most form scenarios.
     - Pass field.id to child controls that accept id, including UiTextbox, UiSelect, and UiNumberStepper.
     - Use v-slot on UiField when the field uses only the default slot.
-    - Use UiField as a semantic wrapper for a single control.
+    - Use UiField as a semantic wrapper for a single textbox, select, number, date, or time control.
+    - Place validation errors inside the relevant field composition instead of rendering them as unrelated sibling blocks.
   avoid:
     - Do not use UiField as a generic visual container without control semantics.
     - Do not use UiField for UiSwitch settings rows; pair UiSwitch with a visible label and hint text instead.
+    - Do not use UiField for simple UiCheckbox rows; pair UiCheckbox with a visible label and optional hint instead.
     - Do not ignore id and ariaLabelledby when accessibility matters.

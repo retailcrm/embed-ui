@@ -211,6 +211,8 @@ behavior:
       notes: Enables the separate locked state.
   notes:
     - If href is present, the component becomes a link-shaped action.
+    - appearance="secondary" is for neighboring commands that should still read as real buttons.
+    - appearance="tertiary" is for lower-emphasis actions near headers, cards, tables, and inline content.
 
 accessibility:
   notes:
@@ -231,7 +233,9 @@ ai_notes:
     - Start with appearance=primary for the main CTA, then choose variant by meaning.
     - Use variant="success" for the strongest create/save/apply action when it commits a result, and keep only one Success Primary on a page.
     - Use the default variant for an important primary action that is not the strongest commit action.
-    - Use secondary or tertiary for neighboring actions near titles.
+    - Use secondary for a real neighboring command that should still look like a button.
+    - Use tertiary for lower-emphasis edit, open, configure, cancel, close, and optional commands that should not compete with the main flow.
   avoid:
     - Do not replace UiButton with UiLink when the action should read as a button.
     - Do not use UiButton for regular inline text navigation.
+    - Do not default every non-primary action to secondary; choose tertiary when the action is only supportive.
