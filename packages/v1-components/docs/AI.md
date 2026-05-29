@@ -63,10 +63,13 @@ When building a basic form or settings screen, start from patterns like:
 ```ts
 import {
   UiButton,
+  UiCheckbox,
   UiField,
+  UiNumberStepper,
   UiPageFooter,
   UiPageHeader,
   UiSelect,
+  UiSwitch,
   UiTextbox,
 } from '@retailcrm/embed-ui-v1-components/remote'
 ```
@@ -75,6 +78,9 @@ Typical compositions:
 
 - `UiField` + `UiTextbox`
 - `UiField` + `UiSelect`
+- `UiField` + `UiNumberStepper`
+- `UiSwitch` + visible label + hint row
+- `UiCheckbox` + visible label row or checkbox group
 - `UiPageHeader` + `UiButton`
 - `UiSelect` + `UiSelectOption`
 
@@ -91,15 +97,20 @@ Default screen rules:
 - use `UiPageFooter` for page-level save/cancel/delete actions instead of recreating a local footer;
 - use one `Success Primary` button for the strongest save/apply/create action that commits a result; use `Default Primary`
   only for another important action with a different meaning;
+- use `Secondary` buttons for real neighboring commands that should still look like buttons;
+- use `Tertiary` buttons for lower-emphasis edit, open, configure, cancel, close, and optional commands near headers,
+  cards, tables, and inline content;
 - apply the 24px top and 32px side/bottom padding rule to white content surfaces, not to the page root wrapper;
 - keep filters and controls near the content they affect;
-- use `UiField` around labeled form controls;
+- use `UiField` around labeled textbox, select, number, date, and time controls;
 - use `UiTable` for structured result lists;
 - use `UiLink` for navigation and inline links, `UiButton` for commands;
 - use `UiLoader` with `overlay: true` when loading should dim the covered page or module content;
 - keep public imports on `@retailcrm/embed-ui-v1-components/remote`;
 - when a component uses only the default slot, prefer `v-slot` on the component instead of `<template #default>`;
 - avoid custom markup that recreates textbox, select, button, link, or table chrome.
+- before passing enum-like prop values, check the component profile or public type; omit optional props instead of
+  inventing neutral values such as `"none"` when they are not listed.
 
 ## Default Recommendation For Table Screens
 
@@ -142,10 +153,16 @@ When building forms with remote controls:
 - use `UiField` for labeled text, select, date, and number controls;
 - forward `UiField` slot props into the actual child control when it accepts `id`, especially
   `UiTextbox`, `UiSelect`, and `UiNumberStepper`;
+- put validation errors inside the relevant field composition, not as unrelated sibling blocks;
 - when a component uses only the default slot, prefer `v-slot` on the component instead of
   `<template #default>`;
 - do not wrap `UiSwitch` in `UiField`; place the switch next to a visible label and optional hint,
   and connect `UiSwitch :id` with `label :for`.
+- do not wrap simple `UiCheckbox` rows in `UiField`; place the checkbox next to a visible label and optional hint.
+- use `UiSwitch` for compact immediate boolean settings, feature toggles, and enable/disable flags.
+- use `UiCheckbox` for checkbox groups, table row selection, "select all", acknowledgements, and checkbox-shaped choices.
+- use `UiNumberStepper` for bounded numeric settings, quantities, durations, limits, and values with meaningful increments.
+- use `UiTextbox` for numeric-looking text such as phone numbers, codes, identifiers, and free-form numeric strings.
 
 ## Default Recommendation For Widgets
 

@@ -37,12 +37,14 @@ use_when:
   - You need a standard text input.
   - You need search, email, phone, url, or password input.
   - You need decimal or numeric input without a separate stepper.
+  - You need numeric-looking text such as a phone, code, identifier, article, external id, or free-form numeric string.
   - You need a multiline control in the same visual language.
   - You need an input that composes well with UiField and inline editing.
 
 avoid_when:
   - You need value selection, not free-form input.
   - You need explicit increment and decrement UX.
+  - You need bounded numeric settings, quantities, durations, limits, or values with meaningful increments; use UiNumberStepper instead.
   - You need advanced formatting beyond the prefix or suffix model.
 
 api:

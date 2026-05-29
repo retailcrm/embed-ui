@@ -157,6 +157,28 @@ For style-sensitive generation:
 4. avoid relying on internal descendant selectors unless the profile says that is safe;
 5. state which styling source is being followed when the change was requested by design feedback.
 
+## Remote Page Styles
+
+For Vue remote pages and page-like components, prefer local CSS Modules:
+
+```vue
+<style module lang="less">
+```
+
+Apply classes through `$style[...]` in the template. Use `@import (reference)` from
+`@retailcrm/embed-ui-v1-components/assets/stylesheets/*` for shared LESS tokens and typography
+mixins.
+
+Remote page styles should normally:
+
+- use package spacing, palette, geometry, and typography tokens instead of local hardcoded colors,
+  font sizes, weights, and spacing;
+- keep styles local to the page or component through CSS Modules;
+- avoid shared global files such as `admin.less` as the default strategy;
+- avoid duplicating CRM host layout padding on the page root;
+- put documented 24px top and 32px side/bottom padding on white content surfaces when such a
+  surface exists.
+
 ## Design Feedback Triage
 
 When design feedback does not match the current implementation, resolve the source before editing:

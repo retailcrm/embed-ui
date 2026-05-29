@@ -26,13 +26,20 @@ Use this skill before changing frontend UI built with `@retailcrm/embed-ui-v1-co
 5. Do not hand-roll buttons, inputs, selects, tables, or links when a documented Embed UI component exists.
 6. Do not set arbitrary `font-family`; inherit the host/component stack unless a project-specific design requirement says otherwise.
 7. Do not style internal `.ui-v1-*` selectors unless the profile or `STYLING.md` explicitly documents that override pattern.
+8. For Vue remote pages, prefer `<style module lang="less">` with `$style[...]` and package LESS tokens/mixins.
+9. Before passing enum-like prop values, check the profile or public type; omit optional props instead of inventing neutral values.
 
 ## High-signal checks
 
 - For entity lists, use `UiTable`, `UiTableColumn`, and table footer slots.
 - For table pagination, follow the reference example in `UiTable.yml`: button sizes, active state, dividers, arrow assets, and scoped selector pattern.
 - For form fields, use `UiField` with the matching control and forward slot props such as `id` when the control accepts them.
+- Put validation errors inside the relevant field composition, not as unrelated sibling blocks.
 - For `UiSwitch`, use the documented switch + visible label + hint row instead of wrapping it in `UiField`.
+- For simple `UiCheckbox` rows, use checkbox + visible label + optional hint instead of wrapping it in `UiField`.
+- Use `UiSwitch` for compact boolean settings and `UiCheckbox` for checkbox groups, table row selection, select-all, and acknowledgements.
+- Use `UiNumberStepper` for bounded numeric settings and `UiTextbox` for numeric-looking text such as phones, codes, and identifiers.
+- Use `Secondary` buttons for real neighboring commands and `Tertiary` buttons for lower-emphasis edit/open/configure/cancel/close actions.
 - For widgets mounted into CRM targets, keep inline UI compact; move complex UI into `UiModalSidebar` or `UiModalWindow`.
 - For sidebar footers, group related actions, use 12px or 16px gaps inside groups, and confirm destructive icon-only actions with `UiPopconfirm okVariant="danger"`.
 
