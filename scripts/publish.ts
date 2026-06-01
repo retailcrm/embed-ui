@@ -5,7 +5,6 @@ import { join, relative } from 'node:path'
 import { GitCommander } from '@modulify/git-toolkit'
 
 import chalk from 'chalk'
-import gitSemverTags from 'git-semver-tags'
 import semver from 'semver'
 
 import { read, walk } from '@modulify/pkg'
@@ -16,6 +15,10 @@ import Runner from './lib/Runner'
 import args from './args/publish'
 
 import { DEFAULTS } from './args/release'
+
+type GitSemverTagsModule = {
+  getSemverTags(options?: { tagPrefix?: string }): Promise<string[]>;
+}
 
 try {
   const cwd = process.cwd()
@@ -33,7 +36,8 @@ try {
     return manifest.version
   }
 
-  const [nextTag, prevTag] = await gitSemverTags({ tagPrefix: 'v' })
+  const { getSemverTags } = await import('git-semver-tags') as unknown as GitSemverTagsModule
+  const [nextTag, prevTag] = await getSemverTags({ tagPrefix: 'v' })
 
   log.info('\nPublishing packages, that have changes from tag %s to tag %s\n', [
     prevTag,
