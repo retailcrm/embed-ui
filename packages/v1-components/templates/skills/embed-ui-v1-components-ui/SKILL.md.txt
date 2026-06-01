@@ -32,6 +32,7 @@ Use this skill before changing frontend UI built with `@retailcrm/embed-ui-v1-co
 ## High-signal checks
 
 - For entity lists, use `UiTable`, `UiTableColumn`, and table footer slots.
+- For ordinary table cells, configure `UiTableColumn` headers through props and use `v-slot` on the column; reserve `#cell` for columns that also need another named slot or extra clarity.
 - For table pagination, follow the reference example in `UiTable.yml`: button sizes, active state, dividers, arrow assets, and scoped selector pattern.
 - For form fields, use `UiField` with the matching control and forward slot props such as `id` when the control accepts them.
 - Put validation errors inside the relevant field composition, not as unrelated sibling blocks.

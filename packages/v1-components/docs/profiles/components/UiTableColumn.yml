@@ -11,6 +11,35 @@ public_import:
 related_components:
   - UiTable
 
+examples:
+  - title: Prop label with default cell slot
+    notes:
+      - Use this shape when header metadata is covered by props and only the cell body is custom.
+    code: |
+      <UiTableColumn v-slot="{ row }" label="Name" min-width="180">
+        <UiLink size="small">{{ row.name }}</UiLink>
+      </UiTableColumn>
+  - title: Custom label and explicit cell slot
+    notes:
+      - Use named slots when the column uses a custom label, for example a sorter.
+      - Keeping `#cell` explicit makes the two slot zones easier to scan.
+    code: |
+      <UiTableColumn min-width="180">
+        <template #label>
+          <UiTableSorter
+            :direction="sort.direction"
+            :active="sort.field === 'name'"
+            @click="setSort('name')"
+          >
+            Name
+          </UiTableSorter>
+        </template>
+
+        <template #cell="{ row }">
+          <UiLink size="small">{{ row.name }}</UiLink>
+        </template>
+      </UiTableColumn>
+
 use_when:
   - You define columns for UiTable.
 
@@ -30,12 +59,19 @@ api:
     - name: default
       zone: cell
       creates: Cell content.
+      notes: >
+        Prefer `v-slot` on UiTableColumn when the header label is already supplied by the `label`
+        prop and only the cell body is customized.
     - name: cell
       zone: cell
       creates: Explicit cell content.
+      notes: >
+        Use `#cell` when the column also needs another named slot such as `#label`, or when explicit
+        naming makes a complex column easier to read.
     - name: label
       zone: header-label
       creates: Header label content.
+      notes: Use only when the header label needs custom markup, for example UiTableSorter.
 
 rendered_structure:
   descriptive_only: true
@@ -60,6 +96,10 @@ composition:
       notes: Put the row's main UiLink in the first meaningful text column and set link size to small.
     - title: Sortable header
       notes: Use the label slot with UiTableSorter when the column supports sorting.
+    - title: Prop label plus custom cell
+      notes: Use `<UiTableColumn v-slot="{ row }" label="Name">` instead of `<template #cell>` when `label` prop is enough for the header.
+    - title: Custom label plus custom cell
+      notes: Use separate `<template #label>` and `<template #cell>` blocks when the header is built with a slot.
     - title: Status column
       notes: Use UiTag for categorical statuses instead of raw colored text.
 
@@ -68,8 +108,12 @@ ai_notes:
     - Set minWidth for important text columns so generated tables remain scannable.
     - Use align="right" for numbers, money, and percentages.
     - Use trim only for narrow checkbox, icon, or action columns.
+    - Prefer `v-slot` on UiTableColumn for ordinary custom cell content when the header is configured through props.
+    - Use the label slot only when the header itself needs custom markup.
+    - Use explicit `#cell` together with `#label` when both header and cell content are custom.
   avoid:
     - Do not place filters inside column labels; filters belong above the table.
+    - Do not wrap every cell body in `<template #cell>` when the default slot would express the same thing more simply.
 
 behavior:
   notes:

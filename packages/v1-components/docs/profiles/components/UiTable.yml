@@ -32,24 +32,18 @@ examples:
           :rows="rows"
           row-key="id"
         >
-          <UiTableColumn label="Title">
-            <template #cell="{ row }">
-              <strong>{{ row.title }}</strong>
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Title">
+            <strong>{{ row.title }}</strong>
           </UiTableColumn>
 
-          <UiTableColumn label="Customer" width="180">
-            <template #cell="{ row }">
-              {{ row.customer }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Customer" width="180">
+            {{ row.customer }}
           </UiTableColumn>
 
-          <UiTableColumn label="Status" width="160">
-            <template #cell="{ row }">
-              <UiTag :background="statusBackgroundByName[row.status]" size="md" saturated :ticker="false">
-                {{ row.status }}
-              </UiTag>
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Status" width="160">
+            <UiTag :background="statusBackgroundByName[row.status]" size="md" saturated :ticker="false">
+              {{ row.status }}
+            </UiTag>
           </UiTableColumn>
         </UiTable>
       </template>
@@ -78,29 +72,25 @@ examples:
           :rows="rows"
           row-key="id"
         >
-          <UiTableColumn label="Name">
-            <template #cell="{ row }">
-              {{ row.name }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Name">
+            {{ row.name }}
           </UiTableColumn>
 
-          <UiTableColumn :width="48" label="" trim>
-            <template #cell="{ row }">
-              <UiPopperConnector>
-                <UiButton
-                  :aria-label="`Edit ${row.name}`"
-                  appearance="tertiary"
-                  size="sm"
-                  @click="edit(row)"
-                >
-                  <IconEdit aria-hidden="true" />
-                </UiButton>
+          <UiTableColumn v-slot="{ row }" :width="48" label="" trim>
+            <UiPopperConnector>
+              <UiButton
+                :aria-label="`Edit ${row.name}`"
+                appearance="tertiary"
+                size="sm"
+                @click="edit(row)"
+              >
+                <IconEdit aria-hidden="true" />
+              </UiButton>
 
-                <UiTooltip>
-                  Edit {{ row.name }}
-                </UiTooltip>
-              </UiPopperConnector>
-            </template>
+              <UiTooltip>
+                Edit {{ row.name }}
+              </UiTooltip>
+            </UiPopperConnector>
           </UiTableColumn>
         </UiTable>
       </template>
@@ -139,18 +129,14 @@ examples:
           :rows="rows"
           row-key="id"
         >
-          <UiTableColumn :width="44" label="" trim>
-            <template #cell="{ expanded, toggle }">
-              <button class="table-expand" type="button" @click="toggle">
-                {{ expanded ? '-' : '+' }}
-              </button>
-            </template>
+          <UiTableColumn v-slot="{ expanded, toggle }" :width="44" label="" trim>
+            <button class="table-expand" type="button" @click="toggle">
+              {{ expanded ? '-' : '+' }}
+            </button>
           </UiTableColumn>
 
-          <UiTableColumn label="Title">
-            <template #cell="{ row }">
-              {{ row.title }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Title">
+            {{ row.title }}
           </UiTableColumn>
 
           <template #expand="{ row }">
@@ -186,16 +172,12 @@ examples:
           row-key="id"
           :group-by="groupByStatus"
         >
-          <UiTableColumn label="Title">
-            <template #cell="{ row }">
-              {{ row.title }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Title">
+            {{ row.title }}
           </UiTableColumn>
 
-          <UiTableColumn label="Status" width="160">
-            <template #cell="{ row }">
-              {{ row.status }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Status" width="160">
+            {{ row.status }}
           </UiTableColumn>
 
           <template #group-head="{ group }">
@@ -241,10 +223,8 @@ examples:
           :rows="rows"
           row-key="id"
         >
-          <UiTableColumn label="Title">
-            <template #cell="{ row }">
-              {{ row.title }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Title">
+            {{ row.title }}
           </UiTableColumn>
 
           <template #footer-summary="{ rowsCount }">
@@ -440,16 +420,12 @@ examples:
           :rows="rows"
           row-key="id"
         >
-          <UiTableColumn label="Title">
-            <template #cell="{ row }">
-              {{ row.title }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Title">
+            {{ row.title }}
           </UiTableColumn>
 
-          <UiTableColumn label="Status" width="160">
-            <template #cell="{ row }">
-              {{ row.status }}
-            </template>
+          <UiTableColumn v-slot="{ row }" label="Status" width="160">
+            {{ row.status }}
           </UiTableColumn>
         </UiTable>
       </template>
@@ -649,6 +625,11 @@ composition:
       - Use UiTableSorter inside a UiTableColumn label slot for sortable columns.
       - Reset pagination to the first page when sorting changes.
       - Persist sort key and direction in URL query parameters when routing is available.
+  columns:
+    notes:
+      - Configure header metadata with UiTableColumn props such as label, width, align, valign, and trim.
+      - Prefer `v-slot` on UiTableColumn for ordinary cell content when the header is configured through props.
+      - Use `#cell` only when the column also needs another named slot such as `#label`, or when explicit naming improves readability.
   pagination:
     notes:
       - Use footer-summary, footer-page-size, footer-export, and footer-pagination slots for structured footer controls.
@@ -676,6 +657,7 @@ ai_notes:
     - Compose footer controls with UiTableFooterSection and UiTableFooterButton.
     - Copy the Entity list table footer example when building a realistic entity-list footer.
     - Use UiTableSorter for sortable headers.
+    - Prefer UiTableColumn `v-slot` for ordinary custom cells when label and sizing are configured through props.
     - Use icon-only row action buttons with aria-label and UiTooltip in action columns.
   avoid:
     - Do not hide table filters in page header actions.
@@ -684,6 +666,7 @@ ai_notes:
     - Do not put visible text buttons in dense table action columns.
     - Do not put pagination only in local state when the screen has routable result sets.
     - Do not import table internals from host or src paths.
+    - Do not use `<template #cell>` for every column when the default slot would be simpler.
 
 behavior:
   notes:
