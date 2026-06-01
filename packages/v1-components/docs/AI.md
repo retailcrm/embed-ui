@@ -126,6 +126,10 @@ screen where users scan and refine datasets:
 - reset `page` to `1` when filters or sorting change;
 - debounce free-text search before writing query or fetching data;
 - use `UiTableSorter` for sortable headers;
+- for ordinary `UiTableColumn` cell customization, set header metadata through props such as `label`, `width`,
+  and `trim`, then use `v-slot` on `UiTableColumn` instead of `<template #cell>`;
+- use the `#cell` slot only when the column also needs another named slot such as `#label`, or when explicit
+  slot naming makes a complex column easier to read;
 - use `UiTable` footer slots for summary, page-size controls, export, and pagination;
 - compose table footer controls with `UiTableFooterSection` and `UiTableFooterButton`, not regular `UiButton`;
 - use chevron icon assets for table footer previous/next controls instead of text glyphs;
