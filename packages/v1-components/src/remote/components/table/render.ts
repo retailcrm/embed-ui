@@ -308,6 +308,14 @@ export const slotNeedsBodyCellWrapper = (children: VNodeArrayChildren): boolean 
   return !nodes.every(isCellVNode)
 }
 
+export const hasSlotContent = (children: VNodeArrayChildren | null | undefined): boolean => {
+  if (!children) {
+    return false
+  }
+
+  return normalizeNodes(children).length > 0
+}
+
 export const renderGroupHead = <T, GroupData>(
   slot: Slot<DataForGroupHead<T, GroupData>> | undefined,
   props: DataForGroupHead<T, GroupData>

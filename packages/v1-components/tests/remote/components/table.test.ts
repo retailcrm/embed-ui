@@ -329,4 +329,46 @@ describe('remote/components/table', () => {
     expect(wrapper.find('.ui-v1-table__footer-main').text()).toContain('Export')
     expect(wrapper.find('.ui-v1-table__footer-side').text()).toContain('1 / 1')
   })
+
+  test('does not render structured footer side when pagination slot is empty', () => {
+    wrapper = mount(UiTable, {
+      props: {
+        rows: [{ id: 1, label: 'Invoice #1' }],
+        rowKey: 'id',
+      },
+      slots: {
+        default: () => [
+          h(UiTableColumn, { label: 'Label' }, {
+            default: ({ row }: { row: { label: string } }) => row.label,
+          }),
+        ],
+        'footer-page-size': () => h('span', { class: 'footer-page-size' }, '20 / 50 / 100'),
+        'footer-pagination': () => [],
+      },
+    })
+
+    expect(wrapper.find('.ui-v1-table__footer-controls').exists()).toBe(true)
+    expect(wrapper.find('.ui-v1-table__footer-main').text()).toContain('20 / 50 / 100')
+    expect(wrapper.find('.ui-v1-table__footer-side').exists()).toBe(false)
+  })
+
+  test('does not render structured footer when all structured slots are empty', () => {
+    wrapper = mount(UiTable, {
+      props: {
+        rows: [{ id: 1, label: 'Invoice #1' }],
+        rowKey: 'id',
+      },
+      slots: {
+        default: () => [
+          h(UiTableColumn, { label: 'Label' }, {
+            default: ({ row }: { row: { label: string } }) => row.label,
+          }),
+        ],
+        'footer-pagination': () => [],
+      },
+    })
+
+    expect(wrapper.find('tfoot').exists()).toBe(false)
+    expect(wrapper.find('.ui-v1-table__footer').exists()).toBe(false)
+  })
 })
