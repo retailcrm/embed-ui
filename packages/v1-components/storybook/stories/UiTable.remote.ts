@@ -31,9 +31,11 @@ const statusBackgroundByName: Record<TableRow['status'], string> = {
 
 type UiTableProps = InstanceType<typeof UiTable>['$props']
 type UiTableStoryExtras = {
+  currentPage?: number;
   dense?: boolean;
   empty?: boolean;
   footerMode?: 'none' | 'simple' | 'structured';
+  hasNextPage?: boolean;
   showServiceColumn?: boolean;
   withExpand?: boolean;
   withGrouping?: boolean;
@@ -94,6 +96,8 @@ createComponentEndpoint<UiTableWorkerProps>({
             withGrouping = false,
             withExpand = false,
             showServiceColumn = true,
+            currentPage = 1,
+            hasNextPage = false,
             empty = false,
             dense = false,
             ...tableProps
@@ -140,12 +144,35 @@ createComponentEndpoint<UiTableWorkerProps>({
           }
 
           if (footerMode === 'structured') {
+            const normalizedCurrentPage = Math.max(1, Math.trunc(Number(currentPage)) || 1)
+            const shouldShowPagination = normalizedCurrentPage > 1 || hasNextPage
+
             tableSlots['footer-summary'] = ({ rowsCount }: { rowsCount: number }) => h('span', `Всего строк: ${rowsCount}`)
             tableSlots['footer-page-size'] = () => h(UiTableFooterSection, () => h('span', '20 / 50 / 100'))
             tableSlots['footer-export'] = () => h(UiTableFooterSection, () => h(UiTableFooterButton, {
               type: 'button',
             }, () => 'Выгрузить таблицу'))
-            tableSlots['footer-pagination'] = () => h(UiTableFooterSection, () => h('span', '1 / 3'))
+            tableSlots['footer-pagination'] = () => {
+              if (!shouldShowPagination) {
+                return null
+              }
+
+              return h(UiTableFooterSection, () => h('span', {
+                style: 'display: inline-flex; align-items: center; gap: 10px;',
+              }, [
+                h(UiTableFooterButton, {
+                  type: 'button',
+                  'aria-label': 'Предыдущая страница',
+                  disabled: normalizedCurrentPage === 1,
+                }, () => '<'),
+                h('span', `${normalizedCurrentPage}${hasNextPage ? '+' : ''}`),
+                h(UiTableFooterButton, {
+                  type: 'button',
+                  'aria-label': 'Следующая страница',
+                  disabled: !hasNextPage,
+                }, () => '>'),
+              ]))
+            }
           }
 
           const columns = []

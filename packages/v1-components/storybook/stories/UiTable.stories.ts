@@ -14,8 +14,10 @@ import page from './UiTable.mdx'
 
 type UiTableProps = InstanceType<typeof UiTable>['$props']
 type UiTableStoryExtras = {
+  currentPage?: number;
   dense?: boolean;
   footerMode?: 'none' | 'simple' | 'structured';
+  hasNextPage?: boolean;
   withGrouping?: boolean;
   withExpand?: boolean;
   showServiceColumn?: boolean;
@@ -43,6 +45,14 @@ const meta = {
     withGrouping: { control: 'boolean' },
     withExpand: { control: 'boolean' },
     showServiceColumn: { control: 'boolean' },
+    currentPage: {
+      control: {
+        type: 'number',
+        min: 1,
+        step: 1,
+      },
+    },
+    hasNextPage: { control: 'boolean' },
     empty: { control: 'boolean' },
     dense: { control: 'boolean' },
 
@@ -74,7 +84,9 @@ export const Sandbox: Story = {
     withGrouping: false,
     withExpand: false,
     showServiceColumn: true,
-    footerMode: 'none',
+    footerMode: 'structured',
+    currentPage: 1,
+    hasNextPage: false,
     empty: false,
   },
 }

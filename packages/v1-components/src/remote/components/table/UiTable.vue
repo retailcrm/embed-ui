@@ -29,6 +29,7 @@ import {
 import {
   buildRenderedRows,
   collectTableColumns,
+  hasSlotContent,
   renderCell,
   renderExpand,
   renderGroupHead,
@@ -356,23 +357,32 @@ export default defineComponent({
         const pageSize = slots['footer-page-size']?.(footerData)
         const exportControl = slots['footer-export']?.(footerData)
         const pagination = slots['footer-pagination']?.(footerData)
+        const hasSummary = hasSlotContent(summary)
+        const hasPageSize = hasSlotContent(pageSize)
+        const hasExportControl = hasSlotContent(exportControl)
+        const hasPagination = hasSlotContent(pagination)
+        const hasAnyStructuredFooterContent = hasSummary || hasPageSize || hasExportControl || hasPagination
+
+        if (!hasAnyStructuredFooterContent) {
+          return null
+        }
 
         return h(UiTableSection, { kind: 'foot', key: 'footer' }, () => h(UiTableRow, () => h(UiTableBodyCell, {
           colspan: columnsCount,
           class: 'ui-v1-table__footer-cell',
         }, () => h('div', { class: 'ui-v1-table__footer' }, [
-          summary
+          hasSummary
             ? h('div', { class: 'ui-v1-table__footer-meta' }, [summary])
             : null,
-          pageSize || exportControl || pagination
+          hasPageSize || hasExportControl || hasPagination
             ? h('div', { class: 'ui-v1-table__footer-controls' }, [
-              pageSize || exportControl
+              hasPageSize || hasExportControl
                 ? h('div', { class: 'ui-v1-table__footer-main' }, [
                   pageSize,
                   exportControl,
                 ])
                 : null,
-              pagination
+              hasPagination
                 ? h('div', { class: 'ui-v1-table__footer-side' }, [pagination])
                 : null,
             ])
