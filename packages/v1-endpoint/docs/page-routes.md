@@ -98,6 +98,26 @@ const openSettings = (host: HostApi) => {
 }
 ```
 
+## Уведомление перед уходом со страницы
+
+Если странице нужно сообщить host, что уход с текущего URL нежелателен, зарегистрируйте
+`HostApi.onBeforeRouteLeave(hook)`.
+
+```ts
+import type { HostApi } from '@retailcrm/embed-ui-v1-types/host'
+
+const registerLeaveGuard = (host: HostApi, hasUnsavedChanges: () => boolean) => {
+  host.onBeforeRouteLeave(() => !hasUnsavedChanges())
+}
+```
+
+`true` означает, что расширение подтверждает возможность перехода. `false` означает, что расширение
+не подтверждает переход, например потому что пользователь может потерять несохраненные изменения.
+Это не жесткая блокировка навигации со стороны расширения: host может учесть результат, показать
+диалог подтверждения, остаться на текущем URL или проигнорировать мнение расширения, если так устроен
+конкретный сценарий. Метод нужен как общий способ уведомить host о состоянии страницы перед сменой
+маршрута.
+
 Breadcrumb-like navigation для module pages строится CRM из hierarchy в `pages[]`: `menu`,
 `parentMenuItemCode`, `menuItemOrdering` и связанных metadata. Не собирайте breadcrumbs вручную внутри
 страницы, если продуктовая задача явно не просит локальную in-page navigation.
@@ -107,4 +127,5 @@ Breadcrumb-like navigation для module pages строится CRM из hierarc
 - [`menu-placements`](./menu-placements.md) — как связать пункт меню, page `code` и маршрут.
 - [`definePageRunner`](./define-page-runner.md) — как page `code` попадает в компонент.
 - `@retailcrm/embed-ui-v1-contexts` `docs/ru/CONCEPT.md` — общий принцип работы контекстов.
-- `@retailcrm/embed-ui-v1-types` `host.d.ts` — публичный тип host API с `goTo`.
+- `@retailcrm/embed-ui-v1-types` `host.d.ts` — публичный тип host API с `goTo` и
+  `onBeforeRouteLeave`.
