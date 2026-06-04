@@ -4,81 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>v1-sandbox</title>
-    <style>
-      :root {
-        color-scheme: light;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      body {
-        margin: 0;
-        background: #f5f7fa;
-        color: #18212f;
-      }
-
-      .topbar {
-        height: 56px;
-        background: linear-gradient(90deg, #0f62fe 0%, #3386ff 100%);
-      }
-
-      .shell {
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 32px 24px 48px;
-      }
-
-      .panel {
-        background: #fff;
-        border: 1px solid #d9e2ec;
-        border-radius: 16px;
-        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-        padding: 24px;
-      }
-
-      .status {
-        display: inline-flex;
-        align-items: center;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: #e7f5ff;
-        color: #0b7285;
-        font-weight: 600;
-      }
-
-      button {
-        margin-top: 20px;
-        border: 0;
-        border-radius: 10px;
-        background: #0f62fe;
-        color: #fff;
-        cursor: pointer;
-        font: inherit;
-        padding: 10px 16px;
-      }
-    </style>
   </head>
   <body>
-    <div class="topbar"></div>
-    <main class="shell">
-      <section class="panel">
-        <h1 data-testid="sandbox-title">v1-sandbox smoke page</h1>
-        <p data-testid="sandbox-description">Playwright starts Vite automatically through webServer.</p>
-        <div class="status" data-testid="sandbox-status">ready</div>
-        <div>
-          <button type="button" data-testid="sandbox-button">Ping aboba</button>
-        </div>
-      </section>
-    </main>
-
-    <script type="module">
-      const button = document.querySelector('[data-testid="sandbox-button"]');
-      const status = document.querySelector('[data-testid="sandbox-status"]');
-
-      button?.addEventListener('click', () => {
-        if (status) {
-          status.textContent = 'clicked';
-        }
-      });
-    </script>
+    <div id="app"></div>
+    <script type="module" src="/src/app/main.ts"></script>
   </body>
 </html>

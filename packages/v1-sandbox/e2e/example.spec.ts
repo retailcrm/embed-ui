@@ -1,18 +1,33 @@
 import { expect, test } from '@playwright/test'
 
-test('has title', async ({ page }) => {
+test('renders widget in target and reacts to host context changes', async ({ page }, testInfo) => {
   await page.goto('/')
+
   await expect(page).toHaveTitle(/v1-sandbox/)
-})
+  await expect(page.getByTestId('sandbox-rail')).toBeVisible()
+  await expect(page.getByTestId('sandbox-sidebar')).toContainText('Продажи')
+  await expect(page.getByTestId('sandbox-sidebar')).toContainText('Заказы')
+  await expect(page.getByTestId('sandbox-page')).toBeVisible()
+  await expect(page.getByTestId('target-order-card-common-after')).toContainText('order/card:common.after')
+  await expect(page.getByTestId('demo-extension-target')).toContainText('Target: order/card:common.after')
+  await expect(page.getByTestId('demo-extension-order-number')).toContainText('Order: 215C')
+  await expect(page.getByTestId('demo-extension-order-status')).toContainText('Status: new')
+  await expect(page.getByTestId('host-order-status')).toContainText('CRM status: new')
 
-test('renders sandbox smoke page', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.getByTestId('sandbox-title')).toHaveText('v1-sandbox smoke page')
-  await expect(page.getByTestId('sandbox-status')).toHaveText('ready')
-})
+  await page.getByTestId('host-toggle-status').click()
 
-test('updates status after button click', async ({ page }) => {
-  await page.goto('/')
-  await page.getByTestId('sandbox-button').click()
-  await expect(page.getByTestId('sandbox-status')).toHaveText('clicked')
+  await expect(page.getByTestId('host-order-status')).toContainText('CRM status: client-confirmed')
+  await expect(page.getByTestId('demo-extension-order-status')).toContainText('Status: client-confirmed')
+  await expect(page.getByTestId('sandbox-controls')).toHaveCount(0)
+  await expect(page.getByTestId('sandbox-order-workspace')).toHaveCount(0)
+
+  const screenshot = await page.screenshot({
+    fullPage: true,
+    path: testInfo.outputPath('sandbox-context-update-widget.png'),
+  })
+
+  await testInfo.attach('sandbox-context-update-widget', {
+    body: screenshot,
+    contentType: 'image/png',
+  })
 })

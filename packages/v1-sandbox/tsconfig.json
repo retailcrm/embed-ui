@@ -25,6 +25,7 @@
     "sourceMap": false,
     "strict": true,
     "target": "ES2017",
+    "resolveJsonModule": true,
     "types": [
       "node"
     ],
@@ -32,8 +33,6 @@
   },
   "include": [
     "src/**/*.ts",
-    "tests/**/*.ts",
-    "vite.config*.ts",
-    "vitest.config*.ts"
+    "tests/**/*.ts"
   ]
 }

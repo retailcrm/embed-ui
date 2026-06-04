@@ -1,5 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const baseURL = process.env.SANDBOX_BASE_URL ?? 'http://127.0.0.1:4173'
+const useExternalSandbox = Boolean(process.env.SANDBOX_BASE_URL)
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -23,9 +26,11 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  outputDir: 'artifacts/playwright/results',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL,
+    screenshot: 'only-on-failure',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
@@ -68,7 +73,7 @@ export default defineConfig({
     // },
   ],
 
-  webServer: {
+  webServer: useExternalSandbox ? undefined : {
     command: 'yarn dev:e2e',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: !process.env.CI,
