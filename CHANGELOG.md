@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.27](https://github.com/retailcrm/embed-ui/compare/v0.9.26...v0.9.27) (2026-06-04)
+
+### Bug Fixes
+
+* **v1-components:** fixed show footer-pagination ([8e7f85f](https://github.com/retailcrm/embed-ui/commit/8e7f85f63d3396d373d1e0cfd461a15be22a9600))
 ## [0.9.26](https://github.com/retailcrm/embed-ui/compare/v0.9.25...v0.9.26) (2026-05-29)
 ## [0.9.25](https://github.com/retailcrm/embed-ui/compare/v0.9.24...v0.9.25) (2026-05-28)
 
