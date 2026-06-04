@@ -1,4 +1,4 @@
-import type { Pojo, Scalar } from './scaffolding'
+import type { MaybePromise, Pojo, Scalar } from './scaffolding'
 
 export type HostQueryInputValue = Scalar | Scalar[]
 export type HostQueryInput = Record<string, HostQueryInputValue>
@@ -17,6 +17,8 @@ export type HostQueryOptions = {
   preserveExisting?: boolean;
 }
 
+export type BeforeRouteLeaveHook = () => MaybePromise<boolean>
+
 export type HostApi = {
   goTo (route: string, params?: Record<string, unknown>): void;
 
@@ -30,4 +32,6 @@ export type HostApi = {
   replaceQuery (query: HostQueryInput, options?: HostQueryOptions): void;
 
   pushQuery (query: HostQueryInput, options?: HostQueryOptions): void;
+
+  onBeforeRouteLeave (hook: BeforeRouteLeaveHook): void;
 }
