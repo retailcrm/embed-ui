@@ -123,6 +123,10 @@ export const useHost = (): RemoteCallable<Callable> => {
         ? endpoint.call.pushQuery(query, options)
         : endpoint.call.pushQuery(query)
     },
+
+    onBeforeRouteLeave (hook) {
+      return endpoint.call.onBeforeRouteLeave(hook)
+    },
   }
 }
 
