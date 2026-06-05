@@ -30,7 +30,9 @@ Use this skill before changing JS module endpoint wiring, page registration, wid
 4. Use documented public entrypoints such as `@retailcrm/embed-ui-v1-endpoint/remote`; do not import from `dist/*`, source files, or repository-only paths.
 5. Keep widget inline UI compact; use component package widget composition guidance for UI mounted into CRM targets.
 6. After the first page vertical slice, verify it in the CRM host: menu item, `/modules/<moduleCode>/<pageCode>` route, entrypoint URL, stylesheet URL, and actual frontend mount.
-7. If a runtime error appears only in a minified bundle, switch to a dev bundle or sourcemaps before guessing.
+7. Keep page switch/root components thin; move shared locale synchronization and context plumbing into composables or plugins when several embed pages need them.
+8. Prefer domain-specific frontend API helpers over one generic page-level `callAdminApi`; preserve status, field errors, and error codes in structured error objects.
+9. If a runtime error appears only in a minified bundle, switch to a dev bundle or sourcemaps before guessing.
 
 ## Page and menu checks
 
@@ -47,3 +49,10 @@ Use this skill before changing JS module endpoint wiring, page registration, wid
 - Use public Host API for location, query state, and navigation.
 - Do not depend on internal endpoint runtime stores or private channel state.
 - Keep route names, page codes, and extension descriptor values documented in the project.
+
+## Shared page setup checks
+
+- If i18n is used by several embed pages, synchronize remote locale once through a shared composable or plugin.
+- Do not duplicate the same locale watch/load code in every page component.
+- Domain helpers such as `loadSettings`, `saveSettings`, `loadSpecialties`, `saveSpecialist`, and `deleteSpecialist` should express page contracts better than generic transport calls.
+- If the API returns machine-readable error codes, translate them in the frontend UI layer; backend messages may be fallbacks or explicit product requirements, not the only structured contract.

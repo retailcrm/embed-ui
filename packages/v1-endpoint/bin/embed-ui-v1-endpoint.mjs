@@ -172,6 +172,8 @@ When working with \`${PACKAGE_NAME}\` in this project:
 11. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
 12. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
 13. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
+14. Keep page switch/root components thin; move shared locale synchronization and context plumbing into composables or plugins when several embed pages need them.
+15. Prefer domain-specific frontend API helpers over one generic page-level transport helper, and preserve structured API errors.
 
 Suggested MCP stdio server configuration:
 

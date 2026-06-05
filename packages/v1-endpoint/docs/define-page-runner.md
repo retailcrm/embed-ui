@@ -61,6 +61,26 @@ const pageRunner = definePageRunner({
 Если ошибка видна только в minified bundle, соберите или отдайте dev bundle без минификации до изменения кода
 по догадке.
 
+## Shared page setup
+
+Если runner обслуживает несколько embed pages, держите root/switch component максимально тонким: он выбирает
+компонент страницы по `code`, но не должен дублировать context plumbing, синхронизацию локали и API-адаптеры
+каждой страницы.
+
+Для i18n используйте общий composable или plugin, который синхронизирует remote locale из settings/context
+источника, принятого в проекте. Если локаль нужна нескольким embed pages, не копируйте один и тот же watch/load
+код в каждую страницу и не прячьте его в page switch без явной причины.
+
+Для admin pages с несколькими сущностями предпочитайте тонкие domain helpers вместо одного безымянного
+`callAdminApi`: `loadSettings`, `saveSettings`, `loadSpecialties`, `saveSpecialist`, `deleteSpecialist` и т.п.
+Такие helpers должны сохранять transport details внутри integration layer, но отражать доменный контракт страницы
+в именах и типах.
+
+Ошибки API сохраняйте структурированными: status, field errors, error codes и machine-readable детали не должны
+теряться при преобразовании в UI state. Если API возвращает error codes, frontend может переводить их в локали UI;
+готовый backend message допустим как fallback или специальное продуктовое требование, но не должен быть
+единственным typed contract для сложной формы.
+
 ## `beforeMount`
 
 `beforeMount` вызывается после `app.use(pinia)` и до `app.mount(...)`.
