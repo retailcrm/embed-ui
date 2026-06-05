@@ -4,6 +4,7 @@ import './styles.css'
 
 import type { Channel } from '@omnicajs/vue-remote/remote'
 import type { Endpoint } from '@remote-ui/rpc'
+import type { PageRunIdentity } from '@retailcrm/embed-ui-v1-endpoint/remote'
 import type { Receiver } from '@omnicajs/vue-remote/host'
 import type {
   WidgetRunConfig,
@@ -12,6 +13,9 @@ import type {
 
 import type { OrderSandboxSchemas } from '@/fixtures'
 import type { SandboxEndpointApi } from '@/controller'
+import type { SandboxLaunchConfig } from '@/launch'
+import type { SandboxOrderTarget } from '@/targets'
+import type { SandboxSlotDefinition } from '@/targets'
 
 import { createApp } from 'vue'
 import {
@@ -29,11 +33,15 @@ import {
 } from 'vue'
 
 import { createOrderSandboxController } from '@/fixtures'
+import { ORDER_SANDBOX_SLOTS } from '@/targets'
+import { parseSandboxLaunchConfig } from '@/launch'
+
+type RunIdentity = PageRunIdentity | WidgetRunIdentity
 
 type SandboxRemoteApi = {
-  release(config: WidgetRunIdentity): void;
+  release(config: RunIdentity): void;
   reset(): void;
-  run(channel: Channel, config: WidgetRunConfig): Promise<void>;
+  run(channel: Channel, config: PageRunIdentity | WidgetRunConfig): Promise<void>;
 }
 
 type SandboxWorkerApi = SandboxRemoteApi & SandboxEndpointApi<OrderSandboxSchemas>
@@ -41,7 +49,7 @@ type SandboxWorkerApi = SandboxRemoteApi & SandboxEndpointApi<OrderSandboxSchema
 type SandboxRuntime = {
   endpoint: Endpoint<SandboxWorkerApi>;
   flushTimer: number;
-  receiver: Receiver;
+  mounts: SandboxMount[];
   worker: Worker;
 }
 
@@ -49,24 +57,44 @@ type HostedTreeRef = {
   forceUpdate(): void;
 }
 
+type SandboxMount = {
+  id: string;
+  label: string;
+  receiver: Receiver;
+  releaseConfig: RunIdentity;
+  runConfig: PageRunIdentity | WidgetRunConfig;
+  testId: string;
+  tree: HostedTreeRef | null;
+  type: 'page' | 'widget';
+}
+
+const DEFAULT_DEMO_TARGETS: SandboxOrderTarget[] = [
+  'order/card:common.before',
+  'order/card:common.after',
+]
+
 const provider = markRaw(createHostProvider())
-const receiver = markRaw(createReceiver())
 
 const App = defineComponent({
   name: 'SandboxApp',
 
   setup () {
-    const sandbox = createOrderSandboxController('order-basic')
+    const launchConfig = parseSandboxLaunchConfig(new URLSearchParams(window.location.search), {
+      targets: DEFAULT_DEMO_TARGETS,
+    })
+    const sandbox = createOrderSandboxController(launchConfig.fixture)
+    const mounts = createMounts(launchConfig)
     const runtime = ref<SandboxRuntime | null>(null)
-    const hostedTree = ref<HostedTreeRef | null>(null)
 
     const flushReceiver = async () => {
-      await receiver.flush()
-      hostedTree.value?.forceUpdate()
+      await Promise.all(mounts.map(async (mount) => {
+        await mount.receiver.flush()
+        mount.tree?.forceUpdate()
+      }))
     }
 
-    const mountCommonAfterWidget = async () => {
-      const worker = new Worker('/src/demo-extension.ts', { type: 'module' })
+    const mountExtension = async () => {
+      const worker = new Worker(launchConfig.extensionUrl, { type: 'module' })
       const endpoint = createRpcEndpoint<SandboxWorkerApi>(worker)
       const endpointApi = sandbox.endpointApi
 
@@ -76,10 +104,10 @@ const App = defineComponent({
         httpCall: (...args: Parameters<typeof endpointApi.httpCall>) => endpointApi.httpCall(...args),
       } as unknown as SandboxWorkerApi)
 
-      await endpoint.call.run(receiver.receive, {
-        id: 'sandbox-widget',
-        target: 'order/card:common.after',
-      })
+      for (const mount of mounts) {
+        await endpoint.call.run(mount.receiver.receive, mount.runConfig)
+      }
+
       await flushReceiver()
 
       runtime.value = {
@@ -87,7 +115,7 @@ const App = defineComponent({
         flushTimer: window.setInterval(() => {
           void flushReceiver()
         }, 100),
-        receiver,
+        mounts,
         worker,
       }
     }
@@ -100,7 +128,10 @@ const App = defineComponent({
       window.clearInterval(current.flushTimer)
 
       try {
-        await current.endpoint.call.release({ id: 'sandbox-widget' })
+        for (const mount of current.mounts) {
+          await current.endpoint.call.release(mount.releaseConfig)
+        }
+
         await flushReceiver()
       } finally {
         current.worker.terminate()
@@ -109,9 +140,7 @@ const App = defineComponent({
     }
 
     const flushRemoteUpdates = () => {
-      const current = runtime.value
-
-      if (!current) return
+      if (!runtime.value) return
 
       ;[0, 20, 100].forEach((delay) => {
         window.setTimeout(() => {
@@ -129,7 +158,7 @@ const App = defineComponent({
     }
 
     onMounted(() => {
-      void mountCommonAfterWidget()
+      void mountExtension()
     })
 
     onBeforeUnmount(() => {
@@ -139,43 +168,122 @@ const App = defineComponent({
 
     return () => h('div', { class: 'sandbox-root' }, [
       renderRail(),
-      renderSidebar(),
+      renderSidebar(launchConfig),
       h('main', {
         class: 'crm-page',
         'data-testid': 'sandbox-page',
         onClickCapture: flushRemoteUpdates,
       }, [
-        h('section', {
-          class: 'host-controls',
-          'data-testid': 'host-controls',
-        }, [
-          h('div', { class: 'host-controls__title' }, 'Host environment'),
-          h('div', {
-            class: 'host-controls__status',
-            'data-testid': 'host-order-status',
-          }, `CRM status: ${sandbox.state.contexts['order/card'].status}`),
-          h('button', {
-            class: 'host-controls__button',
-            'data-testid': 'host-toggle-status',
-            onClick: toggleOrderStatus,
-            type: 'button',
-          }, 'Сменить статус заказа'),
-        ]),
-        h('section', {
-          class: 'target-slot',
-          'data-target': 'order/card:common.after',
-          'data-testid': 'target-order-card-common-after',
-        }, [
-          h('div', { class: 'target-slot__label' }, 'order/card:common.after'),
-          h(HostedTree as never, {
-            provider: provider as never,
-            ref: hostedTree,
-            receiver,
-          }),
-        ]),
+        renderHostControls(launchConfig, sandbox.state.contexts['order/card'].status, toggleOrderStatus),
+        launchConfig.mode === 'page'
+          ? renderPageMount(mounts[0])
+          : renderWidgetMounts(mounts),
       ]),
     ])
   },
+})
+
+const createMounts = (config: SandboxLaunchConfig): SandboxMount[] => {
+  if (config.mode === 'page') {
+    return [createPageMount(config)]
+  }
+
+  return ORDER_SANDBOX_SLOTS
+    .filter(slot => config.targets.includes(slot.target))
+    .map(slot => createWidgetMount(config, slot))
+}
+
+const createPageMount = (config: SandboxLaunchConfig): SandboxMount => ({
+  id: `page:${config.pageCode}`,
+  label: config.pageCode,
+  receiver: markRaw(createReceiver()),
+  releaseConfig: { code: config.pageCode },
+  runConfig: { code: config.pageCode },
+  testId: 'sandbox-page-canvas',
+  tree: null,
+  type: 'page',
+})
+
+const createWidgetMount = (
+  config: SandboxLaunchConfig,
+  slot: SandboxSlotDefinition
+): SandboxMount => {
+  const id = createWidgetInstanceId(config.widgetId, slot.target)
+
+  return {
+    id,
+    label: slot.target,
+    receiver: markRaw(createReceiver()),
+    releaseConfig: { id },
+    runConfig: {
+      id,
+      target: slot.target,
+    },
+    testId: `target-order-card-${slot.id}`,
+    tree: null,
+    type: 'widget',
+  }
+}
+
+const createWidgetInstanceId = (widgetId: string, target: SandboxOrderTarget): string =>
+  `${widgetId}:${target.replace(/[^a-z0-9]+/gi, '-')}`
+
+const renderHostControls = (
+  config: SandboxLaunchConfig,
+  orderStatus: string,
+  toggleOrderStatus: () => void
+) => h('section', {
+  class: 'host-controls',
+  'data-testid': 'host-controls',
+}, [
+  h('div', { class: 'host-controls__title' }, 'Host environment'),
+  h('div', {
+    class: 'host-controls__status',
+    'data-testid': 'host-run-mode',
+  }, config.mode === 'page'
+    ? `Page: ${config.pageCode}`
+    : `Widgets: ${config.targets.length}`),
+  h('div', {
+    class: 'host-controls__status',
+    'data-testid': 'host-order-status',
+  }, `CRM status: ${orderStatus}`),
+  h('button', {
+    class: 'host-controls__button',
+    'data-testid': 'host-toggle-status',
+    onClick: toggleOrderStatus,
+    type: 'button',
+  }, 'Сменить статус заказа'),
+])
+
+const renderWidgetMounts = (mounts: SandboxMount[]) => h('section', {
+  class: 'target-grid',
+  'data-testid': 'sandbox-widget-targets',
+}, mounts.map(renderWidgetMount))
+
+const renderWidgetMount = (mount: SandboxMount) => h('section', {
+  class: 'target-slot',
+  'data-target': mount.label,
+  'data-testid': mount.testId,
+}, [
+  h('div', { class: 'target-slot__label' }, mount.label),
+  renderHostedTree(mount),
+])
+
+const renderPageMount = (mount: SandboxMount) => h('section', {
+  class: 'page-canvas',
+  'data-page-code': mount.label,
+  'data-testid': mount.testId,
+}, [
+  h('div', { class: 'page-canvas__label' }, `page:${mount.label}`),
+  renderHostedTree(mount),
+])
+
+const renderHostedTree = (mount: SandboxMount) => h(HostedTree as never, {
+  provider: provider as never,
+  ref: ((tree: HostedTreeRef | null) => {
+    mount.tree = tree
+  }) as never,
+  receiver: mount.receiver,
 })
 
 const renderRail = () => h('aside', { class: 'icon-rail', 'data-testid': 'sandbox-rail' }, [
@@ -190,16 +298,30 @@ const renderRail = () => h('aside', { class: 'icon-rail', 'data-testid': 'sandbo
   h('div', { class: 'rail-user' }, 'D'),
 ])
 
-const renderSidebar = () => h('aside', { class: 'crm-sidebar', 'data-testid': 'sandbox-sidebar' }, [
+const renderSidebar = (config: SandboxLaunchConfig) => h('aside', {
+  class: 'crm-sidebar',
+  'data-testid': 'sandbox-sidebar',
+}, [
   h('div', { class: 'crm-section-title' }, 'Продажи'),
   h('nav', { class: 'crm-menu' }, [
-    h('a', { class: 'crm-menu-item crm-menu-item_active' }, 'Заказы'),
+    h('a', {
+      class: [
+        'crm-menu-item',
+        config.mode === 'widget' ? 'crm-menu-item_active' : '',
+      ],
+    }, 'Заказы'),
     h('a', { class: 'crm-menu-item' }, 'Возвраты'),
     h('a', { class: 'crm-menu-item' }, 'Клиенты'),
     h('a', { class: 'crm-menu-item' }, 'Коммуникации'),
     h('a', { class: 'crm-menu-item' }, 'Товары и склад'),
     h('a', { class: 'crm-menu-item' }, 'Менеджеры'),
     h('a', { class: 'crm-menu-item' }, 'Финансы'),
+    h('a', {
+      class: [
+        'crm-menu-item',
+        config.mode === 'page' ? 'crm-menu-item_active' : '',
+      ],
+    }, 'Sandbox page'),
   ]),
   h('div', { class: 'crm-add-link' }, '+ Добавить ссылку'),
 ])

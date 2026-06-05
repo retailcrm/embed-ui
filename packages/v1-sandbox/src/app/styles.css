@@ -149,7 +149,7 @@ body {
   gap: 16px;
   min-height: 72px;
   padding: 16px 20px;
-  width: 520px;
+  width: min(100%, 760px);
 }
 
 .host-controls__title {
@@ -177,12 +177,19 @@ body {
   padding: 10px 14px;
 }
 
+.target-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  width: min(100%, 980px);
+}
+
 .target-slot {
   border: 1px dashed #c9d5e3;
   border-radius: 8px;
   min-height: 180px;
   padding: 20px;
-  width: 520px;
+  width: 100%;
 }
 
 .target-slot__label {
@@ -190,5 +197,21 @@ body {
   font-size: 13px;
   font-weight: 700;
   margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.page-canvas {
+  border: 1px solid #d9e1ea;
+  border-radius: 8px;
+  min-height: 420px;
+  padding: 28px;
+  width: min(100%, 980px);
+}
+
+.page-canvas__label {
+  color: #657286;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 24px;
   text-transform: uppercase;
 }

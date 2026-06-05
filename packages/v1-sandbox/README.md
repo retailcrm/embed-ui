@@ -42,21 +42,33 @@ await remote.call.set('article', 'title', 'Preview title')
 
 ## Dev sandbox
 
-Workspace содержит dev sandbox для запуска widget extensions в CRM-подобной
-оболочке. Сейчас поддерживается первый сценарий: `order/card` targets, запуск
-одного widget worker и Playwright feedback loop.
+Workspace содержит dev sandbox для запуска widget/page extensions в
+CRM-подобной оболочке. Сейчас поддерживаются `order/card` targets, запуск
+нескольких widget instances из одного worker, page runner по `code` и
+Playwright feedback loop.
 
 Публичный URL contract:
 
 - `extensionUrl` — URL module worker entrypoint расширения;
-- `target` — один из поддержанных `order/card:*` targets;
-- `widgetId` — идентификатор widget instance, по умолчанию `sandbox-widget`;
+- `mode` — `widget` или `page`, по умолчанию `widget`;
+- `target` — один поддержанный `order/card:*` target для одиночного запуска;
+- `targets` — список `order/card:*` targets через запятую для запуска
+  нескольких widget instances;
+- `widgetId` — базовый идентификатор widget instance, по умолчанию
+  `sandbox-widget`;
+- `pageCode` — page code для `mode=page`, по умолчанию `orders-dashboard`;
 - `fixture` — код фикстуры, по умолчанию `order-basic`.
 
 Пример:
 
 ```text
-http://127.0.0.1:4173/?extensionUrl=/src/demo-extension.ts&target=order/card:common.before&fixture=order-basic
+http://127.0.0.1:4173/?extensionUrl=/src/demo-extension.ts&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+```
+
+Пример запуска page runner:
+
+```text
+http://127.0.0.1:4173/?mode=page&pageCode=orders-dashboard&extensionUrl=/src/demo-extension.ts
 ```
 
 Extension entrypoint должен быть worker-compatible и вызвать
@@ -66,8 +78,13 @@ Extension entrypoint должен быть worker-compatible и вызвать
 import { defineRunner, runEndpoint } from '@retailcrm/embed-ui-v1-endpoint/remote'
 
 runEndpoint(defineRunner({
-  pages: [],
-  widgets: [/* Vue widget component or runner map */],
+  pages: [{
+    'orders-dashboard': ordersDashboardPageRunner,
+  }],
+  widgets: [{
+    'order/card:common.before': commonBeforeWidgetRunner,
+    'order/card:common.after': commonAfterWidgetRunner,
+  }],
 }))
 ```
 
