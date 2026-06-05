@@ -168,9 +168,10 @@ When working with \`${PACKAGE_NAME}\` in this project:
 7. Then read the relevant \`embed-ui-v1-endpoint://targets/<encoded-target>\` resource before answering or changing code related to that target.
 8. For widget UI composition, keep inline target content compact: prefer \`UiToolbarButton\`, \`UiToolbarLink\`, short text, and icons; move complex UI into \`UiModalSidebar\` or \`UiModalWindow\`.
 9. If \`@retailcrm/embed-ui-v1-components\` is installed, read its widget composition docs before building widget UI.
-10. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
-11. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
-12. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
+10. Before choosing RetailCRM system \`menu\` or \`parentMenuItemCode\`, read \`https://docs.retailcrm.ru/api/ru/RetailCRM/jsApiMethods/navigation\`; do not guess menu codes from section names or stale examples.
+11. A project \`.mcp.json\` may require restarting or reconnecting the AI client before MCP resources appear in the current session.
+12. If MCP resources are not available, use the generated YAML profiles from \`./node_modules/${PACKAGE_NAME}/docs/targets/*.yml\` as the fallback source.
+13. Prefer target profiles over guessing target placement, contexts, or semantic intent from names alone.
 
 Suggested MCP stdio server configuration:
 

@@ -36,6 +36,7 @@ Use this skill before changing JS module endpoint wiring, page registration, wid
 
 - Published page descriptors must be objects, not string page codes.
 - Page descriptors need `code`, `menu`, and usually `menuItemTitle`.
+- Before choosing RetailCRM system `menu` or `parentMenuItemCode`, read `https://docs.retailcrm.ru/api/ru/RetailCRM/jsApiMethods/navigation`; do not guess menu codes from section names or stale examples.
 - Use `parentMenuItemCode` and `menuItemOrdering` to model the intended CRM page/menu hierarchy.
 - Breadcrumb-like navigation is derived by CRM from the page/menu hierarchy passed in the extension config; do not hand-roll breadcrumbs in the page unless the product task explicitly asks for local in-page navigation.
 - For updating an already installed module, use the existing integration module edit/update flow and put pages under `integrationModule.integrations.embedJs.pages`.

@@ -16,6 +16,19 @@
 `menu item` не равен `target`. Меню открывает полноценную встраиваемую страницу по `code`, а `target`
 используется для виджетов, которые встраиваются внутрь уже существующей CRM-страницы.
 
+## Справочник системных меню RetailCRM
+
+Коды системных меню и родительских пунктов меню RetailCRM обязательно сверяйте с актуальным
+JSON-справочником:
+
+https://docs.retailcrm.ru/api/ru/RetailCRM/jsApiMethods/navigation
+
+Этот ресурс отдаёт фактические `menus[]` и `menu_items[]`, которые использует документация RetailCRM.
+Не подбирайте `menu` и `parentMenuItemCode` по названию раздела или по старым примерам: перед добавлением
+или изменением страницы перечитайте справочник и выберите код из него. Например, для страницы в настройках
+валидная пара обычно выглядит как `menu: "private_main_menu"` и `parentMenuItemCode: "settings"`, а для
+страницы в продажах — `menu: "activity_main_menu"` и подходящий пункт из `menu_items[]` этого меню.
+
 ## Что фиксировать в справочнике проекта
 
 Для каждого пункта меню указывайте:
@@ -59,7 +72,7 @@
 `menu` обязателен для опубликованной страницы: без него backend не сможет открыть route вида
 `/modules/<module-code>/<page-code>`. Для страниц в разделе настроек обычно используется
 `menu: "private_main_menu"` и `parentMenuItemCode: "settings"`. Для страниц в разделе продаж используйте
-`menu: "activity_main_menu"` и соответствующий parent menu item, например `orders`.
+`menu: "activity_main_menu"` и соответствующий parent menu item из справочника RetailCRM.
 
 CRM также использует hierarchy из `pages[]` для видимой навигации и breadcrumb-like поведения. Сначала
 моделируйте нужную иерархию через `menu`, `parentMenuItemCode` и `menuItemOrdering`; локальные ссылки внутри
@@ -105,7 +118,9 @@ method с обычным JSON-объектом вместо добавления
 
 ## Пример справочника меню
 
-Конкретные `placement`, `item code` и `route` нужно брать из host/manifest расширения.
+Конкретные локальные `placement`, `item code` и `route` нужно брать из host/manifest расширения. Системные
+`menu` и `parentMenuItemCode` для RetailCRM сначала сверяйте со справочником
+`https://docs.retailcrm.ru/api/ru/RetailCRM/jsApiMethods/navigation`.
 
 | Placement | Item code | Label | Page code | Route | Когда использовать |
 | --- | --- | --- | --- | --- | --- |
