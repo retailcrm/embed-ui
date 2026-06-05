@@ -44,14 +44,19 @@ ai_notes:
     - Use as the default child node of UiSelect.
     - Provide stable value and human-readable label.
     - Use description for secondary explanation, not for long help text.
+    - Keep Vue `v-for` keys stable and non-null even when the option value itself can be null.
+    - Normalize persisted option DTOs to non-null ids, or use another stable domain key such as code, slug, or a temporary client id.
   avoid:
     - Do not put arbitrary controls inside options.
+    - Do not use nullable DTO ids directly as Vue keys.
+    - Do not use array index as the fallback key for dynamic options that can be sorted, filtered, inserted, or removed.
 
 behavior:
   notes:
     - disabled prevents selection while keeping the option visible.
     - counter and accent help scan dense option lists.
     - In filterable selects, label and description participate in matching.
+    - A nullable option value is valid for selection semantics, but the Vue key for a repeated option node must still be stable and non-null.
 
 composition:
   works_well_with:

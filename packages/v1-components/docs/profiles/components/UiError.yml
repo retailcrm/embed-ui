@@ -92,8 +92,10 @@ ai_notes:
   do:
     - Use for compact error presentation.
     - Keep the message short and specific.
+    - Put field-level errors inside the matching UiField instead of below the field wrapper.
   avoid:
     - Do not use for multi-paragraph explanations or page-level failures.
+    - Do not leave field-level errors disconnected from the control they describe.
 
 composition:
   works_well_with:
@@ -101,7 +103,9 @@ composition:
     - UiAlert
   patterns:
     - title: Field or section error
-      notes: Use where the user needs to see a concise local error message.
+      notes: >
+        Use where the user needs to see a concise local error message. For field-level validation,
+        render UiError inside the corresponding UiField default slot, directly after the control.
     - title: Page-level failure
       notes: Use UiAlert or UiInfobox instead when the error needs explanation and actions.
 

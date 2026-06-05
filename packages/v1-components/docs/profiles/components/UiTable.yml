@@ -119,6 +119,98 @@ examples:
         console.log(row)
       }
       </script>
+  - title: Multiple row actions in one final column
+    notes:
+      - Use one stable final action column for several row commands unless the product task explicitly asks for separate semantic columns.
+      - Keep the action cell width fixed and prevent it from wrapping primary row content.
+      - Each icon-only action needs aria-label and UiTooltip text.
+    code: |
+      <template>
+        <UiTable
+          bordered
+          :rows="rows"
+          row-key="id"
+        >
+          <UiTableColumn v-slot="{ row }" label="Name">
+            {{ row.name }}
+          </UiTableColumn>
+
+          <UiTableColumn v-slot="{ row }" :width="104" label="" trim>
+            <div :class="$style['specialist-table__actions']">
+              <UiPopperConnector>
+                <UiButton
+                  :aria-label="`Edit ${row.name}`"
+                  appearance="tertiary"
+                  size="sm"
+                  @click="edit(row)"
+                >
+                  <IconEdit aria-hidden="true" />
+                </UiButton>
+
+                <UiTooltip>
+                  Edit {{ row.name }}
+                </UiTooltip>
+              </UiPopperConnector>
+
+              <UiPopperConnector>
+                <UiButton
+                  :aria-label="`Delete ${row.name}`"
+                  appearance="tertiary"
+                  size="sm"
+                  variant="danger"
+                  @click="remove(row)"
+                >
+                  <IconDelete aria-hidden="true" />
+                </UiButton>
+
+                <UiTooltip>
+                  Delete {{ row.name }}
+                </UiTooltip>
+              </UiPopperConnector>
+            </div>
+          </UiTableColumn>
+        </UiTable>
+      </template>
+
+      <script lang="ts" setup>
+      import IconDelete from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/delete.svg'
+      import IconEdit from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/edit.svg'
+      import {
+        UiButton,
+        UiPopperConnector,
+        UiTable,
+        UiTableColumn,
+        UiTooltip,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      type Row = {
+        id: number
+        name: string
+      }
+
+      const rows: Row[] = [
+        { id: 101, name: 'Anna Smith' },
+        { id: 102, name: 'Ilya Johnson' },
+      ]
+
+      const edit = (row: Row) => {
+        console.log(row)
+      }
+
+      const remove = (row: Row) => {
+        console.log(row)
+      }
+      </script>
+
+      <style lang="less" module>
+      .specialist-table__actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        white-space: nowrap;
+      }
+      </style>
   - title: Expandable rows table
     notes:
       - Use the expand slot and cell toggle helper for expandable row details.
@@ -644,6 +736,9 @@ composition:
   actions:
     notes:
       - Prefer narrow action columns with icon-only UiButton controls for row commands.
+      - If a row has multiple actions, keep them together in one final action column by default.
+      - Split row actions into separate columns only when each column has a distinct user-facing meaning or the task explicitly requires it.
+      - Give the action column a stable width and an inner flex container so actions do not resize or wrap primary row content.
       - Keep visible button text out of dense table rows; provide aria-label and matching UiTooltip text.
       - Use package sprite icons and set aria-hidden on the icon itself.
       - Wrap action buttons and UiTooltip in UiPopperConnector. Add UiPopperTarget only for custom non-component targets.
@@ -659,11 +754,13 @@ ai_notes:
     - Use UiTableSorter for sortable headers.
     - Prefer UiTableColumn `v-slot` for ordinary custom cells when label and sizing are configured through props.
     - Use icon-only row action buttons with aria-label and UiTooltip in action columns.
+    - Put several row actions into one final action cell unless separate columns are explicitly required.
   avoid:
     - Do not hide table filters in page header actions.
     - Do not wrap UiTable in an additional white card, panel, or content-surface container.
     - Do not use UiButton inside table footer pagination.
     - Do not put visible text buttons in dense table action columns.
+    - Do not create several neighboring empty action columns for edit, delete, and similar compact row commands.
     - Do not put pagination only in local state when the screen has routable result sets.
     - Do not import table internals from host or src paths.
     - Do not use `<template #cell>` for every column when the default slot would be simpler.

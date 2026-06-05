@@ -213,7 +213,9 @@ api:
         - disabled
         - counter
         - accent
-      notes: Base selectable option node.
+      notes: >
+        Base selectable option node. Nullable values are allowed when they are meaningful to the model,
+        but Vue keys for repeated option nodes must be stable and non-null.
     - name: UiSelectOptionGroup
       key_props:
         - label

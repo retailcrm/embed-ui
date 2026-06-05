@@ -109,6 +109,56 @@ examples:
 
       const duration = ref(30)
       </script>
+  - title: Field validation with local error
+    notes:
+      - Keep the field-level error inside the UiField default slot, directly after the control it describes.
+      - Forward id and ARIA slot props into the real control; invalid styling alone is not enough for validation wiring.
+      - Add local margin to UiError when the design needs a visual gap below the control.
+    code: |
+      <template>
+          <UiField
+              id="specialist-name"
+              v-slot="field"
+              :invalid="Boolean(error)"
+              label="Name"
+              required
+          >
+              <UiTextbox
+                  :id="field.id"
+                  v-model:value="name"
+                  :invalid="field.invalid"
+                  :input-attributes="{
+                      'aria-labelledby': field.ariaLabelledby,
+                      'aria-invalid': field.ariaInvalid,
+                  }"
+              />
+
+              <UiError
+                  v-if="error"
+                  :class="$style['form-field-error']"
+                  :message="error"
+              />
+          </UiField>
+      </template>
+
+      <script lang="ts" setup>
+      import { ref } from 'vue'
+
+      import {
+        UiError,
+        UiField,
+        UiTextbox,
+      } from '@retailcrm/embed-ui-v1-components/remote'
+
+      const name = ref('')
+      const error = ref('Name is required')
+      </script>
+
+      <style lang="less" module>
+      .form-field-error {
+        margin-top: 4px;
+      }
+      </style>
 use_when:
   - You need a labeled form control with consistent field semantics.
   - You need to pass id, aria-labelledby, and aria-invalid into an inner control.
@@ -305,6 +355,10 @@ composition:
   patterns:
     - title: Safe field wiring
       notes: Use slot props for semantics, not just for visual wrapping.
+    - title: Field-level validation
+      notes: >
+        Place UiError inside the default slot immediately after the control, and complete id,
+        aria-labelledby, and aria-invalid wiring on the real control.
 
 
 ai_notes:
@@ -314,8 +368,11 @@ ai_notes:
     - Use v-slot on UiField when the field uses only the default slot.
     - Use UiField as a semantic wrapper for a single textbox, select, number, date, or time control.
     - Place validation errors inside the relevant field composition instead of rendering them as unrelated sibling blocks.
+    - Add local spacing to UiError itself when the error needs a visible gap from the control.
   avoid:
     - Do not use UiField as a generic visual container without control semantics.
     - Do not use UiField for UiSwitch settings rows; pair UiSwitch with a visible label and hint text instead.
     - Do not use UiField for simple UiCheckbox rows; pair UiCheckbox with a visible label and optional hint instead.
     - Do not ignore id and ariaLabelledby when accessibility matters.
+    - Do not render field-level UiError as a sibling immediately after the closing UiField.
+    - Do not rely only on the invalid prop when the control can receive field ARIA slot props.

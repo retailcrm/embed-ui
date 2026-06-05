@@ -151,6 +151,12 @@ expected_structure:
   - Destructive footer actions are often icon-only buttons aligned to the right edge.
   - Destructive icon-only actions should usually open UiPopconfirm with okVariant="danger"; its confirmation button is primary by default.
   - Content can be flexible, but should stay compact.
+  - Default sidebar forms use one form or grid container with a consistent gap.
+  - Each labeled textbox, select, number, date, or time control in a sidebar form should live in UiField.
+  - Field-level errors should use UiError inside the corresponding UiField, directly after the control.
+  - Bounded numeric sidebar fields should use UiNumberStepper unless stepper controls do not fit the product interaction.
+  - Footer actions should be placed through the UiModalSidebar footer slot, usually primary save and secondary or tertiary cancel.
+  - Sidebar titles should stay short enough for the available width.
   - Small tables can be placed in sidebars.
 
 recommended_components:
@@ -166,8 +172,14 @@ recommended_components:
     profile: ../components/UiField.yml
   - name: UiTextbox
     profile: ../components/UiTextbox.yml
+  - name: UiNumberStepper
+    profile: ../components/UiNumberStepper.yml
   - name: UiSelect
     profile: ../components/UiSelect.yml
+  - name: UiError
+    profile: ../components/UiError.yml
+  - name: UiAlert
+    profile: ../components/UiAlert.yml
   - name: UiTable
     profile: ../components/UiTable.yml
     notes: Use only for small, simple tables.
@@ -176,6 +188,9 @@ ai_notes:
   do:
     - Use for inspect, edit, or secondary workflows related to the current list or page.
     - Keep the flow compact.
+    - Use a single local form/grid container for sidebar forms.
+    - Put every labeled scalar form control in UiField and keep UiError inside that field.
+    - Use the footer slot for save/cancel actions rather than a page footer component.
     - Split footer actions into meaningful left and right groups when secondary or destructive actions need separation.
     - Use 12px or 16px gaps inside each footer action group.
     - Put destructive icon-only actions on the right and confirm them with UiPopconfirm okVariant="danger"; the confirmation button is primary by default.
@@ -183,4 +198,7 @@ ai_notes:
     - Do not use for bulky or complex interfaces.
     - Do not use collapse blocks inside sidebars.
     - Do not use two-column content on separate surfaces.
+    - Do not use a two-column form inside a sidebar unless the product task explicitly requires it and the content still fits.
+    - Do not place UiPageFooter inside UiModalSidebar.
+    - Do not mix unrelated spacing strategies inside one sidebar form; keep gaps owned by the form container and local error margins.
     - Use a full page or modal window for bulky flows.

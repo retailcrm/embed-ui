@@ -28,6 +28,12 @@ expected_structure:
   - UiTable should not be wrapped in an extra white content surface.
   - A wrapper around UiTable should only handle layout, width, or scrolling, without card chrome or content-surface padding.
   - Row action columns should use icon-only buttons with aria-label and UiTooltip instead of visible text buttons.
+  - Multiple row actions should live in one final action column with a stable width unless the task explicitly asks for separate columns.
+  - Settings-dependent columns should be conditional at the UiTableColumn level, not permanent columns that render empty values.
+  - If a setting disables a dependent column, avoid loading expensive data used only by that column.
+  - Show initial or blocking loading with UiLoader in the table/content area while keeping filters and page actions understandable.
+  - Show page-level API failures with UiAlert variant="danger".
+  - Use UiTable '#empty' for table-owned empty states; use UiInfobox when the empty state needs richer guidance or an action outside the table body.
   - The table may scroll and may support export.
 
 recommended_components:
@@ -51,6 +57,12 @@ recommended_components:
     profile: ../components/UiTableFooterSection.yml
   - name: UiTableFooterButton
     profile: ../components/UiTableFooterButton.yml
+  - name: UiLoader
+    profile: ../components/UiLoader.yml
+  - name: UiAlert
+    profile: ../components/UiAlert.yml
+  - name: UiInfobox
+    profile: ../components/UiInfobox.yml
 
 table_footer_rules:
   - Use UiTableFooterSection and UiTableFooterButton for table footer pagination.
@@ -66,10 +78,15 @@ ai_notes:
     - Persist filters, sorting, page, and page size in query parameters when routing is available.
     - Reset page to 1 when filters or sorting change.
     - Use narrow icon-only row action columns with matching aria-label and UiTooltip text.
+    - Put edit, delete, and similar compact row actions into one final action cell by default.
+    - Conditionally render settings-dependent columns at the column declaration, for example with `v-if` on UiTableColumn.
+    - Skip dependent API loads when the current settings make the dependent table data invisible.
     - Use tertiary for low-emphasis header or row-adjacent commands when a secondary button would be too visually heavy.
   avoid:
     - Do not hide filters in page header actions.
     - Do not put pagination only in local state when the result set is routable.
     - Do not place UiTable inside an additional white card or padded content surface.
     - Do not use visible text buttons for dense table row actions.
+    - Do not split compact row commands into several neighboring empty columns unless each column has a separate product meaning.
+    - Do not keep a settings-dependent column visible with blank cells when the setting is disabled.
     - Do not make every header action secondary when only one action should draw attention.

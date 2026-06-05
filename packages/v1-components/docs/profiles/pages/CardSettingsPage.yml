@@ -24,9 +24,15 @@ expected_structure:
   - The page root wrapper should not repeat that padding.
   - Content can include text, buttons, fields, checkboxes, radio groups, switches, and other form controls.
   - Textbox, select, number, date, and time controls usually live inside UiField.
+  - Field-level validation errors should be rendered as UiError inside the corresponding UiField, directly after the control.
+  - Bounded numeric settings, quantities, durations, limits, and ordering values should use UiNumberStepper instead of UiTextbox.
+  - UiTextbox with numeric input attributes is acceptable only when stepper controls do not fit the product interaction.
   - UiSwitch and simple UiCheckbox rows should use their own row layout with a visible label and optional hint, not UiField.
   - A bottom save panel is optional.
   - If a bottom save panel is used, its main save or apply action should be Success Primary.
+  - Show page-level API failures with UiAlert variant="danger".
+  - Show successful saves with a closable UiAlert variant="success" or another documented project success pattern.
+  - Use UiLoader when loading blocks the settings form; keep already loaded form chrome stable during save requests when possible.
 
 recommended_components:
   - name: UiPageHeader
@@ -37,8 +43,16 @@ recommended_components:
     profile: ../components/UiField.yml
   - name: UiTextbox
     profile: ../components/UiTextbox.yml
+  - name: UiNumberStepper
+    profile: ../components/UiNumberStepper.yml
   - name: UiSelect
     profile: ../components/UiSelect.yml
+  - name: UiError
+    profile: ../components/UiError.yml
+  - name: UiAlert
+    profile: ../components/UiAlert.yml
+  - name: UiLoader
+    profile: ../components/UiLoader.yml
   - name: UiCheckbox
     profile: ../components/UiCheckbox.yml
   - name: UiRadio
@@ -58,6 +72,8 @@ ai_notes:
   do:
     - Keep form controls grouped by task or semantic section.
     - Use UiField around labeled textbox, select, number, date, and time controls.
+    - Put UiError inside the UiField that owns the invalid control.
+    - Use UiNumberStepper for bounded numeric settings and values with meaningful increments.
     - Use UiSwitch for compact enable or disable settings.
     - Use UiCheckbox for checkbox groups, table selection, acknowledgements, and checkbox-shaped boolean choices.
     - Use tabs only when they reduce visible complexity without hiding required work.
@@ -68,3 +84,5 @@ ai_notes:
     - Do not put content-surface padding on the root page wrapper.
     - Do not use UiCheckbox as the default replacement for UiSwitch just because a setting is boolean.
     - Do not wrap UiSwitch or simple UiCheckbox rows in UiField.
+    - Do not implement bounded numeric settings as plain UiTextbox controls unless the exception is documented.
+    - Do not render field errors as unrelated sibling blocks outside UiField.

@@ -35,6 +35,12 @@ shared_rules:
   - Do not duplicate content-surface padding on the page root; outer page spacing is controlled by the CRM host layout.
   - Prefer public components from @retailcrm/embed-ui-v1-components/remote.
   - Do not invent custom chrome for pages, forms, tables, tabs, buttons, modals, or sidebars when a documented component fits.
+  - For Vue remote pages and page-like components, prefer local CSS Modules with `<style module lang="less">`; use shared global styles only as an intentional feature-level abstraction.
+  - Page-specific CSS Module class names should still describe the block they style, for example `entity-list__actions`, `settings-form__field-error`, or `modal-sidebar-form__footer`.
+  - Use UiLoader for loading states, UiAlert variant="danger" for page-level API failures, and UiAlert variant="success" or an approved local success pattern for successful saves.
+  - Use UiInfobox for richer explanatory empty states; use UiTable #empty when the empty state belongs directly to a table body.
+  - If a column or dependent UI exists only for an enabled setting, render the column conditionally instead of showing empty cells.
+  - Avoid loading expensive dependent API data when the setting that needs it is disabled.
 
 decision_guide:
   - need: Searchable, filterable registry.
@@ -63,9 +69,13 @@ ai_notes:
     - Keep operational CRM screens dense, scannable, and work-focused.
     - Prefer variant="success" for the main save/apply/create action and keep it visually dominant.
     - Prefer appearance="tertiary" for supportive actions that sit near content but should stay visually quiet.
+    - Keep page-specific layout styles in CSS Modules unless the task records a shared styling abstraction.
+    - Choose one documented loading, error, success, and empty-state pattern for the page before finishing.
   avoid:
     - Do not turn internal CRM work screens into marketing-style layouts.
     - Do not hide filters or primary workflow controls away from the content they affect.
     - Do not place multiple Success Primary, Default Primary, or Danger Primary actions with the same variant in the page-level scope or inside one collapse-box scope.
     - Do not default every non-primary action to appearance="secondary"; choose by local action importance.
     - Do not add page-surface padding to both the page root and the white content surface.
+    - Do not use a shared `admin.less` or other global page stylesheet only to avoid local composition styles.
+    - Do not show settings-dependent table columns as permanent empty placeholder columns.
