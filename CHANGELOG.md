@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [0.9.28](https://github.com/retailcrm/embed-ui/compare/v0.9.27...v0.9.28) (2026-06-05)
+
+### Features
+
+* Before route leave host hook forwarded ([106f4ce](https://github.com/retailcrm/embed-ui/commit/106f4ce4f2089142929e2055dbb317722b6ba317))
+* **v1-types:** Before route leave host hook added ([438913c](https://github.com/retailcrm/embed-ui/commit/438913ce4fd1b3324c65efb493d8761ac09000ad))
 ## [0.9.27](https://github.com/retailcrm/embed-ui/compare/v0.9.26...v0.9.27) (2026-06-04)
 
 ### Bug Fixes
