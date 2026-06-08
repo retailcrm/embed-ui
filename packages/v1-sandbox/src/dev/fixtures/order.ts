@@ -1,8 +1,8 @@
 import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 
-import type { CreateSandboxControllerOptions } from '@/controller'
-import type { SandboxContextOverrides } from '@/state'
-import type { SandboxController } from '@/controller'
+import type { CreateSandboxControllerOptions } from '@/core/controller'
+import type { SandboxContextOverrides } from '@/core/state'
+import type { SandboxController } from '@/core/controller'
 
 import {
   schema as currentUserSchema,
@@ -15,7 +15,7 @@ import {
 } from '@retailcrm/embed-ui-v1-contexts/remote/order/card-settings'
 import { schema as settingsSchema } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
-import { createSandboxController } from '@/controller'
+import { createSandboxController } from '@/core/controller'
 
 export const orderSandboxSchemas = {
   'order/card': orderCardSchema,

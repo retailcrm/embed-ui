@@ -5,7 +5,7 @@ import {
   DEFAULT_SANDBOX_PAGE_CODE,
   DEFAULT_SANDBOX_WIDGET_ID,
   parseSandboxLaunchConfig,
-} from '@/launch'
+} from '@/dev/launch'
 
 test('parses sandbox launch config from url params', () => {
   const config = parseSandboxLaunchConfig(new URLSearchParams({

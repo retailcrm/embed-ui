@@ -10,21 +10,21 @@ import type {
 
 import type { HostApi, HostLocation } from '@retailcrm/embed-ui-v1-types/host'
 
-import type { CreateSandboxStateOptions } from '@/state'
-import type { SandboxBridge } from '@/bridge'
-import type { SandboxHostApiOptions } from '@/host'
-import type { SandboxSnapshot, SandboxState } from '@/state'
+import type { CreateSandboxStateOptions } from '@/core/state'
+import type { SandboxBridge } from '@/core/bridge'
+import type { SandboxHostApiOptions } from '@/core/host'
+import type { SandboxSnapshot, SandboxState } from '@/core/state'
 
-import { applySandboxSnapshot, captureSandboxSnapshot } from '@/state'
-import { clone } from '@/utils'
-import { createSandboxBridge } from '@/bridge'
+import { applySandboxSnapshot, captureSandboxSnapshot } from '@/core/state'
+import { clone } from '@/core/utils'
+import { createSandboxBridge } from '@/core/bridge'
 import {
   createSandboxContextAccessor,
   createSandboxCustomContextAccessor,
-} from '@/context'
-import { createSandboxHostApi } from '@/host'
-import { createSandboxState } from '@/state'
-import { installSandboxBridge } from '@/bridge'
+} from '@/core/context'
+import { createSandboxHostApi } from '@/core/host'
+import { createSandboxState } from '@/core/state'
+import { installSandboxBridge } from '@/core/bridge'
 
 export type SandboxEndpointApi<M extends ContextSchemaList> =
   & ContextAccessor<M>

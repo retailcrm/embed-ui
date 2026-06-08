@@ -134,11 +134,21 @@ body {
 
 .crm-page {
   background: #fff;
-  display: grid;
-  gap: 24px;
-  align-content: start;
   min-height: 100vh;
   padding: 48px;
+}
+
+.workspace-layout {
+  align-items: start;
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) 420px;
+}
+
+.workspace-main {
+  align-content: start;
+  display: grid;
+  gap: 24px;
 }
 
 .host-controls {
@@ -177,11 +187,162 @@ body {
   padding: 10px 14px;
 }
 
+.dev-panel {
+  align-content: start;
+  display: grid;
+  gap: 16px;
+  max-height: calc(100vh - 96px);
+  overflow: auto;
+}
+
+.dev-card {
+  border: 1px solid #d9e1ea;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.dev-card__title {
+  color: #172140;
+  font-size: 20px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.dev-field {
+  display: grid;
+  gap: 6px;
+}
+
+.dev-field__label {
+  color: #657286;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.dev-input {
+  border: 1px solid #cfd9e6;
+  border-radius: 6px;
+  color: #172140;
+  font: inherit;
+  font-size: 15px;
+  min-height: 40px;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+.dev-input:disabled {
+  background: #f5f8fb;
+  color: #8a96a8;
+}
+
+.target-checklist {
+  display: grid;
+  gap: 8px;
+}
+
+.target-checklist__item {
+  align-items: center;
+  color: #172140;
+  display: flex;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.target-checklist__item input {
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+
+.dev-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dev-actions_wrap {
+  flex-wrap: wrap;
+}
+
+.dev-button {
+  background: #fff;
+  border: 1px solid #cfd9e6;
+  border-radius: 6px;
+  color: #172140;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 8px 12px;
+}
+
+.dev-button_primary {
+  background: #075fea;
+  border-color: #075fea;
+  color: #fff;
+}
+
+.activity-log {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.activity-item {
+  background: #f7f9fc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.activity-item code {
+  color: #172140;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.activity-item__kind {
+  color: #075fea;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.activity-item__index {
+  color: #657286;
+  font-size: 12px;
+}
+
+.activity-item_empty {
+  color: #657286;
+  font-size: 14px;
+}
+
+.state-snapshot {
+  background: #10182f;
+  border-radius: 6px;
+  color: #dbe7ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  max-height: 360px;
+  overflow: auto;
+  padding: 14px;
+}
+
 .target-grid {
   display: grid;
   gap: 20px;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  width: min(100%, 980px);
 }
 
 .target-slot {
@@ -205,7 +366,6 @@ body {
   border-radius: 8px;
   min-height: 420px;
   padding: 28px;
-  width: min(100%, 980px);
 }
 
 .page-canvas__label {
@@ -214,4 +374,14 @@ body {
   font-weight: 700;
   margin-bottom: 24px;
   text-transform: uppercase;
+}
+
+@media (max-width: 1300px) {
+  .workspace-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dev-panel {
+    max-height: none;
+  }
 }

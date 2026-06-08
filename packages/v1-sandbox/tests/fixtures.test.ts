@@ -4,7 +4,7 @@ import {
   createOrderSandboxController,
   getOrderSandboxFixture,
   orderSandboxFixtures,
-} from '@/fixtures'
+} from '@/dev/fixtures'
 
 test('returns default fixture for unknown fixture code', () => {
   expect(getOrderSandboxFixture('unknown')).toBe(orderSandboxFixtures['order-basic'])

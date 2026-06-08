@@ -15,7 +15,7 @@ import {
   keysOf,
   syncArray,
   syncRecord,
-} from '@/utils'
+} from '@/core/utils'
 
 export type SandboxMode = 'preview' | 'automation' | 'standalone-test'
 
@@ -116,9 +116,9 @@ export const applySandboxSnapshot = <M extends ContextSchemaList>(
 ) => {
   state.mode = snapshot.mode
 
-  syncRecord(
-    state.contexts as Record<string, Context<M[keyof M]>>,
-    snapshot.contexts as Record<string, Context<M[keyof M]>>
+  syncContextRecords(
+    state.contexts as Record<string, Record<string, unknown>>,
+    snapshot.contexts as Record<string, Record<string, unknown>>
   )
 
   syncRecord(state.custom.entities, snapshot.custom.entities)
@@ -127,6 +127,26 @@ export const applySandboxSnapshot = <M extends ContextSchemaList>(
   state.host.location = clone(snapshot.host.location)
   syncArray(state.host.http, snapshot.host.http)
   syncArray(state.host.navigation, snapshot.host.navigation)
+}
+
+const syncContextRecords = (
+  target: Record<string, Record<string, unknown>>,
+  source: Record<string, Record<string, unknown>>
+) => {
+  Object.keys(target).forEach((key) => {
+    if (!(key in source)) {
+      delete target[key]
+    }
+  })
+
+  Object.entries(source).forEach(([key, value]) => {
+    if (key in target) {
+      syncRecord(target[key], value)
+      return
+    }
+
+    target[key] = clone(value)
+  })
 }
 
 const createContextState = <M extends ContextSchemaList>(

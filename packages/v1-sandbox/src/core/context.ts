@@ -13,7 +13,7 @@ import type {
   Writable,
 } from '@retailcrm/embed-ui-v1-types/context'
 
-import type { SandboxState } from '@/state'
+import type { SandboxState } from '@/core/state'
 
 import { release, retain } from '@remote-ui/rpc'
 import { watch } from 'vue'
@@ -22,7 +22,7 @@ import { createContextAccessor, createGetter } from '@retailcrm/embed-ui-v1-cont
 import { createHandler } from '@retailcrm/embed-ui-v1-testing/lib/createHandler'
 import { createSetter, LogicalError } from '@retailcrm/embed-ui-v1-contexts/host'
 
-import { clone, keysOf } from '@/utils'
+import { clone, keysOf } from '@/core/utils'
 
 export const createSandboxContextAccessor = <M extends ContextSchemaList>(
   schemas: M,

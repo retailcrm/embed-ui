@@ -2,8 +2,8 @@ import type { Field } from '@retailcrm/embed-ui-v1-types/context'
 
 import { expect, test } from 'vitest'
 
-import { createSandboxController } from '@/controller'
-import { createSandboxRpc } from '@/rpc'
+import { createSandboxController } from '@/core/controller'
+import { createSandboxRpc } from '@/core/rpc'
 
 type UserContext = {
   id: Field<number, true>;
@@ -58,6 +58,29 @@ test('serves reactive context access through rpc bridge', async () => {
 
   expect(sandbox.state.contexts.user.name).toBe('Kirill')
   expect(sandbox.state.contexts.article.title).toBe('Sandbox')
+
+  dispose()
+})
+
+test('keeps endpoint context references valid after reset', async () => {
+  const sandbox = createSandboxController<typeof schemas>({
+    schemas,
+  })
+
+  const { dispose, remote } = createSandboxRpc(sandbox)
+  const endpoint = remote.call as {
+    get(context: string, field: string): Promise<unknown>;
+    set(context: string, field: string, value: unknown): Promise<void>;
+  }
+
+  await endpoint.set('article', 'title', 'Changed')
+
+  expect(await endpoint.get('article', 'title')).toBe('Changed')
+
+  sandbox.reset()
+
+  expect(sandbox.state.contexts.article.title).toBe('Draft')
+  expect(await endpoint.get('article', 'title')).toBe('Draft')
 
   dispose()
 })

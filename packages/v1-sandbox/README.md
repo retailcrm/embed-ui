@@ -62,13 +62,13 @@ Playwright feedback loop.
 Пример:
 
 ```text
-http://127.0.0.1:4173/?extensionUrl=/src/demo-extension.ts&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+http://v1.embed-ui-sandbox.local/?extensionUrl=/src/demo-extension/index.ts&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 Пример запуска page runner:
 
 ```text
-http://127.0.0.1:4173/?mode=page&pageCode=orders-dashboard&extensionUrl=/src/demo-extension.ts
+http://v1.embed-ui-sandbox.local/?mode=page&pageCode=orders-dashboard&extensionUrl=/src/demo-extension/index.ts
 ```
 
 Extension entrypoint должен быть worker-compatible и вызвать
@@ -88,6 +88,15 @@ runEndpoint(defineRunner({
 }))
 ```
 
+Dev-панель справа от рабочей области позволяет:
+
+- менять `extensionUrl`, `mode`, `fixture`, `pageCode` и список `targets`;
+- применить выбранные значения через URL contract;
+- перезапустить extension worker без перезагрузки страницы;
+- сбросить sandbox state к текущей fixture;
+- вызвать host API actions: `httpCall`, `goTo`, `pushQuery`, `replaceQuery`;
+- посмотреть host activity log и JSON snapshot текущего sandbox state.
+
 ## Playwright и стенд
 
 Основной Docker-first способ поднять стенд:
@@ -101,13 +110,6 @@ docker compose up v1-sandbox
 ```bash
 make sandbox.serve
 ```
-
-После старта Vite стенд будет доступен по адресам:
-
-- `http://127.0.0.1:4173`;
-- `http://v1.embed-ui-sandbox.local` при настроенном OrbStack/Traefik.
-
-Для произвольных workspace-скриптов есть универсальная команда:
 
 ```bash
 make workspace.run workspace=@retailcrm/embed-ui-v1-sandbox script=dev:e2e
@@ -146,7 +148,7 @@ make playwright-report workspace=@retailcrm/embed-ui-v1-sandbox
 
 - `workspace=...` — выбрать workspace, в котором лежит `vitest.config.playwright.ts`;
 - `cli='--project chromium'` — передать флаги напрямую в `playwright test`;
-- `cli='e2e/example.spec.ts'` — запустить только один spec-файл.
+- `cli='e2e/sandbox.spec.ts'` — запустить только один spec-файл.
 
 Дополнительные флаги для отчёта тоже передаются через `cli`, например:
 

@@ -1,8 +1,8 @@
-import type { SandboxOrderTarget } from '@/targets'
+import type { SandboxOrderTarget } from '@/dev/targets'
 
-import { DEFAULT_SANDBOX_TARGET, isSandboxOrderTarget } from '@/targets'
+import { DEFAULT_SANDBOX_TARGET, isSandboxOrderTarget } from '@/dev/targets'
 
-export const DEFAULT_SANDBOX_EXTENSION_URL = '/src/demo-extension.ts'
+export const DEFAULT_SANDBOX_EXTENSION_URL = '/src/demo-extension/index.ts'
 export const DEFAULT_SANDBOX_FIXTURE = 'order-basic'
 export const DEFAULT_SANDBOX_MODE = 'widget'
 export const DEFAULT_SANDBOX_PAGE_CODE = 'orders-dashboard'

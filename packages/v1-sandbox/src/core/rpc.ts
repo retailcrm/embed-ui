@@ -1,7 +1,7 @@
 import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 import type { Endpoint } from '@remote-ui/rpc'
 
-import type { SandboxController, SandboxEndpointApi } from '@/controller'
+import type { SandboxController, SandboxEndpointApi } from '@/core/controller'
 
 import { createEndpoint, fromMessagePort } from '@remote-ui/rpc'
 import { MessageChannel } from '@retailcrm/embed-ui-v1-testing/lib/rpc'
