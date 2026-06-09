@@ -16,6 +16,7 @@ import {
 } from 'vitest'
 
 import { createPublishScript } from '../src/cmd/embed-ui/templates'
+import { HELP_TEXT } from '../src/cmd/embed-ui/args'
 import { isSameExecutablePath, parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
 import { resolveCurrentPackageVersion } from '../src/cmd/embed-ui/packages'
 import { resolvePackageHookCommand } from '../src/cmd/embed-ui/package-hook-runner'
@@ -217,6 +218,30 @@ describe('embed-ui CLI', () => {
     expect(options.fixSections).toBe(true)
     expect(options.interactive).toBe(true)
     expect(options.noConfigs).toBe(true)
+  })
+
+  test('help text documents init force and scaffold controls', () => {
+    [
+      '--with',
+      '--dirs',
+      '--src-dir',
+      '--template',
+      '--page-code',
+      '--widget-target',
+      '--no-dirs',
+      '--no-template',
+      '--force',
+      '--force-deps',
+      '--force-files',
+      '--force-agents',
+      '--agents-only',
+      '--force-skills',
+      '--skills-only',
+      '--force-mcp',
+      '--mcp-client-configs',
+    ].forEach((option) => {
+      expect(HELP_TEXT).toContain(option)
+    })
   })
 
   test('interactive init mode requires a TTY', async () => {

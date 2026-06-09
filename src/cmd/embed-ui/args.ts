@@ -68,18 +68,32 @@ Options:
       --dry-run           Show changes without writing package.json
       --add               Add selected embed-ui packages into one package.json
       --packages <list>   Comma-separated package ids or names for --add/init
+      --with <list>       Additional published package ids or names for init
       --cwd <path>        Project working directory for init
       --package-manager   Package manager for init installs
+      --dirs <list>       Comma-separated starter directory presets for init
+      --src-dir <path>    Frontend source root relative to cwd
+      --template <name>   Starter template name
+      --page-code <code>  Starter embedded page code
+      --widget-target <target> Starter widget target
       --interactive       Ask init questions with TTY selection prompts
       --verbose           Print detailed init change lists
       --no-install        Do not run package manager install in init mode
       --no-configs        Do not create root TypeScript, Vite, ESLint and env config files
+      --no-dirs           Do not create starter directories in init mode
+      --no-template       Do not create starter template files in init mode
+      --force             Force managed init writes, hooks, and install
       --force-deps        Replace incompatible existing init dependencies
       --fix-sections      Move init dependencies to expected package.json sections
+      --force-files       Overwrite generated starter files in init mode
       --no-agents         Do not create or update AGENTS.md in init mode
+      --force-agents      Force AGENTS.md section and package agent hook updates
+      --agents-only       Install only project-level agent instructions
       --no-skills         Do not create or update .agents/skills in init mode
+      --force-skills      Force project-level skill hook updates
       --skills-only       Install only project-level skills
       --no-mcp            Do not add package MCP instructions in init mode
+      --force-mcp         Force package MCP config hook updates
       --mcp-client-configs Comma-separated project-level MCP client configs to create (codex,cursor,junie,vscode)
       --git               Initialize Git repository in init mode when cwd is not a Git work tree
   -h, --help              Show this help

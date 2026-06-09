@@ -83,16 +83,28 @@ npx @retailcrm/embed-ui init ./web --cwd ./my-project --package-manager npm
 - `--version 0.9.21` — использовать указанную версию пакетов вместо версии запущенного CLI.
 - `--exact` — записывать точные версии вместо диапазонов.
 - `--packages embed-ui,components,contexts,types,endpoint` — явно выбрать пакеты для установки и настройки.
+- `--with components,endpoint` — добавить опубликованные пакеты к стандартному набору `init`.
+- `--package-manager yarn|npm|pnpm|bun` — явно выбрать package manager для установки.
+- `--src-dir ./frontend` — задать frontend source root относительно корня проекта.
+- `--dirs endpoint,pages,widgets,shared,i18n` — задать набор стартовых каталогов; дополнительно поддерживаются `src` и `tests`.
+- `--no-dirs` — не создавать стартовые каталоги.
+- `--template order-card` — выбрать стартовый шаблон; сейчас поддерживается `order-card`.
+- `--page-code settings` — задать код стартовой embedded-страницы.
+- `--widget-target order/card:common.after` — задать стартовый target виджета.
+- `--force` — включить общий force-режим для управляемых файлов, hook-команд и install.
 - `--force-deps` — заменить несовместимые версии зависимостей.
 - `--fix-sections` — перенести зависимости в ожидаемые секции `dependencies`/`devDependencies`.
 - `--force-files` — перезаписать генерируемые стартовые файлы.
 - `--no-configs` — не создавать `tsconfig.json`, `vite.config.ts`, `eslint.config.js` и `env.d.ts`.
 - `--no-template` — не создавать стартовые Vue-файлы и `extensionrc.json`.
 - `--no-agents` — не создавать и не дополнять `AGENTS.md`.
+- `--force-agents` — обновить управляемую секцию `AGENTS.md` и прокинуть `--force` в package-level agent hooks.
+- `--agents-only` — установить только agent-инструкции, без изменения зависимостей, шаблонов, skills и MCP.
 - `--no-skills` — не создавать и не обновлять project-level skills в `.agents/skills/*`.
 - `--force-skills` — обновить уже существующие управляемые project-level skills.
 - `--skills-only` — установить только project-level skills, без изменения зависимостей, шаблонов и `AGENTS.md`.
 - `--no-mcp` — не добавлять MCP-настройки пакетов.
+- `--force-mcp` — прокинуть `--force` в package-level MCP config hooks.
 - `--mcp-client-configs codex,cursor,junie,vscode` — дополнительно создать project-level конфиги поддерживаемых AI-клиентов.
 - `--git` — выполнить `git init` в корне проекта, если каталог еще не является Git-репозиторием.
 
