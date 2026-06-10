@@ -1525,14 +1525,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@omnicajs/vue-remote@npm:^0.2.24":
-  version: 0.2.24
-  resolution: "@omnicajs/vue-remote@npm:0.2.24"
+"@omnicajs/vue-remote@npm:^0.2.26":
+  version: 0.2.26
+  resolution: "@omnicajs/vue-remote@npm:0.2.26"
   dependencies:
     "@remote-ui/rpc": "npm:^1.4.5"
   peerDependencies:
     vue: ^3.4
-  checksum: 10/01e2d08876a801efae238e196354277d5b45b2132ead8a1874da7ec4cf87b27606b34305d07b114be24735df7da473a74b4430f66bbdbb99f0b0bd45ccb5ef41
+  checksum: 10/eec3039e1c8a6ef43c448e77d23d4b8c1cc700824f1e74aeb381026198c55d1241c1e57f46003fcc6bda54298184895beadde29db583e9f4e0405dff2ebe9070
   languageName: node
   linkType: hard
 
@@ -1575,7 +1575,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-components@workspace:packages/v1-components"
   dependencies:
-    "@omnicajs/vue-remote": "npm:^0.2.24"
+    "@omnicajs/vue-remote": "npm:^0.2.26"
     "@remote-ui/rpc": "npm:^1.4.7"
     "@retailcrm/image-preview": "npm:^1.0.2"
     "@storybook/addon-a11y": "npm:^10.3.5"
@@ -1660,7 +1660,7 @@ __metadata:
     vite-plugin-dts: "npm:^4.5.4"
     vitest: "npm:4.1.8"
   peerDependencies:
-    "@omnicajs/vue-remote": ^0.2.24
+    "@omnicajs/vue-remote": ^0.2.26
     "@remote-ui/rpc": ^1.4
     "@retailcrm/embed-ui-v1-contexts": ^0.9.28
     "@retailcrm/embed-ui-v1-types": ^0.9.28
@@ -1678,7 +1678,7 @@ __metadata:
   dependencies:
     "@retailcrm/embed-ui-v1-types": "npm:^0.9.28"
   peerDependencies:
-    "@omnicajs/vue-remote": ^0.2.24
+    "@omnicajs/vue-remote": ^0.2.26
     "@remote-ui/rpc": ^1.4
     vue: ^3.5
   languageName: unknown
@@ -1703,7 +1703,7 @@ __metadata:
     "@modulify/pkg": "npm:^1.0.1"
     "@omnicajs/eslint-plugin-dependencies": "npm:^0.0.2"
     "@omnicajs/symfony-router": "npm:^1.0.0"
-    "@omnicajs/vue-remote": "npm:^0.2.24"
+    "@omnicajs/vue-remote": "npm:^0.2.26"
     "@remote-ui/rpc": "npm:^1.4.5"
     "@retailcrm/embed-ui-v1-components": "npm:^0.9.28"
     "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.28"

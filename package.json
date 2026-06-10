@@ -55,7 +55,7 @@
     "@floating-ui/dom": "^1.6.13",
     "@inquirer/prompts": "^8.4.3",
     "@omnicajs/symfony-router": "^1.0.0",
-    "@omnicajs/vue-remote": "^0.2.24",
+    "@omnicajs/vue-remote": "^0.2.26",
     "@remote-ui/rpc": "^1.4.5",
     "@retailcrm/embed-ui-v1-components": "^0.9.28",
     "@retailcrm/embed-ui-v1-contexts": "^0.9.28",

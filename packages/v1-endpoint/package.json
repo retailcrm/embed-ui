@@ -99,7 +99,7 @@
     "test": "vitest --run"
   },
   "peerDependencies": {
-    "@omnicajs/vue-remote": "^0.2.24",
+    "@omnicajs/vue-remote": "^0.2.26",
     "@remote-ui/rpc": "^1.4",
     "@retailcrm/embed-ui-v1-contexts": "^0.9.28",
     "@retailcrm/embed-ui-v1-types": "^0.9.28",
