@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [0.9.29](https://github.com/retailcrm/embed-ui/compare/v0.9.28...v0.9.29) (2026-06-10)
+
+### Bug Fixes
+
+* **v1-components:** UiButton link hover styles preserved ([3463e58](https://github.com/retailcrm/embed-ui/commit/3463e58fa78201da48262f937ac78556a989f155))
 ## [0.9.28](https://github.com/retailcrm/embed-ui/compare/v0.9.27...v0.9.28) (2026-06-05)
 
 ### Features
