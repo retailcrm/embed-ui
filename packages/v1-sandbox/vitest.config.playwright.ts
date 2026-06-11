@@ -73,9 +73,11 @@ export default defineConfig({
     // },
   ],
 
-  webServer: useExternalSandbox ? undefined : {
-    command: 'yarn dev:e2e',
-    url: 'http://127.0.0.1:4173',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: useExternalSandbox ? undefined : [
+    {
+      command: 'yarn dev:e2e',
+      url: 'http://127.0.0.1:4173',
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 })
