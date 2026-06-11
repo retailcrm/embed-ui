@@ -49,7 +49,10 @@ Playwright feedback loop.
 
 Публичный URL contract:
 
-- `extensionUrl` — URL module worker entrypoint расширения;
+- `manifestUrl` — URL внешнего расширения. Поддерживает JSON manifest,
+  HTML entrypoint (`/extension/<uuid>`) и прямой JS script;
+- `extensionUrl` — fallback URL module worker entrypoint расширения, если
+  `manifestUrl` пустой;
 - `mode` — `widget` или `page`, по умолчанию `widget`;
 - `target` — один поддержанный `order/card:*` target для одиночного запуска;
 - `targets` — список `order/card:*` targets через запятую для запуска
@@ -62,13 +65,40 @@ Playwright feedback loop.
 Пример:
 
 ```text
-http://v1.embed-ui-sandbox.local/?extensionUrl=/src/demo-extension/index.ts&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+http://v1.embed-ui-sandbox.local/?manifestUrl=http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7&targets=order/card:common.after&fixture=order-basic
 ```
 
 Пример запуска page runner:
 
 ```text
-http://v1.embed-ui-sandbox.local/?mode=page&pageCode=orders-dashboard&extensionUrl=/src/demo-extension/index.ts
+http://v1.embed-ui-sandbox.local/?mode=page&pageCode=returns&manifestUrl=http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7
+```
+
+Для `core-ui-extensions-examples` page code берётся из
+`cases/returnsModule/extensionrc.json`: `returns`. Быстрый пример внешней
+страницы:
+
+```text
+http://v1.embed-ui-sandbox.local/?manifestUrl=http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7&mode=page&pageCode=returns&targets=order/card:common.after&target=order/card:common.after
+```
+
+`manifestUrl` — основной dev contract. Sandbox загружает внешний URL по сети:
+если это JSON manifest, получает descriptor (`uuid`, `runner`, `entrypoint`,
+`targets`, `pages`); если это HTML entrypoint, достаёт первый `<script src>`
+из `<head>`; если это JS, запускает его напрямую через локальный bootstrap
+worker. Если нужно отладить прямой worker entrypoint без внешнего URL,
+можно передать пустой
+`manifestUrl` и `extensionUrl`:
+
+```text
+http://v1.embed-ui-sandbox.local/?manifestUrl=&extensionUrl=/src/demo-extension/index.ts
+```
+
+Внешний extension server должен отдавать entrypoint по сети. Для
+`core-ui-extensions-examples` это core-похожий URL:
+
+```text
+http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7/script
 ```
 
 Extension entrypoint должен быть worker-compatible и вызвать
@@ -90,7 +120,8 @@ runEndpoint(defineRunner({
 
 Dev-панель справа от рабочей области позволяет:
 
-- менять `extensionUrl`, `mode`, `fixture`, `pageCode` и список `targets`;
+- менять `manifestUrl`, `extensionUrl`, `mode`, `fixture`, `pageCode` и список
+  `targets`;
 - применить выбранные значения через URL contract;
 - перезапустить extension worker без перезагрузки страницы;
 - сбросить sandbox state к текущей fixture;
@@ -103,6 +134,14 @@ Dev-панель справа от рабочей области позволя�
 
 ```bash
 docker compose up v1-sandbox
+```
+
+Эта команда поднимает только sandbox host. Расширение запускается отдельно,
+например из соседнего проекта `core-ui-extensions-examples`, который отдаёт
+HTML entrypoint и script:
+
+```text
+http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7
 ```
 
 То же самое через Docker/Makefile:

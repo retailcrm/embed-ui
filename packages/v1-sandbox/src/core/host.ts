@@ -60,6 +60,10 @@ export const createSandboxHostApi = <M extends ContextSchemaList>(
       })
     },
 
+    onBeforeRouteLeave(hook) {
+      void hook
+    },
+
     pushQuery(query, options) {
       state.host.location = applyQuery(state.host.location, query, options)
       state.host.navigation.push({

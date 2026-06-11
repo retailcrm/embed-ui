@@ -31,6 +31,7 @@ export type SandboxRuntime = {
   endpoint: Endpoint<SandboxWorkerApi>;
   flushTimer: number;
   mounts: SandboxMount[];
+  stylesheet: HTMLLinkElement | null;
   worker: Worker;
 }
 

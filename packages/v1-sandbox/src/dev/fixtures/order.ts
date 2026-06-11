@@ -3,6 +3,7 @@ import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 import type { CreateSandboxControllerOptions } from '@/core/controller'
 import type { SandboxContextOverrides } from '@/core/state'
 import type { SandboxController } from '@/core/controller'
+import type { SandboxHttpCallRequest, SandboxHttpCallResponse } from '@/core/host'
 
 import {
   schema as currentUserSchema,
@@ -15,6 +16,7 @@ import {
 } from '@retailcrm/embed-ui-v1-contexts/remote/order/card-settings'
 import { schema as settingsSchema } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
+import { CORE_UI_EXTENSION_EXAMPLE_BASE_URL } from '@/dev/launch'
 import { createSandboxController } from '@/core/controller'
 
 export const orderSandboxSchemas = {
@@ -215,13 +217,53 @@ export const createOrderSandboxController = (
     },
     mode: 'preview',
     schemas: orderSandboxSchemas,
-    httpCall: async request => ({
-      body: JSON.stringify({
-        action: request.action,
-        ok: true,
-      }),
-      status: 200,
-    }),
+    httpCall: async request => resolveOrderSandboxHttpCall(request),
     ...options,
   })
+}
+
+const resolveOrderSandboxHttpCall = async (
+  request: SandboxHttpCallRequest
+): Promise<SandboxHttpCallResponse> => {
+  if (isExternalBackendAction(request.action)) {
+    return proxyExternalBackendHttpCall(request)
+  }
+
+  return {
+    body: JSON.stringify({
+      action: request.action,
+      ok: true,
+    }),
+    status: 200,
+  }
+}
+
+const isExternalBackendAction = (action: string): boolean =>
+  action.startsWith('/')
+
+const proxyExternalBackendHttpCall = async (
+  request: SandboxHttpCallRequest
+): Promise<SandboxHttpCallResponse> => {
+  const response = await fetch(`${CORE_UI_EXTENSION_EXAMPLE_BASE_URL}${request.action}`, {
+    body: new URLSearchParams({
+      payload: serializeHttpCallPayload(request.payload),
+    }),
+    cache: 'no-store',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    },
+    method: 'POST',
+  })
+
+  return {
+    body: await response.text(),
+    status: response.status,
+  }
+}
+
+const serializeHttpCallPayload = (payload: SandboxHttpCallRequest['payload']): string => {
+  if (typeof payload === 'string') return payload
+
+  return JSON.stringify(payload ?? {})
 }
