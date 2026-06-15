@@ -2,7 +2,7 @@ import type { Manifest } from '@modulify/pkg/types/manifest'
 
 import { join, relative } from 'node:path'
 
-import { GitCommander } from '@modulify/git-toolkit'
+import { Client } from '@modulify/conventional-git'
 
 import chalk from 'chalk'
 import semver from 'semver'
@@ -14,30 +14,31 @@ import Runner from './lib/Runner'
 
 import args from './args/publish'
 
-import { DEFAULTS } from './args/release'
-
-type GitSemverTagsModule = {
-  getSemverTags(options?: { tagPrefix?: string }): Promise<string[]>;
-}
+import { DEFAULTS } from './args/publish'
 
 try {
   const cwd = process.cwd()
   const options = { ...DEFAULTS, ...args.argv }
 
-  const git = new GitCommander({ cwd })
+  const history = new Client({ cwd })
 
   const log = new Logger(options)
   const sh = new Runner(log, options.dry)
 
   const versionOnTag = async (path: string, tag: string): Promise<string | undefined> => {
-    const content = await git.show(tag, relative(cwd, join(path, 'package.json')))
+    const content = await history.git.cmd.show(tag, relative(cwd, join(path, 'package.json')))
     const manifest = JSON.parse(content ?? '{}') as Manifest
 
     return manifest.version
   }
 
-  const { getSemverTags } = await import('git-semver-tags') as unknown as GitSemverTagsModule
-  const [nextTag, prevTag] = await getSemverTags({ tagPrefix: 'v' })
+  const tags = [] as string[]
+
+  for await (const tag of history.tags({ prefix: 'v' })) {
+    tags.push(tag)
+  }
+
+  const [nextTag, prevTag] = tags.sort((a, b) => semver.rcompare(a, b))
 
   log.info('\nPublishing packages, that have changes from tag %s to tag %s\n', [
     prevTag,
