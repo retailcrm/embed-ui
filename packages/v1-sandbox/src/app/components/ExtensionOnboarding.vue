@@ -5,31 +5,32 @@
     >
         <div :class="$style['extension-onboarding__content']">
             <p :class="$style['extension-onboarding__eyebrow']">
-                External delivery
+                {{ t('extensionOnboarding.eyebrow') }}
             </p>
 
             <h1 :class="$style['extension-onboarding__title']">
-                Подключите внешнее расширение
+                {{ t('extensionOnboarding.title') }}
             </h1>
 
             <p :class="$style['extension-onboarding__description']">
-                Sandbox ждёт URL внешнего проекта: JSON manifest, HTML entrypoint
-                или JS script. Он загрузит entrypoint по сети и запустит расширение в worker.
+                {{ t('extensionOnboarding.description') }}
             </p>
 
             <ol :class="$style['extension-onboarding__steps']">
-                <li>Поднимите внешний extension server, например `core-ui-extensions-examples`.</li>
-                <li>Возьмите URL `/extension/&lt;uuid&gt;` или `/extension/&lt;uuid&gt;/script` из проекта расширения.</li>
-                <li>Вставьте его ниже или в control panel и примените конфигурацию.</li>
+                <li>{{ t('extensionOnboarding.steps.devServer') }}</li>
+                <li>{{ t('extensionOnboarding.steps.entrypoint') }}</li>
+                <li>{{ t('extensionOnboarding.steps.worker') }}</li>
             </ol>
 
             <label :class="$style['extension-onboarding__field']">
-                <span :class="$style['extension-onboarding__label']">Extension URL</span>
+                <span :class="$style['extension-onboarding__label']">
+                    {{ t('extensionOnboarding.extensionUrl') }}
+                </span>
                 <input
                     :class="$style['extension-onboarding__input']"
                     :value="manifestUrl"
                     data-testid="sandbox-onboarding-manifest-url"
-                    placeholder="http://web-extensions-server.simla.local/extension/<uuid>"
+                    :placeholder="t('extensionOnboarding.placeholder')"
                     type="text"
                     @input="updateManifestUrl"
                 />
@@ -45,7 +46,7 @@
                     type="button"
                     @click="useCoreUiExtensionExample"
                 >
-                    Use core example
+                    {{ t('extensionOnboarding.actions.useDemoExtension') }}
                 </button>
 
                 <button
@@ -54,7 +55,7 @@
                     type="button"
                     @click="apply"
                 >
-                    Открыть с manifestUrl
+                    {{ t('extensionOnboarding.actions.apply') }}
                 </button>
 
                 <button
@@ -63,7 +64,7 @@
                     type="button"
                     @click="openCoreUiExtensionExampleReturnsPage"
                 >
-                    Open returns page
+                    {{ t('extensionOnboarding.actions.openDemoPage') }}
                 </button>
 
                 <button
@@ -72,32 +73,27 @@
                     type="button"
                     @click="openDevPanel"
                 >
-                    Configure extension
+                    {{ t('extensionOnboarding.actions.configure') }}
                 </button>
             </div>
 
-            <button
-                :class="$style['extension-onboarding__demo-link']"
-                data-testid="sandbox-onboarding-run-demo"
-                type="button"
-                @click="runLocalDemo"
-            >
-                Запустить локальный demo fallback
-            </button>
         </div>
     </section>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
 const props = defineProps<{
   apply(): void;
   manifestUrl: string;
   openCoreUiExtensionExampleReturnsPage(): void;
   openDevPanel(): void;
-  runLocalDemo(): void;
   setManifestUrl(value: string): void;
   useCoreUiExtensionExample(): void;
 }>()
+
+const { t } = useI18n()
 
 const updateManifestUrl = (event: Event) => {
   props.setManifestUrl((event.target as HTMLInputElement).value)
@@ -188,8 +184,7 @@ const updateManifestUrl = (event: Event) => {
         gap: @spacing-xs;
     }
 
-    &__button,
-    &__demo-link {
+    &__button {
         background: #fff;
         border: 1px solid @grey-600;
         border-radius: @border-radius-md;
@@ -206,10 +201,6 @@ const updateManifestUrl = (event: Event) => {
         background: @blue-500;
         border-color: @blue-500;
         color: #fff;
-    }
-
-    &__demo-link {
-        justify-self: start;
     }
 }
 </style>

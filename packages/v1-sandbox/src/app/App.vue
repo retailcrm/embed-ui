@@ -33,7 +33,7 @@
                 type="button"
                 @click="openDevPanel"
             >
-                Sandbox
+                {{ t('app.devPanelToggle') }}
             </button>
 
             <div
@@ -47,7 +47,6 @@
                     :manifest-url="manifestUrl"
                     :open-core-ui-extension-example-returns-page="openCoreUiExtensionExampleReturnsPage"
                     :open-dev-panel="openDevPanel"
-                    :run-local-demo="runLocalDemo"
                     :set-manifest-url="setManifestUrl"
                     :use-core-ui-extension-example="useCoreUiExtensionExample"
                 />
@@ -76,7 +75,7 @@
         <aside
             v-if="isDevPanelOpen"
             :class="$style['sandbox-app__dev-panel-drawer']"
-            aria-label="Sandbox controls"
+            :aria-label="t('app.devPanelAriaLabel')"
             data-testid="sandbox-dev-panel-drawer"
         >
             <button
@@ -107,8 +106,6 @@
                 :replace-query="replaceQuery"
                 :reset-state="resetState"
                 :run-http-ping="runHttpPing"
-                :run-local-demo="runLocalDemo"
-                :open-retail-crm-test-page="openRetailCrmTestPage"
                 :sandbox="sandbox"
                 :selected-targets="selectedTargets"
                 :set-extension-url="setExtensionUrl"
@@ -144,6 +141,7 @@ import type { SandboxRuntime, SandboxWorkerApi } from '@/app/runtime/mounts'
 import { computed } from 'vue'
 import { createEndpoint as createRpcEndpoint, fromWebWorker } from '@remote-ui/rpc'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import DevPanel from '@/app/components/DevPanel.vue'
 import ExtensionOnboarding from '@/app/components/ExtensionOnboarding.vue'
@@ -159,8 +157,7 @@ import { CORE_UI_EXTENSION_EXAMPLE_TARGET } from '@/dev/launch'
 import { createDefaultSandboxManifestUrl } from '@/dev/launch'
 import { createMounts } from '@/app/runtime/mounts'
 import { createOrderSandboxController } from '@/dev/fixtures'
-import { DEFAULT_DEMO_TARGETS } from '@/app/runtime/mounts'
-import { DEFAULT_SANDBOX_EXTENSION_URL } from '@/dev/launch'
+import { DEFAULT_SANDBOX_TARGETS } from '@/app/runtime/mounts'
 import { parseSandboxLaunchConfig } from '@/dev/launch'
 import { resolveSandboxExtensionSource } from '@/dev/manifest'
 import { updateSandboxLaunchQuery } from '@/dev/launch'
@@ -169,7 +166,7 @@ const searchParams = new URLSearchParams(window.location.search)
 const hasExplicitExtensionUrl = Boolean(searchParams.get('extensionUrl')?.trim())
 const launchConfig = parseSandboxLaunchConfig(searchParams, {
   manifestUrl: createDefaultSandboxManifestUrl(),
-  targets: DEFAULT_DEMO_TARGETS,
+  targets: DEFAULT_SANDBOX_TARGETS,
 })
 const extensionUrl = ref(launchConfig.extensionUrl)
 const fixture = ref(launchConfig.fixture)
@@ -182,11 +179,12 @@ const mounts = createMounts(launchConfig)
 const runtime = ref<SandboxRuntime | null>(null)
 const isDevPanelOpen = ref(false)
 const isSidebarOpen = ref(true)
+const { t } = useI18n()
 
 const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExplicitExtensionUrl)
 const runModeLabel = computed(() => launchConfig.mode === 'page'
-  ? `Page: ${launchConfig.pageCode}`
-  : `Widgets: ${launchConfig.targets.length}`)
+  ? t('app.runMode.page', { pageCode: launchConfig.pageCode })
+  : t('app.runMode.widgets', { count: launchConfig.targets.length }))
 
 const flushReceiver = async () => {
   await Promise.all(mounts.map(async (mount) => {
@@ -273,7 +271,7 @@ const applyLaunchConfig = () => {
     pageCode: pageCode.value,
     targets: selectedTargets.value.length > 0
       ? selectedTargets.value
-      : DEFAULT_DEMO_TARGETS,
+      : DEFAULT_SANDBOX_TARGETS,
     widgetId: launchConfig.widgetId,
   }).toString()
 }
@@ -326,13 +324,6 @@ const openCoreUiExtensionExampleReturnsPage = () => {
   mode.value = 'page'
   pageCode.value = CORE_UI_EXTENSION_EXAMPLE_PAGE_CODE
   selectedTargets.value = [CORE_UI_EXTENSION_EXAMPLE_TARGET]
-  applyLaunchConfig()
-}
-
-const runLocalDemo = () => {
-  manifestUrl.value = ''
-  extensionUrl.value = DEFAULT_SANDBOX_EXTENSION_URL
-  selectedTargets.value = [...DEFAULT_DEMO_TARGETS]
   applyLaunchConfig()
 }
 
@@ -491,7 +482,9 @@ onBeforeUnmount(() => {
     background: @grey-200;
     display: grid;
     grid-template-columns: 64px 256px minmax(0, 1fr);
-    min-height: 100vh;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
     position: relative;
     transition: grid-template-columns @transition;
 
@@ -509,12 +502,15 @@ onBeforeUnmount(() => {
         border-radius: 16px 0 0 0;
         box-shadow: 0 8px 16px rgba(30, 34, 72, 0.16);
         grid-column: 3;
-        min-height: 100vh;
+        height: 100vh;
+        min-height: 0;
+        overflow: auto;
         position: relative;
     }
 
     &__extension-canvas {
-        min-height: 100vh;
+        box-sizing: border-box;
+        min-height: 100%;
         padding: 56px;
     }
 

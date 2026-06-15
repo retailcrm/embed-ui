@@ -1705,6 +1705,7 @@ __metadata:
     vite-svg-loader: "npm:^5.1.0"
     vitest: "npm:4.1.8"
     vue: "npm:^3.5.32"
+    vue-i18n: "npm:10.0.8"
   peerDependencies:
     "@omnicajs/vue-remote": ^0.2.24
     "@remote-ui/rpc": ^1.4

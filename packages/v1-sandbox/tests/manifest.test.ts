@@ -10,9 +10,9 @@ import {
 import { resolveSandboxExtensionSource } from '@/dev/manifest'
 
 const config = (overrides: Partial<SandboxLaunchConfig> = {}): SandboxLaunchConfig => ({
-  extensionUrl: '/src/demo-extension/index.ts',
+  extensionUrl: '/src/direct-extension.js',
   fixture: 'order-basic',
-  manifestUrl: '/demo-extension/manifest.json',
+  manifestUrl: '/extension/manifest.json',
   mode: 'widget',
   pageCode: 'orders-dashboard',
   targets: ['order/card:common.before'],

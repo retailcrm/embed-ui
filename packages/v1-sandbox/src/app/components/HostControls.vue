@@ -4,7 +4,7 @@
         data-testid="host-controls"
     >
         <div :class="$style['host-controls__title']">
-            Host environment
+            {{ t('hostControls.title') }}
         </div>
 
         <div
@@ -20,14 +20,17 @@
 import type { SandboxLaunchConfig } from '@/dev/launch'
 
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   config: SandboxLaunchConfig;
 }>()
 
+const { t } = useI18n()
+
 const runModeLabel = computed(() => props.config.mode === 'page'
-  ? `Page: ${props.config.pageCode}`
-  : `Widgets: ${props.config.targets.length}`)
+  ? t('hostControls.page', { pageCode: props.config.pageCode })
+  : t('hostControls.widgets', { count: props.config.targets.length }))
 </script>
 
 <style scoped lang="less" module>

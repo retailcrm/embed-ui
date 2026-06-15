@@ -1,0 +1,81 @@
+{
+  "app": {
+    "devPanelAriaLabel": "Управление песочницей",
+    "devPanelToggle": "Песочница",
+    "runMode": {
+      "page": "Страница: {pageCode}",
+      "widgets": "Виджеты: {count}"
+    }
+  },
+  "devPanel": {
+    "actions": {
+      "apply": "Применить",
+      "openDemoPage": "Открыть страницу примера",
+      "reloadExtension": "Перезапустить расширение",
+      "resetState": "Сбросить состояние",
+      "useDemoExtension": "Использовать пример расширения"
+    },
+    "delivery": {
+      "empty": "Сейчас URL расширения пустой. Без прямого URL будет показана стартовая страница.",
+      "title": "Доставка JS-модуля",
+      "used": "Сейчас используется внешний URL расширения.",
+      "workflow": "extension URL → descriptor/entrypoint/script → worker"
+    },
+    "directExtensionUrl": {
+      "hint": "Используется только когда URL расширения пустой.",
+      "label": "Прямой URL расширения"
+    },
+    "extensionUrl": "URL расширения",
+    "fixture": "Фикстура",
+    "fixtures": {
+      "orderBasic": "Базовый заказ",
+      "orderReadonlyError": "Readonly / error-like",
+      "orderWithDelivery": "Заказ с доставкой"
+    },
+    "hostActivity": {
+      "empty": "Нет действий",
+      "title": "Активность хоста"
+    },
+    "hostApiActions": "Действия Host API",
+    "mode": "Режим",
+    "modeOptions": {
+      "page": "Страница",
+      "widgets": "Виджеты"
+    },
+    "pageCode": "Код страницы",
+    "stateSnapshot": "Снимок состояния",
+    "targets": "Таргеты",
+    "title": "Управление песочницей"
+  },
+  "extensionOnboarding": {
+    "actions": {
+      "apply": "Открыть с URL расширения",
+      "configure": "Настроить расширение",
+      "openDemoPage": "Открыть страницу примера",
+      "useDemoExtension": "Использовать пример расширения"
+    },
+    "description": "Песочница подключает frontend-часть JS-модуля по внешнему URL: manifest/descriptor, HTML entrypoint или JS script. Она загружает ресурсы по сети, подключает stylesheet при наличии и запускает расширение через worker-compatible endpoint.",
+    "eyebrow": "Доставка JS-модуля",
+    "extensionUrl": "URL расширения",
+    "placeholder": "https://your-extension-host.ru/extension/<uuid>",
+    "steps": {
+      "devServer": "Поднимите dev-сервер вашего модуля, который отдаёт frontend-ресурсы по HTTP.",
+      "entrypoint": "Укажите URL entrypoint или descriptor: JS script, HTML entrypoint или JSON manifest.",
+      "worker": "Для актуального сценария entrypoint должен запускать `runEndpoint(defineRunner(...))`, а descriptor — описывать `runner: \"worker\"`, `targets` и/или `pages`."
+    },
+    "title": "Подключите внешнее расширение"
+  },
+  "hostControls": {
+    "page": "Страница: {pageCode}",
+    "title": "Host-окружение",
+    "widgets": "Виджеты: {count}"
+  },
+  "rail": {
+    "analyticsSection": "Раздел аналитики",
+    "locationSection": "Раздел геолокации",
+    "mainSection": "Основной раздел",
+    "notifications": "Уведомления",
+    "ordersSection": "Раздел заказов",
+    "settings": "Настройки"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "app": {
+    "devPanelAriaLabel": "Controles de sandbox",
+    "devPanelToggle": "Sandbox",
+    "runMode": {
+      "page": "Página: {pageCode}",
+      "widgets": "Widgets: {count}"
+    }
+  },
+  "devPanel": {
+    "actions": {
+      "apply": "Aplicar",
+      "openDemoPage": "Abrir página de ejemplo",
+      "reloadExtension": "Recargar extensión",
+      "resetState": "Restablecer estado",
+      "useDemoExtension": "Usar extensión de ejemplo"
+    },
+    "delivery": {
+      "empty": "Extension URL está vacío. Sin direct URL se mostrará onboarding.",
+      "title": "Entrega de módulo JS",
+      "used": "Ahora se usa un Extension URL externo.",
+      "workflow": "extension URL → descriptor/entrypoint/script → worker"
+    },
+    "directExtensionUrl": {
+      "hint": "Se usa solo cuando Extension URL está vacío.",
+      "label": "Direct extension URL"
+    },
+    "extensionUrl": "Extension URL",
+    "fixture": "Fixture",
+    "fixtures": {
+      "orderBasic": "Pedido básico",
+      "orderReadonlyError": "Readonly / error-like",
+      "orderWithDelivery": "Pedido con entrega"
+    },
+    "hostActivity": {
+      "empty": "Sin acciones",
+      "title": "Actividad del host"
+    },
+    "hostApiActions": "Acciones de Host API",
+    "mode": "Modo",
+    "modeOptions": {
+      "page": "Página",
+      "widgets": "Widgets"
+    },
+    "pageCode": "Código de página",
+    "stateSnapshot": "Snapshot de estado",
+    "targets": "Targets",
+    "title": "Controles de sandbox"
+  },
+  "extensionOnboarding": {
+    "actions": {
+      "apply": "Abrir con Extension URL",
+      "configure": "Configurar extensión",
+      "openDemoPage": "Abrir página de ejemplo",
+      "useDemoExtension": "Usar extensión de ejemplo"
+    },
+    "description": "Sandbox conecta la parte frontend de un módulo JS por una URL externa: manifest/descriptor, HTML entrypoint o JS script. Carga los recursos por red, conecta stylesheet si existe y arranca la extensión mediante un endpoint compatible con worker.",
+    "eyebrow": "Entrega de módulo JS",
+    "extensionUrl": "Extension URL",
+    "placeholder": "https://your-extension-host.ru/extension/<uuid>",
+    "steps": {
+      "devServer": "Levante el dev server de su módulo que sirve recursos frontend por HTTP.",
+      "entrypoint": "Indique la URL de entrypoint o descriptor: JS script, HTML entrypoint o JSON manifest.",
+      "worker": "Para el escenario actual, el entrypoint debe ejecutar `runEndpoint(defineRunner(...))`, y el descriptor debe definir `runner: \"worker\"`, `targets` y/o `pages`."
+    },
+    "title": "Conectar una extensión externa"
+  },
+  "hostControls": {
+    "page": "Página: {pageCode}",
+    "title": "Entorno host",
+    "widgets": "Widgets: {count}"
+  },
+  "rail": {
+    "analyticsSection": "Sección de analítica",
+    "locationSection": "Sección de ubicación",
+    "mainSection": "Sección principal",
+    "notifications": "Notificaciones",
+    "ordersSection": "Sección de pedidos",
+    "settings": "Ajustes"
+  }
+}

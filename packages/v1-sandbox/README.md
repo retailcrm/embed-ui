@@ -86,12 +86,11 @@ http://v1.embed-ui-sandbox.local/?manifestUrl=http://web-extensions-server.simla
 если это JSON manifest, получает descriptor (`uuid`, `runner`, `entrypoint`,
 `targets`, `pages`); если это HTML entrypoint, достаёт первый `<script src>`
 из `<head>`; если это JS, запускает его напрямую через локальный bootstrap
-worker. Если нужно отладить прямой worker entrypoint без внешнего URL,
-можно передать пустой
-`manifestUrl` и `extensionUrl`:
+worker. Если нужно отладить прямой worker entrypoint без manifest endpoint,
+можно передать пустой `manifestUrl` и внешний `extensionUrl`:
 
 ```text
-http://v1.embed-ui-sandbox.local/?manifestUrl=&extensionUrl=/src/demo-extension/index.ts
+http://v1.embed-ui-sandbox.local/?manifestUrl=&extensionUrl=http://your-extension-host.local/entrypoint.js
 ```
 
 Внешний extension server должен отдавать entrypoint по сети. Для

@@ -50,6 +50,9 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
 import IconChart from '~assets/sprites/technology-and-data/chart_bar_2.svg'
 import IconLocation from '~assets/sprites/map-and-places/my_location.svg'
 import IconNotifications from '~assets/sprites/alerts/notifications_outlined.svg'
@@ -63,39 +66,41 @@ type RailItem = {
   label: string;
 }
 
-const topItems: RailItem[] = [
+const { t } = useI18n()
+
+const topItems = computed<RailItem[]>(() => [
   {
     active: true,
     icon: IconShoppingBasket,
-    label: 'Orders section',
+    label: t('rail.ordersSection'),
   },
   {
     active: false,
     icon: IconRobot,
-    label: 'Main section',
+    label: t('rail.mainSection'),
   },
   {
     active: false,
     icon: IconLocation,
-    label: 'Location section',
+    label: t('rail.locationSection'),
   },
   {
     active: false,
     icon: IconChart,
-    label: 'Analytics section',
+    label: t('rail.analyticsSection'),
   },
-]
+])
 
-const bottomItems: RailItem[] = [
+const bottomItems = computed<RailItem[]>(() => [
   {
     icon: IconNotifications,
-    label: 'Notifications',
+    label: t('rail.notifications'),
   },
   {
     icon: IconSettings,
-    label: 'Settings',
+    label: t('rail.settings'),
   },
-]
+])
 </script>
 
 <style scoped lang="less" module>
@@ -111,7 +116,9 @@ const bottomItems: RailItem[] = [
     display: flex;
     flex-direction: column;
     gap: @spacing-xs;
-    min-height: 100vh;
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
     padding: @spacing-s 0;
 
     &__logo {

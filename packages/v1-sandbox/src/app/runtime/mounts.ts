@@ -50,7 +50,7 @@ export type SandboxMount = {
   type: 'page' | 'widget';
 }
 
-export const DEFAULT_DEMO_TARGETS: SandboxOrderTarget[] = [
+export const DEFAULT_SANDBOX_TARGETS: SandboxOrderTarget[] = [
   'order/card:common.before',
   'order/card:common.after',
 ]

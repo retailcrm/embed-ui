@@ -9,18 +9,13 @@ import {
   parseSandboxLaunchConfig,
 } from '@/dev/launch'
 
-test('uses demo extension folder entrypoint as default url', () => {
-  expect(DEFAULT_SANDBOX_EXTENSION_URL).toBe('/src/demo-extension/index.ts')
+test('does not use bundled extension entrypoint by default', () => {
+  expect(DEFAULT_SANDBOX_EXTENSION_URL).toBe('')
   expect(DEFAULT_SANDBOX_MANIFEST_URL).toBe('')
 })
 
 test('does not assume bundled external extension server', () => {
-  expect(createDefaultSandboxManifestUrl('http://v1.embed-ui-sandbox.local/orders')).toBe(
-    ''
-  )
-  expect(createDefaultSandboxManifestUrl('http://127.0.0.1:4173/')).toBe(
-    ''
-  )
+  expect(createDefaultSandboxManifestUrl()).toBe('')
 })
 
 test('parses sandbox launch config from url params', () => {
@@ -52,7 +47,7 @@ test('parses multiple widget targets and page mode', () => {
   }))
 
   expect(config).toEqual({
-    extensionUrl: DEFAULT_SANDBOX_EXTENSION_URL,
+    extensionUrl: '',
     fixture: 'order-basic',
     manifestUrl: DEFAULT_SANDBOX_MANIFEST_URL,
     mode: 'page',
@@ -74,7 +69,7 @@ test('falls back to safe defaults for empty and unsupported values', () => {
   }))
 
   expect(config).toEqual({
-    extensionUrl: DEFAULT_SANDBOX_EXTENSION_URL,
+    extensionUrl: '',
     fixture: 'order-basic',
     manifestUrl: DEFAULT_SANDBOX_MANIFEST_URL,
     mode: 'widget',

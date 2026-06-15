@@ -2,7 +2,7 @@ import type { SandboxOrderTarget } from '@/dev/targets'
 
 import { DEFAULT_SANDBOX_TARGET, isSandboxOrderTarget } from '@/dev/targets'
 
-export const DEFAULT_SANDBOX_EXTENSION_URL = '/src/demo-extension/index.ts'
+export const DEFAULT_SANDBOX_EXTENSION_URL = ''
 export const DEFAULT_SANDBOX_FIXTURE = 'order-basic'
 export const DEFAULT_SANDBOX_MANIFEST_URL = ''
 export const DEFAULT_SANDBOX_MODE = 'widget'

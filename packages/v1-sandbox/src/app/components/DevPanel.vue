@@ -5,17 +5,17 @@
     >
         <section :class="$style['dev-panel__card']">
             <h2 :class="$style['dev-panel__card-title']">
-                Sandbox controls
+                {{ t('devPanel.title') }}
             </h2>
 
             <div :class="$style['dev-panel__delivery-note']">
-                <strong>External delivery</strong>
-                <span>extension URL → HTML/manifest/script → worker</span>
+                <strong>{{ t('devPanel.delivery.title') }}</strong>
+                <span>{{ t('devPanel.delivery.workflow') }}</span>
                 <span v-if="props.manifestUrl">
-                    Сейчас используется внешний extension URL.
+                    {{ t('devPanel.delivery.used') }}
                 </span>
                 <span v-else>
-                    Сейчас manifest пустой. Без явного direct URL будет показан onboarding.
+                    {{ t('devPanel.delivery.empty') }}
                 </span>
 
                 <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
@@ -28,7 +28,7 @@
                         type="button"
                         @click="props.useCoreUiExtensionExample"
                     >
-                        Use core example
+                        {{ t('devPanel.actions.useDemoExtension') }}
                     </button>
 
                     <button
@@ -37,22 +37,15 @@
                         type="button"
                         @click="props.openCoreUiExtensionExampleReturnsPage"
                     >
-                        Open returns page
-                    </button>
-
-                    <button
-                        :class="$style['dev-panel__button']"
-                        data-testid="sandbox-run-local-demo"
-                        type="button"
-                        @click="props.runLocalDemo"
-                    >
-                        Run local demo fallback
+                        {{ t('devPanel.actions.openDemoPage') }}
                     </button>
                 </div>
             </div>
 
             <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">Extension URL</span>
+                <span :class="$style['dev-panel__field-label']">
+                    {{ t('devPanel.extensionUrl') }}
+                </span>
                 <input
                     :class="$style['dev-panel__input']"
                     :value="props.manifestUrl"
@@ -63,7 +56,9 @@
             </label>
 
             <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">Direct extension URL</span>
+                <span :class="$style['dev-panel__field-label']">
+                    {{ t('devPanel.directExtensionUrl.label') }}
+                </span>
                 <input
                     :class="$style['dev-panel__input']"
                     :value="props.extensionUrl"
@@ -72,13 +67,13 @@
                     @input="updateExtensionUrl"
                 />
                 <span :class="$style['dev-panel__field-hint']">
-                    Used only when Manifest URL is empty.
+                    {{ t('devPanel.directExtensionUrl.hint') }}
                 </span>
             </label>
 
             <div :class="$style['dev-panel__field']">
                 <div :class="$style['dev-panel__field-label']">
-                    Mode
+                    {{ t('devPanel.mode') }}
                 </div>
 
                 <select
@@ -89,10 +84,10 @@
                     @change="updateMode"
                 >
                     <option value="widget">
-                        Widgets
+                        {{ t('devPanel.modeOptions.widgets') }}
                     </option>
                     <option value="page">
-                        Page
+                        {{ t('devPanel.modeOptions.page') }}
                     </option>
                 </select>
 
@@ -136,7 +131,7 @@
 
             <div :class="$style['dev-panel__field']">
                 <div :class="$style['dev-panel__field-label']">
-                    Fixture
+                    {{ t('devPanel.fixture') }}
                 </div>
 
                 <select
@@ -194,7 +189,9 @@
             </div>
 
             <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">Page code</span>
+                <span :class="$style['dev-panel__field-label']">
+                    {{ t('devPanel.pageCode') }}
+                </span>
                 <input
                     :class="$style['dev-panel__input']"
                     :disabled="props.mode !== 'page'"
@@ -207,7 +204,7 @@
 
             <div :class="$style['dev-panel__field']">
                 <div :class="$style['dev-panel__field-label']">
-                    Targets
+                    {{ t('devPanel.targets') }}
                 </div>
 
                 <div
@@ -237,7 +234,7 @@
                     type="button"
                     @click="props.applyLaunchConfig"
                 >
-                    Применить
+                    {{ t('devPanel.actions.apply') }}
                 </button>
                 <button
                     :class="$style['dev-panel__button']"
@@ -245,7 +242,7 @@
                     type="button"
                     @click="props.reloadExtension"
                 >
-                    Reload extension
+                    {{ t('devPanel.actions.reloadExtension') }}
                 </button>
                 <button
                     :class="$style['dev-panel__button']"
@@ -253,14 +250,14 @@
                     type="button"
                     @click="props.resetState"
                 >
-                    Reset state
+                    {{ t('devPanel.actions.resetState') }}
                 </button>
             </div>
         </section>
 
         <section :class="$style['dev-panel__card']">
             <h2 :class="$style['dev-panel__card-title']">
-                Host API actions
+                {{ t('devPanel.hostApiActions') }}
             </h2>
 
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
@@ -301,7 +298,7 @@
 
         <section :class="$style['dev-panel__card']">
             <h2 :class="$style['dev-panel__card-title']">
-                Host activity
+                {{ t('devPanel.hostActivity.title') }}
             </h2>
 
             <ul
@@ -310,7 +307,7 @@
             >
                 <template v-if="hostActivity.length === 0">
                     <li :class="[$style['dev-panel__activity-item'], $style['dev-panel__activity-item_empty']]">
-                        Нет действий
+                        {{ t('devPanel.hostActivity.empty') }}
                     </li>
                 </template>
 
@@ -330,7 +327,7 @@
 
         <section :class="$style['dev-panel__card']">
             <h2 :class="$style['dev-panel__card-title']">
-                State snapshot
+                {{ t('devPanel.stateSnapshot') }}
             </h2>
 
             <pre
@@ -348,6 +345,7 @@ import type { SandboxLaunchMode } from '@/dev/launch'
 import type { SandboxOrderTarget } from '@/dev/targets'
 
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { ORDER_SANDBOX_SLOTS } from '@/dev/targets'
 import { orderSandboxFixtures } from '@/dev/fixtures'
@@ -368,7 +366,6 @@ const props = defineProps<{
   replaceQuery(): void;
   resetState(): Promise<void>;
   runHttpPing(): Promise<void>;
-  runLocalDemo(): void;
   sandbox: OrderSandboxController;
   selectedTargets: SandboxOrderTarget[];
   setExtensionUrl(value: string): void;
@@ -382,26 +379,32 @@ const props = defineProps<{
 
 type OpenSelect = 'fixture' | 'mode' | null
 
+const { t } = useI18n()
 const openSelect = ref<OpenSelect>(null)
-const modeOptions: Array<{
+const fixtureLabelKeys: Record<string, string> = {
+  'order-basic': 'devPanel.fixtures.orderBasic',
+  'order-readonly-error': 'devPanel.fixtures.orderReadonlyError',
+  'order-with-delivery': 'devPanel.fixtures.orderWithDelivery',
+}
+const modeOptions = computed<Array<{
   label: string;
   value: SandboxLaunchMode;
-}> = [
+}>>(() => [
   {
-    label: 'Widgets',
+    label: t('devPanel.modeOptions.widgets'),
     value: 'widget',
   },
   {
-    label: 'Page',
+    label: t('devPanel.modeOptions.page'),
     value: 'page',
   },
-]
+])
 const fixtureOptions = computed(() => Object.entries(orderSandboxFixtures).map(([code, fixture]) => ({
   code,
-  name: fixture.name,
+  name: fixtureLabelKeys[code] ? t(fixtureLabelKeys[code]) : fixture.name,
 })))
 const selectedModeLabel = computed(() =>
-  modeOptions.find(option => option.value === props.mode)?.label ?? props.mode
+  modeOptions.value.find(option => option.value === props.mode)?.label ?? props.mode
 )
 const selectedFixtureLabel = computed(() =>
   fixtureOptions.value.find(option => option.code === props.fixture)?.name ?? props.fixture

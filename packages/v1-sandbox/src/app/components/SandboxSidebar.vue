@@ -86,7 +86,8 @@ const menuItems = [
 .sandbox-sidebar {
     background: @grey-200;
     grid-column: 2;
-    min-height: 100vh;
+    height: 100vh;
+    min-height: 0;
     overflow: hidden;
     padding: 28px @spacing-s @spacing-m;
     transition: opacity @transition, padding @transition;

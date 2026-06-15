@@ -6,4 +6,8 @@ import { createApp } from 'vue'
 
 import App from '@/app/App.vue'
 
-createApp(App).mount('#app')
+import { sandboxI18n } from '@/app/i18n'
+
+createApp(App)
+  .use(sandboxI18n)
+  .mount('#app')
