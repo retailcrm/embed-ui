@@ -1,24 +1,32 @@
 <template>
     <section
+        :id="uid + '-extension-onboarding'"
         :class="$style['extension-onboarding']"
-        data-testid="sandbox-extension-onboarding"
+        :aria-labelledby="uid + '-extension-onboarding-title'"
     >
         <div :class="$style['extension-onboarding__content']">
             <p :class="$style['extension-onboarding__eyebrow']">
                 {{ t('extensionOnboarding.eyebrow') }}
             </p>
 
-            <h1 :class="$style['extension-onboarding__title']">
+            <h1
+                :id="uid + '-extension-onboarding-title'"
+                :class="$style['extension-onboarding__title']"
+            >
                 {{ t('extensionOnboarding.title') }}
             </h1>
 
-            <p :class="$style['extension-onboarding__description']">
+            <p
+                :class="$style['extension-onboarding__description']"
+            >
                 {{ t('extensionOnboarding.description') }}
             </p>
 
             <ol :class="$style['extension-onboarding__steps']">
                 <li>{{ t('extensionOnboarding.steps.devServer') }}</li>
+
                 <li>{{ t('extensionOnboarding.steps.entrypoint') }}</li>
+
                 <li>{{ t('extensionOnboarding.steps.worker') }}</li>
             </ol>
 
@@ -26,23 +34,25 @@
                 <span :class="$style['extension-onboarding__label']">
                     {{ t('extensionOnboarding.extensionUrl') }}
                 </span>
+
                 <input
                     :class="$style['extension-onboarding__input']"
                     :value="manifestUrl"
-                    data-testid="sandbox-onboarding-manifest-url"
                     :placeholder="t('extensionOnboarding.placeholder')"
                     type="text"
                     @input="updateManifestUrl"
                 />
             </label>
 
-            <div :class="$style['extension-onboarding__actions']">
+            <div
+                :class="$style['extension-onboarding__actions']"
+                role="group"
+            >
                 <button
                     :class="[
                         $style['extension-onboarding__button'],
                         $style['extension-onboarding__button_primary'],
                     ]"
-                    data-testid="sandbox-onboarding-use-core-ui-extension-example"
                     type="button"
                     @click="useCoreUiExtensionExample"
                 >
@@ -51,7 +61,6 @@
 
                 <button
                     :class="$style['extension-onboarding__button']"
-                    data-testid="sandbox-onboarding-apply"
                     type="button"
                     @click="apply"
                 >
@@ -60,7 +69,6 @@
 
                 <button
                     :class="$style['extension-onboarding__button']"
-                    data-testid="sandbox-onboarding-open-core-ui-extension-example-returns"
                     type="button"
                     @click="openCoreUiExtensionExampleReturnsPage"
                 >
@@ -69,7 +77,6 @@
 
                 <button
                     :class="$style['extension-onboarding__button']"
-                    data-testid="sandbox-onboarding-open-controls"
                     type="button"
                     @click="openDevPanel"
                 >
@@ -83,6 +90,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useId } from 'vue'
 
 const props = defineProps<{
   apply(): void;
@@ -93,18 +101,89 @@ const props = defineProps<{
   useCoreUiExtensionExample(): void;
 }>()
 
-const { t } = useI18n()
+const { t } = useI18n({ useScope: 'local' })
+
+const uid = useId()
 
 const updateManifestUrl = (event: Event) => {
   props.setManifestUrl((event.target as HTMLInputElement).value)
 }
 </script>
 
-<style scoped lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
+<i18n locale="en-GB">
+{
+    "extensionOnboarding": {
+        "actions": {
+            "apply": "Open with Extension URL",
+            "configure": "Configure extension",
+            "openDemoPage": "Open example page",
+            "useDemoExtension": "Use example extension"
+        },
+        "description": "Sandbox connects the frontend part of a JS module by external URL: manifest/descriptor, HTML entrypoint or JS script. It loads resources over the network, attaches stylesheet when available and starts the extension through a worker-compatible endpoint.",
+        "eyebrow": "JS module delivery",
+        "extensionUrl": "Extension URL",
+        "placeholder": "https://your-extension-host.ru/extension/module-id",
+        "steps": {
+            "devServer": "Run your module dev server that serves frontend resources over HTTP.",
+            "entrypoint": "Provide an entrypoint or descriptor URL: JS script, HTML entrypoint or JSON manifest.",
+            "worker": "For the current scenario, the entrypoint should run `runEndpoint(defineRunner(...))`, and the descriptor should define `runner: \"worker\"`, `targets` and/or `pages`."
+        },
+        "title": "Connect an external extension"
+    }
+}
+</i18n>
+
+<i18n locale="es-ES">
+{
+    "extensionOnboarding": {
+        "actions": {
+            "apply": "Abrir con Extension URL",
+            "configure": "Configurar extensión",
+            "openDemoPage": "Abrir página de ejemplo",
+            "useDemoExtension": "Usar extensión de ejemplo"
+        },
+        "description": "Sandbox conecta la parte frontend de un módulo JS por una URL externa: manifest/descriptor, HTML entrypoint o JS script. Carga los recursos por red, conecta stylesheet si existe y arranca la extensión mediante un endpoint compatible con worker.",
+        "eyebrow": "Entrega de módulo JS",
+        "extensionUrl": "Extension URL",
+        "placeholder": "https://your-extension-host.ru/extension/module-id",
+        "steps": {
+            "devServer": "Levante el dev server de su módulo que sirve recursos frontend por HTTP.",
+            "entrypoint": "Indique la URL de entrypoint o descriptor: JS script, HTML entrypoint o JSON manifest.",
+            "worker": "Para el escenario actual, el entrypoint debe ejecutar `runEndpoint(defineRunner(...))`, y el descriptor debe definir `runner: \"worker\"`, `targets` y/o `pages`."
+        },
+        "title": "Conectar una extensión externa"
+    }
+}
+</i18n>
+
+<i18n locale="ru-RU">
+{
+    "extensionOnboarding": {
+        "actions": {
+            "apply": "Открыть с URL расширения",
+            "configure": "Настроить расширение",
+            "openDemoPage": "Открыть страницу примера",
+            "useDemoExtension": "Использовать пример расширения"
+        },
+        "description": "Песочница подключает frontend-часть JS-модуля по внешнему URL: manifest/descriptor, HTML entrypoint или JS script. Она загружает ресурсы по сети, подключает stylesheet при наличии и запускает расширение через worker-compatible endpoint.",
+        "eyebrow": "Доставка JS-модуля",
+        "extensionUrl": "URL расширения",
+        "placeholder": "https://your-extension-host.ru/extension/module-id",
+        "steps": {
+            "devServer": "Поднимите dev-сервер вашего модуля, который отдаёт frontend-ресурсы по HTTP.",
+            "entrypoint": "Укажите URL entrypoint или descriptor: JS script, HTML entrypoint или JSON manifest.",
+            "worker": "Для актуального сценария entrypoint должен запускать `runEndpoint(defineRunner(...))`, а descriptor — описывать `runner: \"worker\"`, `targets` и/или `pages`."
+        },
+        "title": "Подключите внешнее расширение"
+    }
+}
+</i18n>
+
+<style lang="less" module>
+@import (reference) "~assets/stylesheets/palette.less";
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/geometry.less";
+@import (reference) "~assets/stylesheets/variables.less";
 
 .extension-onboarding {
     align-items: center;

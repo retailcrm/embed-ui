@@ -1,15 +1,13 @@
 <template>
     <aside
+        :id="id"
         :class="[
             $style['sandbox-sidebar'],
             !open && $style['sandbox-sidebar_closed'],
         ]"
-        :data-open="String(open)"
-        data-testid="sandbox-sidebar"
     >
         <div
             :class="$style['sandbox-sidebar__section-title']"
-            data-testid="sandbox-sidebar-skeleton"
         />
 
         <nav :class="$style['sandbox-sidebar__menu']">
@@ -20,7 +18,6 @@
                     $style['sandbox-sidebar__menu-item'],
                     item.active && $style['sandbox-sidebar__menu-item_active'],
                 ]"
-                data-testid="sandbox-sidebar-skeleton"
             >
                 <span
                     :class="$style['sandbox-sidebar__menu-item-skeleton']"
@@ -31,13 +28,13 @@
 
         <div
             :class="$style['sandbox-sidebar__add-link']"
-            data-testid="sandbox-sidebar-skeleton"
         />
     </aside>
 </template>
 
 <script setup lang="ts">
 defineProps<{
+  id: string;
   open: boolean;
 }>()
 
@@ -77,11 +74,11 @@ const menuItems = [
 ]
 </script>
 
-<style scoped lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
+<style lang="less" module>
+@import (reference) "~assets/stylesheets/palette.less";
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/geometry.less";
+@import (reference) "~assets/stylesheets/variables.less";
 
 .sandbox-sidebar {
     background: @grey-200;

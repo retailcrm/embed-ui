@@ -1,8 +1,8 @@
 <template>
     <section
         :class="$style['widget-mount']"
-        :data-target="mount.label"
-        :data-testid="mount.testId"
+        :aria-label="`Widget target: ${mount.label}`"
+        role="region"
     >
         <div :class="$style['widget-mount__label']">
             {{ mount.label }}
@@ -38,11 +38,11 @@ const setTree: VNodeRef = (tree) => {
 }
 </script>
 
-<style scoped lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
+<style lang="less" module>
+@import (reference) "~assets/stylesheets/palette.less";
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/geometry.less";
+@import (reference) "~assets/stylesheets/variables.less";
 
 .widget-mount {
     background: #fff;

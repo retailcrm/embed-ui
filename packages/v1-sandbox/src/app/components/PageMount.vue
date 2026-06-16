@@ -1,8 +1,8 @@
 <template>
     <section
         :class="$style['page-mount']"
-        :data-page-code="mount.label"
-        :data-testid="mount.testId"
+        :aria-label="`Page extension: ${mount.label}`"
+        role="region"
     >
         <HostedTree
             :ref="setTree"
@@ -34,10 +34,10 @@ const setTree: VNodeRef = (tree) => {
 }
 </script>
 
-<style scoped lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
+<style lang="less" module>
+@import (reference) "~assets/stylesheets/palette.less";
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/geometry.less";
 
 .page-mount {
     background: @grey-100;

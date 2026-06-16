@@ -1,19 +1,23 @@
 <template>
-    <aside
-        :class="$style['dev-panel']"
-        data-testid="sandbox-dev-panel"
-    >
-        <section :class="$style['dev-panel__card']">
-            <h2 :class="$style['dev-panel__card-title']">
+    <aside :class="$style['dev-panel']">
+        <section
+            :id="uid + '-dev-panel-controls'"
+            :class="$style['dev-panel__card']"
+            :aria-labelledby="uid + '-dev-panel-controls-title'"
+        >
+            <h2 :id="uid + '-dev-panel-controls-title'" :class="$style['dev-panel__card-title']">
                 {{ t('devPanel.title') }}
             </h2>
 
             <div :class="$style['dev-panel__delivery-note']">
                 <strong>{{ t('devPanel.delivery.title') }}</strong>
+
                 <span>{{ t('devPanel.delivery.workflow') }}</span>
+
                 <span v-if="props.manifestUrl">
                     {{ t('devPanel.delivery.used') }}
                 </span>
+
                 <span v-else>
                     {{ t('devPanel.delivery.empty') }}
                 </span>
@@ -24,7 +28,6 @@
                             $style['dev-panel__button'],
                             $style['dev-panel__button_primary'],
                         ]"
-                        data-testid="sandbox-use-core-ui-extension-example"
                         type="button"
                         @click="props.useCoreUiExtensionExample"
                     >
@@ -33,7 +36,6 @@
 
                     <button
                         :class="$style['dev-panel__button']"
-                        data-testid="sandbox-open-core-ui-extension-example-returns"
                         type="button"
                         @click="props.openCoreUiExtensionExampleReturnsPage"
                     >
@@ -46,10 +48,10 @@
                 <span :class="$style['dev-panel__field-label']">
                     {{ t('devPanel.extensionUrl') }}
                 </span>
+
                 <input
                     :class="$style['dev-panel__input']"
                     :value="props.manifestUrl"
-                    data-testid="sandbox-manifest-url"
                     type="text"
                     @input="updateManifestUrl"
                 />
@@ -59,33 +61,37 @@
                 <span :class="$style['dev-panel__field-label']">
                     {{ t('devPanel.directExtensionUrl.label') }}
                 </span>
+
                 <input
                     :class="$style['dev-panel__input']"
                     :value="props.extensionUrl"
-                    data-testid="sandbox-extension-url"
                     type="text"
                     @input="updateExtensionUrl"
                 />
+
                 <span :class="$style['dev-panel__field-hint']">
                     {{ t('devPanel.directExtensionUrl.hint') }}
                 </span>
             </label>
 
             <div :class="$style['dev-panel__field']">
-                <div :class="$style['dev-panel__field-label']">
+                <div
+                    :id="uid + '-dev-panel-mode-label'"
+                    :class="$style['dev-panel__field-label']"
+                >
                     {{ t('devPanel.mode') }}
                 </div>
 
                 <select
                     :class="$style['dev-panel__native-select']"
                     :value="props.mode"
-                    data-testid="sandbox-mode-select"
                     tabindex="-1"
                     @change="updateMode"
                 >
                     <option value="widget">
                         {{ t('devPanel.modeOptions.widgets') }}
                     </option>
+
                     <option value="page">
                         {{ t('devPanel.modeOptions.page') }}
                     </option>
@@ -93,16 +99,17 @@
 
                 <div :class="$style['dev-panel__select']">
                     <button
+                        :aria-label="`${t('devPanel.mode')}: ${selectedModeLabel}`"
                         :aria-expanded="openSelect === 'mode'"
                         :class="$style['dev-panel__select-trigger']"
-                        data-testid="sandbox-mode-select-trigger"
+                        aria-haspopup="listbox"
                         type="button"
                         @click="toggleSelect('mode')"
                     >
                         <span>{{ selectedModeLabel }}</span>
+
                         <span
                             :class="$style['dev-panel__select-chevron']"
-                            aria-hidden="true"
                         >
                             ‹
                         </span>
@@ -111,7 +118,8 @@
                     <div
                         v-if="openSelect === 'mode'"
                         :class="$style['dev-panel__select-popper']"
-                        data-testid="sandbox-mode-select-popper"
+                        :aria-labelledby="uid + '-dev-panel-mode-label'"
+                        role="listbox"
                     >
                         <button
                             v-for="option in modeOptions"
@@ -120,6 +128,8 @@
                                 $style['dev-panel__select-option'],
                                 option.value === props.mode && $style['dev-panel__select-option_selected'],
                             ]"
+                            :aria-selected="option.value === props.mode"
+                            role="option"
                             type="button"
                             @click="selectMode(option.value)"
                         >
@@ -130,14 +140,16 @@
             </div>
 
             <div :class="$style['dev-panel__field']">
-                <div :class="$style['dev-panel__field-label']">
+                <div
+                    :id="uid + '-dev-panel-fixture-label'"
+                    :class="$style['dev-panel__field-label']"
+                >
                     {{ t('devPanel.fixture') }}
                 </div>
 
                 <select
                     :class="$style['dev-panel__native-select']"
                     :value="props.fixture"
-                    data-testid="sandbox-fixture-select"
                     tabindex="-1"
                     @change="updateFixture"
                 >
@@ -152,16 +164,17 @@
 
                 <div :class="$style['dev-panel__select']">
                     <button
+                        :aria-label="`${t('devPanel.fixture')}: ${selectedFixtureLabel}`"
                         :aria-expanded="openSelect === 'fixture'"
                         :class="$style['dev-panel__select-trigger']"
-                        data-testid="sandbox-fixture-select-trigger"
+                        aria-haspopup="listbox"
                         type="button"
                         @click="toggleSelect('fixture')"
                     >
                         <span>{{ selectedFixtureLabel }}</span>
+
                         <span
                             :class="$style['dev-panel__select-chevron']"
-                            aria-hidden="true"
                         >
                             ‹
                         </span>
@@ -170,7 +183,8 @@
                     <div
                         v-if="openSelect === 'fixture'"
                         :class="$style['dev-panel__select-popper']"
-                        data-testid="sandbox-fixture-select-popper"
+                        :aria-labelledby="uid + '-dev-panel-fixture-label'"
+                        role="listbox"
                     >
                         <button
                             v-for="option in fixtureOptions"
@@ -179,6 +193,8 @@
                                 $style['dev-panel__select-option'],
                                 option.code === props.fixture && $style['dev-panel__select-option_selected'],
                             ]"
+                            :aria-selected="option.code === props.fixture"
+                            role="option"
                             type="button"
                             @click="selectFixture(option.code)"
                         >
@@ -192,24 +208,28 @@
                 <span :class="$style['dev-panel__field-label']">
                     {{ t('devPanel.pageCode') }}
                 </span>
+
                 <input
                     :class="$style['dev-panel__input']"
                     :disabled="props.mode !== 'page'"
                     :value="props.pageCode"
-                    data-testid="sandbox-page-code-input"
                     type="text"
                     @input="updatePageCode"
                 />
             </label>
 
             <div :class="$style['dev-panel__field']">
-                <div :class="$style['dev-panel__field-label']">
+                <div
+                    :id="uid + '-dev-panel-targets-label'"
+                    :class="$style['dev-panel__field-label']"
+                >
                     {{ t('devPanel.targets') }}
                 </div>
 
                 <div
                     :class="$style['dev-panel__target-checklist']"
-                    data-testid="sandbox-target-list"
+                    :aria-labelledby="uid + '-dev-panel-targets-label'"
+                    role="group"
                 >
                     <label
                         v-for="slot in ORDER_SANDBOX_SLOTS"
@@ -230,23 +250,22 @@
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
                 <button
                     :class="[$style['dev-panel__button'], $style['dev-panel__button_primary']]"
-                    data-testid="sandbox-apply-config"
                     type="button"
                     @click="props.applyLaunchConfig"
                 >
                     {{ t('devPanel.actions.apply') }}
                 </button>
+
                 <button
                     :class="$style['dev-panel__button']"
-                    data-testid="sandbox-reload-extension"
                     type="button"
                     @click="props.reloadExtension"
                 >
                     {{ t('devPanel.actions.reloadExtension') }}
                 </button>
+
                 <button
                     :class="$style['dev-panel__button']"
-                    data-testid="sandbox-reset-state"
                     type="button"
                     @click="props.resetState"
                 >
@@ -255,39 +274,41 @@
             </div>
         </section>
 
-        <section :class="$style['dev-panel__card']">
-            <h2 :class="$style['dev-panel__card-title']">
+        <section
+            :class="$style['dev-panel__card']"
+            :aria-labelledby="uid + '-dev-panel-host-api-actions-title'"
+        >
+            <h2 :id="uid + '-dev-panel-host-api-actions-title'" :class="$style['dev-panel__card-title']">
                 {{ t('devPanel.hostApiActions') }}
             </h2>
 
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
                 <button
                     :class="$style['dev-panel__button']"
-                    data-testid="sandbox-http-ping"
                     type="button"
                     @click="runHttpPing"
                 >
                     httpCall
                 </button>
+
                 <button
                     :class="$style['dev-panel__button']"
-                    data-testid="sandbox-go-to"
                     type="button"
                     @click="props.goToOrder"
                 >
                     goTo
                 </button>
+
                 <button
                     :class="$style['dev-panel__button']"
-                    data-testid="sandbox-push-query"
                     type="button"
                     @click="props.pushQuery"
                 >
                     pushQuery
                 </button>
+
                 <button
                     :class="$style['dev-panel__button']"
-                    data-testid="sandbox-replace-query"
                     type="button"
                     @click="props.replaceQuery"
                 >
@@ -296,14 +317,14 @@
             </div>
         </section>
 
-        <section :class="$style['dev-panel__card']">
-            <h2 :class="$style['dev-panel__card-title']">
+        <section :aria-labelledby="uid + '-dev-panel-host-activity-title'" :class="$style['dev-panel__card']">
+            <h2 :id="uid + '-dev-panel-host-activity-title'" :class="$style['dev-panel__card-title']">
                 {{ t('devPanel.hostActivity.title') }}
             </h2>
 
             <ul
                 :class="$style['dev-panel__activity-log']"
-                data-testid="sandbox-host-activity"
+                aria-live="polite"
             >
                 <template v-if="hostActivity.length === 0">
                     <li :class="[$style['dev-panel__activity-item'], $style['dev-panel__activity-item_empty']]">
@@ -318,22 +339,25 @@
                         :class="$style['dev-panel__activity-item']"
                     >
                         <span :class="$style['dev-panel__activity-item-kind']">{{ record.kind }}</span>
+
                         <code>{{ record.text }}</code>
+
                         <span :class="$style['dev-panel__activity-item-index']">#{{ record.index }}</span>
                     </li>
                 </template>
             </ul>
         </section>
 
-        <section :class="$style['dev-panel__card']">
-            <h2 :class="$style['dev-panel__card-title']">
+        <section :aria-labelledby="uid + '-dev-panel-state-snapshot-title'" :class="$style['dev-panel__card']">
+            <h2 :id="uid + '-dev-panel-state-snapshot-title'" :class="$style['dev-panel__card-title']">
                 {{ t('devPanel.stateSnapshot') }}
             </h2>
 
             <pre
                 :class="$style['dev-panel__state-snapshot']"
-                data-testid="sandbox-state-snapshot"
-            >{{ stateSnapshot }}</pre>
+            >
+              {{ stateSnapshot }}
+            </pre>
         </section>
     </aside>
 </template>
@@ -346,11 +370,13 @@ import type { SandboxOrderTarget } from '@/dev/targets'
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useId } from 'vue'
 
 import { ORDER_SANDBOX_SLOTS } from '@/dev/targets'
 import { orderSandboxFixtures } from '@/dev/fixtures'
 
 type OrderSandboxController = SandboxController<OrderSandboxSchemas>
+type OpenSelect = 'fixture' | 'mode' | null
 
 const props = defineProps<{
   applyLaunchConfig(): void;
@@ -377,9 +403,8 @@ const props = defineProps<{
   useCoreUiExtensionExample(): void;
 }>()
 
-type OpenSelect = 'fixture' | 'mode' | null
-
-const { t } = useI18n()
+const { t } = useI18n({ useScope: 'local' })
+const uid = useId()
 const openSelect = ref<OpenSelect>(null)
 const fixtureLabelKeys: Record<string, string> = {
   'order-basic': 'devPanel.fixtures.orderBasic',
@@ -477,11 +502,146 @@ const runHttpPing = () => {
 }
 </script>
 
-<style scoped lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
+<i18n locale="en-GB">
+{
+    "devPanel": {
+        "actions": {
+            "apply": "Apply",
+            "openDemoPage": "Open example page",
+            "reloadExtension": "Reload extension",
+            "resetState": "Reset state",
+            "useDemoExtension": "Use example extension"
+        },
+        "delivery": {
+            "empty": "Extension URL is empty. The onboarding page will be shown without a direct URL.",
+            "title": "JS module delivery",
+            "used": "External extension URL is currently used.",
+            "workflow": "extension URL → descriptor/entrypoint/script → worker"
+        },
+        "directExtensionUrl": {
+            "hint": "Used only when Extension URL is empty.",
+            "label": "Direct extension URL"
+        },
+        "extensionUrl": "Extension URL",
+        "fixture": "Fixture",
+        "fixtures": {
+            "orderBasic": "Basic order",
+            "orderReadonlyError": "Readonly / error-like",
+            "orderWithDelivery": "Order with delivery"
+        },
+        "hostActivity": {
+            "empty": "No actions",
+            "title": "Host activity"
+        },
+        "hostApiActions": "Host API actions",
+        "mode": "Mode",
+        "modeOptions": {
+            "page": "Page",
+            "widgets": "Widgets"
+        },
+        "pageCode": "Page code",
+        "stateSnapshot": "State snapshot",
+        "targets": "Targets",
+        "title": "Sandbox controls"
+    }
+}
+</i18n>
+
+<i18n locale="es-ES">
+{
+    "devPanel": {
+        "actions": {
+            "apply": "Aplicar",
+            "openDemoPage": "Abrir página de ejemplo",
+            "reloadExtension": "Recargar extensión",
+            "resetState": "Restablecer estado",
+            "useDemoExtension": "Usar extensión de ejemplo"
+        },
+        "delivery": {
+            "empty": "Extension URL está vacío. Sin direct URL se mostrará onboarding.",
+            "title": "Entrega de módulo JS",
+            "used": "Ahora se usa un Extension URL externo.",
+            "workflow": "extension URL → descriptor/entrypoint/script → worker"
+        },
+        "directExtensionUrl": {
+            "hint": "Se usa solo cuando Extension URL está vacío.",
+            "label": "Direct extension URL"
+        },
+        "extensionUrl": "Extension URL",
+        "fixture": "Fixture",
+        "fixtures": {
+            "orderBasic": "Pedido básico",
+            "orderReadonlyError": "Readonly / error-like",
+            "orderWithDelivery": "Pedido con entrega"
+        },
+        "hostActivity": {
+            "empty": "Sin acciones",
+            "title": "Actividad del host"
+        },
+        "hostApiActions": "Acciones de Host API",
+        "mode": "Modo",
+        "modeOptions": {
+            "page": "Página",
+            "widgets": "Widgets"
+        },
+        "pageCode": "Código de página",
+        "stateSnapshot": "Snapshot de estado",
+        "targets": "Targets",
+        "title": "Controles de sandbox"
+    }
+}
+</i18n>
+
+<i18n locale="ru-RU">
+{
+    "devPanel": {
+        "actions": {
+            "apply": "Применить",
+            "openDemoPage": "Открыть страницу примера",
+            "reloadExtension": "Перезапустить расширение",
+            "resetState": "Сбросить состояние",
+            "useDemoExtension": "Использовать пример расширения"
+        },
+        "delivery": {
+            "empty": "Сейчас URL расширения пустой. Без прямого URL будет показана стартовая страница.",
+            "title": "Доставка JS-модуля",
+            "used": "Сейчас используется внешний URL расширения.",
+            "workflow": "extension URL → descriptor/entrypoint/script → worker"
+        },
+        "directExtensionUrl": {
+            "hint": "Используется только когда URL расширения пустой.",
+            "label": "Прямой URL расширения"
+        },
+        "extensionUrl": "URL расширения",
+        "fixture": "Фикстура",
+        "fixtures": {
+            "orderBasic": "Базовый заказ",
+            "orderReadonlyError": "Readonly / error-like",
+            "orderWithDelivery": "Заказ с доставкой"
+        },
+        "hostActivity": {
+            "empty": "Нет действий",
+            "title": "Активность хоста"
+        },
+        "hostApiActions": "Действия Host API",
+        "mode": "Режим",
+        "modeOptions": {
+            "page": "Страница",
+            "widgets": "Виджеты"
+        },
+        "pageCode": "Код страницы",
+        "stateSnapshot": "Снимок состояния",
+        "targets": "Таргеты",
+        "title": "Управление песочницей"
+    }
+}
+</i18n>
+
+<style lang="less" module>
+@import (reference) "~assets/stylesheets/palette.less";
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/geometry.less";
+@import (reference) "~assets/stylesheets/variables.less";
 
 .dev-panel {
     align-content: start;
@@ -739,7 +899,7 @@ const runHttpPing = () => {
     }
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1280px) {
     .dev-panel {
         max-height: none;
     }

@@ -3,90 +3,115 @@ import { expect, test } from '@playwright/test'
 test('shows onboarding when extension source is not configured', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByTestId('sandbox-extension-onboarding')).toBeVisible()
-  await expect(page.getByTestId('sandbox-extension-onboarding')).toContainText('Подключите внешнее расширение')
+  const onboarding = page.getByRole('region', { name: 'Подключите внешнее расширение' })
+
+  await expect(onboarding).toBeVisible()
+  await expect(onboarding).toContainText('Подключите внешнее расширение')
+  await expect(onboarding.getByRole('textbox', { name: 'URL расширения' })).toBeVisible()
+
+  const actions = onboarding.getByRole('group')
+
+  await expect(actions).toBeVisible()
+  await expect(actions.getByRole('button', { name: 'Использовать пример расширения' })).toBeVisible()
+  await expect(actions.getByRole('button', { name: 'Открыть с URL расширения' })).toBeVisible()
+  await expect(actions.getByRole('button', { name: 'Открыть страницу примера' })).toBeVisible()
+  await expect(actions.getByRole('button', { name: 'Настроить расширение' })).toBeVisible()
 })
 
 test('renders sandbox shell and records host activity without bundled extension', async ({ page }, testInfo) => {
   await page.goto('/')
 
   await expect(page).toHaveTitle(/v1-sandbox/)
-  await expect(page.getByTestId('sandbox-rail')).toBeVisible()
-  await expect(page.getByTestId('sandbox-sidebar')).toBeVisible()
-  await expect(page.getByTestId('sandbox-sidebar-skeleton')).toHaveCount(10)
-  await expect(page.getByTestId('sandbox-content')).toBeVisible()
-  await expect(page.getByTestId('sandbox-page')).toBeVisible()
-  await expect(page.getByTestId('host-run-mode')).toContainText('Виджеты: 2')
+  const rail = page.getByRole('complementary', { name: 'Основная CRM-навигация' })
+  const collapseSidebar = page.getByRole('button', { name: 'Свернуть боковую панель' })
+  const sidebarId = await collapseSidebar.getAttribute('aria-controls')
+
+  expect(sidebarId).toBeTruthy()
+
+  const sidebar = page.locator(`[id="${sidebarId}"]`)
+  const content = page.getByRole('main', { name: 'Контент песочницы' })
+  const extensionCanvas = page.getByRole('region', { name: 'Область расширения' })
+
+  await expect(rail).toBeVisible()
+  await expect(sidebar).toBeVisible()
+  await expect(sidebar.getByRole('navigation')).toBeVisible()
+  await expect(content).toBeVisible()
+  await expect(extensionCanvas).toBeVisible()
+  await expect(page.getByRole('status', { name: 'Режим запуска песочницы' })).toContainText('Виджеты: 2')
+  await expect(page.locator('[data-testid]')).toHaveCount(0)
 
   const viewportHeight = page.viewportSize()?.height ?? 0
 
   expect(viewportHeight).toBeGreaterThan(0)
 
   await expect.poll(async () => {
-    const railBox = await page.getByTestId('sandbox-rail').boundingBox()
+    const railBox = await rail.boundingBox()
 
     return Math.round(railBox?.height ?? 0)
   }).toBe(viewportHeight)
   await expect.poll(async () => {
-    const sidebarBox = await page.getByTestId('sandbox-sidebar').boundingBox()
+    const sidebarBox = await sidebar.boundingBox()
 
     return Math.round(sidebarBox?.height ?? 0)
   }).toBe(viewportHeight)
 
-  await page.getByTestId('sandbox-page').evaluate((element) => {
+  await extensionCanvas.evaluate((element) => {
     const scrollProbe = document.createElement('div')
 
-    scrollProbe.dataset.testid = 'sandbox-scroll-probe'
     scrollProbe.style.height = '1800px'
 
     element.append(scrollProbe)
   })
-  await expect.poll(async () => page.getByTestId('sandbox-content').evaluate((element) => (
+  await expect.poll(async () => content.evaluate((element) => (
     element.scrollHeight > element.clientHeight
   ))).toBe(true)
   await expect.poll(async () => page.evaluate(() => document.scrollingElement?.scrollHeight ?? 0))
     .toBeLessThanOrEqual(viewportHeight)
 
-  const openContentBox = await page.getByTestId('sandbox-content').boundingBox()
+  const openContentBox = await content.boundingBox()
 
-  await page.getByTestId('sandbox-sidebar-toggle').click()
-  await expect(page.getByTestId('sandbox-sidebar')).toHaveAttribute('data-open', 'false')
-  await expect(page.getByTestId('sandbox-rail')).toBeVisible()
+  await collapseSidebar.click()
+  await expect(page.getByRole('button', { name: 'Развернуть боковую панель' })).toHaveAttribute('aria-expanded', 'false')
+  await expect(rail).toBeVisible()
   await expect.poll(async () => {
-    const closedContentBox = await page.getByTestId('sandbox-content').boundingBox()
+    const closedContentBox = await content.boundingBox()
 
     return closedContentBox?.x ?? 0
   }).toBeLessThan(openContentBox?.x ?? 0)
 
-  const closedContentBox = await page.getByTestId('sandbox-content').boundingBox()
-  const railBox = await page.getByTestId('sandbox-rail').boundingBox()
+  const closedContentBox = await content.boundingBox()
+  const railBox = await rail.boundingBox()
 
   expect(closedContentBox?.x).toBeGreaterThan(railBox?.width ?? 0)
 
-  await page.getByTestId('sandbox-sidebar-toggle').click()
-  await expect(page.getByTestId('sandbox-sidebar')).toHaveAttribute('data-open', 'true')
+  const expandSidebar = page.getByRole('button', { name: 'Развернуть боковую панель' })
 
-  await expect(page.getByTestId('sandbox-dev-panel')).toHaveCount(0)
-  await page.getByTestId('sandbox-dev-panel-toggle').click()
-  await expect(page.getByTestId('sandbox-dev-panel')).toBeVisible()
-  await expect(page.getByTestId('sandbox-state-snapshot')).toContainText('"status": "new"')
+  await expandSidebar.click()
+  await expect(page.getByRole('button', { name: 'Свернуть боковую панель' })).toHaveAttribute('aria-expanded', 'true')
+  await expect(sidebar).toBeVisible()
 
-  await page.getByTestId('sandbox-http-ping').click()
-  await page.getByTestId('sandbox-go-to').click()
-  await page.getByTestId('sandbox-push-query').click()
-  await page.getByTestId('sandbox-replace-query').click()
+  await expect(page.getByRole('complementary', { name: 'Управление песочницей' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Песочница' }).click()
+  const devPanel = page.getByRole('complementary', { name: 'Управление песочницей' })
 
-  await expect(page.getByTestId('sandbox-host-activity')).toContainText('httpCall')
-  await expect(page.getByTestId('sandbox-host-activity')).toContainText('sandbox.demo.ping -> 200')
-  await expect(page.getByTestId('sandbox-host-activity')).toContainText('go-to')
-  await expect(page.getByTestId('sandbox-host-activity')).toContainText('push-query')
-  await expect(page.getByTestId('sandbox-host-activity')).toContainText('replace-query')
+  await expect(devPanel).toBeVisible()
+  await expect(devPanel.getByRole('region', { name: 'Снимок состояния' })).toContainText('"status": "new"')
 
-  await expect(page.getByTestId('sandbox-controls')).toHaveCount(0)
-  await expect(page.getByTestId('sandbox-order-workspace')).toHaveCount(0)
+  await devPanel.getByRole('button', { name: 'httpCall' }).click()
+  await devPanel.getByRole('button', { name: 'goTo' }).click()
+  await devPanel.getByRole('button', { name: 'pushQuery' }).click()
+  await devPanel.getByRole('button', { name: 'replaceQuery' }).click()
 
-  await page.getByTestId('sandbox-dev-panel-close').click()
-  await expect(page.getByTestId('sandbox-dev-panel')).toHaveCount(0)
+  const hostActivity = devPanel.getByRole('region', { name: 'Активность хоста' })
+
+  await expect(hostActivity).toContainText('httpCall')
+  await expect(hostActivity).toContainText('sandbox.demo.ping -> 200')
+  await expect(hostActivity).toContainText('go-to')
+  await expect(hostActivity).toContainText('push-query')
+  await expect(hostActivity).toContainText('replace-query')
+
+  await devPanel.getByRole('button', { name: 'Закрыть управление песочницей' }).click()
+  await expect(page.getByRole('complementary', { name: 'Управление песочницей' })).toHaveCount(0)
 
   const screenshot = await page.screenshot({
     fullPage: true,
@@ -102,14 +127,18 @@ test('renders sandbox shell and records host activity without bundled extension'
 test('applies fixture and page mode controls through public url contract', async ({ page }) => {
   await page.goto('/')
 
-  await page.getByTestId('sandbox-dev-panel-toggle').click()
-  await page.getByTestId('sandbox-mode-select').selectOption('page')
-  await page.getByTestId('sandbox-page-code-input').fill('orders-dashboard')
-  await page.getByTestId('sandbox-fixture-select').selectOption('order-with-delivery')
-  await page.getByTestId('sandbox-apply-config').click()
+  await page.getByRole('button', { name: 'Песочница' }).click()
+  const devPanel = page.getByRole('complementary', { name: 'Управление песочницей' })
+
+  await devPanel.getByRole('button', { name: 'Режим: Виджеты' }).click()
+  await devPanel.getByRole('listbox', { name: 'Режим' }).getByRole('option', { name: 'Страница' }).click()
+  await devPanel.getByRole('textbox', { name: 'Код страницы' }).fill('orders-dashboard')
+  await devPanel.getByRole('button', { name: 'Фикстура: Базовый заказ' }).click()
+  await devPanel.getByRole('listbox', { name: 'Фикстура' }).getByRole('option', { name: 'Заказ с доставкой' }).click()
+  await devPanel.getByRole('button', { name: 'Применить' }).click()
 
   await expect(page).toHaveURL(/mode=page/)
   await expect(page).toHaveURL(/fixture=order-with-delivery/)
-  await expect(page.getByTestId('sandbox-extension-onboarding')).toBeVisible()
-  await expect(page.getByTestId('host-run-mode')).toContainText('Страница: orders-dashboard')
+  await expect(page.getByRole('region', { name: 'Подключите внешнее расширение' })).toBeVisible()
+  await expect(page.getByRole('status', { name: 'Режим запуска песочницы' })).toContainText('Страница: orders-dashboard')
 })

@@ -1,81 +1,16 @@
 {
   "app": {
+    "contentAriaLabel": "Sandbox content",
     "devPanelAriaLabel": "Sandbox controls",
+    "devPanelClose": "Close sandbox controls",
     "devPanelToggle": "Sandbox",
+    "extensionCanvasAriaLabel": "Extension canvas",
     "runMode": {
       "page": "Page: {pageCode}",
       "widgets": "Widgets: {count}"
-    }
-  },
-  "devPanel": {
-    "actions": {
-      "apply": "Apply",
-      "openDemoPage": "Open example page",
-      "reloadExtension": "Reload extension",
-      "resetState": "Reset state",
-      "useDemoExtension": "Use example extension"
     },
-    "delivery": {
-      "empty": "Extension URL is empty. The onboarding page will be shown without a direct URL.",
-      "title": "JS module delivery",
-      "used": "External extension URL is currently used.",
-      "workflow": "extension URL → descriptor/entrypoint/script → worker"
-    },
-    "directExtensionUrl": {
-      "hint": "Used only when Extension URL is empty.",
-      "label": "Direct extension URL"
-    },
-    "extensionUrl": "Extension URL",
-    "fixture": "Fixture",
-    "fixtures": {
-      "orderBasic": "Basic order",
-      "orderReadonlyError": "Readonly / error-like",
-      "orderWithDelivery": "Order with delivery"
-    },
-    "hostActivity": {
-      "empty": "No actions",
-      "title": "Host activity"
-    },
-    "hostApiActions": "Host API actions",
-    "mode": "Mode",
-    "modeOptions": {
-      "page": "Page",
-      "widgets": "Widgets"
-    },
-    "pageCode": "Page code",
-    "stateSnapshot": "State snapshot",
-    "targets": "Targets",
-    "title": "Sandbox controls"
-  },
-  "extensionOnboarding": {
-    "actions": {
-      "apply": "Open with Extension URL",
-      "configure": "Configure extension",
-      "openDemoPage": "Open example page",
-      "useDemoExtension": "Use example extension"
-    },
-    "description": "Sandbox connects the frontend part of a JS module by external URL: manifest/descriptor, HTML entrypoint or JS script. It loads resources over the network, attaches stylesheet when available and starts the extension through a worker-compatible endpoint.",
-    "eyebrow": "JS module delivery",
-    "extensionUrl": "Extension URL",
-    "placeholder": "https://your-extension-host.ru/extension/<uuid>",
-    "steps": {
-      "devServer": "Run your module dev server that serves frontend resources over HTTP.",
-      "entrypoint": "Provide an entrypoint or descriptor URL: JS script, HTML entrypoint or JSON manifest.",
-      "worker": "For the current scenario, the entrypoint should run `runEndpoint(defineRunner(...))`, and the descriptor should define `runner: \"worker\"`, `targets` and/or `pages`."
-    },
-    "title": "Connect an external extension"
-  },
-  "hostControls": {
-    "page": "Page: {pageCode}",
-    "title": "Host environment",
-    "widgets": "Widgets: {count}"
-  },
-  "rail": {
-    "analyticsSection": "Analytics section",
-    "locationSection": "Location section",
-    "mainSection": "Main section",
-    "notifications": "Notifications",
-    "ordersSection": "Orders section",
-    "settings": "Settings"
+    "runModeAriaLabel": "Sandbox run mode",
+    "sidebarCollapse": "Collapse sidebar",
+    "sidebarExpand": "Expand sidebar"
   }
 }

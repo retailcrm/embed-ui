@@ -1,11 +1,10 @@
 <template>
     <aside
         :class="$style['sandbox-rail']"
-        data-testid="sandbox-rail"
+        :aria-label="t('rail.navigation')"
     >
         <div
             :class="$style['sandbox-rail__logo']"
-            data-testid="sandbox-rail-logo"
         />
 
         <button
@@ -21,7 +20,6 @@
             <component
                 :is="item.icon"
                 :class="$style['sandbox-rail__icon']"
-                aria-hidden="true"
             />
         </button>
 
@@ -37,11 +35,12 @@
             <component
                 :is="item.icon"
                 :class="$style['sandbox-rail__icon']"
-                aria-hidden="true"
             />
         </button>
 
-        <div :class="$style['sandbox-rail__user']">
+        <div
+            :class="$style['sandbox-rail__user']"
+        >
             <span :class="$style['sandbox-rail__user-skeleton']" />
         </div>
     </aside>
@@ -66,7 +65,7 @@ type RailItem = {
   label: string;
 }
 
-const { t } = useI18n()
+const { t } = useI18n({ useScope: 'local' })
 
 const topItems = computed<RailItem[]>(() => [
   {
@@ -103,11 +102,53 @@ const bottomItems = computed<RailItem[]>(() => [
 ])
 </script>
 
-<style scoped lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
+<i18n locale="en-GB">
+{
+    "rail": {
+        "analyticsSection": "Analytics section",
+        "locationSection": "Location section",
+        "mainSection": "Main section",
+        "navigation": "CRM navigation rail",
+        "notifications": "Notifications",
+        "ordersSection": "Orders section",
+        "settings": "Settings"
+    }
+}
+</i18n>
+
+<i18n locale="es-ES">
+{
+    "rail": {
+        "analyticsSection": "Sección de analítica",
+        "locationSection": "Sección de ubicación",
+        "mainSection": "Sección principal",
+        "navigation": "Rail de navegación CRM",
+        "notifications": "Notificaciones",
+        "ordersSection": "Sección de pedidos",
+        "settings": "Ajustes"
+    }
+}
+</i18n>
+
+<i18n locale="ru-RU">
+{
+    "rail": {
+        "analyticsSection": "Раздел аналитики",
+        "locationSection": "Раздел геолокации",
+        "mainSection": "Основной раздел",
+        "navigation": "Основная CRM-навигация",
+        "notifications": "Уведомления",
+        "ordersSection": "Раздел заказов",
+        "settings": "Настройки"
+    }
+}
+</i18n>
+
+<style lang="less" module>
+@import (reference) "~assets/stylesheets/palette.less";
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/geometry.less";
+@import (reference) "~assets/stylesheets/variables.less";
 
 .sandbox-rail {
     align-items: center;

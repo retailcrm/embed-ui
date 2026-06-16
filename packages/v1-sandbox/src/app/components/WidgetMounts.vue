@@ -1,7 +1,8 @@
 <template>
     <section
         :class="$style['widget-mounts']"
-        data-testid="sandbox-widget-targets"
+        aria-label="Widget targets"
+        role="region"
     >
         <WidgetMount
             v-for="mount in mounts"
@@ -23,9 +24,9 @@ defineProps<{
 }>()
 </script>
 
-<style scoped lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
+<style lang="less" module>
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/variables.less";
 
 .widget-mounts {
     display: grid;

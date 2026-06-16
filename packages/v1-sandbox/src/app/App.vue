@@ -6,18 +6,21 @@
         ]"
     >
         <SandboxRail />
-        <SandboxSidebar :open="isSidebarOpen" />
+        <SandboxSidebar
+            :id="uid + '-sandbox-sidebar'"
+            :open="isSidebarOpen"
+        />
 
         <button
-            :aria-expanded="isSidebarOpen"
             :class="$style['sandbox-app__sidebar-toggle']"
-            data-testid="sandbox-sidebar-toggle"
+            :aria-label="isSidebarOpen ? t('app.sidebarCollapse') : t('app.sidebarExpand')"
+            :aria-expanded="isSidebarOpen"
+            :aria-controls="uid + '-sandbox-sidebar'"
             type="button"
             @click="toggleSidebar"
         >
             <span
                 :class="$style['sandbox-app__sidebar-toggle-glyph']"
-                aria-hidden="true"
             >
                 ‹
             </span>
@@ -25,11 +28,12 @@
 
         <main
             :class="$style['sandbox-app__content-panel']"
-            data-testid="sandbox-content"
+            :aria-label="t('app.contentAriaLabel')"
         >
             <button
                 :class="$style['sandbox-app__dev-panel-toggle']"
-                data-testid="sandbox-dev-panel-toggle"
+                :aria-expanded="isDevPanelOpen"
+                :aria-controls="uid + '-sandbox-dev-panel-drawer'"
                 type="button"
                 @click="openDevPanel"
             >
@@ -38,7 +42,8 @@
 
             <div
                 :class="$style['sandbox-app__extension-canvas']"
-                data-testid="sandbox-page"
+                :aria-label="t('app.extensionCanvasAriaLabel')"
+                role="region"
                 @click.capture="flushRemoteUpdates"
             >
                 <ExtensionOnboarding
@@ -68,25 +73,23 @@
         <div
             v-if="isDevPanelOpen"
             :class="$style['sandbox-app__dev-panel-backdrop']"
-            data-testid="sandbox-dev-panel-backdrop"
             @click="closeDevPanel"
         />
 
         <aside
             v-if="isDevPanelOpen"
+            :id="uid + '-sandbox-dev-panel-drawer'"
             :class="$style['sandbox-app__dev-panel-drawer']"
             :aria-label="t('app.devPanelAriaLabel')"
-            data-testid="sandbox-dev-panel-drawer"
         >
             <button
                 :class="$style['sandbox-app__dev-panel-close']"
-                data-testid="sandbox-dev-panel-close"
+                :aria-label="t('app.devPanelClose')"
                 type="button"
                 @click="closeDevPanel"
             >
                 <span
                     :class="$style['sandbox-app__dev-panel-close-glyph']"
-                    aria-hidden="true"
                 >
                     ×
                 </span>
@@ -120,13 +123,13 @@
 
         <span
             :class="$style['sandbox-app__run-mode-status']"
-            data-testid="host-run-mode"
+            :aria-label="t('app.runModeAriaLabel')"
+            role="status"
         >
             {{ runModeLabel }}
         </span>
         <span
             :class="$style['sandbox-app__host-controls-status']"
-            data-testid="host-controls"
         />
     </div>
 </template>
@@ -142,6 +145,8 @@ import { computed } from 'vue'
 import { createEndpoint as createRpcEndpoint, fromWebWorker } from '@remote-ui/rpc'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useId } from 'vue'
+import { watch } from 'vue'
 
 import DevPanel from '@/app/components/DevPanel.vue'
 import ExtensionOnboarding from '@/app/components/ExtensionOnboarding.vue'
@@ -179,12 +184,19 @@ const mounts = createMounts(launchConfig)
 const runtime = ref<SandboxRuntime | null>(null)
 const isDevPanelOpen = ref(false)
 const isSidebarOpen = ref(true)
-const { t } = useI18n()
+const { locale, t } = useI18n()
+const uid = useId()
 
 const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExplicitExtensionUrl)
 const runModeLabel = computed(() => launchConfig.mode === 'page'
   ? t('app.runMode.page', { pageCode: launchConfig.pageCode })
   : t('app.runMode.widgets', { count: launchConfig.targets.length }))
+
+watch(() => sandbox.state.contexts.settings['system.locale'], (systemLocale) => {
+  if (systemLocale) {
+    locale.value = systemLocale
+  }
+}, { immediate: true })
 
 const flushReceiver = async () => {
   await Promise.all(mounts.map(async (mount) => {
@@ -473,7 +485,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped lang="less" module>
+<style lang="less" module>
 @import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
 @import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
 @import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
@@ -606,7 +618,16 @@ onBeforeUnmount(() => {
 
     &__run-mode-status,
     &__host-controls-status {
-        display: none;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap;
+        width: 1px;
+
+        &:not(caption) {
+            clip: rect(0 0 0 0);
+        }
     }
 }
 </style>

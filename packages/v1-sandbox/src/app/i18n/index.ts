@@ -8,7 +8,7 @@ export const sandboxI18n = createI18n({
   fallbackLocale: 'en-GB',
   globalInjection: true,
   legacy: false,
-  locale: 'ru-RU',
+  locale: 'en-GB',
   messages: {
     'en-GB': messages_en_GB,
     'es-ES': messages_es_ES,

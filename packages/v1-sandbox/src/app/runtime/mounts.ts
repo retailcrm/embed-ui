@@ -45,7 +45,6 @@ export type SandboxMount = {
   receiver: Receiver;
   releaseConfig: RunIdentity;
   runConfig: PageRunIdentity | WidgetRunConfig;
-  testId: string;
   tree: HostedTreeRef | null;
   type: 'page' | 'widget';
 }
@@ -71,7 +70,6 @@ const createPageMount = (config: SandboxLaunchConfig): SandboxMount => ({
   receiver: markRaw(createReceiver()),
   releaseConfig: { code: config.pageCode },
   runConfig: { code: config.pageCode },
-  testId: 'sandbox-page-canvas',
   tree: null,
   type: 'page',
 })
@@ -91,7 +89,6 @@ const createWidgetMount = (
       id,
       target: slot.target,
     },
-    testId: `target-order-card-${slot.id}`,
     tree: null,
     type: 'widget',
   }
