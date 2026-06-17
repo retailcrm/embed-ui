@@ -1,5 +1,27 @@
 {
   "app": {
+    "alerts": {
+      "iframePageMode": {
+        "message": "This legacy iframe extension supports widget targets only. Switch to widgets mode or use a worker-compatible page extension.",
+        "title": "Invalid launch mode"
+      },
+      "inferredPageMode": {
+        "message": "The URL did not include mode. Sandbox found the \"{pageCode}\" page in the extension and switched the launch to page mode.",
+        "title": "Page mode was selected automatically"
+      },
+      "missingPageCode": {
+        "message": "The extension does not expose the \"{pageCode}\" page. Available pages: {pages}.",
+        "title": "Extension page was not found"
+      },
+      "runtimeError": {
+        "message": "{message}",
+        "title": "Failed to start extension"
+      },
+      "workerPageInWidgetMode": {
+        "message": "The extension exposes pages: {pages}. Widgets mode is selected now; switch mode to page if you expected a page extension.",
+        "title": "Check launch mode"
+      }
+    },
     "contentAriaLabel": "Sandbox content",
     "devPanelAriaLabel": "Sandbox controls",
     "devPanelClose": "Close sandbox controls",

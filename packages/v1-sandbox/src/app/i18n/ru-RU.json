@@ -1,5 +1,27 @@
 {
   "app": {
+    "alerts": {
+      "iframePageMode": {
+        "message": "Это legacy iframe-расширение поддерживает только widget targets. Выберите режим виджетов или подключите worker-compatible page extension.",
+        "title": "Неверный режим запуска"
+      },
+      "inferredPageMode": {
+        "message": "В ссылке не был указан mode. Sandbox нашёл страницу \"{pageCode}\" в расширении и переключил запуск в режим страницы.",
+        "title": "Режим страницы выбран автоматически"
+      },
+      "missingPageCode": {
+        "message": "В расширении нет страницы \"{pageCode}\". Доступные страницы: {pages}.",
+        "title": "Страница расширения не найдена"
+      },
+      "runtimeError": {
+        "message": "{message}",
+        "title": "Не удалось запустить расширение"
+      },
+      "workerPageInWidgetMode": {
+        "message": "Расширение содержит страницы: {pages}. Сейчас выбран режим виджетов; если ожидается страница, переключите mode на page.",
+        "title": "Проверьте режим запуска"
+      }
+    },
     "contentAriaLabel": "Контент песочницы",
     "devPanelAriaLabel": "Управление песочницей",
     "devPanelClose": "Закрыть управление песочницей",

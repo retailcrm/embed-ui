@@ -1,5 +1,27 @@
 {
   "app": {
+    "alerts": {
+      "iframePageMode": {
+        "message": "Esta extensión iframe legacy solo admite targets de widget. Cambia al modo widgets o usa una extensión de página compatible con worker.",
+        "title": "Modo de inicio no válido"
+      },
+      "inferredPageMode": {
+        "message": "La URL no incluía mode. Sandbox encontró la página \"{pageCode}\" en la extensión y cambió el inicio al modo página.",
+        "title": "El modo página se seleccionó automáticamente"
+      },
+      "missingPageCode": {
+        "message": "La extensión no expone la página \"{pageCode}\". Páginas disponibles: {pages}.",
+        "title": "No se encontró la página de la extensión"
+      },
+      "runtimeError": {
+        "message": "{message}",
+        "title": "No se pudo iniciar la extensión"
+      },
+      "workerPageInWidgetMode": {
+        "message": "La extensión expone páginas: {pages}. Ahora está seleccionado el modo widgets; cambia mode a page si esperabas una página.",
+        "title": "Revisa el modo de inicio"
+      }
+    },
     "contentAriaLabel": "Contenido de sandbox",
     "devPanelAriaLabel": "Controles de sandbox",
     "devPanelClose": "Cerrar controles de sandbox",

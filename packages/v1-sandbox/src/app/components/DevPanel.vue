@@ -13,35 +13,6 @@
                 <strong>{{ t('devPanel.delivery.title') }}</strong>
 
                 <span>{{ t('devPanel.delivery.workflow') }}</span>
-
-                <span v-if="props.manifestUrl">
-                    {{ t('devPanel.delivery.used') }}
-                </span>
-
-                <span v-else>
-                    {{ t('devPanel.delivery.empty') }}
-                </span>
-
-                <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
-                    <button
-                        :class="[
-                            $style['dev-panel__button'],
-                            $style['dev-panel__button_primary'],
-                        ]"
-                        type="button"
-                        @click="props.useCoreUiExtensionExample"
-                    >
-                        {{ t('devPanel.actions.useDemoExtension') }}
-                    </button>
-
-                    <button
-                        :class="$style['dev-panel__button']"
-                        type="button"
-                        @click="props.openCoreUiExtensionExampleReturnsPage"
-                    >
-                        {{ t('devPanel.actions.openDemoPage') }}
-                    </button>
-                </div>
             </div>
 
             <label :class="$style['dev-panel__field']">
@@ -55,23 +26,6 @@
                     type="text"
                     @input="updateManifestUrl"
                 />
-            </label>
-
-            <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">
-                    {{ t('devPanel.directExtensionUrl.label') }}
-                </span>
-
-                <input
-                    :class="$style['dev-panel__input']"
-                    :value="props.extensionUrl"
-                    type="text"
-                    @input="updateExtensionUrl"
-                />
-
-                <span :class="$style['dev-panel__field-hint']">
-                    {{ t('devPanel.directExtensionUrl.hint') }}
-                </span>
             </label>
 
             <div :class="$style['dev-panel__field']">
@@ -225,6 +179,10 @@
                 >
                     {{ t('devPanel.targets') }}
                 </div>
+
+                <span :class="$style['dev-panel__field-hint']">
+                    {{ t('devPanel.targetsHint') }}
+                </span>
 
                 <div
                     :class="$style['dev-panel__target-checklist']"
@@ -380,12 +338,10 @@ type OpenSelect = 'fixture' | 'mode' | null
 
 const props = defineProps<{
   applyLaunchConfig(): void;
-  extensionUrl: string;
   fixture: string;
   goToOrder(): void;
   manifestUrl: string;
   mode: SandboxLaunchMode;
-  openCoreUiExtensionExampleReturnsPage(): void;
   pageCode: string;
   pushQuery(): void;
   reloadExtension(): void;
@@ -394,16 +350,14 @@ const props = defineProps<{
   runHttpPing(): Promise<void>;
   sandbox: OrderSandboxController;
   selectedTargets: SandboxOrderTarget[];
-  setExtensionUrl(value: string): void;
   setFixture(value: string): void;
   setManifestUrl(value: string): void;
   setMode(value: SandboxLaunchMode): void;
   setPageCode(value: string): void;
   setTargetSelected(target: SandboxOrderTarget, checked: boolean): void;
-  useCoreUiExtensionExample(): void;
 }>()
 
-const { t } = useI18n({ useScope: 'local' })
+const { t } = useI18n()
 const uid = useId()
 const openSelect = ref<OpenSelect>(null)
 const fixtureLabelKeys: Record<string, string> = {
@@ -459,10 +413,6 @@ const stateSnapshot = computed(() => JSON.stringify({
   mode: props.sandbox.state.mode,
 }, null, 2))
 
-const updateExtensionUrl = (event: Event) => {
-  props.setExtensionUrl((event.target as HTMLInputElement).value)
-}
-
 const updateMode = (event: Event) => {
   props.setMode((event.target as HTMLSelectElement).value as SandboxLaunchMode)
 }
@@ -507,22 +457,15 @@ const runHttpPing = () => {
     "devPanel": {
         "actions": {
             "apply": "Apply",
-            "openDemoPage": "Open example page",
             "reloadExtension": "Reload extension",
-            "resetState": "Reset state",
-            "useDemoExtension": "Use example extension"
+            "resetState": "Reset state"
         },
         "delivery": {
-            "empty": "Extension URL is empty. The onboarding page will be shown without a direct URL.",
+            "empty": "Manifest / extension URL is empty. The onboarding page will be shown without a network source.",
             "title": "JS module delivery",
-            "used": "External extension URL is currently used.",
-            "workflow": "extension URL → descriptor/entrypoint/script → worker"
+            "workflow": "%extension-url%/extension/%extension-id% → descriptor/entrypoint/script → worker"
         },
-        "directExtensionUrl": {
-            "hint": "Used only when Extension URL is empty.",
-            "label": "Direct extension URL"
-        },
-        "extensionUrl": "Extension URL",
+        "extensionUrl": "Manifest / extension URL",
         "fixture": "Fixture",
         "fixtures": {
             "orderBasic": "Basic order",
@@ -541,7 +484,8 @@ const runHttpPing = () => {
         },
         "pageCode": "Page code",
         "stateSnapshot": "State snapshot",
-        "targets": "Targets",
+        "targets": "Widget mount targets",
+        "targetsHint": "Targets are CRM slots where widget runners are mounted. They are used only in widget mode.",
         "title": "Sandbox controls"
     }
 }
@@ -552,22 +496,15 @@ const runHttpPing = () => {
     "devPanel": {
         "actions": {
             "apply": "Aplicar",
-            "openDemoPage": "Abrir página de ejemplo",
             "reloadExtension": "Recargar extensión",
-            "resetState": "Restablecer estado",
-            "useDemoExtension": "Usar extensión de ejemplo"
+            "resetState": "Restablecer estado"
         },
         "delivery": {
-            "empty": "Extension URL está vacío. Sin direct URL se mostrará onboarding.",
+            "empty": "Manifest / extension URL está vacío. Sin fuente de red se mostrará onboarding.",
             "title": "Entrega de módulo JS",
-            "used": "Ahora se usa un Extension URL externo.",
-            "workflow": "extension URL → descriptor/entrypoint/script → worker"
+            "workflow": "%extension-url%/extension/%extension-id% → descriptor/entrypoint/script → worker"
         },
-        "directExtensionUrl": {
-            "hint": "Se usa solo cuando Extension URL está vacío.",
-            "label": "Direct extension URL"
-        },
-        "extensionUrl": "Extension URL",
+        "extensionUrl": "Manifest / extension URL",
         "fixture": "Fixture",
         "fixtures": {
             "orderBasic": "Pedido básico",
@@ -586,7 +523,8 @@ const runHttpPing = () => {
         },
         "pageCode": "Código de página",
         "stateSnapshot": "Snapshot de estado",
-        "targets": "Targets",
+        "targets": "Puntos de montaje de widgets",
+        "targetsHint": "Los targets son slots de CRM donde se montan los widget runners. Se usan solo en modo widget.",
         "title": "Controles de sandbox"
     }
 }
@@ -597,22 +535,15 @@ const runHttpPing = () => {
     "devPanel": {
         "actions": {
             "apply": "Применить",
-            "openDemoPage": "Открыть страницу примера",
             "reloadExtension": "Перезапустить расширение",
-            "resetState": "Сбросить состояние",
-            "useDemoExtension": "Использовать пример расширения"
+            "resetState": "Сбросить состояние"
         },
         "delivery": {
-            "empty": "Сейчас URL расширения пустой. Без прямого URL будет показана стартовая страница.",
+            "empty": "Сейчас Manifest / URL расширения пустой. Без сетевого источника будет показана стартовая страница.",
             "title": "Доставка JS-модуля",
-            "used": "Сейчас используется внешний URL расширения.",
-            "workflow": "extension URL → descriptor/entrypoint/script → worker"
+            "workflow": "%extension-url%/extension/%extension-id% → descriptor/entrypoint/script → worker"
         },
-        "directExtensionUrl": {
-            "hint": "Используется только когда URL расширения пустой.",
-            "label": "Прямой URL расширения"
-        },
-        "extensionUrl": "URL расширения",
+        "extensionUrl": "Manifest / URL расширения",
         "fixture": "Фикстура",
         "fixtures": {
             "orderBasic": "Базовый заказ",
@@ -631,7 +562,8 @@ const runHttpPing = () => {
         },
         "pageCode": "Код страницы",
         "stateSnapshot": "Снимок состояния",
-        "targets": "Таргеты",
+        "targets": "Места встраивания виджетов",
+        "targetsHint": "Targets — это CRM-слоты, куда монтируются widget runners. Они используются только в режиме виджетов.",
         "title": "Управление песочницей"
     }
 }

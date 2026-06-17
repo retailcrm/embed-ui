@@ -16,7 +16,7 @@ import {
 } from '@retailcrm/embed-ui-v1-contexts/remote/order/card-settings'
 import { schema as settingsSchema } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
-import { CORE_UI_EXTENSION_EXAMPLE_BASE_URL } from '@/dev/launch'
+import { CoreUiExtension } from '@/enum'
 import { createSandboxController } from '@/core/controller'
 
 export const orderSandboxSchemas = {
@@ -244,7 +244,7 @@ const isExternalBackendAction = (action: string): boolean =>
 const proxyExternalBackendHttpCall = async (
   request: SandboxHttpCallRequest
 ): Promise<SandboxHttpCallResponse> => {
-  const response = await fetch(`${CORE_UI_EXTENSION_EXAMPLE_BASE_URL}${request.action}`, {
+  const response = await fetch(`${CoreUiExtension.BaseUrl}${request.action}`, {
     body: new URLSearchParams({
       payload: serializeHttpCallPayload(request.payload),
     }),

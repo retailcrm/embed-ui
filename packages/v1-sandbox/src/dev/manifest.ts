@@ -73,11 +73,11 @@ export const resolveSandboxExtensionSource = async (
   const contentType = response.headers.get('content-type') ?? ''
 
   if (!isJsonMimeType(contentType)) {
-    const descriptor = createDescriptorFromEntrypoint(config, responseUrl)
+    const source = await resolveEntrypointSource(config, response, responseUrl, contentType, fetcher)
 
     return {
-      descriptor,
-      entrypoint: await resolveWorkerEntrypoint(descriptor.entrypoint, fetcher),
+      descriptor: source.descriptor,
+      entrypoint: source.entrypoint,
       manifest: null,
       manifestUrl: responseUrl,
     }
@@ -88,7 +88,7 @@ export const resolveSandboxExtensionSource = async (
 
   return {
     descriptor,
-    entrypoint: await resolveWorkerEntrypoint(descriptor.entrypoint, fetcher),
+    entrypoint: await resolveExtensionEntrypoint(descriptor, fetcher),
     manifest,
     manifestUrl: responseUrl,
   }
@@ -109,10 +109,6 @@ const createDescriptorFromManifest = (
 ): SandboxExtensionDescriptor => {
   const runner = manifest.runner ?? 'worker'
 
-  if (runner !== 'worker') {
-    throw new Error(`[sandbox:manifest] Unsupported runner '${runner}'. v1-sandbox supports worker runner only.`)
-  }
-
   const rawEntrypoint = resolveManifestEntrypoint(manifest)
   const entrypoint = resolveUrl(rawEntrypoint, responseUrl).href
   const stylesheet = typeof manifest.stylesheet === 'string'
@@ -131,12 +127,15 @@ const createDescriptorFromManifest = (
 
 const createDescriptorFromEntrypoint = (
   config: SandboxLaunchConfig,
-  responseUrl: string
+  responseUrl: string,
+  runner: SandboxExtensionRunner,
+  stylesheet: string | null,
+  pages = config.mode === 'page' ? [config.pageCode] : []
 ): SandboxExtensionDescriptor => ({
   entrypoint: responseUrl,
-  pages: config.mode === 'page' ? [config.pageCode] : [],
-  runner: 'worker',
-  stylesheet: resolveCoreEntrypointStylesheet(responseUrl),
+  pages,
+  runner,
+  stylesheet,
   targets: config.targets,
   uuid: config.widgetId,
 })
@@ -158,6 +157,68 @@ const normalizePages = (pages: SandboxExtensionManifest['pages']): string[] =>
 
     return page.code ? [page.code] : []
   })
+
+const resolveEntrypointSource = async (
+  config: SandboxLaunchConfig,
+  response: Response,
+  responseUrl: string,
+  contentType: string,
+  fetcher: FetchLike
+): Promise<Pick<SandboxExtensionSource, 'descriptor' | 'entrypoint'>> => {
+  if (!isHtmlMimeType(contentType)) {
+    const descriptor = createDescriptorFromEntrypoint(config, responseUrl, 'worker', null)
+
+    return {
+      descriptor,
+      entrypoint: resolveUrl(response.url || responseUrl, window.location.href),
+    }
+  }
+
+  const html = await response.text()
+  const scriptEntrypoint = resolveWorkerEntrypointFromHtml(html, response.url || responseUrl)
+
+  if (!scriptEntrypoint) {
+    throw new Error(`[sandbox:manifest] Entrypoint '${responseUrl}' does not have a script in <head>.`)
+  }
+
+  const scriptResponse = await fetcher(scriptEntrypoint.href, {
+    cache: 'no-store',
+    credentials: 'include',
+  })
+
+  if (!scriptResponse.ok) {
+    throw new Error(`[sandbox:manifest] Failed to load entrypoint '${scriptEntrypoint.href}' (${scriptResponse.status})`)
+  }
+
+  const script = await scriptResponse.text()
+  const runner = inferRunnerFromScript(script)
+  const entrypoint = runner === 'iframe'
+    ? resolveUrl(response.url || responseUrl, window.location.href)
+    : resolveUrl(scriptResponse.url || scriptEntrypoint.href, window.location.href)
+  const stylesheet = runner === 'worker'
+    ? await resolveCoreEntrypointStylesheet(responseUrl, fetcher)
+    : null
+  const pages = runner === 'worker'
+    ? resolveEntrypointPages(config, script)
+    : []
+  const descriptor = createDescriptorFromEntrypoint(config, entrypoint.href, runner, stylesheet, pages)
+
+  return {
+    descriptor,
+    entrypoint,
+  }
+}
+
+const resolveExtensionEntrypoint = async (
+  descriptor: SandboxExtensionDescriptor,
+  fetcher: FetchLike
+): Promise<URL> => {
+  if (descriptor.runner === 'iframe') {
+    return resolveUrl(descriptor.entrypoint, window.location.href)
+  }
+
+  return await resolveWorkerEntrypoint(descriptor.entrypoint, fetcher)
+}
 
 const resolveWorkerEntrypoint = async (
   entrypoint: string,
@@ -204,14 +265,156 @@ const isJsonMimeType = (contentType: string): boolean => {
   return mimeType.includes('json')
 }
 
-const resolveCoreEntrypointStylesheet = (responseUrl: string): string | null => {
+const isHtmlMimeType = (contentType: string): boolean => {
+  const mimeType = contentType.toLowerCase()
+
+  return mimeType.includes('text/html')
+}
+
+const inferRunnerFromScript = (script: string): SandboxExtensionRunner =>
+  script.includes('This does not appear to be a child iframe')
+    ? 'iframe'
+    : 'worker'
+
+const resolveEntrypointPages = (
+  config: SandboxLaunchConfig,
+  script: string
+): string[] => {
+  const pages = inferPageCodesFromScript(script)
+
+  if (pages.length > 0) return pages
+
+  return config.mode === 'page' ? [config.pageCode] : []
+}
+
+const inferPageCodesFromScript = (script: string): string[] => {
+  const pagesObject = extractPagesObjectBody(script)
+  if (!pagesObject) return []
+
+  const codes = new Set<string>()
+  let depth = 0
+  let index = 0
+
+  while (index < pagesObject.length) {
+    const char = pagesObject[index]
+
+    if (char === '"' || char === '\'' || char === '`') {
+      index = skipString(pagesObject, index)
+      continue
+    }
+
+    if (char === '{' || char === '[' || char === '(') {
+      depth++
+      index++
+      continue
+    }
+
+    if (char === '}' || char === ']' || char === ')') {
+      depth = Math.max(0, depth - 1)
+      index++
+      continue
+    }
+
+    if (depth === 0) {
+      const key = readObjectKey(pagesObject, index)
+
+      if (key) {
+        codes.add(key.value)
+        index = key.end
+        continue
+      }
+    }
+
+    index++
+  }
+
+  return Array.from(codes)
+}
+
+const extractPagesObjectBody = (script: string): string | null => {
+  const pagesMatch = /pages\s*:\s*\[\s*\{/u.exec(script)
+  if (!pagesMatch) return null
+
+  const objectStart = script.indexOf('{', pagesMatch.index)
+  let depth = 0
+
+  for (let index = objectStart; index < script.length; index++) {
+    const char = script[index]
+
+    if (char === '"' || char === '\'' || char === '`') {
+      index = skipString(script, index) - 1
+      continue
+    }
+
+    if (char === '{') {
+      depth++
+      continue
+    }
+
+    if (char === '}') {
+      depth--
+
+      if (depth === 0) {
+        return script.slice(objectStart + 1, index)
+      }
+    }
+  }
+
+  return null
+}
+
+const skipString = (source: string, start: number): number => {
+  const quote = source[start]
+  let index = start + 1
+
+  while (index < source.length) {
+    if (source[index] === '\\') {
+      index += 2
+      continue
+    }
+
+    if (source[index] === quote) {
+      return index + 1
+    }
+
+    index++
+  }
+
+  return index
+}
+
+const readObjectKey = (
+  source: string,
+  start: number
+): { end: number; value: string } | null => {
+  const match = /^(?:^|,)\s*(?:"(?<double>[^"]+)"|'(?<single>[^']+)'|(?<identifier>[A-Za-z_$][\w$-]*))\s*:/u.exec(source.slice(start))
+  const value = match?.groups?.double ?? match?.groups?.single ?? match?.groups?.identifier
+
+  if (!match || !value) return null
+
+  return {
+    end: start + match[0].length,
+    value,
+  }
+}
+
+const resolveCoreEntrypointStylesheet = async (
+  responseUrl: string,
+  fetcher: FetchLike
+): Promise<string | null> => {
   const url = resolveUrl(responseUrl, window.location.href)
 
   if (!url.pathname.match(/\/extension\/[^/]+$/u)) return null
 
   url.pathname = `${url.pathname}/stylesheet`
 
-  return url.href
+  const response = await fetcher(url.href, {
+    cache: 'no-store',
+    credentials: 'include',
+    method: 'HEAD',
+  })
+
+  return response.ok ? url.href : null
 }
 
 const resolveUrl = (value: string, base: string): URL => {

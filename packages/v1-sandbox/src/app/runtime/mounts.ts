@@ -25,14 +25,34 @@ export type SandboxRemoteApi = {
   run(channel: Channel, config: PageRunIdentity | WidgetRunConfig): Promise<void>;
 }
 
+export type SandboxIframeWidgetRemoteApi = {
+  release(): void;
+  run(channel: Channel, target: SandboxOrderTarget): Promise<void>;
+}
+
 export type SandboxWorkerApi = SandboxRemoteApi & SandboxEndpointApi<OrderSandboxSchemas>
 
+export type SandboxIframeWidgetApi = SandboxIframeWidgetRemoteApi & SandboxEndpointApi<OrderSandboxSchemas>
+
+export type SandboxRuntimeConnection =
+  | {
+    endpoint: Endpoint<SandboxIframeWidgetApi>;
+    iframe: HTMLIFrameElement;
+    kind: 'iframe';
+    mount: SandboxMount;
+  }
+  | {
+    endpoint: Endpoint<SandboxWorkerApi>;
+    kind: 'worker';
+    mounts: SandboxMount[];
+    worker: Worker;
+  }
+
 export type SandboxRuntime = {
-  endpoint: Endpoint<SandboxWorkerApi>;
+  connections: SandboxRuntimeConnection[];
   flushTimer: number;
   mounts: SandboxMount[];
   stylesheet: HTMLLinkElement | null;
-  worker: Worker;
 }
 
 export type HostedTreeRef = {

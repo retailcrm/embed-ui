@@ -27,7 +27,7 @@ const props = defineProps<{
   config: SandboxLaunchConfig;
 }>()
 
-const { t } = useI18n({ useScope: 'local' })
+const { t } = useI18n()
 
 const runModeLabel = computed(() => props.config.mode === 'page'
   ? t('hostControls.page', { pageCode: props.config.pageCode })

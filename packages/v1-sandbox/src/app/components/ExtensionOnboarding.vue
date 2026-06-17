@@ -30,60 +30,22 @@
                 <li>{{ t('extensionOnboarding.steps.worker') }}</li>
             </ol>
 
-            <label :class="$style['extension-onboarding__field']">
-                <span :class="$style['extension-onboarding__label']">
-                    {{ t('extensionOnboarding.extensionUrl') }}
-                </span>
+            <div :class="$style['extension-onboarding__example']">
+                <span>{{ t('extensionOnboarding.example.label') }}</span>
 
-                <input
-                    :class="$style['extension-onboarding__input']"
-                    :value="manifestUrl"
-                    :placeholder="t('extensionOnboarding.placeholder')"
-                    type="text"
-                    @input="updateManifestUrl"
-                />
-            </label>
-
-            <div
-                :class="$style['extension-onboarding__actions']"
-                role="group"
-            >
-                <button
-                    :class="[
-                        $style['extension-onboarding__button'],
-                        $style['extension-onboarding__button_primary'],
-                    ]"
-                    type="button"
-                    @click="useCoreUiExtensionExample"
-                >
-                    {{ t('extensionOnboarding.actions.useDemoExtension') }}
-                </button>
-
-                <button
-                    :class="$style['extension-onboarding__button']"
-                    type="button"
-                    @click="apply"
-                >
-                    {{ t('extensionOnboarding.actions.apply') }}
-                </button>
-
-                <button
-                    :class="$style['extension-onboarding__button']"
-                    type="button"
-                    @click="openCoreUiExtensionExampleReturnsPage"
-                >
-                    {{ t('extensionOnboarding.actions.openDemoPage') }}
-                </button>
-
-                <button
-                    :class="$style['extension-onboarding__button']"
-                    type="button"
-                    @click="openDevPanel"
-                >
-                    {{ t('extensionOnboarding.actions.configure') }}
-                </button>
+                <code>%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic</code>
             </div>
 
+            <button
+                :class="[
+                    $style['extension-onboarding__button'],
+                    $style['extension-onboarding__button_primary'],
+                ]"
+                type="button"
+                @click="openDevPanel"
+            >
+                {{ t('extensionOnboarding.actions.openSandbox') }}
+            </button>
         </div>
     </section>
 </template>
@@ -93,39 +55,30 @@ import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
 const props = defineProps<{
-  apply(): void;
-  manifestUrl: string;
-  openCoreUiExtensionExampleReturnsPage(): void;
   openDevPanel(): void;
-  setManifestUrl(value: string): void;
-  useCoreUiExtensionExample(): void;
 }>()
 
-const { t } = useI18n({ useScope: 'local' })
+const { t } = useI18n()
 
 const uid = useId()
 
-const updateManifestUrl = (event: Event) => {
-  props.setManifestUrl((event.target as HTMLInputElement).value)
-}
+const openDevPanel = () => props.openDevPanel()
 </script>
 
 <i18n locale="en-GB">
 {
     "extensionOnboarding": {
         "actions": {
-            "apply": "Open with Extension URL",
-            "configure": "Configure extension",
-            "openDemoPage": "Open example page",
-            "useDemoExtension": "Use example extension"
+            "openSandbox": "Open sandbox controls"
         },
         "description": "Sandbox connects the frontend part of a JS module by external URL: manifest/descriptor, HTML entrypoint or JS script. It loads resources over the network, attaches stylesheet when available and starts the extension through a worker-compatible endpoint.",
         "eyebrow": "JS module delivery",
-        "extensionUrl": "Extension URL",
-        "placeholder": "https://your-extension-host.ru/extension/module-id",
+        "example": {
+            "label": "Universal URL example"
+        },
         "steps": {
             "devServer": "Run your module dev server that serves frontend resources over HTTP.",
-            "entrypoint": "Provide an entrypoint or descriptor URL: JS script, HTML entrypoint or JSON manifest.",
+            "entrypoint": "Provide a descriptor or entrypoint URL: JSON manifest, HTML entrypoint or JS script.",
             "worker": "For the current scenario, the entrypoint should run `runEndpoint(defineRunner(...))`, and the descriptor should define `runner: \"worker\"`, `targets` and/or `pages`."
         },
         "title": "Connect an external extension"
@@ -137,18 +90,16 @@ const updateManifestUrl = (event: Event) => {
 {
     "extensionOnboarding": {
         "actions": {
-            "apply": "Abrir con Extension URL",
-            "configure": "Configurar extensión",
-            "openDemoPage": "Abrir página de ejemplo",
-            "useDemoExtension": "Usar extensión de ejemplo"
+            "openSandbox": "Abrir controles de sandbox"
         },
         "description": "Sandbox conecta la parte frontend de un módulo JS por una URL externa: manifest/descriptor, HTML entrypoint o JS script. Carga los recursos por red, conecta stylesheet si existe y arranca la extensión mediante un endpoint compatible con worker.",
         "eyebrow": "Entrega de módulo JS",
-        "extensionUrl": "Extension URL",
-        "placeholder": "https://your-extension-host.ru/extension/module-id",
+        "example": {
+            "label": "Ejemplo universal de URL"
+        },
         "steps": {
             "devServer": "Levante el dev server de su módulo que sirve recursos frontend por HTTP.",
-            "entrypoint": "Indique la URL de entrypoint o descriptor: JS script, HTML entrypoint o JSON manifest.",
+            "entrypoint": "Indique la URL de descriptor o entrypoint: JSON manifest, HTML entrypoint o JS script.",
             "worker": "Para el escenario actual, el entrypoint debe ejecutar `runEndpoint(defineRunner(...))`, y el descriptor debe definir `runner: \"worker\"`, `targets` y/o `pages`."
         },
         "title": "Conectar una extensión externa"
@@ -160,18 +111,16 @@ const updateManifestUrl = (event: Event) => {
 {
     "extensionOnboarding": {
         "actions": {
-            "apply": "Открыть с URL расширения",
-            "configure": "Настроить расширение",
-            "openDemoPage": "Открыть страницу примера",
-            "useDemoExtension": "Использовать пример расширения"
+            "openSandbox": "Открыть песочницу"
         },
         "description": "Песочница подключает frontend-часть JS-модуля по внешнему URL: manifest/descriptor, HTML entrypoint или JS script. Она загружает ресурсы по сети, подключает stylesheet при наличии и запускает расширение через worker-compatible endpoint.",
         "eyebrow": "Доставка JS-модуля",
-        "extensionUrl": "URL расширения",
-        "placeholder": "https://your-extension-host.ru/extension/module-id",
+        "example": {
+            "label": "Универсальный пример URL"
+        },
         "steps": {
             "devServer": "Поднимите dev-сервер вашего модуля, который отдаёт frontend-ресурсы по HTTP.",
-            "entrypoint": "Укажите URL entrypoint или descriptor: JS script, HTML entrypoint или JSON manifest.",
+            "entrypoint": "Укажите URL descriptor или entrypoint: JSON manifest, HTML entrypoint или JS script.",
             "worker": "Для актуального сценария entrypoint должен запускать `runEndpoint(defineRunner(...))`, а descriptor — описывать `runner: \"worker\"`, `targets` и/или `pages`."
         },
         "title": "Подключите внешнее расширение"
@@ -231,6 +180,23 @@ const updateManifestUrl = (event: Event) => {
         gap: @spacing-xs;
         margin: 0;
         padding-left: 18px;
+    }
+
+    &__example {
+        background: @grey-200;
+        border: 1px solid @grey-500;
+        border-radius: @border-radius-md;
+        color: @black-500;
+        display: grid;
+        font-size: 13px;
+        gap: @spacing-xs;
+        line-height: 1.4;
+        padding: @spacing-s;
+
+        code {
+            color: @blue-500;
+            overflow-wrap: anywhere;
+        }
     }
 
     &__field {

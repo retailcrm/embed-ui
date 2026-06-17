@@ -1,17 +1,11 @@
 import { expect, test } from 'vitest'
 
-import {
-  createDefaultSandboxManifestUrl,
-  DEFAULT_SANDBOX_EXTENSION_URL,
-  DEFAULT_SANDBOX_MANIFEST_URL,
-  DEFAULT_SANDBOX_PAGE_CODE,
-  DEFAULT_SANDBOX_WIDGET_ID,
-  parseSandboxLaunchConfig,
-} from '@/dev/launch'
+import { createDefaultSandboxManifestUrl } from '@/dev/launch'
+import { DefaultSandbox } from '@/enum'
+import { parseSandboxLaunchConfig } from '@/dev/launch'
 
 test('does not use bundled extension entrypoint by default', () => {
-  expect(DEFAULT_SANDBOX_EXTENSION_URL).toBe('')
-  expect(DEFAULT_SANDBOX_MANIFEST_URL).toBe('')
+  expect(DefaultSandbox.Url).toBe('')
 })
 
 test('does not assume bundled external extension server', () => {
@@ -33,7 +27,7 @@ test('parses sandbox launch config from url params', () => {
     fixture: 'order-with-delivery',
     manifestUrl: '/extension/manifest.json',
     mode: 'widget',
-    pageCode: DEFAULT_SANDBOX_PAGE_CODE,
+    pageCode: DefaultSandbox.PageCode,
     targets: ['order/card:delivery.before'],
     widgetId: 'delivery-widget',
   })
@@ -49,14 +43,14 @@ test('parses multiple widget targets and page mode', () => {
   expect(config).toEqual({
     extensionUrl: '',
     fixture: 'order-basic',
-    manifestUrl: DEFAULT_SANDBOX_MANIFEST_URL,
+    manifestUrl: DefaultSandbox.Url,
     mode: 'page',
     pageCode: 'orders-dashboard',
     targets: [
       'order/card:common.before',
       'order/card:common.after',
     ],
-    widgetId: DEFAULT_SANDBOX_WIDGET_ID,
+    widgetId: DefaultSandbox.WidgetId,
   })
 })
 
@@ -71,11 +65,11 @@ test('falls back to safe defaults for empty and unsupported values', () => {
   expect(config).toEqual({
     extensionUrl: '',
     fixture: 'order-basic',
-    manifestUrl: DEFAULT_SANDBOX_MANIFEST_URL,
+    manifestUrl: DefaultSandbox.Url,
     mode: 'widget',
-    pageCode: DEFAULT_SANDBOX_PAGE_CODE,
+    pageCode: DefaultSandbox.PageCode,
     targets: ['order/card:common.before'],
-    widgetId: DEFAULT_SANDBOX_WIDGET_ID,
+    widgetId: DefaultSandbox.WidgetId,
   })
 })
 

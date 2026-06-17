@@ -1,7 +1,7 @@
 <template>
     <aside
+        :id="uid + '-sandbox-rail'"
         :class="$style['sandbox-rail']"
-        :aria-label="t('rail.navigation')"
     >
         <div
             :class="$style['sandbox-rail__logo']"
@@ -20,6 +20,7 @@
             <component
                 :is="item.icon"
                 :class="$style['sandbox-rail__icon']"
+                aria-hidden="true"
             />
         </button>
 
@@ -35,6 +36,7 @@
             <component
                 :is="item.icon"
                 :class="$style['sandbox-rail__icon']"
+                aria-hidden="true"
             />
         </button>
 
@@ -51,6 +53,7 @@ import type { Component } from 'vue'
 
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useId } from 'vue'
 
 import IconChart from '~assets/sprites/technology-and-data/chart_bar_2.svg'
 import IconLocation from '~assets/sprites/map-and-places/my_location.svg'
@@ -65,7 +68,8 @@ type RailItem = {
   label: string;
 }
 
-const { t } = useI18n({ useScope: 'local' })
+const { t } = useI18n()
+const uid = useId()
 
 const topItems = computed<RailItem[]>(() => [
   {

@@ -1,17 +1,8 @@
 import type { SandboxOrderTarget } from '@/dev/targets'
 
-import { DEFAULT_SANDBOX_TARGET, isSandboxOrderTarget } from '@/dev/targets'
-
-export const DEFAULT_SANDBOX_EXTENSION_URL = ''
-export const DEFAULT_SANDBOX_FIXTURE = 'order-basic'
-export const DEFAULT_SANDBOX_MANIFEST_URL = ''
-export const DEFAULT_SANDBOX_MODE = 'widget'
-export const DEFAULT_SANDBOX_PAGE_CODE = 'orders-dashboard'
-export const DEFAULT_SANDBOX_WIDGET_ID = 'sandbox-widget'
-export const CORE_UI_EXTENSION_EXAMPLE_BASE_URL = 'http://web-extensions-server.simla.local'
-export const CORE_UI_EXTENSION_EXAMPLE_ENTRYPOINT_URL = 'http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7'
-export const CORE_UI_EXTENSION_EXAMPLE_PAGE_CODE = 'returns'
-export const CORE_UI_EXTENSION_EXAMPLE_TARGET = 'order/card:common.after'
+import { DEFAULT_SANDBOX_TARGET } from '@/dev/targets'
+import { DefaultSandbox } from '@/enum'
+import { isSandboxOrderTarget } from '@/dev/targets'
 
 export type SandboxLaunchMode = 'page' | 'widget'
 
@@ -27,7 +18,7 @@ export type SandboxLaunchConfig = {
 
 export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
 
-export const createDefaultSandboxManifestUrl = (): string => DEFAULT_SANDBOX_MANIFEST_URL
+export const createDefaultSandboxManifestUrl = (): string => DefaultSandbox.Url
 
 export const parseSandboxLaunchConfig = (
   params: URLSearchParams,
@@ -42,29 +33,29 @@ export const parseSandboxLaunchConfig = (
     extensionUrl: readStringParam(
       params,
       'extensionUrl',
-      options.extensionUrl ?? DEFAULT_SANDBOX_EXTENSION_URL
+      options.extensionUrl ?? DefaultSandbox.Url
     ),
     fixture: readStringParam(
       params,
       'fixture',
-      options.fixture ?? DEFAULT_SANDBOX_FIXTURE
+      options.fixture ?? DefaultSandbox.Fixture
     ),
     manifestUrl: readOptionalStringParam(
       params,
       'manifestUrl',
-      options.manifestUrl ?? DEFAULT_SANDBOX_MANIFEST_URL
+      options.manifestUrl ?? DefaultSandbox.Url
     ),
-    mode: parseMode(params.get('mode')) ?? options.mode ?? DEFAULT_SANDBOX_MODE,
+    mode: parseMode(params.get('mode')) ?? options.mode ?? DefaultSandbox.Mode,
     pageCode: readStringParam(
       params,
       'pageCode',
-      options.pageCode ?? DEFAULT_SANDBOX_PAGE_CODE
+      options.pageCode ?? DefaultSandbox.PageCode
     ),
     targets: targets.length > 0 ? targets : [DEFAULT_SANDBOX_TARGET],
     widgetId: readStringParam(
       params,
       'widgetId',
-      options.widgetId ?? DEFAULT_SANDBOX_WIDGET_ID
+      options.widgetId ?? DefaultSandbox.WidgetId
     ),
   }
 }

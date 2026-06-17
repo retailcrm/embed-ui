@@ -6,6 +6,7 @@
         ]"
     >
         <SandboxRail />
+
         <SandboxSidebar
             :id="uid + '-sandbox-sidebar'"
             :open="isSidebarOpen"
@@ -48,12 +49,7 @@
             >
                 <ExtensionOnboarding
                     v-if="shouldShowOnboarding"
-                    :apply="applyLaunchConfig"
-                    :manifest-url="manifestUrl"
-                    :open-core-ui-extension-example-returns-page="openCoreUiExtensionExampleReturnsPage"
                     :open-dev-panel="openDevPanel"
-                    :set-manifest-url="setManifestUrl"
-                    :use-core-ui-extension-example="useCoreUiExtensionExample"
                 />
 
                 <PageMount
@@ -97,12 +93,10 @@
 
             <DevPanel
                 :apply-launch-config="applyLaunchConfig"
-                :extension-url="extensionUrl"
                 :fixture="fixture"
                 :go-to-order="goToOrder"
                 :manifest-url="manifestUrl"
                 :mode="mode"
-                :open-core-ui-extension-example-returns-page="openCoreUiExtensionExampleReturnsPage"
                 :page-code="pageCode"
                 :push-query="pushQuery"
                 :reload-extension="reloadExtension"
@@ -111,13 +105,11 @@
                 :run-http-ping="runHttpPing"
                 :sandbox="sandbox"
                 :selected-targets="selectedTargets"
-                :set-extension-url="setExtensionUrl"
                 :set-fixture="setFixture"
                 :set-manifest-url="setManifestUrl"
                 :set-mode="setMode"
                 :set-page-code="setPageCode"
                 :set-target-selected="setTargetSelected"
-                :use-core-ui-extension-example="useCoreUiExtensionExample"
             />
         </aside>
 
@@ -136,13 +128,19 @@
 
 <script setup lang="ts">
 import type { HostedTreeRef } from '@/app/runtime/mounts'
+import type { SandboxExtensionDescriptor } from '@/dev/manifest'
+import type { SandboxIframeWidgetApi } from '@/app/runtime/mounts'
 import type { SandboxLaunchMode } from '@/dev/launch'
 import type { SandboxMount } from '@/app/runtime/mounts'
 import type { SandboxOrderTarget } from '@/dev/targets'
 import type { SandboxRuntime, SandboxWorkerApi } from '@/app/runtime/mounts'
 
 import { computed } from 'vue'
-import { createEndpoint as createRpcEndpoint, fromWebWorker } from '@remote-ui/rpc'
+import {
+  createEndpoint as createRpcEndpoint,
+  fromIframe,
+  fromWebWorker,
+} from '@remote-ui/rpc'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
@@ -156,9 +154,6 @@ import SandboxSidebar from '@/app/components/SandboxSidebar.vue'
 
 import WidgetMounts from '@/app/components/WidgetMounts.vue'
 
-import { CORE_UI_EXTENSION_EXAMPLE_ENTRYPOINT_URL } from '@/dev/launch'
-import { CORE_UI_EXTENSION_EXAMPLE_PAGE_CODE } from '@/dev/launch'
-import { CORE_UI_EXTENSION_EXAMPLE_TARGET } from '@/dev/launch'
 import { createDefaultSandboxManifestUrl } from '@/dev/launch'
 import { createMounts } from '@/app/runtime/mounts'
 import { createOrderSandboxController } from '@/dev/fixtures'
@@ -169,11 +164,12 @@ import { updateSandboxLaunchQuery } from '@/dev/launch'
 
 const searchParams = new URLSearchParams(window.location.search)
 const hasExplicitExtensionUrl = Boolean(searchParams.get('extensionUrl')?.trim())
+const hasExplicitLaunchMode = searchParams.has('mode')
 const launchConfig = parseSandboxLaunchConfig(searchParams, {
   manifestUrl: createDefaultSandboxManifestUrl(),
   targets: DEFAULT_SANDBOX_TARGETS,
 })
-const extensionUrl = ref(launchConfig.extensionUrl)
+const LAUNCH_NOTICE_STORAGE_KEY = 'v1-sandbox:launch-notice'
 const fixture = ref(launchConfig.fixture)
 const manifestUrl = ref(launchConfig.manifestUrl)
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
@@ -206,15 +202,125 @@ const flushReceiver = async () => {
 }
 
 const mountExtension = async () => {
-  const extensionSource = await resolveSandboxExtensionSource(launchConfig)
-  const stylesheet = mountExtensionStylesheet(extensionSource.descriptor.stylesheet)
-  const worker = createExtensionWorker(extensionSource.descriptor.uuid, extensionSource.entrypoint)
+  let stylesheet: HTMLLinkElement | null = null
+
+  try {
+    const extensionSource = await resolveSandboxExtensionSource(launchConfig)
+
+    if (redirectToInferredPageMode(extensionSource.descriptor)) return
+
+    const diagnostic = createLaunchDiagnostic(extensionSource.descriptor)
+
+    if (diagnostic) {
+      showSandboxAlert(diagnostic.title, diagnostic.message)
+
+      if (diagnostic.blocking) return
+    }
+
+    stylesheet = mountExtensionStylesheet(extensionSource.descriptor.stylesheet)
+    const connections = extensionSource.descriptor.runner === 'iframe'
+      ? await mountIframeExtension(extensionSource.descriptor.uuid, extensionSource.entrypoint)
+      : await mountWorkerExtension(extensionSource.descriptor.uuid, extensionSource.entrypoint)
+
+    await flushReceiver()
+
+    runtime.value = {
+      connections,
+      flushTimer: window.setInterval(() => {
+        void flushReceiver()
+      }, 100),
+      mounts,
+      stylesheet,
+    }
+  } catch (error) {
+    stylesheet?.remove()
+    showSandboxAlert(
+      t('app.alerts.runtimeError.title'),
+      t('app.alerts.runtimeError.message', { message: getErrorMessage(error) })
+    )
+  }
+}
+
+const redirectToInferredPageMode = (descriptor: SandboxExtensionDescriptor): boolean => {
+  const pageCode = descriptor.pages[0]
+
+  if (
+    hasExplicitLaunchMode
+    || launchConfig.mode !== 'widget'
+    || descriptor.runner !== 'worker'
+    || !pageCode
+  ) {
+    return false
+  }
+
+  storeLaunchNotice({
+    pageCode,
+    type: 'inferred-page-mode',
+  })
+  window.location.replace(updateSandboxLaunchQuery({
+    ...launchConfig,
+    mode: 'page',
+    pageCode,
+  }).toString())
+
+  return true
+}
+
+const createLaunchDiagnostic = (
+  descriptor: SandboxExtensionDescriptor
+): SandboxLaunchDiagnostic | null => {
+  if (descriptor.runner === 'iframe' && launchConfig.mode === 'page') {
+    return {
+      blocking: true,
+      message: t('app.alerts.iframePageMode.message'),
+      title: t('app.alerts.iframePageMode.title'),
+    }
+  }
+
+  if (
+    descriptor.runner === 'worker'
+    && launchConfig.mode === 'page'
+    && descriptor.pages.length > 0
+    && !descriptor.pages.includes(launchConfig.pageCode)
+  ) {
+    return {
+      blocking: true,
+      message: t('app.alerts.missingPageCode.message', {
+        pageCode: launchConfig.pageCode,
+        pages: descriptor.pages.join(', '),
+      }),
+      title: t('app.alerts.missingPageCode.title'),
+    }
+  }
+
+  if (
+    descriptor.runner === 'worker'
+    && launchConfig.mode === 'widget'
+    && hasExplicitLaunchMode
+    && descriptor.pages.length > 0
+  ) {
+    return {
+      blocking: false,
+      message: t('app.alerts.workerPageInWidgetMode.message', {
+        pages: descriptor.pages.join(', '),
+      }),
+      title: t('app.alerts.workerPageInWidgetMode.title'),
+    }
+  }
+
+  return null
+}
+
+const mountWorkerExtension = async (
+  uuid: string,
+  entrypoint: URL
+): Promise<SandboxRuntime['connections']> => {
+  const worker = createExtensionWorker(uuid, entrypoint)
   const endpoint = createRpcEndpoint<SandboxWorkerApi>(fromWebWorker(worker))
 
   try {
-    await waitForExtensionWorkerReady(worker, extensionSource.descriptor.uuid)
+    await waitForExtensionWorkerReady(worker, uuid)
   } catch (error) {
-    stylesheet?.remove()
     endpoint.terminate()
     throw error
   }
@@ -227,20 +333,113 @@ const mountExtension = async () => {
     httpCall: (...args: Parameters<typeof endpointApi.httpCall>) => endpointApi.httpCall(...args),
   } as unknown as SandboxWorkerApi)
 
-  for (const mount of mounts) {
-    await endpoint.call.run(mount.receiver.receive, mount.runConfig)
+  try {
+    for (const mount of mounts) {
+      await endpoint.call.run(mount.receiver.receive, mount.runConfig)
+    }
+  } catch (error) {
+    endpoint.terminate()
+    worker.terminate()
+    throw error
   }
 
-  await flushReceiver()
-
-  runtime.value = {
+  return [{
     endpoint,
-    flushTimer: window.setInterval(() => {
-      void flushReceiver()
-    }, 100),
+    kind: 'worker',
     mounts,
-    stylesheet,
     worker,
+  }]
+}
+
+const mountIframeExtension = async (
+  uuid: string,
+  entrypoint: URL
+): Promise<SandboxRuntime['connections']> => {
+  const widgetMounts = mounts.filter(mount => mount.type === 'widget')
+
+  if (widgetMounts.length !== mounts.length) {
+    throw new Error('[sandbox:manifest] Iframe runner supports widget targets only. Use mode=widget.')
+  }
+
+  const connections: SandboxRuntime['connections'] = []
+  const endpointApi = sandbox.endpointApi
+
+  try {
+    for (const mount of widgetMounts) {
+      const iframe = createExtensionIframe(uuid, entrypoint)
+      const endpoint = createRpcEndpoint<SandboxIframeWidgetApi>(fromIframe(iframe, {
+        terminate: false,
+      }))
+
+      endpoint.expose({
+        ...endpointApi,
+        get: (...args: Parameters<typeof endpointApi.get>) => endpointApi.get(...args),
+        httpCall: (...args: Parameters<typeof endpointApi.httpCall>) => endpointApi.httpCall(...args),
+      } as unknown as SandboxIframeWidgetApi)
+
+      connections.push({
+        endpoint,
+        iframe,
+        kind: 'iframe',
+        mount,
+      })
+
+      await endpoint.call.run(mount.receiver.receive, getWidgetMountTarget(mount))
+    }
+  } catch (error) {
+    connections.forEach(disposeRuntimeConnection)
+    throw error
+  }
+
+  return connections
+}
+
+const getWidgetMountTarget = (mount: SandboxMount): SandboxOrderTarget => {
+  if (!('target' in mount.runConfig)) {
+    throw new Error(`[sandbox:manifest] Mount '${mount.id}' is not a widget target.`)
+  }
+
+  return mount.runConfig.target as SandboxOrderTarget
+}
+
+const createExtensionIframe = (uuid: string, entrypoint: URL): HTMLIFrameElement => {
+  const iframe = document.createElement('iframe')
+
+  iframe.height = '0'
+  iframe.sandbox.add('allow-scripts', 'allow-same-origin')
+  iframe.src = entrypoint.href
+  iframe.style.display = 'none'
+  iframe.title = `sandbox:${uuid}`
+  iframe.width = '0'
+
+  document.body.append(iframe)
+
+  return iframe
+}
+
+const disposeRuntimeConnection = (
+  connection: SandboxRuntime['connections'][number]
+) => {
+  connection.endpoint.terminate()
+
+  if (connection.kind === 'iframe') {
+    connection.iframe.remove()
+    return
+  }
+
+  connection.worker.terminate()
+}
+
+const releaseRuntimeConnection = async (
+  connection: SandboxRuntime['connections'][number]
+) => {
+  if (connection.kind === 'iframe') {
+    await connection.endpoint.call.release()
+    return
+  }
+
+  for (const mount of connection.mounts) {
+    await connection.endpoint.call.release(mount.releaseConfig)
   }
 }
 
@@ -252,14 +451,19 @@ const disposeRuntime = async () => {
   window.clearInterval(current.flushTimer)
 
   try {
-    for (const mount of current.mounts) {
-      await current.endpoint.call.release(mount.releaseConfig)
+    for (const connection of current.connections) {
+      try {
+        await releaseRuntimeConnection(connection)
+      } catch (error) {
+        console.warn('[sandbox:manifest] Failed to release extension runtime', error)
+      } finally {
+        disposeRuntimeConnection(connection)
+      }
     }
 
     await flushReceiver()
   } finally {
     current.stylesheet?.remove()
-    current.worker.terminate()
     runtime.value = null
   }
 }
@@ -276,7 +480,7 @@ const flushRemoteUpdates = () => {
 
 const applyLaunchConfig = () => {
   window.location.href = updateSandboxLaunchQuery({
-    extensionUrl: extensionUrl.value,
+    extensionUrl: '',
     fixture: fixture.value,
     manifestUrl: manifestUrl.value,
     mode: mode.value,
@@ -323,24 +527,6 @@ const goToOrder = () => {
   sandbox.endpointApi.goTo('/orders/215/edit', {
     source: 'v1-sandbox',
   })
-}
-
-const useCoreUiExtensionExample = () => {
-  manifestUrl.value = CORE_UI_EXTENSION_EXAMPLE_ENTRYPOINT_URL
-  mode.value = 'widget'
-  selectedTargets.value = [CORE_UI_EXTENSION_EXAMPLE_TARGET]
-}
-
-const openCoreUiExtensionExampleReturnsPage = () => {
-  manifestUrl.value = CORE_UI_EXTENSION_EXAMPLE_ENTRYPOINT_URL
-  mode.value = 'page'
-  pageCode.value = CORE_UI_EXTENSION_EXAMPLE_PAGE_CODE
-  selectedTargets.value = [CORE_UI_EXTENSION_EXAMPLE_TARGET]
-  applyLaunchConfig()
-}
-
-const setExtensionUrl = (value: string) => {
-  extensionUrl.value = value
 }
 
 const setFixture = (value: string) => {
@@ -399,8 +585,21 @@ type WorkerReadyMessage = {
   type: string;
 }
 
-const WORKER_READY = 'sandbox:extension-worker-ready'
-const WORKER_READY_ERROR = 'sandbox:extension-worker-error'
+type SandboxLaunchDiagnostic = {
+  blocking: boolean;
+  message: string;
+  title: string;
+}
+
+type StoredLaunchNotice = {
+  pageCode?: string;
+  type: 'inferred-page-mode';
+}
+
+enum ExtensionWorkerMessageType {
+  Ready = 'sandbox:extension-worker-ready',
+  ReadyError = 'sandbox:extension-worker-error',
+}
 
 const isWorkerReadyMessage = (value: unknown): value is WorkerReadyMessage =>
   typeof value === 'object' && value !== null && 'type' in value
@@ -425,13 +624,13 @@ const waitForExtensionWorkerReady = async (
     const onMessage = (event: MessageEvent) => {
       if (!isWorkerReadyMessage(event.data)) return
 
-      if (event.data.type === WORKER_READY) {
+      if (event.data.type === ExtensionWorkerMessageType.Ready) {
         cleanup()
         resolve()
         return
       }
 
-      if (event.data.type === WORKER_READY_ERROR) {
+      if (event.data.type === ExtensionWorkerMessageType.ReadyError) {
         cleanup()
         reject(new Error(
           event.data.error ?? `[sandbox:manifest] Worker bootstrap failed for '${uuid}'`
@@ -470,8 +669,50 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
+const showSandboxAlert = (title: string, message: string) => {
+  window.alert(`${title}\n\n${message}`)
+}
+
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message
+
+  return String(error)
+}
+
+const readLaunchNotice = (): StoredLaunchNotice | null => {
+  const rawNotice = window.sessionStorage.getItem(LAUNCH_NOTICE_STORAGE_KEY)
+
+  window.sessionStorage.removeItem(LAUNCH_NOTICE_STORAGE_KEY)
+
+  if (!rawNotice) return null
+
+  try {
+    return JSON.parse(rawNotice) as StoredLaunchNotice
+  } catch {
+    return null
+  }
+}
+
+const storeLaunchNotice = (notice: StoredLaunchNotice) => {
+  window.sessionStorage.setItem(LAUNCH_NOTICE_STORAGE_KEY, JSON.stringify(notice))
+}
+
+const showStoredLaunchNotice = () => {
+  const notice = readLaunchNotice()
+
+  if (notice?.type !== 'inferred-page-mode') return
+
+  showSandboxAlert(
+    t('app.alerts.inferredPageMode.title'),
+    t('app.alerts.inferredPageMode.message', {
+      pageCode: notice.pageCode ?? launchConfig.pageCode,
+    })
+  )
+}
+
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
+  showStoredLaunchNotice()
 
   if (!shouldShowOnboarding.value) {
     void mountExtension()
@@ -486,9 +727,9 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less" module>
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
-@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
+@import (reference) "~assets/stylesheets/palette.less";
+@import (reference) "~assets/stylesheets/layout.less";
+@import (reference) "~assets/stylesheets/variables.less";
 
 .sandbox-app {
     background: @grey-200;

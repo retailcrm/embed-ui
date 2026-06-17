@@ -7,22 +7,16 @@ test('shows onboarding when extension source is not configured', async ({ page }
 
   await expect(onboarding).toBeVisible()
   await expect(onboarding).toContainText('Подключите внешнее расширение')
-  await expect(onboarding.getByRole('textbox', { name: 'URL расширения' })).toBeVisible()
-
-  const actions = onboarding.getByRole('group')
-
-  await expect(actions).toBeVisible()
-  await expect(actions.getByRole('button', { name: 'Использовать пример расширения' })).toBeVisible()
-  await expect(actions.getByRole('button', { name: 'Открыть с URL расширения' })).toBeVisible()
-  await expect(actions.getByRole('button', { name: 'Открыть страницу примера' })).toBeVisible()
-  await expect(actions.getByRole('button', { name: 'Настроить расширение' })).toBeVisible()
+  await expect(onboarding).toContainText('%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%')
+  await expect(onboarding.getByRole('button', { name: 'Открыть песочницу' })).toBeVisible()
+  await expect(onboarding.getByRole('textbox')).toHaveCount(0)
 })
 
 test('renders sandbox shell and records host activity without bundled extension', async ({ page }, testInfo) => {
   await page.goto('/')
 
   await expect(page).toHaveTitle(/v1-sandbox/)
-  const rail = page.getByRole('complementary', { name: 'Основная CRM-навигация' })
+  const rail = page.locator('[id$="-sandbox-rail"]')
   const collapseSidebar = page.getByRole('button', { name: 'Свернуть боковую панель' })
   const sidebarId = await collapseSidebar.getAttribute('aria-controls')
 
@@ -141,4 +135,30 @@ test('applies fixture and page mode controls through public url contract', async
   await expect(page).toHaveURL(/fixture=order-with-delivery/)
   await expect(page.getByRole('region', { name: 'Подключите внешнее расширение' })).toBeVisible()
   await expect(page.getByRole('status', { name: 'Режим запуска песочницы' })).toContainText('Страница: orders-dashboard')
+})
+
+test('alerts when page mode is selected for iframe extension manifest', async ({ page }) => {
+  await page.route('http://extension.test/manifest.json', async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        entrypoint: 'http://extension.test/script',
+        runner: 'iframe',
+        targets: ['order/card:common.after'],
+        uuid: 'iframe-extension',
+      }),
+      contentType: 'application/json',
+    })
+  })
+
+  const dialogPromise = page.waitForEvent('dialog')
+  const navigationPromise = page.goto('/?manifestUrl=http%3A%2F%2Fextension.test%2Fmanifest.json&mode=page&pageCode=returns')
+  const dialog = await dialogPromise
+
+  expect(dialog.message()).toContain('Неверный режим запуска')
+  expect(dialog.message()).toContain('legacy iframe-расширение поддерживает только widget targets')
+
+  await dialog.accept()
+  await navigationPromise
+
+  await expect(page.getByRole('status', { name: 'Режим запуска песочницы' })).toContainText('Страница: returns')
 })

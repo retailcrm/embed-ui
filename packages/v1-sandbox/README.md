@@ -11,7 +11,7 @@ standalone-тестирования и автоматизации JS-расши�
 - global bridge для automation/AI через `globalThis`;
 - RPC helper для подключения remote runtime в тестах и превью.
 
-## Быстрый старт
+## Programmatic API
 
 ```ts
 import { createSandboxController, createSandboxRpc } from '@retailcrm/embed-ui-v1-sandbox'
@@ -34,7 +34,7 @@ const { remote } = createSandboxRpc(sandbox)
 await remote.call.set('article', 'title', 'Preview title')
 ```
 
-## Режимы
+### Controller modes
 
 - `preview` — ручное превью и локальная отладка;
 - `automation` — управление песочницей через bridge/API;
@@ -47,12 +47,13 @@ CRM-подобной оболочке. Сейчас поддерживаются
 нескольких widget instances из одного worker, page runner по `code` и
 Playwright feedback loop.
 
-Публичный URL contract:
+### URL contract
 
 - `manifestUrl` — URL внешнего расширения. Поддерживает JSON manifest,
-  HTML entrypoint (`/extension/<uuid>`) и прямой JS script;
-- `extensionUrl` — fallback URL module worker entrypoint расширения, если
-  `manifestUrl` пустой;
+  HTML entrypoint (`/extension/%extension-id%`) и прямой JS script;
+- `extensionUrl` — низкоуровневый fallback URL module worker entrypoint
+  расширения, если `manifestUrl` пустой. В UI dev-панели используется один
+  основной путь подключения — `manifestUrl`;
 - `mode` — `widget` или `page`, по умолчанию `widget`;
 - `target` — один поддержанный `order/card:*` target для одиночного запуска;
 - `targets` — список `order/card:*` targets через запятую для запуска
@@ -62,24 +63,30 @@ Playwright feedback loop.
 - `pageCode` — page code для `mode=page`, по умолчанию `orders-dashboard`;
 - `fixture` — код фикстуры, по умолчанию `order-basic`.
 
-Пример:
+Где:
+
+- `%crm-url%` — адрес sandbox/CRM-оболочки, например
+  `http://v1.embed-ui-sandbox.local`;
+- `%extension-url%` — origin внешнего extension server;
+- `%extension-id%` — идентификатор модуля/расширения на extension server;
+- `%page-code%` — page code, который расширение регистрирует в runner.
+
+Пример запуска widget:
 
 ```text
-http://v1.embed-ui-sandbox.local/?manifestUrl=http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7&targets=order/card:common.after&fixture=order-basic
+%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic
 ```
 
 Пример запуска page runner:
 
 ```text
-http://v1.embed-ui-sandbox.local/?mode=page&pageCode=returns&manifestUrl=http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7
+%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%
 ```
 
-Для `core-ui-extensions-examples` page code берётся из
-`cases/returnsModule/extensionrc.json`: `returns`. Быстрый пример внешней
-страницы:
+Пример запуска нескольких widget targets:
 
 ```text
-http://v1.embed-ui-sandbox.local/?manifestUrl=http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7&mode=page&pageCode=returns&targets=order/card:common.after&target=order/card:common.after
+%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 `manifestUrl` — основной dev contract. Sandbox загружает внешний URL по сети:
@@ -90,14 +97,14 @@ worker. Если нужно отладить прямой worker entrypoint бе
 можно передать пустой `manifestUrl` и внешний `extensionUrl`:
 
 ```text
-http://v1.embed-ui-sandbox.local/?manifestUrl=&extensionUrl=http://your-extension-host.local/entrypoint.js
+%crm-url%/?manifestUrl=&extensionUrl=%extension-url%/entrypoint.js
 ```
 
-Внешний extension server должен отдавать entrypoint по сети. Для
-`core-ui-extensions-examples` это core-похожий URL:
+Внешний extension server должен отдавать entrypoint по сети. Core-style
+доставка обычно выглядит так:
 
 ```text
-http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7/script
+%extension-url%/extension/%extension-id%/script
 ```
 
 Extension entrypoint должен быть worker-compatible и вызвать
@@ -119,8 +126,7 @@ runEndpoint(defineRunner({
 
 Dev-панель справа от рабочей области позволяет:
 
-- менять `manifestUrl`, `extensionUrl`, `mode`, `fixture`, `pageCode` и список
-  `targets`;
+- менять `manifestUrl`, `mode`, `fixture`, `pageCode` и список `targets`;
 - применить выбранные значения через URL contract;
 - перезапустить extension worker без перезагрузки страницы;
 - сбросить sandbox state к текущей fixture;
@@ -136,11 +142,11 @@ docker compose up v1-sandbox
 ```
 
 Эта команда поднимает только sandbox host. Расширение запускается отдельно,
-например из соседнего проекта `core-ui-extensions-examples`, который отдаёт
-HTML entrypoint и script:
+из любого проекта, который отдаёт extension descriptor/entrypoint/script по
+HTTP:
 
 ```text
-http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7
+%extension-url%/extension/%extension-id%
 ```
 
 То же самое через Docker/Makefile:
@@ -186,7 +192,7 @@ make playwright-report workspace=@retailcrm/embed-ui-v1-sandbox
 
 - `workspace=...` — выбрать workspace, в котором лежит `vitest.config.playwright.ts`;
 - `cli='--project chromium'` — передать флаги напрямую в `playwright test`;
-- `cli='e2e/sandbox.spec.ts'` — запустить только один spec-файл.
+- `cli='e2e/sandbox.e2e.ts'` — запустить только один e2e-файл.
 
 Дополнительные флаги для отчёта тоже передаются через `cli`, например:
 
