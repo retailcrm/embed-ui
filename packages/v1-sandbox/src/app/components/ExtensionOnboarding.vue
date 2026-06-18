@@ -27,7 +27,9 @@
 
                 <li>{{ t('extensionOnboarding.steps.entrypoint') }}</li>
 
-                <li>{{ t('extensionOnboarding.steps.worker') }}</li>
+                <li>{{ t('extensionOnboarding.steps.runtime') }}</li>
+
+                <li>{{ t('extensionOnboarding.steps.context') }}</li>
             </ol>
 
             <div :class="$style['extension-onboarding__example']">
@@ -36,16 +38,13 @@
                 <code>%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic</code>
             </div>
 
-            <button
-                :class="[
-                    $style['extension-onboarding__button'],
-                    $style['extension-onboarding__button_primary'],
-                ]"
-                type="button"
+            <UiButton
+                appearance="primary"
+                size="sm"
                 @click="openDevPanel"
             >
                 {{ t('extensionOnboarding.actions.openSandbox') }}
-            </button>
+            </UiButton>
         </div>
     </section>
 </template>
@@ -53,6 +52,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
+
+import { UiButton } from '@/app/host-components'
 
 const props = defineProps<{
   openDevPanel(): void;
@@ -79,7 +80,8 @@ const openDevPanel = () => props.openDevPanel()
         "steps": {
             "devServer": "Run your module dev server that serves frontend resources over HTTP.",
             "entrypoint": "Provide a descriptor or entrypoint URL: JSON manifest, HTML entrypoint or JS script.",
-            "worker": "For the current scenario, the entrypoint should run `runEndpoint(defineRunner(...))`, and the descriptor should define `runner: \"worker\"`, `targets` and/or `pages`."
+            "runtime": "Choose mode: widgets use targets, pages use page code from the descriptor.",
+            "context": "Select a fixture and, if needed, edit Context JSON in sandbox controls to simulate CRM state."
         },
         "title": "Connect an external extension"
     }
@@ -100,7 +102,8 @@ const openDevPanel = () => props.openDevPanel()
         "steps": {
             "devServer": "Levante el dev server de su módulo que sirve recursos frontend por HTTP.",
             "entrypoint": "Indique la URL de descriptor o entrypoint: JSON manifest, HTML entrypoint o JS script.",
-            "worker": "Para el escenario actual, el entrypoint debe ejecutar `runEndpoint(defineRunner(...))`, y el descriptor debe definir `runner: \"worker\"`, `targets` y/o `pages`."
+            "runtime": "Elija mode: widgets usa targets, pages usa page code del descriptor.",
+            "context": "Seleccione una fixture y, si hace falta, edite Context JSON en los controles de sandbox para simular el estado de CRM."
         },
         "title": "Conectar una extensión externa"
     }
@@ -121,7 +124,8 @@ const openDevPanel = () => props.openDevPanel()
         "steps": {
             "devServer": "Поднимите dev-сервер вашего модуля, который отдаёт frontend-ресурсы по HTTP.",
             "entrypoint": "Укажите URL descriptor или entrypoint: JSON manifest, HTML entrypoint или JS script.",
-            "worker": "Для актуального сценария entrypoint должен запускать `runEndpoint(defineRunner(...))`, а descriptor — описывать `runner: \"worker\"`, `targets` и/или `pages`."
+            "runtime": "Выберите режим: widgets используют targets, pages используют page code из descriptor.",
+            "context": "Выберите фикстуру и при необходимости измените Context JSON в управлении песочницей, чтобы симулировать состояние CRM."
         },
         "title": "Подключите внешнее расширение"
     }
@@ -223,29 +227,5 @@ const openDevPanel = () => props.openDevPanel()
         width: 100%;
     }
 
-    &__actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: @spacing-xs;
-    }
-
-    &__button {
-        background: #fff;
-        border: 1px solid @grey-600;
-        border-radius: @border-radius-md;
-        color: @black-500;
-        cursor: pointer;
-        font: inherit;
-        font-size: 14px;
-        font-weight: 700;
-        min-height: 38px;
-        padding: @spacing-xs 12px;
-    }
-
-    &__button_primary {
-        background: @blue-500;
-        border-color: @blue-500;
-        color: #fff;
-    }
 }
 </style>

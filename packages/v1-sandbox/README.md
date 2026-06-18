@@ -47,6 +47,8 @@ CRM-подобной оболочке. Сейчас поддерживаются
 нескольких widget instances из одного worker, page runner по `code` и
 Playwright feedback loop.
 
+Подробная пользовательская инструкция: [docs/README.md](./docs/README.md).
+
 ### URL contract
 
 - `manifestUrl` — URL внешнего расширения. Поддерживает JSON manifest,
@@ -65,8 +67,9 @@ Playwright feedback loop.
 
 Где:
 
-- `%crm-url%` — адрес sandbox/CRM-оболочки, например
-  `http://v1.embed-ui-sandbox.local`;
+- `%crm-url%` — адрес sandbox/CRM-оболочки из локальной container/DNS-настройки окружения.
+  Для Linux Docker используется Traefik и домен верхнего уровня `.test`;
+  для OrbStack на macOS используется `.local` из доменного пространства имён.
 - `%extension-url%` — origin внешнего extension server;
 - `%extension-id%` — идентификатор модуля/расширения на extension server;
 - `%page-code%` — page code, который расширение регистрирует в runner.
@@ -128,10 +131,16 @@ Dev-панель справа от рабочей области позволя�
 
 - менять `manifestUrl`, `mode`, `fixture`, `pageCode` и список `targets`;
 - применить выбранные значения через URL contract;
+- редактировать fixture-backed Context JSON для текущего запуска;
 - перезапустить extension worker без перезагрузки страницы;
-- сбросить sandbox state к текущей fixture;
-- вызвать host API actions: `httpCall`, `goTo`, `pushQuery`, `replaceQuery`;
-- посмотреть host activity log и JSON snapshot текущего sandbox state.
+- сбросить sandbox state к текущей fixture.
+
+Host API симулируется внутри sandbox. Вызовы расширения к `httpCall`
+проходят через middleware-цепочку, где order-specific endpoints вроде
+`/returns`, `/returns-count`, `/receipts` отвечают из fixture-backed данных.
+Навигационные методы `goTo`, `pushQuery`, `replaceQuery` меняют in-memory
+`host.location/navigation`; для автотестов текущее состояние доступно через
+global bridge `window.__CRM_EMBED_SANDBOX__.snapshot()`.
 
 ## Playwright и стенд
 
@@ -188,11 +197,21 @@ happy-path screenshot/state attachments. Результаты лежат в
 make playwright-report workspace=@retailcrm/embed-ui-v1-sandbox
 ```
 
+Real-extension e2e запускается только с внешним URL расширения:
+
+```bash
+SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
+make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox cli='e2e/sandbox-extension.e2e.ts'
+```
+
+Без `SANDBOX_EXTENSION_URL` этот сценарий пропускается, чтобы локальный и CI
+запуск не зависели от конкретного extension server.
+
 Полезные параметры:
 
 - `workspace=...` — выбрать workspace, в котором лежит `vitest.config.playwright.ts`;
 - `cli='--project chromium'` — передать флаги напрямую в `playwright test`;
-- `cli='e2e/sandbox.e2e.ts'` — запустить только один e2e-файл.
+- `cli='e2e/sandbox-extension.e2e.ts'` — запустить только один e2e-файл.
 
 Дополнительные флаги для отчёта тоже передаются через `cli`, например:
 

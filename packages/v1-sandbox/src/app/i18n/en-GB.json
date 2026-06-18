@@ -22,10 +22,16 @@
         "title": "Check launch mode"
       }
     },
+    "contextEditor": {
+      "errors": {
+        "contextObject": "Context \"{context}\" must be a JSON object.",
+        "rootObject": "Context overrides must be a JSON object.",
+        "unknownContext": "Unknown context \"{context}\"."
+      }
+    },
     "contentAriaLabel": "Sandbox content",
     "devPanelAriaLabel": "Sandbox controls",
     "devPanelClose": "Close sandbox controls",
-    "devPanelToggle": "Sandbox",
     "extensionCanvasAriaLabel": "Extension canvas",
     "runMode": {
       "page": "Page: {pageCode}",

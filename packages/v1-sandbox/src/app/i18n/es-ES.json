@@ -22,10 +22,16 @@
         "title": "Revisa el modo de inicio"
       }
     },
+    "contextEditor": {
+      "errors": {
+        "contextObject": "El contexto \"{context}\" debe ser un objeto JSON.",
+        "rootObject": "Las sobrescrituras de contexto deben ser un objeto JSON.",
+        "unknownContext": "Contexto desconocido \"{context}\"."
+      }
+    },
     "contentAriaLabel": "Contenido de sandbox",
     "devPanelAriaLabel": "Controles de sandbox",
     "devPanelClose": "Cerrar controles de sandbox",
-    "devPanelToggle": "Sandbox",
     "extensionCanvasAriaLabel": "Canvas de extensión",
     "runMode": {
       "page": "Página: {pageCode}",

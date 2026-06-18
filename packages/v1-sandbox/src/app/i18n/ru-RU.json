@@ -22,10 +22,16 @@
         "title": "Проверьте режим запуска"
       }
     },
+    "contextEditor": {
+      "errors": {
+        "contextObject": "Контекст \"{context}\" должен быть JSON-объектом.",
+        "rootObject": "Переопределения контекста должны быть JSON-объектом.",
+        "unknownContext": "Неизвестный контекст \"{context}\"."
+      }
+    },
     "contentAriaLabel": "Контент песочницы",
     "devPanelAriaLabel": "Управление песочницей",
     "devPanelClose": "Закрыть управление песочницей",
-    "devPanelToggle": "Песочница",
     "extensionCanvasAriaLabel": "Область расширения",
     "runMode": {
       "page": "Страница: {pageCode}",

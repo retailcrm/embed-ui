@@ -6,8 +6,10 @@
             !open && $style['sandbox-sidebar_closed'],
         ]"
     >
-        <div
+        <UiSkeleton
             :class="$style['sandbox-sidebar__section-title']"
+            :height="20"
+            :width="132"
         />
 
         <nav :class="$style['sandbox-sidebar__menu']">
@@ -19,20 +21,25 @@
                     item.active && $style['sandbox-sidebar__menu-item_active'],
                 ]"
             >
-                <span
+                <UiSkeleton
                     :class="$style['sandbox-sidebar__menu-item-skeleton']"
-                    :style="{ width: `${item.width}px` }"
+                    :height="14"
+                    :width="item.width"
                 />
             </div>
         </nav>
 
-        <div
+        <UiSkeleton
             :class="$style['sandbox-sidebar__add-link']"
+            :height="14"
+            :width="164"
         />
     </aside>
 </template>
 
 <script setup lang="ts">
+import { UiSkeleton } from '@/app/host-components'
+
 defineProps<{
   id: string;
   open: boolean;
@@ -100,10 +107,12 @@ const menuItems = [
     &__section-title {
         background: @grey-500;
         border-radius: @border-radius-md;
-        height: 20px;
         margin-bottom: 46px;
         margin-left: 4px;
-        width: 132px;
+
+        &:global(.ui-v1-skeleton_shimmer)::after {
+            display: none;
+        }
     }
 
     &__menu {
@@ -130,8 +139,10 @@ const menuItems = [
     &__menu-item-skeleton {
         background: @grey-500;
         border-radius: @border-radius-sm;
-        display: block;
-        height: 14px;
+
+        &:global(.ui-v1-skeleton_shimmer)::after {
+            display: none;
+        }
     }
 
     &__menu-item_active &__menu-item-skeleton {
@@ -141,9 +152,11 @@ const menuItems = [
     &__add-link {
         background: @grey-500;
         border-radius: @border-radius-sm;
-        height: 14px;
         margin: 34px 0 0 4px;
-        width: 164px;
+
+        &:global(.ui-v1-skeleton_shimmer)::after {
+            display: none;
+        }
     }
 }
 </style>

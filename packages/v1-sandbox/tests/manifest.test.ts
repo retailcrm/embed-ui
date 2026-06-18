@@ -52,25 +52,25 @@ describe('resolveSandboxExtensionSource', () => {
           uuid: 'external-extension',
         }, {
           contentType: 'application/json',
-          url: 'http://sandbox.local/extensions/demo/manifest.json',
+          url: 'http://sandbox.test/extensions/demo/manifest.json',
         })
       }
 
       return response('', {
         contentType: 'application/javascript',
-        url: 'http://sandbox.local/extensions/demo/entry.js',
+        url: 'http://sandbox.test/extensions/demo/entry.js',
       })
     })
 
     const source = await resolveSandboxExtensionSource(config(), { fetch: fetcher as typeof fetch })
 
     expect(source.descriptor).toMatchObject({
-      entrypoint: 'http://sandbox.local/extensions/demo/entry.js',
+      entrypoint: 'http://sandbox.test/extensions/demo/entry.js',
       runner: 'worker',
       targets: ['order/card:common.after'],
       uuid: 'external-extension',
     })
-    expect(source.entrypoint.href).toBe('http://sandbox.local/extensions/demo/entry.js')
+    expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/demo/entry.js')
   })
 
   test('resolves html entrypoint to first head script', async () => {
@@ -84,19 +84,19 @@ describe('resolveSandboxExtensionSource', () => {
           uuid: 'html-extension',
         }, {
           contentType: 'application/json',
-          url: 'http://sandbox.local/extensions/html/manifest.json',
+          url: 'http://sandbox.test/extensions/html/manifest.json',
         })
       }
 
       return response('<html><head><script src="./assets/entry.js"></script></head></html>', {
         contentType: 'text/html',
-        url: 'http://sandbox.local/extensions/html/index.html',
+        url: 'http://sandbox.test/extensions/html/index.html',
       })
     })
 
     const source = await resolveSandboxExtensionSource(config(), { fetch: fetcher as typeof fetch })
 
-    expect(source.entrypoint.href).toBe('http://sandbox.local/extensions/html/assets/entry.js')
+    expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/html/assets/entry.js')
   })
 
   test('infers iframe runner from core-style html endpoint script', async () => {
@@ -108,7 +108,7 @@ describe('resolveSandboxExtensionSource', () => {
           '<html><head><script type="module" src="/dist/allTargetsButton.js"></script></head></html>',
           {
             contentType: 'text/html',
-            url: 'http://extension-host.local/extension/module-id',
+            url: 'http://extension-host.test/extension/module-id',
           }
         )
       }
@@ -118,18 +118,18 @@ describe('resolveSandboxExtensionSource', () => {
           contentType: 'text/plain',
           ok: false,
           status: 404,
-          url: 'http://extension-host.local/extension/module-id/stylesheet',
+          url: 'http://extension-host.test/extension/module-id/stylesheet',
         })
       }
 
       return response('throw new Error("This does not appear to be a child iframe")', {
         contentType: 'application/javascript',
-        url: 'http://extension-host.local/dist/allTargetsButton.js',
+        url: 'http://extension-host.test/dist/allTargetsButton.js',
       })
     })
 
     const source = await resolveSandboxExtensionSource(config({
-      manifestUrl: 'http://extension-host.local/extension/module-id',
+      manifestUrl: 'http://extension-host.test/extension/module-id',
     }), { fetch: fetcher as typeof fetch })
 
     expect(source.manifest).toBeNull()
@@ -137,7 +137,7 @@ describe('resolveSandboxExtensionSource', () => {
     expect(source.descriptor.runner).toBe('iframe')
     expect(source.descriptor.stylesheet).toBeNull()
     expect(source.entrypoint.href).toBe(
-      'http://extension-host.local/extension/module-id'
+      'http://extension-host.test/extension/module-id'
     )
     expect(fetcher).toHaveBeenCalledTimes(2)
   })
@@ -151,7 +151,7 @@ describe('resolveSandboxExtensionSource', () => {
           '<html><head><script type="module" src="/dist/returnsModule.js"></script></head></html>',
           {
             contentType: 'text/html',
-            url: 'http://extension-host.local/extension/module-id',
+            url: 'http://extension-host.test/extension/module-id',
           }
         )
       }
@@ -159,28 +159,28 @@ describe('resolveSandboxExtensionSource', () => {
       if (href.endsWith('/extension/module-id/stylesheet')) {
         return response('', {
           contentType: 'text/css',
-          url: 'http://extension-host.local/extension/module-id/stylesheet',
+          url: 'http://extension-host.test/extension/module-id/stylesheet',
         })
       }
 
       return response('runEndpoint(defineRunner({ widgets: [{}], pages: [{ returns: definePageRunner(ReturnsPage) }] }))', {
         contentType: 'application/javascript',
-        url: 'http://extension-host.local/dist/returnsModule.js',
+        url: 'http://extension-host.test/dist/returnsModule.js',
       })
     })
 
     const source = await resolveSandboxExtensionSource(config({
-      manifestUrl: 'http://extension-host.local/extension/module-id',
+      manifestUrl: 'http://extension-host.test/extension/module-id',
     }), { fetch: fetcher as typeof fetch })
 
     expect(source.manifest).toBeNull()
     expect(source.descriptor.pages).toEqual(['returns'])
     expect(source.descriptor.runner).toBe('worker')
     expect(source.descriptor.stylesheet).toBe(
-      'http://extension-host.local/extension/module-id/stylesheet'
+      'http://extension-host.test/extension/module-id/stylesheet'
     )
     expect(source.entrypoint.href).toBe(
-      'http://extension-host.local/dist/returnsModule.js'
+      'http://extension-host.test/dist/returnsModule.js'
     )
     expect(fetcher).toHaveBeenCalledTimes(3)
   })
@@ -194,7 +194,7 @@ describe('resolveSandboxExtensionSource', () => {
           '<html><head><script type="module" src="/dist/returnsModule.js"></script></head></html>',
           {
             contentType: 'text/html',
-            url: 'http://extension-host.local/extension/module-id',
+            url: 'http://extension-host.test/extension/module-id',
           }
         )
       }
@@ -202,18 +202,18 @@ describe('resolveSandboxExtensionSource', () => {
       if (href.endsWith('/extension/module-id/stylesheet')) {
         return response('', {
           contentType: 'text/css',
-          url: 'http://extension-host.local/extension/module-id/stylesheet',
+          url: 'http://extension-host.test/extension/module-id/stylesheet',
         })
       }
 
       return response('runEndpoint(defineRunner({ pages: [{ returns: definePageRunner(ReturnsPage) }] }))', {
         contentType: 'application/javascript',
-        url: 'http://extension-host.local/dist/returnsModule.js',
+        url: 'http://extension-host.test/dist/returnsModule.js',
       })
     })
 
     const source = await resolveSandboxExtensionSource(config({
-      manifestUrl: 'http://extension-host.local/extension/module-id',
+      manifestUrl: 'http://extension-host.test/extension/module-id',
       mode: 'page',
       pageCode: 'orders-dashboard',
     }), { fetch: fetcher as typeof fetch })
@@ -229,18 +229,18 @@ describe('resolveSandboxExtensionSource', () => {
       uuid: 'iframe-extension',
     }, {
       contentType: 'application/json',
-      url: 'http://sandbox.local/extensions/iframe/manifest.json',
+      url: 'http://sandbox.test/extensions/iframe/manifest.json',
     }))
 
     const source = await resolveSandboxExtensionSource(config(), { fetch: fetcher as typeof fetch })
 
     expect(source.descriptor).toMatchObject({
-      entrypoint: 'http://sandbox.local/extensions/iframe/index.html',
+      entrypoint: 'http://sandbox.test/extensions/iframe/index.html',
       runner: 'iframe',
       targets: ['order/card:common.before'],
       uuid: 'iframe-extension',
     })
-    expect(source.entrypoint.href).toBe('http://sandbox.local/extensions/iframe/index.html')
+    expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/iframe/index.html')
     expect(fetcher).toHaveBeenCalledTimes(1)
   })
 

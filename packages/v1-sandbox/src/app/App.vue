@@ -5,14 +5,18 @@
             !isSidebarOpen && $style['sandbox-app_sidebar-closed'],
         ]"
     >
-        <SandboxRail />
+        <SandboxRail
+            :dev-panel-controls-id="uid + '-sandbox-dev-panel-drawer'"
+            :dev-panel-open="isDevPanelOpen"
+            @open-dev-panel="openDevPanel"
+        />
 
         <SandboxSidebar
             :id="uid + '-sandbox-sidebar'"
             :open="isSidebarOpen"
         />
 
-        <button
+        <UiButton
             :class="$style['sandbox-app__sidebar-toggle']"
             :aria-label="isSidebarOpen ? t('app.sidebarCollapse') : t('app.sidebarExpand')"
             :aria-expanded="isSidebarOpen"
@@ -25,22 +29,12 @@
             >
                 ‹
             </span>
-        </button>
+        </UiButton>
 
         <main
             :class="$style['sandbox-app__content-panel']"
             :aria-label="t('app.contentAriaLabel')"
         >
-            <button
-                :class="$style['sandbox-app__dev-panel-toggle']"
-                :aria-expanded="isDevPanelOpen"
-                :aria-controls="uid + '-sandbox-dev-panel-drawer'"
-                type="button"
-                @click="openDevPanel"
-            >
-                {{ t('app.devPanelToggle') }}
-            </button>
-
             <div
                 :class="$style['sandbox-app__extension-canvas']"
                 :aria-label="t('app.extensionCanvasAriaLabel')"
@@ -66,52 +60,41 @@
             </div>
         </main>
 
-        <div
-            v-if="isDevPanelOpen"
-            :class="$style['sandbox-app__dev-panel-backdrop']"
-            @click="closeDevPanel"
-        />
-
-        <aside
-            v-if="isDevPanelOpen"
+        <UiModalSidebar
             :id="uid + '-sandbox-dev-panel-drawer'"
             :class="$style['sandbox-app__dev-panel-drawer']"
             :aria-label="t('app.devPanelAriaLabel')"
+            :opened="isDevPanelOpen"
+            direction="right"
+            role="dialog"
+            scrolling="native"
+            size="lg"
+            @update:opened="isDevPanelOpen = $event"
         >
-            <button
-                :class="$style['sandbox-app__dev-panel-close']"
-                :aria-label="t('app.devPanelClose')"
-                type="button"
-                @click="closeDevPanel"
-            >
-                <span
-                    :class="$style['sandbox-app__dev-panel-close-glyph']"
-                >
-                    ×
-                </span>
-            </button>
+            <template #title>
+                {{ t('app.devPanelAriaLabel') }}
+            </template>
 
             <DevPanel
                 :apply-launch-config="applyLaunchConfig"
+                :apply-context-json="applyContextJson"
+                :context-json="contextJson"
+                :context-json-error="contextJsonError"
                 :fixture="fixture"
-                :go-to-order="goToOrder"
                 :manifest-url="manifestUrl"
                 :mode="mode"
                 :page-code="pageCode"
-                :push-query="pushQuery"
                 :reload-extension="reloadExtension"
-                :replace-query="replaceQuery"
                 :reset-state="resetState"
-                :run-http-ping="runHttpPing"
-                :sandbox="sandbox"
                 :selected-targets="selectedTargets"
+                :set-context-json="setContextJson"
                 :set-fixture="setFixture"
                 :set-manifest-url="setManifestUrl"
                 :set-mode="setMode"
                 :set-page-code="setPageCode"
                 :set-target-selected="setTargetSelected"
             />
-        </aside>
+        </UiModalSidebar>
 
         <span
             :class="$style['sandbox-app__run-mode-status']"
@@ -154,6 +137,8 @@ import SandboxSidebar from '@/app/components/SandboxSidebar.vue'
 
 import WidgetMounts from '@/app/components/WidgetMounts.vue'
 
+import { UiButton, UiModalSidebar } from '@/app/host-components'
+
 import { createDefaultSandboxManifestUrl } from '@/dev/launch'
 import { createMounts } from '@/app/runtime/mounts'
 import { createOrderSandboxController } from '@/dev/fixtures'
@@ -175,13 +160,17 @@ const manifestUrl = ref(launchConfig.manifestUrl)
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
 const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
-const sandbox = createOrderSandboxController(launchConfig.fixture)
+const sandbox = createOrderSandboxController(launchConfig.fixture, {
+  globalBridge: {},
+})
 const mounts = createMounts(launchConfig)
 const runtime = ref<SandboxRuntime | null>(null)
 const isDevPanelOpen = ref(false)
 const isSidebarOpen = ref(true)
 const { locale, t } = useI18n()
 const uid = useId()
+const contextJson = ref(formatContextJson())
+const contextJsonError = ref('')
 
 const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExplicitExtensionUrl)
 const runModeLabel = computed(() => launchConfig.mode === 'page'
@@ -499,34 +488,25 @@ const reloadExtension = async () => {
 
 const resetState = async () => {
   sandbox.reset()
+  contextJson.value = formatContextJson()
+  contextJsonError.value = ''
   await reloadExtension()
 }
 
-const runHttpPing = async () => {
-  await sandbox.endpointApi.httpCall('sandbox.demo.ping', {
-    fixture: launchConfig.fixture,
-    mode: launchConfig.mode,
-  })
+const applyContextJson = async () => {
+  try {
+    applyContextJsonValue(contextJson.value)
+    contextJson.value = formatContextJson()
+    contextJsonError.value = ''
+    await reloadExtension()
+  } catch (error) {
+    contextJsonError.value = getErrorMessage(error)
+  }
 }
 
-const pushQuery = () => {
-  sandbox.endpointApi.pushQuery({
-    sandbox: '1',
-    status: sandbox.state.contexts['order/card'].status,
-  }, { preserveExisting: true })
-}
-
-const replaceQuery = () => {
-  sandbox.endpointApi.replaceQuery({
-    fixture: launchConfig.fixture,
-    mode: launchConfig.mode,
-  })
-}
-
-const goToOrder = () => {
-  sandbox.endpointApi.goTo('/orders/215/edit', {
-    source: 'v1-sandbox',
-  })
+const setContextJson = (value: string | number) => {
+  contextJson.value = String(value)
+  contextJsonError.value = ''
 }
 
 const setFixture = (value: string) => {
@@ -596,6 +576,8 @@ type StoredLaunchNotice = {
   type: 'inferred-page-mode';
 }
 
+type OrderContextName = Extract<keyof typeof sandbox.state.contexts, string>
+
 enum ExtensionWorkerMessageType {
   Ready = 'sandbox:extension-worker-ready',
   ReadyError = 'sandbox:extension-worker-error',
@@ -655,23 +637,45 @@ const openDevPanel = () => {
   isDevPanelOpen.value = true
 }
 
-const closeDevPanel = () => {
-  isDevPanelOpen.value = false
-}
-
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
-}
-
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape') {
-    closeDevPanel()
-  }
 }
 
 const showSandboxAlert = (title: string, message: string) => {
   window.alert(`${title}\n\n${message}`)
 }
+
+function formatContextJson(): string {
+  return JSON.stringify(sandbox.snapshot().contexts, null, 2)
+}
+
+const applyContextJsonValue = (value: string) => {
+  const parsed = JSON.parse(value) as unknown
+
+  if (!isRecord(parsed)) {
+    throw new Error(t('app.contextEditor.errors.rootObject'))
+  }
+
+  Object.entries(parsed).forEach(([context, contextValue]) => {
+    if (!isOrderContextName(context)) {
+      throw new Error(t('app.contextEditor.errors.unknownContext', { context }))
+    }
+
+    if (!isRecord(contextValue)) {
+      throw new Error(t('app.contextEditor.errors.contextObject', { context }))
+    }
+
+    sandbox.patchContext(context, contextValue)
+  })
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const isOrderContextName = (
+  value: string
+): value is OrderContextName =>
+  value in sandbox.state.contexts
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) return error.message
@@ -711,7 +715,6 @@ const showStoredLaunchNotice = () => {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
   showStoredLaunchNotice()
 
   if (!shouldShowOnboarding.value) {
@@ -720,7 +723,6 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeydown)
   void disposeRuntime()
   sandbox.dispose()
 })
@@ -780,12 +782,27 @@ onBeforeUnmount(() => {
         justify-content: center;
         left: 306px;
         min-height: 24px;
+        min-width: 24px;
         padding: 0;
         position: absolute;
         top: 30px;
         transition: left @transition, transform @transition;
         width: 24px;
         z-index: 4;
+
+        &:global(.ui-v1-button) {
+            border-radius: 50%;
+            height: 24px;
+            min-height: 24px;
+            min-width: 24px;
+            padding: 0;
+            width: 24px;
+        }
+
+        :global(.ui-v1-button__content) {
+            height: 24px;
+            width: 24px;
+        }
     }
 
     &__sidebar-toggle-glyph {
@@ -795,66 +812,15 @@ onBeforeUnmount(() => {
         transform: translateY(-1px);
     }
 
-    &__dev-panel-toggle {
-        background: transparent;
-        border: 0;
-        color: @blue-500;
-        cursor: pointer;
-        font: inherit;
-        font-size: 14px;
-        font-weight: 700;
-        padding: @spacing-xs;
-        position: absolute;
-        right: 24px;
-        top: 24px;
-        z-index: 2;
-    }
-
-    &__dev-panel-backdrop {
-        background: rgba(13, 15, 31, 0.3);
-        inset: 0;
-        position: fixed;
-        z-index: 10;
-    }
-
     &__dev-panel-drawer {
-        background: #fff;
-        bottom: 0;
-        box-shadow: @drop-shadow-l;
-        max-width: calc(100vw - 32px);
-        overflow: auto;
-        padding: @spacing-xl @spacing-m @spacing-m;
-        position: fixed;
-        right: 0;
-        top: 0;
-        width: min(720px, calc(100vw - 32px));
-        z-index: 11;
-    }
+        :global(.ui-v1-modal-sidebar) {
+            max-width: calc(100vw - 32px);
+            width: min(720px, calc(100vw - 32px));
+        }
 
-    &__dev-panel-close {
-        align-items: center;
-        background: #fff;
-        border: 1px solid @grey-500;
-        border-radius: 50%;
-        color: @black-500;
-        cursor: pointer;
-        display: flex;
-        font: inherit;
-        height: 32px;
-        justify-content: center;
-        min-height: 32px;
-        padding: 0;
-        position: absolute;
-        right: @spacing-s;
-        top: @spacing-s;
-        width: 32px;
-    }
-
-    &__dev-panel-close-glyph {
-        display: block;
-        font-size: 22px;
-        line-height: 1;
-        transform: translateY(-1px);
+        :global(.ui-v1-modal-sidebar__body) {
+            padding: @spacing-m;
+        }
     }
 
     &__run-mode-status,

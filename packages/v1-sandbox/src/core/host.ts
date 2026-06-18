@@ -22,11 +22,20 @@ export type SandboxHttpCallResponse = {
   status: number;
 }
 
+export type SandboxHostMiddlewareNext = () => MaybePromise<SandboxHttpCallResponse>
+
+export type SandboxHostMiddleware<M extends ContextSchemaList> = (
+  request: SandboxHttpCallRequest,
+  state: SandboxState<M>,
+  next: SandboxHostMiddlewareNext
+) => MaybePromise<SandboxHttpCallResponse>
+
 export type SandboxHostApiOptions<M extends ContextSchemaList> = {
   httpCall?: (
     request: SandboxHttpCallRequest,
     state: SandboxState<M>
   ) => MaybePromise<SandboxHttpCallResponse>;
+  httpMiddlewares?: SandboxHostMiddleware<M>[];
 }
 
 export const createSandboxHostApi = <M extends ContextSchemaList>(
@@ -38,9 +47,8 @@ export const createSandboxHostApi = <M extends ContextSchemaList>(
     },
 
     async httpCall(action, payload) {
-      const response = options.httpCall
-        ? await options.httpCall({ action, payload }, state)
-        : { body: '', status: 200 }
+      const request = { action, payload }
+      const response = await resolveHttpCall(request, state, options)
 
       state.host.http.push({
         action,
@@ -81,6 +89,61 @@ export const createSandboxHostApi = <M extends ContextSchemaList>(
     },
   })
 
+const resolveHttpCall = async <M extends ContextSchemaList>(
+  request: SandboxHttpCallRequest,
+  state: SandboxState<M>,
+  options: SandboxHostApiOptions<M>
+): Promise<SandboxHttpCallResponse> => {
+  try {
+    return await createHttpCallPipeline(state, options)(request)
+  } catch (error) {
+    return {
+      body: JSON.stringify({
+        error: error instanceof Error ? error.message : String(error),
+        ok: false,
+      }),
+      status: 500,
+    }
+  }
+}
+
+const createHttpCallPipeline = <M extends ContextSchemaList>(
+  state: SandboxState<M>,
+  options: SandboxHostApiOptions<M>
+) => {
+  const fallback = () => options.httpCall
+    ? options.httpCall
+    : async () => ({
+      body: JSON.stringify({
+        ok: true,
+      }),
+      status: 200,
+    })
+  const middlewares = options.httpMiddlewares ?? []
+
+  return (request: SandboxHttpCallRequest): MaybePromise<SandboxHttpCallResponse> => {
+    let index = -1
+
+    const dispatch = (nextIndex: number): MaybePromise<SandboxHttpCallResponse> => {
+      if (nextIndex <= index) {
+        throw new Error('[sandbox:host] httpCall middleware called next() more than once.')
+      }
+
+      index = nextIndex
+
+      const middleware = middlewares[nextIndex]
+
+      if (!middleware) {
+        return fallback()(request, state)
+      }
+
+      return middleware(request, state, () => dispatch(nextIndex + 1))
+    }
+
+    return dispatch(0)
+  }
+}
+
 const applyQuery = (
   location: HostLocation,
   query: HostQueryInput,
@@ -120,7 +183,7 @@ const createRouteLocation = (
   route: string,
   params: Record<string, unknown> | undefined
 ): SandboxHostState['location'] => {
-  const url = new URL(route, 'https://sandbox.crm.local')
+  const url = new URL(route, 'https://sandbox.crm.test')
   const query = Object.entries(params ?? {}).reduce((all, [key, value]) => {
     if (Array.isArray(value)) {
       all[key] = value.map(item => String(item))

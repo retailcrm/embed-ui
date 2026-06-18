@@ -3,7 +3,6 @@ import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 import type { CreateSandboxControllerOptions } from '@/core/controller'
 import type { SandboxContextOverrides } from '@/core/state'
 import type { SandboxController } from '@/core/controller'
-import type { SandboxHttpCallRequest, SandboxHttpCallResponse } from '@/core/host'
 
 import {
   schema as currentUserSchema,
@@ -16,7 +15,7 @@ import {
 } from '@retailcrm/embed-ui-v1-contexts/remote/order/card-settings'
 import { schema as settingsSchema } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 
-import { CoreUiExtension } from '@/enum'
+import { createOrderSandboxHttpMiddleware } from '@/dev/fixtures/orderHttp'
 import { createSandboxController } from '@/core/controller'
 
 export const orderSandboxSchemas = {
@@ -32,6 +31,44 @@ export type OrderSandboxFixture = {
   contexts: SandboxContextOverrides<OrderSandboxSchemas>;
   description: string;
   name: string;
+}
+
+const orderSandboxRouting = {
+  base_url: '',
+  host: '',
+  locale: '',
+  port: '',
+  prefix: '',
+  routes: {
+    crm_manager_show: {
+      defaults: [],
+      hosttokens: [],
+      methods: [],
+      requirements: {
+        id: '\\d+',
+      },
+      schemes: [],
+      tokens: [
+        ['variable', '/', '\\d+', 'id', true],
+        ['text', '/managers'],
+      ],
+    },
+    crm_users_edit: {
+      defaults: [],
+      hosttokens: [],
+      methods: [],
+      requirements: {
+        id: '\\d+',
+      },
+      schemes: [],
+      tokens: [
+        ['text', '/edit'],
+        ['variable', '/', '\\d+', 'id', true],
+        ['text', '/users'],
+      ],
+    },
+  },
+  scheme: 'http',
 }
 
 export const orderSandboxFixtures = {
@@ -61,6 +98,7 @@ export const orderSandboxFixtures = {
       },
       'settings': {
         'system.locale': 'ru-RU',
+        'system.routing': orderSandboxRouting,
       },
       'user/current': {
         'email': 'dev@example.com',
@@ -102,6 +140,7 @@ export const orderSandboxFixtures = {
       },
       'settings': {
         'system.locale': 'ru-RU',
+        'system.routing': orderSandboxRouting,
       },
       'user/current': {
         'email': 'dev@example.com',
@@ -141,6 +180,7 @@ export const orderSandboxFixtures = {
       },
       'settings': {
         'system.locale': 'ru-RU',
+        'system.routing': orderSandboxRouting,
       },
       'user/current': {
         'email': 'readonly@example.com',
@@ -209,6 +249,9 @@ export const createOrderSandboxController = (
       },
     },
     globalBridge: false,
+    httpMiddlewares: [
+      createOrderSandboxHttpMiddleware(),
+    ],
     location: {
       pathname: '/orders/215/edit',
       query: {
@@ -217,53 +260,6 @@ export const createOrderSandboxController = (
     },
     mode: 'preview',
     schemas: orderSandboxSchemas,
-    httpCall: async request => resolveOrderSandboxHttpCall(request),
     ...options,
   })
-}
-
-const resolveOrderSandboxHttpCall = async (
-  request: SandboxHttpCallRequest
-): Promise<SandboxHttpCallResponse> => {
-  if (isExternalBackendAction(request.action)) {
-    return proxyExternalBackendHttpCall(request)
-  }
-
-  return {
-    body: JSON.stringify({
-      action: request.action,
-      ok: true,
-    }),
-    status: 200,
-  }
-}
-
-const isExternalBackendAction = (action: string): boolean =>
-  action.startsWith('/')
-
-const proxyExternalBackendHttpCall = async (
-  request: SandboxHttpCallRequest
-): Promise<SandboxHttpCallResponse> => {
-  const response = await fetch(`${CoreUiExtension.BaseUrl}${request.action}`, {
-    body: new URLSearchParams({
-      payload: serializeHttpCallPayload(request.payload),
-    }),
-    cache: 'no-store',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    },
-    method: 'POST',
-  })
-
-  return {
-    body: await response.text(),
-    status: response.status,
-  }
-}
-
-const serializeHttpCallPayload = (payload: SandboxHttpCallRequest['payload']): string => {
-  if (typeof payload === 'string') return payload
-
-  return JSON.stringify(payload ?? {})
 }

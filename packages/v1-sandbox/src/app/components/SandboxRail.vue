@@ -7,38 +7,75 @@
             :class="$style['sandbox-rail__logo']"
         />
 
-        <button
-            v-for="item in topItems"
-            :key="item.label"
-            :class="[
-                $style['sandbox-rail__button'],
-                item.active && $style['sandbox-rail__button_active'],
-            ]"
-            :aria-label="item.label"
-            type="button"
-        >
-            <component
-                :is="item.icon"
-                :class="$style['sandbox-rail__icon']"
-                aria-hidden="true"
-            />
-        </button>
+        <ul :class="$style['sandbox-rail__list']">
+            <li
+                v-for="item in topItems"
+                :key="item.label"
+                :class="[
+                    $style['sandbox-rail__item'],
+                    item.current && $style['sandbox-rail__item_current'],
+                ]"
+            >
+                <a
+                    :class="$style['sandbox-rail__link']"
+                    :aria-label="item.label"
+                    :aria-current="item.current ? 'page' : undefined"
+                    href="#"
+                    @click.prevent="item.action?.()"
+                >
+                    <component
+                        :is="item.icon"
+                        :class="$style['sandbox-rail__icon']"
+                        aria-hidden="true"
+                    />
+                </a>
+            </li>
+        </ul>
 
         <div :class="$style['sandbox-rail__spacer']" />
 
-        <button
-            v-for="item in bottomItems"
-            :key="item.label"
-            :aria-label="item.label"
-            :class="$style['sandbox-rail__button']"
-            type="button"
-        >
-            <component
-                :is="item.icon"
-                :class="$style['sandbox-rail__icon']"
-                aria-hidden="true"
-            />
-        </button>
+        <ul :class="$style['sandbox-rail__list']">
+            <li
+                v-for="item in bottomItems"
+                :key="item.label"
+                :class="[
+                    $style['sandbox-rail__item'],
+                    item.open && $style['sandbox-rail__item_open'],
+                ]"
+            >
+                <UiButton
+                    v-if="item.action"
+                    :class="$style['sandbox-rail__link']"
+                    :aria-label="item.label"
+                    :aria-controls="item.controls"
+                    :aria-expanded="item.expanded"
+                    :aria-pressed="item.open"
+                    appearance="tertiary"
+                    size="sm"
+                    @click="item.action"
+                >
+                    <component
+                        :is="item.icon"
+                        :class="$style['sandbox-rail__icon']"
+                        aria-hidden="true"
+                    />
+                </UiButton>
+
+                <a
+                    v-else
+                    :class="$style['sandbox-rail__link']"
+                    :aria-label="item.label"
+                    href="#"
+                    @click.prevent
+                >
+                    <component
+                        :is="item.icon"
+                        :class="$style['sandbox-rail__icon']"
+                        aria-hidden="true"
+                    />
+                </a>
+            </li>
+        </ul>
 
         <div
             :class="$style['sandbox-rail__user']"
@@ -55,6 +92,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
+import IconCode from '@retailcrm/embed-ui-v1-components/assets/sprites/technology-and-data/code.svg'
+
 import IconChart from '~assets/sprites/technology-and-data/chart_bar_2.svg'
 import IconLocation from '~assets/sprites/map-and-places/my_location.svg'
 import IconNotifications from '~assets/sprites/alerts/notifications_outlined.svg'
@@ -62,33 +101,43 @@ import IconRobot from '~assets/sprites/premium/robot_upper.svg'
 import IconSettings from '~assets/sprites/ui/settings_outlined.svg'
 import IconShoppingBasket from '~assets/sprites/actions/shopping_cart_outlined.svg'
 
+import { UiButton } from '@/app/host-components'
+
 type RailItem = {
-  active?: boolean;
+  action?: () => void;
+  controls?: string;
+  current?: boolean;
+  expanded?: boolean;
   icon: Component;
   label: string;
+  open?: boolean;
 }
 
+const props = defineProps<{
+  devPanelControlsId: string;
+  devPanelOpen: boolean;
+}>()
+const emit = defineEmits<{
+  openDevPanel: [];
+}>()
 const { t } = useI18n()
 const uid = useId()
 
 const topItems = computed<RailItem[]>(() => [
   {
-    active: true,
+    current: true,
     icon: IconShoppingBasket,
     label: t('rail.ordersSection'),
   },
   {
-    active: false,
     icon: IconRobot,
     label: t('rail.mainSection'),
   },
   {
-    active: false,
     icon: IconLocation,
     label: t('rail.locationSection'),
   },
   {
-    active: false,
     icon: IconChart,
     label: t('rail.analyticsSection'),
   },
@@ -103,6 +152,14 @@ const bottomItems = computed<RailItem[]>(() => [
     icon: IconSettings,
     label: t('rail.settings'),
   },
+  {
+    action: () => emit('openDevPanel'),
+    controls: props.devPanelControlsId,
+    expanded: props.devPanelOpen,
+    icon: IconCode,
+    label: t('rail.sandboxControls'),
+    open: props.devPanelOpen,
+  },
 ])
 </script>
 
@@ -115,6 +172,7 @@ const bottomItems = computed<RailItem[]>(() => [
         "navigation": "CRM navigation rail",
         "notifications": "Notifications",
         "ordersSection": "Orders section",
+        "sandboxControls": "Open sandbox controls",
         "settings": "Settings"
     }
 }
@@ -129,6 +187,7 @@ const bottomItems = computed<RailItem[]>(() => [
         "navigation": "Rail de navegación CRM",
         "notifications": "Notificaciones",
         "ordersSection": "Sección de pedidos",
+        "sandboxControls": "Abrir controles de sandbox",
         "settings": "Ajustes"
     }
 }
@@ -143,6 +202,7 @@ const bottomItems = computed<RailItem[]>(() => [
         "navigation": "Основная CRM-навигация",
         "notifications": "Уведомления",
         "ordersSection": "Раздел заказов",
+        "sandboxControls": "Открыть управление песочницей",
         "settings": "Настройки"
     }
 }
@@ -175,7 +235,32 @@ const bottomItems = computed<RailItem[]>(() => [
         width: 40px;
     }
 
-    &__button {
+    &__list {
+        display: grid;
+        gap: @spacing-xs;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    &__item {
+        border-left: 3px solid transparent;
+        box-sizing: border-box;
+        width: 100%;
+
+        &_current {
+            background: #fff;
+            border-left-color: @red-500;
+        }
+
+        &_open {
+            background: rgba(255, 255, 255, 0.14);
+            border-left-color: @red-500;
+        }
+    }
+
+    &__link {
         align-items: center;
         background: transparent;
         border: 0;
@@ -185,12 +270,26 @@ const bottomItems = computed<RailItem[]>(() => [
         display: flex;
         height: 48px;
         justify-content: center;
+        min-height: 48px;
+        min-width: 0;
         padding: 0;
+        text-decoration: none;
         width: 100%;
 
-        &_active {
-            background: @black-500;
-            border-left: 3px solid @blue-500;
+        &:global(.ui-v1-button) {
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            color: #fff;
+            min-height: 48px;
+            min-width: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        :global(.ui-v1-button__content) {
+            justify-content: center;
+            width: 100%;
         }
     }
 
@@ -199,6 +298,30 @@ const bottomItems = computed<RailItem[]>(() => [
         height: 28px;
         opacity: 0.92;
         width: 28px;
+
+        [fill]:not([fill="none"]) {
+            fill: currentColor;
+        }
+
+        [stroke]:not([stroke="none"]) {
+            stroke: currentColor;
+        }
+    }
+
+    &__item_current &__link {
+        color: @black-500;
+
+        &:global(.ui-v1-button) {
+            color: @black-500;
+        }
+    }
+
+    &__item_open &__link {
+        color: #fff;
+
+        &:global(.ui-v1-button) {
+            color: #fff;
+        }
     }
 
     &__spacer {

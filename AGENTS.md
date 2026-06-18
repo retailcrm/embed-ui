@@ -16,6 +16,7 @@ This file defines practical instructions for working in the `@retailcrm/embed-ui
 - Current workspace folders:
   - `v1-components`
   - `v1-contexts`
+  - `v1-sandbox`
   - `v1-testing`
   - `v1-types`
 - Workspace package names may differ from folder names, but commit scopes in this repository are based on workspace folder names.
