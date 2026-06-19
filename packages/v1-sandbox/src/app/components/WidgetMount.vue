@@ -8,16 +8,18 @@
             {{ mount.label }}
         </div>
 
-        <HostedTree
-            :ref="setTree"
-            :provider="provider"
-            :receiver="mount.receiver"
-        />
+        <div :class="$style['widget-mount__content']">
+            <HostedTree
+                :ref="setTree"
+                :provider="provider"
+                :receiver="mount.receiver"
+            />
+        </div>
     </section>
 </template>
 
 <script setup lang="ts">
-import type { HostedTreeRef, SandboxMount } from '@/app/runtime/mounts'
+import type { HostedTreeRef, SandboxMount } from '@/app/types'
 import type { VNodeRef } from 'vue'
 
 import {
@@ -58,6 +60,14 @@ const setTree: VNodeRef = (tree) => {
         font-weight: 700;
         margin-bottom: @spacing-s;
         text-transform: uppercase;
+    }
+
+    &__content {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: @spacing-xs;
+        min-width: 0;
     }
 }
 </style>

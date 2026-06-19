@@ -2,8 +2,8 @@ import type { Field } from '@retailcrm/embed-ui-v1-types/context'
 
 import { expect, test } from 'vitest'
 
-import { createSandboxController } from '@/core/controller'
-import { createSandboxRpc } from '@/core/rpc'
+import { createSandboxController } from '@/controller'
+import { createSandboxRpc } from '@/rpc'
 
 type UserContext = {
   id: Field<number, true>;
@@ -81,6 +81,26 @@ test('keeps endpoint context references valid after reset', async () => {
 
   expect(sandbox.state.contexts.article.title).toBe('Draft')
   expect(await endpoint.get('article', 'title')).toBe('Draft')
+
+  dispose()
+})
+
+test('keeps endpoint context references valid after patchContext', async () => {
+  const sandbox = createSandboxController<typeof schemas>({
+    schemas,
+  })
+
+  const { dispose, remote } = createSandboxRpc(sandbox)
+  const endpoint = remote.call as {
+    get(context: string, field: string): Promise<unknown>;
+  }
+
+  sandbox.patchContext('article', {
+    title: 'Patched from editor',
+  })
+
+  expect(sandbox.state.contexts.article.title).toBe('Patched from editor')
+  expect(await endpoint.get('article', 'title')).toBe('Patched from editor')
 
   dispose()
 })

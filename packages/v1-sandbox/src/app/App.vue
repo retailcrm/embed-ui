@@ -79,13 +79,12 @@
                 :apply-launch-config="applyLaunchConfig"
                 :apply-context-json="applyContextJson"
                 :context-json="contextJson"
+                :context-json-changed="contextJsonChanged"
                 :context-json-error="contextJsonError"
                 :fixture="fixture"
                 :manifest-url="manifestUrl"
                 :mode="mode"
                 :page-code="pageCode"
-                :reload-extension="reloadExtension"
-                :reset-state="resetState"
                 :selected-targets="selectedTargets"
                 :set-context-json="setContextJson"
                 :set-fixture="setFixture"
@@ -110,13 +109,13 @@
 </template>
 
 <script setup lang="ts">
-import type { HostedTreeRef } from '@/app/runtime/mounts'
-import type { SandboxExtensionDescriptor } from '@/dev/manifest'
-import type { SandboxIframeWidgetApi } from '@/app/runtime/mounts'
-import type { SandboxLaunchMode } from '@/dev/launch'
-import type { SandboxMount } from '@/app/runtime/mounts'
-import type { SandboxOrderTarget } from '@/dev/targets'
-import type { SandboxRuntime, SandboxWorkerApi } from '@/app/runtime/mounts'
+import type { HostedTreeRef } from '@/app/types'
+import type { SandboxExtensionDescriptor } from '@/dev/types'
+import type { SandboxIframeWidgetApi, SandboxLaunchDiagnostic } from '@/app/types'
+import type { SandboxLaunchMode } from '@/dev/types'
+import type { SandboxMount } from '@/app/types'
+import type { SandboxOrderTarget } from '@/dev/types'
+import type { SandboxRuntime, SandboxWorkerApi, StoredLaunchNotice } from '@/app/types'
 
 import { computed } from 'vue'
 import {
@@ -143,6 +142,7 @@ import { createDefaultSandboxManifestUrl } from '@/dev/launch'
 import { createMounts } from '@/app/runtime/mounts'
 import { createOrderSandboxController } from '@/dev/fixtures'
 import { DEFAULT_SANDBOX_TARGETS } from '@/app/runtime/mounts'
+import { isContextName, isRecord, isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxLaunchConfig } from '@/dev/launch'
 import { resolveSandboxExtensionSource } from '@/dev/manifest'
 import { updateSandboxLaunchQuery } from '@/dev/launch'
@@ -176,6 +176,7 @@ const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExp
 const runModeLabel = computed(() => launchConfig.mode === 'page'
   ? t('app.runMode.page', { pageCode: launchConfig.pageCode })
   : t('app.runMode.widgets', { count: launchConfig.targets.length }))
+const contextJsonChanged = computed(() => contextJson.value !== formatContextJson())
 
 watch(() => sandbox.state.contexts.settings['system.locale'], (systemLocale) => {
   if (systemLocale) {
@@ -287,6 +288,7 @@ const createLaunchDiagnostic = (
     && launchConfig.mode === 'widget'
     && hasExplicitLaunchMode
     && descriptor.pages.length > 0
+    && descriptor.targets.length === 0
   ) {
     return {
       blocking: false,
@@ -486,13 +488,6 @@ const reloadExtension = async () => {
   await mountExtension()
 }
 
-const resetState = async () => {
-  sandbox.reset()
-  contextJson.value = formatContextJson()
-  contextJsonError.value = ''
-  await reloadExtension()
-}
-
 const applyContextJson = async () => {
   try {
     applyContextJsonValue(contextJson.value)
@@ -560,31 +555,12 @@ const mountExtensionStylesheet = (href: string | null): HTMLLinkElement | null =
   return link
 }
 
-type WorkerReadyMessage = {
-  error?: string;
-  type: string;
-}
-
-type SandboxLaunchDiagnostic = {
-  blocking: boolean;
-  message: string;
-  title: string;
-}
-
-type StoredLaunchNotice = {
-  pageCode?: string;
-  type: 'inferred-page-mode';
-}
-
 type OrderContextName = Extract<keyof typeof sandbox.state.contexts, string>
 
 enum ExtensionWorkerMessageType {
   Ready = 'sandbox:extension-worker-ready',
   ReadyError = 'sandbox:extension-worker-error',
 }
-
-const isWorkerReadyMessage = (value: unknown): value is WorkerReadyMessage =>
-  typeof value === 'object' && value !== null && 'type' in value
 
 const waitForExtensionWorkerReady = async (
   worker: Worker,
@@ -669,13 +645,10 @@ const applyContextJsonValue = (value: string) => {
   })
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-
 const isOrderContextName = (
   value: string
 ): value is OrderContextName =>
-  value in sandbox.state.contexts
+  isContextName(sandbox.state.contexts, value)
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) return error.message

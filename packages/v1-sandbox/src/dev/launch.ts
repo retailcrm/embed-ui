@@ -1,22 +1,19 @@
-import type { SandboxOrderTarget } from '@/dev/targets'
+import type {
+  ParseSandboxLaunchConfigOptions,
+  SandboxLaunchConfig,
+  SandboxLaunchMode,
+  SandboxOrderTarget,
+} from '@/dev/types'
 
 import { DEFAULT_SANDBOX_TARGET } from '@/dev/targets'
 import { DefaultSandbox } from '@/enum'
-import { isSandboxOrderTarget } from '@/dev/targets'
+import { isSandboxOrderTarget } from '@/dev/predicates'
 
-export type SandboxLaunchMode = 'page' | 'widget'
-
-export type SandboxLaunchConfig = {
-  extensionUrl: string;
-  fixture: string;
-  manifestUrl: string;
-  mode: SandboxLaunchMode;
-  pageCode: string;
-  targets: SandboxOrderTarget[];
-  widgetId: string;
-}
-
-export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
+export type {
+  ParseSandboxLaunchConfigOptions,
+  SandboxLaunchConfig,
+  SandboxLaunchMode,
+} from '@/dev/types'
 
 export const createDefaultSandboxManifestUrl = (): string => DefaultSandbox.Url
 

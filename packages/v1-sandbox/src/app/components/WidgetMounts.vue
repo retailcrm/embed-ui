@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { HostedTreeRef, SandboxMount } from '@/app/runtime/mounts'
+import type { HostedTreeRef, SandboxMount } from '@/app/types'
 
 import WidgetMount from '@/app/components/WidgetMount.vue'
 

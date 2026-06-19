@@ -8,9 +8,9 @@ import type {
 import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 import type { MaybePromise, Pojo } from '@retailcrm/embed-ui-v1-types/scaffolding'
 
-import type { SandboxHostState, SandboxState } from '@/core/state'
+import type { SandboxHostState, SandboxState } from '@/state'
 
-import { clone } from '@/core/utils'
+import { clone } from '@/utils'
 
 export type SandboxHttpCallRequest = {
   action: string;

@@ -35,7 +35,7 @@
             <div :class="$style['extension-onboarding__example']">
                 <span>{{ t('extensionOnboarding.example.label') }}</span>
 
-                <code>%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic</code>
+                <code>%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic</code>
             </div>
 
             <UiButton

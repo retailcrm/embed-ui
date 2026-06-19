@@ -151,23 +151,10 @@
 
                 <UiButton
                     appearance="outlined"
+                    :disabled="!props.contextJsonChanged"
                     @click="props.applyContextJson"
                 >
                     {{ t('devPanel.actions.applyContextJson') }}
-                </UiButton>
-
-                <UiButton
-                    appearance="outlined"
-                    @click="props.reloadExtension"
-                >
-                    {{ t('devPanel.actions.reloadExtension') }}
-                </UiButton>
-
-                <UiButton
-                    appearance="outlined"
-                    @click="props.resetState"
-                >
-                    {{ t('devPanel.actions.resetState') }}
                 </UiButton>
             </div>
         </section>
@@ -175,8 +162,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SandboxLaunchMode } from '@/dev/launch'
-import type { SandboxOrderTarget } from '@/dev/targets'
+import type { SandboxLaunchMode, SandboxOrderTarget } from '@/dev/types'
 
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -193,13 +179,12 @@ const props = defineProps<{
   applyLaunchConfig(): void;
   applyContextJson(): Promise<void>;
   contextJson: string;
+  contextJsonChanged: boolean;
   contextJsonError: string;
   fixture: string;
   manifestUrl: string;
   mode: SandboxLaunchMode;
   pageCode: string;
-  reloadExtension(): void;
-  resetState(): Promise<void>;
   selectedTargets: SandboxOrderTarget[];
   setContextJson(value: string | number): void;
   setFixture(value: string): void;
@@ -252,9 +237,7 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
     "devPanel": {
         "actions": {
             "apply": "Apply",
-            "applyContextJson": "Apply context",
-            "reloadExtension": "Reload extension",
-            "resetState": "Reset state"
+            "applyContextJson": "Apply context"
         },
         "contextJson": "Context JSON",
         "contextJsonHint": "Edit fixture-backed contexts for the current run. Applying this JSON reloads the extension.",
@@ -288,9 +271,7 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
     "devPanel": {
         "actions": {
             "apply": "Aplicar",
-            "applyContextJson": "Aplicar contexto",
-            "reloadExtension": "Recargar extensión",
-            "resetState": "Restablecer estado"
+            "applyContextJson": "Aplicar contexto"
         },
         "contextJson": "Contexto JSON",
         "contextJsonHint": "Edita los contextos basados en fixture para la ejecución actual. Al aplicar este JSON se recarga la extensión.",
@@ -324,9 +305,7 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
     "devPanel": {
         "actions": {
             "apply": "Применить",
-            "applyContextJson": "Применить контекст",
-            "reloadExtension": "Перезапустить расширение",
-            "resetState": "Сбросить состояние"
+            "applyContextJson": "Применить контекст"
         },
         "contextJson": "Context JSON",
         "contextJsonHint": "Меняет fixture-backed contexts для текущего запуска. После применения расширение перезапускается.",

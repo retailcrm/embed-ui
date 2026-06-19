@@ -1,4 +1,4 @@
-import type { DefineComponent } from 'vue'
+import type { HostComponent } from '@/app/types'
 
 import {
   UiButton as HostUiButton,
@@ -12,8 +12,6 @@ import {
   UiSkeleton as HostUiSkeleton,
   UiTextbox as HostUiTextbox,
 } from '@retailcrm/embed-ui-v1-components/host'
-
-type HostComponent = DefineComponent<Record<string, unknown>>
 
 export const UiButton = HostUiButton as unknown as HostComponent
 export const UiCheckbox = HostUiCheckbox as unknown as HostComponent

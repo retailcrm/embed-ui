@@ -13,10 +13,10 @@ docker compose up v1-sandbox
 2. Откройте страницу:
 
 ```text
-%crm-url%
+%sandbox-url%
 ```
 
-`%crm-url%` зависит от локальной container/DNS-настройки окружения. Под Linux Docker используется Traefik и домен верхнего уровня `.test`; для OrbStack на macOS используется `.local` из доменного пространства имён.
+`%sandbox-url%` зависит от локальной container/DNS-настройки окружения. Под Linux Docker используется Traefik и домен верхнего уровня `.test`; для OrbStack на macOS используется `.local` из доменного пространства имён.
 
 3. Поднимите отдельно проект расширения. Он должен отдавать frontend-модуль по HTTP. Обычно URL выглядит так:
 
@@ -24,9 +24,16 @@ docker compose up v1-sandbox
 %extension-url%/extension/%extension-id%
 ```
 
+Здесь `%extension-url%` — это только origin внешнего сервера без `/extension/%extension-id%`.
+Например, это может быть `http://web-extensions-server.simla.local`, `http://web-extensions-server.simla.test`, или любой другой адрес сервера доставки.
+
 4. В песочнице нажмите иконку `</>` в нижней части тёмного rail. Откроется панель `Управление песочницей`.
 
 5. В поле `Manifest / URL расширения` вставьте URL расширения.
+
+- `%extension-url%` — origin сервера доставки, без `/extension/%extension-id%`;
+- `/extension/` — путь текущего extension server API. Если ваш сервер отдаёт descriptor по другому пути, вставьте полный URL этого endpoint;
+- `%extension-id%` — UUID/ID записи JS-модуля/расширения на extension server. Это не `pageCode` и не `target`; один такой модуль может содержать страницы и виджеты.
 
 6. Выберите режим:
 
@@ -61,6 +68,18 @@ Sandbox умеет загрузить:
 %extension-url%/extension/%extension-id%
 ```
 
+## Поля панели управления
+
+- `Manifest / URL расширения` — полный URL descriptor/entrypoint/script, который sandbox загрузит по сети.
+  Для стандартного extension server это `%extension-url%/extension/%extension-id%`.
+- `Режим` — выбирает тип runner. `Виджеты` монтируют widgets в CRM-слоты, `Страница` монтирует page runner по `Код страницы`.
+- `Фикстура` — набор мок-данных CRM: context заказа, custom fields, справочники, location и ответы HostAPI middleware.
+- `Код страницы` — `code` из массива `pages` в manifest/runner. Например `board` или `summary`.
+  Это не UUID расширения.
+- `Места встраивания виджетов` — targets/CRM-слоты для widget runners, например `order/card:common.after`.
+  Они используются только в режиме `Виджеты`.
+- `Context JSON` — текущий fixture-backed context, который можно временно изменить без правки кода расширения.
+
 ## Запуск виджета
 
 Используйте режим `Виджеты`, если расширение регистрирует `widgets` через `defineRunner`.
@@ -85,7 +104,7 @@ Targets — это CRM-слоты. Если отметить два targets, п�
 Пример URL для прямого открытия:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 ## Запуск страницы
@@ -130,7 +149,7 @@ summary
 Пример URL для прямого открытия:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%&fixture=order-basic
 ```
 
 ## Фикстуры и Context JSON
@@ -206,7 +225,7 @@ window.__CRM_EMBED_SANDBOX__.snapshot()
 - для `Страница` проверьте правильный `Код страницы`;
 - для `Виджеты` проверьте, что выбран target, который расширение реально регистрирует;
 - если расширение legacy iframe, запускайте его только в режиме `Виджеты`;
-- если Network показывает CORS-ошибку, extension server должен разрешать origin `%crm-url%`.
+- если Network показывает CORS-ошибку, extension server должен разрешать origin `%sandbox-url%`.
 
 ## Playwright
 
@@ -230,12 +249,35 @@ SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
 make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox cli='e2e/sandbox-extension.e2e.ts'
 ```
 
+Локальный запуск через workspace script:
+
+```bash
+SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
+yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+```
+
+Пример для OrbStack/macOS:
+
+```bash
+SANDBOX_EXTENSION_URL="http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7" \
+yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+```
+
+Пример для Linux/Traefik:
+
+```bash
+SANDBOX_EXTENSION_URL="http://web-extensions-server.simla.test/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7" \
+yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+```
+
 Дополнительные параметры:
 
 - `SANDBOX_EXTENSION_PAGE_CODE` — page code расширения, по умолчанию `returns`;
 - `SANDBOX_EXTENSION_TARGET` — widget target, по умолчанию `order/card:common.after`.
 
 Если `SANDBOX_EXTENSION_URL` не задан, real-extension сценарий пропускается.
+В таком запуске нормально увидеть `1 skipped`. Если переменная задана и
+extension server доступен, должен пройти полный набор e2e без skip.
 
 Открыть HTML report:
 
@@ -259,26 +301,28 @@ Playwright проверяет:
 Виджеты:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.after&fixture=order-basic
 ```
 
 Несколько виджетов:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 Страница:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%&fixture=order-basic
 ```
 
 Где:
 
-- `%crm-url%` — адрес sandbox/CRM-оболочки из локальной container/DNS-настройки окружения.
+- `%sandbox-url%` — адрес sandbox-оболочки из локальной container/DNS-настройки окружения.
   Под Linux Docker используется Traefik и домен верхнего уровня `.test`;
   для OrbStack на macOS используется `.local` из доменного пространства имён;
-- `%extension-url%` — origin внешнего extension server;
-- `%extension-id%` — UUID/ID расширения на extension server;
+- `%extension-url%` — origin внешнего extension server без `/extension/%extension-id%`.
+  Это может быть `http://web-extensions-server.simla.local`, `http://web-extensions-server.simla.test`,
+  `https://ycp-retail.ru` или другой адрес;
+- `%extension-id%` — UUID/ID записи JS-модуля/расширения на extension server. Это не `pageCode` и не target;
 - `%page-code%` — code страницы из manifest/runner.

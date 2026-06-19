@@ -8,7 +8,7 @@ import type {
 
 import type { HostLocation } from '@retailcrm/embed-ui-v1-types/host'
 
-import type { SandboxMode, SandboxSnapshot } from '@/core/state'
+import type { SandboxMode, SandboxSnapshot } from '@/state'
 
 export const DEFAULT_SANDBOX_GLOBAL_KEY = '__CRM_EMBED_SANDBOX__'
 

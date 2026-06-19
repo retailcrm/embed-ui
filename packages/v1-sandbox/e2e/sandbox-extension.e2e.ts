@@ -108,6 +108,7 @@ test('filters real returns extension and records host state changes', async ({ p
 
   await page.getByRole('button', { name: 'Открыть управление песочницей' }).click()
   const devPanel = page.getByRole('dialog', { name: 'Управление песочницей' })
+  const applyContextButton = devPanel.getByRole('button', { name: 'Применить контекст' })
   const contextSnapshot = await page.evaluate(() => window.__CRM_EMBED_SANDBOX__.snapshot().contexts)
   const contextOverride = {
     ...contextSnapshot,
@@ -117,16 +118,14 @@ test('filters real returns extension and records host state changes', async ({ p
     },
   }
 
+  await expect(applyContextButton).toBeDisabled()
   await devPanel.getByRole('textbox', { name: 'Context JSON' }).fill(JSON.stringify(contextOverride, null, 2))
-  await devPanel.getByRole('button', { name: 'Применить контекст' }).click()
+  await expect(applyContextButton).toBeEnabled()
+  await applyContextButton.click()
 
   await expect.poll(async () => page.evaluate(() => (
     window.__CRM_EMBED_SANDBOX__.snapshot().contexts['order/card'].number
   ))).toBe('999C')
 
-  await devPanel.getByRole('button', { name: 'Сбросить состояние' }).click()
-
-  await expect.poll(async () => page.evaluate(() => (
-    window.__CRM_EMBED_SANDBOX__.snapshot().contexts['order/card'].number
-  ))).toBe('215C')
+  await expect(applyContextButton).toBeDisabled()
 })

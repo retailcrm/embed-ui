@@ -1,44 +1,24 @@
-import type { SandboxLaunchConfig } from '@/dev/launch'
+import type {
+  FetchLike,
+  ResolveSandboxExtensionSourceOptions,
+  SandboxExtensionDescriptor,
+  SandboxExtensionManifest,
+  SandboxExtensionRunner,
+  SandboxExtensionSource,
+  SandboxLaunchConfig,
+} from '@/dev/types'
 
-export type SandboxExtensionRunner = 'iframe' | 'worker'
+import { isHtmlMimeType, isJavascriptMimeType, isJsonMimeType } from '@/dev/predicates'
 
-export type SandboxExtensionPage = {
-  code: string;
-}
-
-export type SandboxExtensionDescriptor = {
-  entrypoint: string;
-  pages: string[];
-  runner: SandboxExtensionRunner;
-  stylesheet: string | null;
-  targets: string[];
-  uuid: string;
-}
-
-export type SandboxExtensionManifest = {
-  code?: string;
-  entrypoint?: string;
-  pages?: Array<string | SandboxExtensionPage>;
-  runner?: SandboxExtensionRunner;
-  scripts?: string[];
-  stylesheet?: string | null;
-  targets?: string[];
-  uuid?: string;
-  version?: string;
-}
-
-export type SandboxExtensionSource = {
-  descriptor: SandboxExtensionDescriptor;
-  entrypoint: URL;
-  manifest: SandboxExtensionManifest | null;
-  manifestUrl: string | null;
-}
-
-type FetchLike = typeof fetch
-
-type ResolveSandboxExtensionSourceOptions = {
-  fetch?: FetchLike;
-}
+export type {
+  FetchLike,
+  ResolveSandboxExtensionSourceOptions,
+  SandboxExtensionDescriptor,
+  SandboxExtensionManifest,
+  SandboxExtensionPage,
+  SandboxExtensionRunner,
+  SandboxExtensionSource,
+} from '@/dev/types'
 
 export const resolveSandboxExtensionSource = async (
   config: SandboxLaunchConfig,
@@ -251,24 +231,6 @@ const resolveWorkerEntrypointFromHtml = (html: string, responseUrl: string): URL
   const scriptSrc = document.head.querySelector('script[src]')?.getAttribute('src')
 
   return scriptSrc ? resolveUrl(scriptSrc, responseUrl) : null
-}
-
-const isJavascriptMimeType = (contentType: string): boolean => {
-  const mimeType = contentType.toLowerCase()
-
-  return mimeType.includes('javascript') || mimeType.includes('ecmascript')
-}
-
-const isJsonMimeType = (contentType: string): boolean => {
-  const mimeType = contentType.toLowerCase()
-
-  return mimeType.includes('json')
-}
-
-const isHtmlMimeType = (contentType: string): boolean => {
-  const mimeType = contentType.toLowerCase()
-
-  return mimeType.includes('text/html')
 }
 
 const inferRunnerFromScript = (script: string): SandboxExtensionRunner =>

@@ -59,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+import type { SandboxSelectOption } from '@/app/types'
+
 import { computed, ref } from 'vue'
 
 import {
@@ -68,12 +70,6 @@ import {
   UiSelectPopper,
   UiSelectTrigger,
 } from '@/app/host-components'
-
-export type SandboxSelectOption = {
-  disabled?: boolean;
-  label: string;
-  value: string;
-}
 
 const props = withDefaults(defineProps<{
   id: string;

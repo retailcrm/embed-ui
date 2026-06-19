@@ -21,12 +21,12 @@ export default mergeConfig(basic, defineConfig({
     lib: {
       formats: ['es', 'cjs'],
       entry: {
-        bridge: path.resolve(__dirname, './src/core/bridge.ts'),
-        controller: path.resolve(__dirname, './src/core/controller.ts'),
-        host: path.resolve(__dirname, './src/core/host.ts'),
+        bridge: path.resolve(__dirname, './src/bridge.ts'),
+        controller: path.resolve(__dirname, './src/controller.ts'),
+        host: path.resolve(__dirname, './src/host.ts'),
         index: path.resolve(__dirname, './src/index.ts'),
-        rpc: path.resolve(__dirname, './src/core/rpc.ts'),
-        state: path.resolve(__dirname, './src/core/state.ts'),
+        rpc: path.resolve(__dirname, './src/rpc.ts'),
+        state: path.resolve(__dirname, './src/state.ts'),
       },
       fileName: (format, name) => `${name}.${{
         es: 'js',

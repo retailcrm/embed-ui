@@ -15,7 +15,7 @@ import {
   keysOf,
   syncArray,
   syncRecord,
-} from '@/core/utils'
+} from '@/utils'
 
 export type SandboxMode = 'preview' | 'automation' | 'standalone-test'
 

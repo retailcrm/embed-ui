@@ -47,7 +47,7 @@ CRM-подобной оболочке. Сейчас поддерживаются
 нескольких widget instances из одного worker, page runner по `code` и
 Playwright feedback loop.
 
-Подробная пользовательская инструкция: [docs/README.md](./docs/README.md).
+Подробная пользовательская инструкция, как пользоваться песочницей: [docs/usage-guide.md](./docs/usage-guide.md).
 
 ### URL contract
 
@@ -67,29 +67,32 @@ Playwright feedback loop.
 
 Где:
 
-- `%crm-url%` — адрес sandbox/CRM-оболочки из локальной container/DNS-настройки окружения.
+- `%sandbox-url%` — адрес sandbox-оболочки из локальной container/DNS-настройки окружения.
   Для Linux Docker используется Traefik и домен верхнего уровня `.test`;
   для OrbStack на macOS используется `.local` из доменного пространства имён.
-- `%extension-url%` — origin внешнего extension server;
-- `%extension-id%` — идентификатор модуля/расширения на extension server;
+- `%extension-url%` — origin внешнего extension server без `/extension/%extension-id%`.
+  Это может быть `http://web-extensions-server.simla.local`,
+  `http://web-extensions-server.simla.test`, `https://ycp-retail.ru` или другой адрес;
+- `%extension-id%` — идентификатор записи JS-модуля/расширения на extension server.
+  Это не `pageCode` и не target; один такой модуль может содержать страницы и виджеты;
 - `%page-code%` — page code, который расширение регистрирует в runner.
 
 Пример запуска widget:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic
 ```
 
 Пример запуска page runner:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%
 ```
 
 Пример запуска нескольких widget targets:
 
 ```text
-%crm-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 `manifestUrl` — основной dev contract. Sandbox загружает внешний URL по сети:
@@ -100,7 +103,7 @@ worker. Если нужно отладить прямой worker entrypoint бе
 можно передать пустой `manifestUrl` и внешний `extensionUrl`:
 
 ```text
-%crm-url%/?manifestUrl=&extensionUrl=%extension-url%/entrypoint.js
+%sandbox-url%/?manifestUrl=&extensionUrl=%extension-url%/entrypoint.js
 ```
 
 Внешний extension server должен отдавать entrypoint по сети. Core-style
@@ -204,8 +207,17 @@ SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
 make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox cli='e2e/sandbox-extension.e2e.ts'
 ```
 
+Локально без Makefile это тот же env contract:
+
+```bash
+SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
+yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+```
+
 Без `SANDBOX_EXTENSION_URL` этот сценарий пропускается, чтобы локальный и CI
-запуск не зависели от конкретного extension server.
+запуск не зависели от конкретного extension server. Поэтому обычный запуск
+может показывать `1 skipped`; если `SANDBOX_EXTENSION_URL` задан и внешний
+extension server доступен, запускается полный набор e2e.
 
 Полезные параметры:
 

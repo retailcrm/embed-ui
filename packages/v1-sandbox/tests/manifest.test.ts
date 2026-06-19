@@ -1,4 +1,4 @@
-import type { SandboxLaunchConfig } from '@/dev/launch'
+import type { SandboxLaunchConfig } from '@/dev/types'
 
 import {
   describe,

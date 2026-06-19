@@ -4,8 +4,8 @@ import type {
   SandboxHostMiddleware,
   SandboxHttpCallRequest,
   SandboxHttpCallResponse,
-} from '@/core/host'
-import type { SandboxState } from '@/core/state'
+} from '@/host'
+import type { SandboxState } from '@/state'
 
 type ReturnItem = {
   amount: number;
@@ -32,6 +32,48 @@ type OrderHttpPayload = {
   };
   orderId?: number;
 }
+
+type OrderNote = {
+  author: {
+    avatar: string;
+    name: string;
+  };
+  createdAt: string;
+  id: number;
+  text: string;
+}
+
+type OrderHttpHandler<M extends ContextSchemaList> = {
+  matches(action: string): boolean;
+  name: string;
+  resolve(
+    request: SandboxHttpCallRequest,
+    state: SandboxState<M>
+  ): SandboxHttpCallResponse;
+}
+
+const SANDBOX_URL_PARSE_BASE = 'http://sandbox.local'
+
+const notes: OrderNote[] = [
+  {
+    author: {
+      avatar: 'DS',
+      name: 'Денис Соколов',
+    },
+    createdAt: '2026-03-16T12:05:00+03:00',
+    id: 9001,
+    text: 'Клиент просит уточнить срок доставки перед оплатой.',
+  },
+  {
+    author: {
+      avatar: 'AM',
+      name: 'Анна Морозова',
+    },
+    createdAt: '2026-03-16T12:18:00+03:00',
+    id: 9002,
+    text: 'Проверить наличие товара на складе перед подтверждением.',
+  },
+]
 
 const returns: ReturnItem[] = [
   {
@@ -163,34 +205,132 @@ const returns: ReturnItem[] = [
 ]
 
 export const createOrderSandboxHttpMiddleware = <M extends ContextSchemaList>():
-SandboxHostMiddleware<M> => async (request, state, next) => {
-    if (request.action === '/returns') {
-      return jsonResponse(createReturnsResponse(request))
-    }
+SandboxHostMiddleware<M> => {
+  const resolveOrderHttpCall = createOrderHttpCallResolver<M>()
 
-    if (request.action === '/returns-count') {
-      return jsonResponse({ count: filterReturns(request).length })
-    }
+  return async (request, state, next) => resolveOrderHttpCall(request, state) ?? next()
+}
 
-    if (request.action === '/receipts') {
-      return jsonResponse(createReceiptsResponse(request, state))
-    }
+const createOrderHttpCallResolver = <M extends ContextSchemaList>() => {
+  const handlers = createOrderHttpHandlers<M>()
 
-    if (request.action === '/receipts-count') {
-      return jsonResponse({ count: 2 })
-    }
+  return (
+    request: SandboxHttpCallRequest,
+    state: SandboxState<M>
+  ): SandboxHttpCallResponse | undefined => {
+    const handler = handlers.find(({ matches }) => matches(request.action))
 
-    return next()
+    return handler?.resolve(request, state)
   }
+}
+
+const createOrderHttpHandlers = <M extends ContextSchemaList>(): Array<OrderHttpHandler<M>> => [
+  {
+    matches: isOrderNotesCountAction,
+    name: 'order notes count',
+    resolve: () => jsonResponse({ count: notes.length }),
+  },
+  {
+    matches: isOrderNotesAction,
+    name: 'order notes list',
+    resolve: (request, state) => jsonResponse(createNotesResponse(request, state)),
+  },
+  {
+    matches: isReturnsCountAction,
+    name: 'returns count',
+    resolve: request => jsonResponse({ count: filterReturns(request).length }),
+  },
+  {
+    matches: isReturnsAction,
+    name: 'returns list',
+    resolve: request => jsonResponse(createReturnsResponse(request)),
+  },
+  {
+    matches: isReceiptsCountAction,
+    name: 'receipts count',
+    resolve: () => jsonResponse({ count: 2 }),
+  },
+  {
+    matches: isReceiptsAction,
+    name: 'receipts list',
+    resolve: (request, state) => jsonResponse(createReceiptsResponse(request, state)),
+  },
+  {
+    matches: isCountAction,
+    name: 'unknown count fallback',
+    resolve: () => jsonResponse({ count: 0 }),
+  },
+]
+
+const isOrderNotesAction = (action: string): boolean =>
+  hasAnyActionSegment(action, ['notes', 'order-notes', 'comments'])
+  && !isCountAction(action)
+
+const isOrderNotesCountAction = (action: string): boolean =>
+  hasAnyActionSegment(action, ['notes', 'order-notes', 'comments'])
+  && isCountAction(action)
+
+const isReturnsAction = (action: string): boolean =>
+  hasAnyActionSegment(action, ['returns'])
+  && !isCountAction(action)
+
+const isReturnsCountAction = (action: string): boolean =>
+  hasAnyActionSegment(action, ['returns'])
+  && isCountAction(action)
+
+const isReceiptsAction = (action: string): boolean =>
+  hasAnyActionSegment(action, ['receipts', 'receipt'])
+  && !isCountAction(action)
+
+const isReceiptsCountAction = (action: string): boolean =>
+  hasAnyActionSegment(action, ['receipts', 'receipt'])
+  && isCountAction(action)
+
+const isCountAction = (action: string): boolean =>
+  /(?:^|[/_-])count(?:$|[/?#])/iu.test(action)
+
+const hasAnyActionSegment = (action: string, segments: string[]): boolean => {
+  const normalized = normalizeAction(action)
+
+  return segments.some(segment => normalized.includes(segment))
+}
+
+const normalizeAction = (action: string): string => {
+  try {
+    return new URL(action, SANDBOX_URL_PARSE_BASE).pathname.toLowerCase()
+  } catch {
+    return action.split('?')[0].toLowerCase()
+  }
+}
 
 const createReturnsResponse = (request: SandboxHttpCallRequest) => {
   const filteredReturns = filterReturns(request)
 
   return {
+    count: filteredReturns.length,
     page: 1,
     perPage: 8,
     returns: filteredReturns,
     total: filteredReturns.length,
+  }
+}
+
+const createNotesResponse = <M extends ContextSchemaList>(
+  request: SandboxHttpCallRequest,
+  state: SandboxState<M>
+) => {
+  const orderId = Number(
+    parsePayload(request.payload).orderId
+    ?? (state.contexts as Record<string, Record<string, unknown>>)['order/card']?.id
+  )
+
+  return {
+    count: notes.length,
+    notes: notes.map(note => ({
+      ...note,
+      orderId,
+    })),
+    total: notes.length,
   }
 }
 
@@ -211,40 +351,43 @@ const createReceiptsResponse = <M extends ContextSchemaList>(
   const orderId = payload.orderId ?? Number(
     (state.contexts as Record<string, Record<string, unknown>>)['order/card']?.id
   )
+  const receipts = [
+    {
+      details: {
+        fdNumber: 41859,
+        ffdVersion: '1.2',
+        fnNumber: '7380440801381848',
+        fpd: 2975038937,
+        kktRegistrationNumber: '0007642722037997',
+        machineNumber: 'KZN030315',
+        onlinePayment: true,
+        receiptTime: '2024-11-17T11:51:00+03:00',
+        shiftNumber: 16,
+        taxSystem: 'OSN',
+      },
+      id: `ORDER${orderId}_645`,
+    },
+    {
+      details: {
+        fdNumber: 4696,
+        ffdVersion: '1.2',
+        fnNumber: '7380440800998420',
+        fpd: 3632111203,
+        kktRegistrationNumber: '0007642686026725',
+        machineNumber: 'KZN1001202',
+        onlinePayment: true,
+        receiptTime: '2024-10-28T10:32:00+03:00',
+        shiftNumber: 18,
+        taxSystem: 'OSN',
+      },
+      id: `ORDER${orderId}_813`,
+    },
+  ]
 
   return {
-    receipts: [
-      {
-        details: {
-          fdNumber: 41859,
-          ffdVersion: '1.2',
-          fnNumber: '7380440801381848',
-          fpd: 2975038937,
-          kktRegistrationNumber: '0007642722037997',
-          machineNumber: 'KZN030315',
-          onlinePayment: true,
-          receiptTime: '2024-11-17T11:51:00+03:00',
-          shiftNumber: 16,
-          taxSystem: 'OSN',
-        },
-        id: `ORDER${orderId}_645`,
-      },
-      {
-        details: {
-          fdNumber: 4696,
-          ffdVersion: '1.2',
-          fnNumber: '7380440800998420',
-          fpd: 3632111203,
-          kktRegistrationNumber: '0007642686026725',
-          machineNumber: 'KZN1001202',
-          onlinePayment: true,
-          receiptTime: '2024-10-28T10:32:00+03:00',
-          shiftNumber: 18,
-          taxSystem: 'OSN',
-        },
-        id: `ORDER${orderId}_813`,
-      },
-    ],
+    count: receipts.length,
+    receipts,
+    total: receipts.length,
   }
 }
 
