@@ -72,14 +72,14 @@ const openDevPanel = () => props.openDevPanel()
         "actions": {
             "openSandbox": "Open sandbox controls"
         },
-        "description": "Sandbox connects the frontend part of a JS module by external URL: manifest/descriptor, HTML entrypoint or JS script. It loads resources over the network, attaches stylesheet when available and starts the extension through a worker-compatible endpoint.",
+        "description": "Sandbox connects the frontend part of a JS module by external URL: HTML entrypoint or JS script. It loads resources over the network, attaches stylesheet when available and starts the extension through a worker-compatible endpoint.",
         "eyebrow": "JS module delivery",
         "example": {
             "label": "Universal URL example"
         },
         "steps": {
             "devServer": "Run your module dev server that serves frontend resources over HTTP.",
-            "entrypoint": "Provide a descriptor or entrypoint URL: JSON manifest, HTML entrypoint or JS script.",
+            "entrypoint": "Provide an extension endpoint or entrypoint URL: HTML entrypoint or JS script.",
             "runtime": "Choose mode: widgets use targets, pages use page code from the descriptor.",
             "context": "Select a fixture and, if needed, edit Context JSON in sandbox controls to simulate CRM state."
         },
@@ -94,14 +94,14 @@ const openDevPanel = () => props.openDevPanel()
         "actions": {
             "openSandbox": "Abrir controles de sandbox"
         },
-        "description": "Sandbox conecta la parte frontend de un módulo JS por una URL externa: manifest/descriptor, HTML entrypoint o JS script. Carga los recursos por red, conecta stylesheet si existe y arranca la extensión mediante un endpoint compatible con worker.",
+        "description": "Sandbox conecta la parte frontend de un módulo JS por una URL externa: HTML entrypoint o JS script. Carga los recursos por red, conecta stylesheet si existe y arranca la extensión mediante un endpoint compatible con worker.",
         "eyebrow": "Entrega de módulo JS",
         "example": {
             "label": "Ejemplo universal de URL"
         },
         "steps": {
             "devServer": "Levante el dev server de su módulo que sirve recursos frontend por HTTP.",
-            "entrypoint": "Indique la URL de descriptor o entrypoint: JSON manifest, HTML entrypoint o JS script.",
+            "entrypoint": "Indique la URL de extension endpoint o entrypoint: HTML entrypoint o JS script.",
             "runtime": "Elija mode: widgets usa targets, pages usa page code del descriptor.",
             "context": "Seleccione una fixture y, si hace falta, edite Context JSON en los controles de sandbox para simular el estado de CRM."
         },
@@ -116,14 +116,14 @@ const openDevPanel = () => props.openDevPanel()
         "actions": {
             "openSandbox": "Открыть песочницу"
         },
-        "description": "Песочница подключает frontend-часть JS-модуля по внешнему URL: manifest/descriptor, HTML entrypoint или JS script. Она загружает ресурсы по сети, подключает stylesheet при наличии и запускает расширение через worker-compatible endpoint.",
+        "description": "Песочница подключает frontend-часть JS-модуля по внешнему URL: HTML entrypoint или JS script. Она загружает ресурсы по сети, подключает stylesheet при наличии и запускает расширение через worker-compatible endpoint.",
         "eyebrow": "Доставка JS-модуля",
         "example": {
             "label": "Универсальный пример URL"
         },
         "steps": {
             "devServer": "Поднимите dev-сервер вашего модуля, который отдаёт frontend-ресурсы по HTTP.",
-            "entrypoint": "Укажите URL descriptor или entrypoint: JSON manifest, HTML entrypoint или JS script.",
+            "entrypoint": "Укажите URL extension endpoint или entrypoint: HTML entrypoint или JS script.",
             "runtime": "Выберите режим: widgets используют targets, pages используют page code из descriptor.",
             "context": "Выберите фикстуру и при необходимости измените Context JSON в управлении песочницей, чтобы симулировать состояние CRM."
         },

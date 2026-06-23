@@ -52,7 +52,6 @@ docker compose up v1-sandbox
 
 Sandbox умеет загрузить:
 
-- JSON manifest/descriptor;
 - HTML entrypoint, из которого берётся первый `<script src>` из `<head>`;
 - прямой JS script.
 
@@ -121,7 +120,7 @@ Targets — это CRM-слоты. Если отметить два targets, п�
 
 Важно: page code — это не `uuid` расширения и не `code` модуля. Это значение из массива `pages`.
 
-Например, для manifest:
+Например, для runner с такими страницами:
 
 ```json
 {

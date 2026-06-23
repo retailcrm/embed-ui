@@ -14,16 +14,24 @@ import {
   schema as orderCardSettingsSchema,
 } from '@retailcrm/embed-ui-v1-contexts/remote/order/card-settings'
 import { schema as settingsSchema } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
+import { targets } from '@retailcrm/embed-ui-v1-endpoint/common/targets'
 
 import { createOrderSandboxHttpMiddleware } from '@/dev/fixtures/orderHttp'
 import { createSandboxController } from '@/controller'
 import { isObjectKey } from '@/dev/predicates'
 
+const [
+  orderCardContextId,
+  orderCardSettingsContextId,
+  currentUserContextId,
+  settingsContextId,
+] = targets['order/card:common.before'].contexts
+
 export const orderSandboxSchemas = {
-  'order/card': orderCardSchema,
-  'order/card:settings': orderCardSettingsSchema,
-  'settings': settingsSchema,
-  'user/current': currentUserSchema,
+  [orderCardContextId]: orderCardSchema,
+  [orderCardSettingsContextId]: orderCardSettingsSchema,
+  [currentUserContextId]: currentUserSchema,
+  [settingsContextId]: settingsSchema,
 } satisfies ContextSchemaList
 
 export type OrderSandboxSchemas = typeof orderSandboxSchemas
@@ -34,10 +42,10 @@ export type OrderSandboxFixture = {
   name: string;
 }
 
-type OrderCardContext = NonNullable<OrderSandboxFixture['contexts']['order/card']>
-type OrderCardSettingsContext = NonNullable<OrderSandboxFixture['contexts']['order/card:settings']>
-type SettingsContext = NonNullable<OrderSandboxFixture['contexts']['settings']>
-type UserCurrentContext = NonNullable<OrderSandboxFixture['contexts']['user/current']>
+type OrderCardContext = NonNullable<OrderSandboxFixture['contexts'][typeof orderCardContextId]>
+type OrderCardSettingsContext = NonNullable<OrderSandboxFixture['contexts'][typeof orderCardSettingsContextId]>
+type SettingsContext = NonNullable<OrderSandboxFixture['contexts'][typeof settingsContextId]>
+type UserCurrentContext = NonNullable<OrderSandboxFixture['contexts'][typeof currentUserContextId]>
 
 const orderSandboxRouting = {
   base_url: '',
@@ -274,23 +282,23 @@ export const orderSandboxFixtures = {
     name: 'Базовый заказ',
     description: 'Обычный заказ без доставки, подходит для проверки общих блоков.',
     contexts: {
-      'order/card': createOrderCardContext({
+      [orderCardContextId]: createOrderCardContext({
         'externalId': 'sandbox-order-215',
         'id': 215,
         'items': orderItems,
         'number': '215C',
         'status': 'new',
       }),
-      'order/card:settings': createOrderCardSettingsContext(),
-      'settings': settingsContext,
-      'user/current': createUserCurrentContext(),
+      [orderCardSettingsContextId]: createOrderCardSettingsContext(),
+      [currentUserContextId]: createUserCurrentContext(),
+      [settingsContextId]: settingsContext,
     },
   },
   'order-with-delivery': {
     name: 'Заказ с доставкой',
     description: 'Заказ с адресом и суммой, полезен для delivery/payment widgets.',
     contexts: {
-      'order/card': createOrderCardContext({
+      [orderCardContextId]: createOrderCardContext({
         'delivery.address': 'Москва, ул. Ленина, 10',
         'discount.amount': 500,
         'discount.percent': 3,
@@ -304,32 +312,31 @@ export const orderSandboxFixtures = {
         'number': '214C',
         'status': 'client-confirmed',
       }),
-      'order/card:settings': createOrderCardSettingsContext({
+      [orderCardSettingsContextId]: createOrderCardSettingsContext({
         'reserveShipmentDateEditable': true,
       }),
-      'settings': settingsContext,
-      'user/current': createUserCurrentContext(),
+      [currentUserContextId]: createUserCurrentContext(),
+      [settingsContextId]: settingsContext,
     },
   },
   'order-readonly-error': {
     name: 'Readonly / error-like',
     description: 'Отменённый заказ с readonly-настройками для проверки disabled states.',
     contexts: {
-      'order/card': createOrderCardContext({
+      [orderCardContextId]: createOrderCardContext({
         'externalId': 'sandbox-order-213',
         'id': 213,
         'items': [],
         'number': '213C',
         'status': 'cancelled',
       }),
-      'order/card:settings': createOrderCardSettingsContext({
+      [orderCardSettingsContextId]: createOrderCardSettingsContext({
         'priceEditable': false,
         'productsRemoveAllowed': false,
         'purchasePriceVisible': false,
         'showPriceTypes': false,
       }),
-      'settings': settingsContext,
-      'user/current': createUserCurrentContext({
+      [currentUserContextId]: createUserCurrentContext({
         'email': 'readonly@example.com',
         'firstName': 'Readonly',
         'groups': ['support'],
@@ -338,6 +345,7 @@ export const orderSandboxFixtures = {
         'lastName': 'Sandbox',
         'permissions': ['orders_view'],
       }),
+      [settingsContextId]: settingsContext,
     },
   },
 } satisfies Record<string, OrderSandboxFixture>

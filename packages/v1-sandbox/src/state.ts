@@ -6,7 +6,7 @@ import type {
   CustomDictionary,
 } from '@retailcrm/embed-ui-v1-types/context'
 
-import type { HostLocation } from '@retailcrm/embed-ui-v1-types/host'
+import type { HostApi, HostLocation } from '@retailcrm/embed-ui-v1-types/host'
 
 import { reactive } from 'vue'
 
@@ -35,17 +35,14 @@ export type SandboxCustomState = {
 
 export type SandboxHttpCallRecord = {
   action: string;
-  payload?: string | Record<string, unknown>;
-  response: {
-    body: string;
-    status: number;
-  };
+  payload?: Parameters<HostApi['httpCall']>[1];
+  response: Awaited<ReturnType<HostApi['httpCall']>>;
 }
 
 export type SandboxNavigationRecord =
   | {
     kind: 'go-to';
-    params?: Record<string, unknown>;
+    params?: Parameters<HostApi['goTo']>[1];
     route: string;
   }
   | {

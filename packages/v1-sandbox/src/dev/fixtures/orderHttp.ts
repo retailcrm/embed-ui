@@ -218,7 +218,15 @@ const createOrderHttpCallResolver = <M extends ContextSchemaList>() => {
     request: SandboxHttpCallRequest,
     state: SandboxState<M>
   ): SandboxHttpCallResponse | undefined => {
+    const normalizedAction = normalizeAction(request.action)
     const handler = handlers.find(({ matches }) => matches(request.action))
+
+    debugOrderHttp('resolve', {
+      action: request.action,
+      handler: handler?.name ?? null,
+      normalizedAction,
+      payload: request.payload,
+    })
 
     return handler?.resolve(request, state)
   }
@@ -297,9 +305,30 @@ const hasAnyActionSegment = (action: string, segments: string[]): boolean => {
 
 const normalizeAction = (action: string): string => {
   try {
-    return new URL(action, SANDBOX_URL_PARSE_BASE).pathname.toLowerCase()
+    const url = new URL(action, SANDBOX_URL_PARSE_BASE)
+
+    debugOrderHttp('normalize-url', {
+      action,
+      href: url.href,
+      pathname: url.pathname,
+    })
+
+    return url.pathname.toLowerCase()
   } catch {
-    return action.split('?')[0].toLowerCase()
+    const pathname = action.split('?')[0]
+
+    debugOrderHttp('normalize-fallback', {
+      action,
+      pathname,
+    })
+
+    return pathname.toLowerCase()
+  }
+}
+
+const debugOrderHttp = (event: string, details: unknown): void => {
+  if (typeof console !== 'undefined') {
+    console.info(`[sandbox:order-http] ${event}`, details)
   }
 }
 

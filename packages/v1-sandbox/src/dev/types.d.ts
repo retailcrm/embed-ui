@@ -24,35 +24,18 @@ export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
 
 export type SandboxExtensionRunner = 'iframe' | 'worker'
 
-export type SandboxExtensionPage = {
-  code: string;
-}
-
 export type SandboxExtensionDescriptor = {
   entrypoint: string;
   pages: string[];
   runner: SandboxExtensionRunner;
   stylesheet: string | null;
-  targets: string[];
+  targets: TargetName[];
   uuid: string;
-}
-
-export type SandboxExtensionManifest = {
-  code?: string;
-  entrypoint?: string;
-  pages?: Array<string | SandboxExtensionPage>;
-  runner?: SandboxExtensionRunner;
-  scripts?: string[];
-  stylesheet?: string | null;
-  targets?: string[];
-  uuid?: string;
-  version?: string;
 }
 
 export type SandboxExtensionSource = {
   descriptor: SandboxExtensionDescriptor;
   entrypoint: URL;
-  manifest: SandboxExtensionManifest | null;
   manifestUrl: string | null;
 }
 

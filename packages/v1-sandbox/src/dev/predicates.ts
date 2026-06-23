@@ -17,12 +17,6 @@ export const isJavascriptMimeType = (contentType: string): boolean => {
   return mimeType.includes('javascript') || mimeType.includes('ecmascript')
 }
 
-export const isJsonMimeType = (contentType: string): boolean => {
-  const mimeType = contentType.toLowerCase()
-
-  return mimeType.includes('json')
-}
-
 export const isHtmlMimeType = (contentType: string): boolean => {
   const mimeType = contentType.toLowerCase()
 

@@ -2,20 +2,17 @@ import type {
   FetchLike,
   ResolveSandboxExtensionSourceOptions,
   SandboxExtensionDescriptor,
-  SandboxExtensionManifest,
   SandboxExtensionRunner,
   SandboxExtensionSource,
   SandboxLaunchConfig,
 } from '@/dev/types'
 
-import { isHtmlMimeType, isJavascriptMimeType, isJsonMimeType } from '@/dev/predicates'
+import { isHtmlMimeType, isJavascriptMimeType } from '@/dev/predicates'
 
 export type {
   FetchLike,
   ResolveSandboxExtensionSourceOptions,
   SandboxExtensionDescriptor,
-  SandboxExtensionManifest,
-  SandboxExtensionPage,
   SandboxExtensionRunner,
   SandboxExtensionSource,
 } from '@/dev/types'
@@ -32,7 +29,6 @@ export const resolveSandboxExtensionSource = async (
     return {
       descriptor,
       entrypoint: await resolveWorkerEntrypoint(descriptor.entrypoint, fetcher),
-      manifest: null,
       manifestUrl: null,
     }
   }
@@ -51,25 +47,11 @@ export const resolveSandboxExtensionSource = async (
 
   const responseUrl = response.url || manifestUrl.href
   const contentType = response.headers.get('content-type') ?? ''
-
-  if (!isJsonMimeType(contentType)) {
-    const source = await resolveEntrypointSource(config, response, responseUrl, contentType, fetcher)
-
-    return {
-      descriptor: source.descriptor,
-      entrypoint: source.entrypoint,
-      manifest: null,
-      manifestUrl: responseUrl,
-    }
-  }
-
-  const manifest = await response.json() as SandboxExtensionManifest
-  const descriptor = createDescriptorFromManifest(manifest, responseUrl)
+  const source = await resolveEntrypointSource(config, response, responseUrl, contentType, fetcher)
 
   return {
-    descriptor,
-    entrypoint: await resolveExtensionEntrypoint(descriptor, fetcher),
-    manifest,
+    descriptor: source.descriptor,
+    entrypoint: source.entrypoint,
     manifestUrl: responseUrl,
   }
 }
@@ -82,28 +64,6 @@ const createFallbackDescriptor = (config: SandboxLaunchConfig): SandboxExtension
   targets: config.targets,
   uuid: config.widgetId,
 })
-
-const createDescriptorFromManifest = (
-  manifest: SandboxExtensionManifest,
-  responseUrl: string
-): SandboxExtensionDescriptor => {
-  const runner = manifest.runner ?? 'worker'
-
-  const rawEntrypoint = resolveManifestEntrypoint(manifest)
-  const entrypoint = resolveUrl(rawEntrypoint, responseUrl).href
-  const stylesheet = typeof manifest.stylesheet === 'string'
-    ? resolveUrl(manifest.stylesheet, responseUrl).href
-    : null
-
-  return {
-    entrypoint,
-    pages: normalizePages(manifest.pages),
-    runner,
-    stylesheet,
-    targets: manifest.targets ?? [],
-    uuid: manifest.uuid ?? manifest.code ?? 'sandbox-extension',
-  }
-}
 
 const createDescriptorFromEntrypoint = (
   config: SandboxLaunchConfig,
@@ -119,24 +79,6 @@ const createDescriptorFromEntrypoint = (
   targets: config.targets,
   uuid: config.widgetId,
 })
-
-const resolveManifestEntrypoint = (manifest: SandboxExtensionManifest): string => {
-  if (manifest.entrypoint && manifest.entrypoint !== 'script' && manifest.entrypoint !== 'html') {
-    return manifest.entrypoint
-  }
-
-  const script = manifest.scripts?.[0]
-  if (script) return script
-
-  throw new Error('[sandbox:manifest] Manifest must define entrypoint or scripts[0].')
-}
-
-const normalizePages = (pages: SandboxExtensionManifest['pages']): string[] =>
-  (pages ?? []).flatMap((page) => {
-    if (typeof page === 'string') return [page]
-
-    return page.code ? [page.code] : []
-  })
 
 const resolveEntrypointSource = async (
   config: SandboxLaunchConfig,
@@ -175,9 +117,7 @@ const resolveEntrypointSource = async (
   const entrypoint = runner === 'iframe'
     ? resolveUrl(response.url || responseUrl, window.location.href)
     : resolveUrl(scriptResponse.url || scriptEntrypoint.href, window.location.href)
-  const stylesheet = runner === 'worker'
-    ? await resolveCoreEntrypointStylesheet(responseUrl, fetcher)
-    : null
+  const stylesheet = await resolveCoreEntrypointStylesheet(responseUrl, fetcher)
   const pages = runner === 'worker'
     ? resolveEntrypointPages(config, script)
     : []
@@ -187,17 +127,6 @@ const resolveEntrypointSource = async (
     descriptor,
     entrypoint,
   }
-}
-
-const resolveExtensionEntrypoint = async (
-  descriptor: SandboxExtensionDescriptor,
-  fetcher: FetchLike
-): Promise<URL> => {
-  if (descriptor.runner === 'iframe') {
-    return resolveUrl(descriptor.entrypoint, window.location.href)
-  }
-
-  return await resolveWorkerEntrypoint(descriptor.entrypoint, fetcher)
 }
 
 const resolveWorkerEntrypoint = async (
@@ -349,8 +278,8 @@ const readObjectKey = (
   source: string,
   start: number
 ): { end: number; value: string } | null => {
-  const match = /^(?:^|,)\s*(?:"(?<double>[^"]+)"|'(?<single>[^']+)'|(?<identifier>[A-Za-z_$][\w$-]*))\s*:/u.exec(source.slice(start))
-  const value = match?.groups?.double ?? match?.groups?.single ?? match?.groups?.identifier
+  const match = /^(?:^|,)\s*(?:"([^"]+)"|'([^']+)'|([A-Za-z_$][\w$-]*))\s*:/u.exec(source.slice(start))
+  const value = match?.[1] ?? match?.[2] ?? match?.[3]
 
   if (!match || !value) return null
 

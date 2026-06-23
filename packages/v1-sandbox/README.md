@@ -51,8 +51,8 @@ Playwright feedback loop.
 
 ### URL contract
 
-- `manifestUrl` — URL внешнего расширения. Поддерживает JSON manifest,
-  HTML entrypoint (`/extension/%extension-id%`) и прямой JS script;
+- `manifestUrl` — URL внешнего расширения. Поддерживает HTML entrypoint
+  (`/extension/%extension-id%`) и прямой JS script;
 - `extensionUrl` — низкоуровневый fallback URL module worker entrypoint
   расширения, если `manifestUrl` пустой. В UI dev-панели используется один
   основной путь подключения — `manifestUrl`;
@@ -96,10 +96,9 @@ Playwright feedback loop.
 ```
 
 `manifestUrl` — основной dev contract. Sandbox загружает внешний URL по сети:
-если это JSON manifest, получает descriptor (`uuid`, `runner`, `entrypoint`,
-`targets`, `pages`); если это HTML entrypoint, достаёт первый `<script src>`
-из `<head>`; если это JS, запускает его напрямую через локальный bootstrap
-worker. Если нужно отладить прямой worker entrypoint без manifest endpoint,
+если это HTML entrypoint, достаёт первый `<script src>` из `<head>`; если это
+JS, запускает его напрямую через локальный bootstrap worker. Если нужно
+отладить прямой worker entrypoint без extension endpoint,
 можно передать пустой `manifestUrl` и внешний `extensionUrl`:
 
 ```text

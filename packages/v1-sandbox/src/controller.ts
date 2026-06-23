@@ -2,6 +2,7 @@ import type {
   Context,
   ContextAccessor,
   ContextSchemaList,
+  CustomContext,
   CustomContextAccessor,
   CustomContextSchema,
   CustomDictionary,
@@ -49,7 +50,7 @@ export type SandboxController<M extends ContextSchemaList> = {
   patchContext<C extends keyof M>(context: C, patch: Partial<Context<M[C]>>): void;
   reset(snapshot?: SandboxSnapshot<M>): void;
   setContext<C extends keyof M>(context: C, value: Context<M[C]>): void;
-  setCustomEntity(entity: string, schema: CustomContextSchema, values?: Record<string, CustomFieldType>): void;
+  setCustomEntity(entity: string, schema: CustomContextSchema, values?: CustomContext): void;
   setCustomField(entity: string, code: string, value: CustomFieldType): void;
   setDictionary(code: string, dictionary: CustomDictionary): void;
   setField<C extends keyof M, F extends keyof Context<M[C]>>(context: C, field: F, value: Context<M[C]>[F]): void;

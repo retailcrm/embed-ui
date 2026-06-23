@@ -40,63 +40,30 @@ const response = (
 } as Response)
 
 describe('resolveSandboxExtensionSource', () => {
-  test('loads descriptor manifest and resolves worker entrypoint', async () => {
-    const fetcher = vi.fn(async (url: string | URL | Request) => {
-      const href = String(url)
-
-      if (href.endsWith('/manifest.json')) {
-        return response({
-          entrypoint: './entry.js',
-          runner: 'worker',
-          targets: ['order/card:common.after'],
-          uuid: 'external-extension',
-        }, {
-          contentType: 'application/json',
-          url: 'http://sandbox.test/extensions/demo/manifest.json',
-        })
-      }
-
-      return response('', {
-        contentType: 'application/javascript',
-        url: 'http://sandbox.test/extensions/demo/entry.js',
-      })
-    })
-
-    const source = await resolveSandboxExtensionSource(config(), { fetch: fetcher as typeof fetch })
-
-    expect(source.descriptor).toMatchObject({
-      entrypoint: 'http://sandbox.test/extensions/demo/entry.js',
-      runner: 'worker',
-      targets: ['order/card:common.after'],
-      uuid: 'external-extension',
-    })
-    expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/demo/entry.js')
-  })
-
   test('resolves html entrypoint to first head script', async () => {
     const fetcher = vi.fn(async (url: string | URL | Request) => {
       const href = String(url)
 
-      if (href.endsWith('/manifest.json')) {
-        return response({
-          entrypoint: './index.html',
-          runner: 'worker',
-          uuid: 'html-extension',
-        }, {
-          contentType: 'application/json',
-          url: 'http://sandbox.test/extensions/html/manifest.json',
+      if (href.endsWith('/extensions/html/index.html')) {
+        return response('<html><head><script src="./assets/entry.js"></script></head></html>', {
+          contentType: 'text/html',
+          url: 'http://sandbox.test/extensions/html/index.html',
         })
       }
 
-      return response('<html><head><script src="./assets/entry.js"></script></head></html>', {
-        contentType: 'text/html',
-        url: 'http://sandbox.test/extensions/html/index.html',
+      return response('runEndpoint(defineRunner({ widgets: [] }))', {
+        contentType: 'application/javascript',
+        url: 'http://sandbox.test/extensions/html/assets/entry.js',
       })
     })
 
-    const source = await resolveSandboxExtensionSource(config(), { fetch: fetcher as typeof fetch })
+    const source = await resolveSandboxExtensionSource(config({
+      manifestUrl: 'http://sandbox.test/extensions/html/index.html',
+    }), { fetch: fetcher as typeof fetch })
 
     expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/html/assets/entry.js')
+    expect(source.descriptor.runner).toBe('worker')
+    expect(fetcher).toHaveBeenCalledTimes(2)
   })
 
   test('infers iframe runner from core-style html endpoint script', async () => {
@@ -132,14 +99,13 @@ describe('resolveSandboxExtensionSource', () => {
       manifestUrl: 'http://extension-host.test/extension/module-id',
     }), { fetch: fetcher as typeof fetch })
 
-    expect(source.manifest).toBeNull()
     expect(source.descriptor.pages).toEqual([])
     expect(source.descriptor.runner).toBe('iframe')
     expect(source.descriptor.stylesheet).toBeNull()
     expect(source.entrypoint.href).toBe(
       'http://extension-host.test/extension/module-id'
     )
-    expect(fetcher).toHaveBeenCalledTimes(2)
+    expect(fetcher).toHaveBeenCalledTimes(3)
   })
 
   test('infers worker runner from core-style html endpoint script', async () => {
@@ -173,7 +139,6 @@ describe('resolveSandboxExtensionSource', () => {
       manifestUrl: 'http://extension-host.test/extension/module-id',
     }), { fetch: fetcher as typeof fetch })
 
-    expect(source.manifest).toBeNull()
     expect(source.descriptor.pages).toEqual(['returns'])
     expect(source.descriptor.runner).toBe('worker')
     expect(source.descriptor.stylesheet).toBe(
@@ -221,29 +186,6 @@ describe('resolveSandboxExtensionSource', () => {
     expect(source.descriptor.pages).toEqual(['returns'])
   })
 
-  test('keeps iframe manifest entrypoint as html page', async () => {
-    const fetcher = vi.fn(async () => response({
-      entrypoint: './index.html',
-      runner: 'iframe',
-      targets: ['order/card:common.before'],
-      uuid: 'iframe-extension',
-    }, {
-      contentType: 'application/json',
-      url: 'http://sandbox.test/extensions/iframe/manifest.json',
-    }))
-
-    const source = await resolveSandboxExtensionSource(config(), { fetch: fetcher as typeof fetch })
-
-    expect(source.descriptor).toMatchObject({
-      entrypoint: 'http://sandbox.test/extensions/iframe/index.html',
-      runner: 'iframe',
-      targets: ['order/card:common.before'],
-      uuid: 'iframe-extension',
-    })
-    expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/iframe/index.html')
-    expect(fetcher).toHaveBeenCalledTimes(1)
-  })
-
   test('keeps direct extension url fallback when manifest url is empty', async () => {
     const fetcher = vi.fn(async () => response('', {
       contentType: 'application/javascript',
@@ -257,7 +199,6 @@ describe('resolveSandboxExtensionSource', () => {
       fetch: fetcher as typeof fetch,
     })
 
-    expect(source.manifest).toBeNull()
     expect(source.descriptor.entrypoint).toBe('/src/direct-extension.js')
     expect(source.entrypoint.href).toBe('http://localhost/src/direct-extension.js')
   })

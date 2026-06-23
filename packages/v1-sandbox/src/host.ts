@@ -1,12 +1,11 @@
+import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 import type {
   HostApi,
   HostLocation,
   HostQueryInput,
   HostQueryOptions,
 } from '@retailcrm/embed-ui-v1-types/host'
-
-import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
-import type { MaybePromise, Pojo } from '@retailcrm/embed-ui-v1-types/scaffolding'
+import type { MaybePromise } from '@retailcrm/embed-ui-v1-types/scaffolding'
 
 import type { SandboxHostState, SandboxState } from '@/state'
 
@@ -14,13 +13,10 @@ import { clone } from '@/utils'
 
 export type SandboxHttpCallRequest = {
   action: string;
-  payload?: Pojo | string;
+  payload?: Parameters<HostApi['httpCall']>[1];
 }
 
-export type SandboxHttpCallResponse = {
-  body: string;
-  status: number;
-}
+export type SandboxHttpCallResponse = Awaited<ReturnType<HostApi['httpCall']>>
 
 export type SandboxHostMiddlewareNext = () => MaybePromise<SandboxHttpCallResponse>
 
@@ -48,7 +44,15 @@ export const createSandboxHostApi = <M extends ContextSchemaList>(
 
     async httpCall(action, payload) {
       const request = { action, payload }
+
+      debugHttpCall('request', request)
+
       const response = await resolveHttpCall(request, state, options)
+
+      debugHttpCall('response', {
+        action,
+        response,
+      })
 
       state.host.http.push({
         action,
@@ -104,6 +108,12 @@ const resolveHttpCall = async <M extends ContextSchemaList>(
       }),
       status: 500,
     }
+  }
+}
+
+const debugHttpCall = (event: string, details: unknown): void => {
+  if (typeof console !== 'undefined') {
+    console.info(`[sandbox:host:httpCall] ${event}`, details)
   }
 }
 
@@ -181,7 +191,7 @@ const applyQuery = (
 
 const createRouteLocation = (
   route: string,
-  params: Record<string, unknown> | undefined
+  params: Parameters<HostApi['goTo']>[1]
 ): SandboxHostState['location'] => {
   const url = new URL(route, 'https://sandbox.crm.test')
   const query = Object.entries(params ?? {}).reduce((all, [key, value]) => {

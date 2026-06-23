@@ -19,6 +19,12 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@retailcrm/embed-ui-v1-types/*": [
+        "../v1-types/*.d.ts"
+      ],
+      "@retailcrm/embed-ui-v1-testing/*": [
+        "../v1-testing/*.ts"
       ]
     },
     "skipLibCheck": true,
