@@ -34,6 +34,7 @@ docker compose up v1-sandbox
 - `%extension-url%` — origin сервера доставки, без `/extension/%extension-id%`;
 - `/extension/` — путь текущего extension server API. Если ваш сервер отдаёт descriptor по другому пути, вставьте полный URL этого endpoint;
 - `%extension-id%` — UUID/ID записи JS-модуля/расширения на extension server. Это не `pageCode` и не `target`; один такой модуль может содержать страницы и виджеты.
+- `%module-code%` — code JS-модуля в CRM. Его нужно указать в поле `Код модуля`, чтобы sandbox передавал правильную module identity в `host.httpCall`.
 
 6. Выберите режим:
 
@@ -71,6 +72,8 @@ Sandbox умеет загрузить:
 
 - `Manifest / URL расширения` — полный URL descriptor/entrypoint/script, который sandbox загрузит по сети.
   Для стандартного extension server это `%extension-url%/extension/%extension-id%`.
+- `Код модуля` — code JS-модуля в CRM, например `returnsModule`.
+  Sandbox использует его как module identity для `host.httpCall`; это не `%extension-id%`, не `pageCode` и не target.
 - `Режим` — выбирает тип runner. `Виджеты` монтируют widgets в CRM-слоты, `Страница` монтирует page runner по `Код страницы`.
 - `Фикстура` — набор мок-данных CRM: context заказа, custom fields, справочники, location и ответы HostAPI middleware.
 - `Код страницы` — `code` из массива `pages` в manifest/runner. Например `board` или `summary`.
@@ -103,7 +106,7 @@ Targets — это CRM-слоты. Если отметить два targets, п�
 Пример URL для прямого открытия:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 ## Запуск страницы
@@ -148,7 +151,7 @@ summary
 Пример URL для прямого открытия:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&mode=page&pageCode=%page-code%&fixture=order-basic
 ```
 
 ## Фикстуры и Context JSON
@@ -300,19 +303,19 @@ Playwright проверяет:
 Виджеты:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&mode=widget&targets=order/card:common.after&fixture=order-basic
 ```
 
 Несколько виджетов:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 Страница:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&mode=page&pageCode=%page-code%&fixture=order-basic
 ```
 
 Где:
@@ -324,4 +327,5 @@ Playwright проверяет:
   Это может быть `http://web-extensions-server.simla.local`, `http://web-extensions-server.simla.test`,
   `https://ycp-retail.ru` или другой адрес;
 - `%extension-id%` — UUID/ID записи JS-модуля/расширения на extension server. Это не `pageCode` и не target;
+- `%module-code%` — code JS-модуля в CRM, который нужен HostAPI/httpCall симуляции;
 - `%page-code%` — code страницы из manifest/runner.

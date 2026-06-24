@@ -10,6 +10,7 @@ import {
 import { resolveSandboxExtensionSource } from '@/dev/manifest'
 
 const config = (overrides: Partial<SandboxLaunchConfig> = {}): SandboxLaunchConfig => ({
+  code: 'returnsModule',
   extensionUrl: '/src/direct-extension.js',
   fixture: 'order-basic',
   manifestUrl: '/extension/manifest.json',
@@ -62,7 +63,9 @@ describe('resolveSandboxExtensionSource', () => {
     }), { fetch: fetcher as typeof fetch })
 
     expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/html/assets/entry.js')
+    expect(source.httpBaseUrl).toBe('http://sandbox.test/')
     expect(source.descriptor.runner).toBe('worker')
+    expect(source.descriptor.uuid).toBe('returnsModule')
     expect(fetcher).toHaveBeenCalledTimes(2)
   })
 
@@ -105,6 +108,7 @@ describe('resolveSandboxExtensionSource', () => {
     expect(source.entrypoint.href).toBe(
       'http://extension-host.test/extension/module-id'
     )
+    expect(source.httpBaseUrl).toBe('http://extension-host.test/')
     expect(fetcher).toHaveBeenCalledTimes(3)
   })
 
@@ -147,6 +151,7 @@ describe('resolveSandboxExtensionSource', () => {
     expect(source.entrypoint.href).toBe(
       'http://extension-host.test/dist/returnsModule.js'
     )
+    expect(source.httpBaseUrl).toBe('http://extension-host.test/')
     expect(fetcher).toHaveBeenCalledTimes(3)
   })
 
@@ -200,6 +205,8 @@ describe('resolveSandboxExtensionSource', () => {
     })
 
     expect(source.descriptor.entrypoint).toBe('/src/direct-extension.js')
+    expect(source.descriptor.uuid).toBe('returnsModule')
     expect(source.entrypoint.href).toBe('http://localhost/src/direct-extension.js')
+    expect(source.httpBaseUrl).toBeNull()
   })
 })

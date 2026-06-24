@@ -22,10 +22,28 @@
 
                 <UiTextbox
                     :id="uid + '-dev-panel-manifest-url'"
+                    :class="$style['dev-panel__control']"
                     :value="props.manifestUrl"
                     type="text"
-                    width="fluid"
                     @update:value="updateManifestUrl"
+                />
+            </label>
+
+            <label :class="$style['dev-panel__field']">
+                <span :class="$style['dev-panel__field-label']">
+                    {{ t('devPanel.code') }}
+                </span>
+
+                <span :class="$style['dev-panel__field-hint']">
+                    {{ t('devPanel.codeHint') }}
+                </span>
+
+                <UiTextbox
+                    :id="uid + '-dev-panel-code'"
+                    :class="$style['dev-panel__control']"
+                    :value="props.code"
+                    type="text"
+                    @update:value="updateCode"
                 />
             </label>
 
@@ -72,10 +90,10 @@
 
                 <UiTextbox
                     :id="uid + '-dev-panel-page-code'"
+                    :class="$style['dev-panel__control']"
                     :disabled="props.mode !== 'page'"
                     :value="props.pageCode"
                     type="text"
-                    width="fluid"
                     @update:value="updatePageCode"
                 />
             </label>
@@ -124,11 +142,11 @@
 
                 <UiTextbox
                     :id="uid + '-dev-panel-context-json'"
+                    :class="$style['dev-panel__control']"
                     :invalid="Boolean(props.contextJsonError)"
                     :value="props.contextJson"
                     multiline
                     rows="14"
-                    width="fluid"
                     @update:value="props.setContextJson"
                 />
             </label>
@@ -178,6 +196,7 @@ import { orderSandboxFixtures } from '@/dev/fixtures'
 const props = defineProps<{
   applyLaunchConfig(): void;
   applyContextJson(): Promise<void>;
+  code: string;
   contextJson: string;
   contextJsonChanged: boolean;
   contextJsonError: string;
@@ -188,6 +207,7 @@ const props = defineProps<{
   selectedTargets: SandboxOrderTarget[];
   setContextJson(value: string | number): void;
   setFixture(value: string): void;
+  setCode(value: string): void;
   setManifestUrl(value: string): void;
   setMode(value: SandboxLaunchMode): void;
   setPageCode(value: string): void;
@@ -223,6 +243,10 @@ const updateManifestUrl = (value: string | number) => {
   props.setManifestUrl(String(value))
 }
 
+const updateCode = (value: string | number) => {
+  props.setCode(String(value))
+}
+
 const updatePageCode = (value: string | number) => {
   props.setPageCode(String(value))
 }
@@ -239,6 +263,8 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
             "apply": "Apply",
             "applyContextJson": "Apply context"
         },
+        "code": "Module code",
+        "codeHint": "Used as descriptor uuid for host.httpCall, matching CRM module code, for example returnsModule.",
         "contextJson": "Context JSON",
         "contextJsonHint": "Edit fixture-backed contexts for the current run. Applying this JSON reloads the extension.",
         "delivery": {
@@ -273,6 +299,8 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
             "apply": "Aplicar",
             "applyContextJson": "Aplicar contexto"
         },
+        "code": "Código del módulo",
+        "codeHint": "Se usa como descriptor uuid para host.httpCall, igual que el module code en CRM, por ejemplo returnsModule.",
         "contextJson": "Contexto JSON",
         "contextJsonHint": "Edita los contextos basados en fixture para la ejecución actual. Al aplicar este JSON se recarga la extensión.",
         "delivery": {
@@ -307,6 +335,8 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
             "apply": "Применить",
             "applyContextJson": "Применить контекст"
         },
+        "code": "Код модуля",
+        "codeHint": "Используется как descriptor uuid для host.httpCall, как code модуля в CRM, например returnsModule.",
         "contextJson": "Context JSON",
         "contextJsonHint": "Меняет fixture-backed contexts для текущего запуска. После применения расширение перезапускается.",
         "delivery": {
@@ -348,7 +378,6 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
 
     &__card {
         background: #fff;
-        border: 1px solid @grey-500;
         border-radius: @border-radius-lg;
         display: grid;
         gap: 14px;
@@ -368,6 +397,10 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
         display: grid;
         gap: 6px;
         min-width: 0;
+    }
+
+    &__control {
+        width: 100%;
     }
 
     &__field-label {

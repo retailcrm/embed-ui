@@ -29,6 +29,7 @@ export const resolveSandboxExtensionSource = async (
     return {
       descriptor,
       entrypoint: await resolveWorkerEntrypoint(descriptor.entrypoint, fetcher),
+      httpBaseUrl: resolveExtensionBackendBaseUrl(descriptor.entrypoint),
       manifestUrl: null,
     }
   }
@@ -52,6 +53,7 @@ export const resolveSandboxExtensionSource = async (
   return {
     descriptor: source.descriptor,
     entrypoint: source.entrypoint,
+    httpBaseUrl: resolveExtensionBackendBaseUrl(responseUrl),
     manifestUrl: responseUrl,
   }
 }
@@ -62,7 +64,7 @@ const createFallbackDescriptor = (config: SandboxLaunchConfig): SandboxExtension
   runner: 'worker',
   stylesheet: null,
   targets: config.targets,
-  uuid: config.widgetId,
+  uuid: config.code || config.widgetId,
 })
 
 const createDescriptorFromEntrypoint = (
@@ -77,7 +79,7 @@ const createDescriptorFromEntrypoint = (
   runner,
   stylesheet,
   targets: config.targets,
-  uuid: config.widgetId,
+  uuid: config.code || config.widgetId,
 })
 
 const resolveEntrypointSource = async (
@@ -166,6 +168,25 @@ const inferRunnerFromScript = (script: string): SandboxExtensionRunner =>
   script.includes('This does not appear to be a child iframe')
     ? 'iframe'
     : 'worker'
+
+const resolveExtensionBackendBaseUrl = (entrypoint: string): string | null => {
+  const url = resolveUrl(entrypoint, window.location.href)
+
+  if (url.origin === window.location.origin && url.pathname.startsWith('/src/')) {
+    return null
+  }
+
+  const extensionSegmentIndex = url.pathname.lastIndexOf('/extension/')
+  const basePath = extensionSegmentIndex >= 0
+    ? url.pathname.slice(0, extensionSegmentIndex)
+    : ''
+
+  url.pathname = basePath || '/'
+  url.search = ''
+  url.hash = ''
+
+  return url.href
+}
 
 const resolveEntrypointPages = (
   config: SandboxLaunchConfig,

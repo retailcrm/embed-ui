@@ -16,8 +16,8 @@ import {
 import { schema as settingsSchema } from '@retailcrm/embed-ui-v1-contexts/remote/settings'
 import { targets } from '@retailcrm/embed-ui-v1-endpoint/common/targets'
 
-import { createOrderSandboxHttpMiddleware } from '@/dev/fixtures/orderHttp'
 import { createSandboxController } from '@/controller'
+import { createSandboxHttpMiddleware } from '@/dev/fixtures/httpMiddlewares'
 import { isObjectKey } from '@/dev/predicates'
 
 const [
@@ -365,6 +365,10 @@ export const createOrderSandboxController = (
   options: Partial<CreateSandboxControllerOptions<OrderSandboxSchemas>> = {}
 ): SandboxController<OrderSandboxSchemas> => {
   const fixture = getOrderSandboxFixture(fixtureCode)
+  const {
+    httpMiddleware,
+    ...controllerOptions
+  } = options
 
   return createSandboxController({
     contexts: fixture.contexts,
@@ -403,9 +407,7 @@ export const createOrderSandboxController = (
       },
     },
     globalBridge: false,
-    httpMiddlewares: [
-      createOrderSandboxHttpMiddleware(),
-    ],
+    httpMiddleware: httpMiddleware ?? createSandboxHttpMiddleware<OrderSandboxSchemas>(),
     location: {
       pathname: '/orders/215/edit',
       query: {
@@ -414,6 +416,6 @@ export const createOrderSandboxController = (
     },
     mode: 'preview',
     schemas: orderSandboxSchemas,
-    ...options,
+    ...controllerOptions,
   })
 }

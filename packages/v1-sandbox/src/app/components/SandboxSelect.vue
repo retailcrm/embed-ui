@@ -7,13 +7,13 @@
             >
                 <UiSelectTrigger
                     :id="id"
+                    :class="$style['sandbox-select__control']"
                     :active-descendant="activeDescendant"
                     :expanded="isOpen"
                     :placeholder="placeholder"
                     :selection="selection"
                     :textbox-size="size"
                     :value="value"
-                    width="fluid"
                     @keydown="handleKeydown"
                     @update:expanded="isOpen = Boolean($event)"
                 />
@@ -122,6 +122,10 @@ const handleKeydown = (event: KeyboardEvent) => {
     width: 100%;
 
     &__target {
+        width: 100%;
+    }
+
+    &__control {
         width: 100%;
     }
 

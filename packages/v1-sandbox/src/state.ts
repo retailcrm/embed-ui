@@ -37,6 +37,7 @@ export type SandboxHttpCallRecord = {
   action: string;
   payload?: Parameters<HostApi['httpCall']>[1];
   response: Awaited<ReturnType<HostApi['httpCall']>>;
+  uuid?: string;
 }
 
 export type SandboxNavigationRecord =

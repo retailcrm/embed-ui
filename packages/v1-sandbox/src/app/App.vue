@@ -82,12 +82,14 @@
                 :context-json-changed="contextJsonChanged"
                 :context-json-error="contextJsonError"
                 :fixture="fixture"
+                :code="code"
                 :manifest-url="manifestUrl"
                 :mode="mode"
                 :page-code="pageCode"
                 :selected-targets="selectedTargets"
                 :set-context-json="setContextJson"
                 :set-fixture="setFixture"
+                :set-code="setCode"
                 :set-manifest-url="setManifestUrl"
                 :set-mode="setMode"
                 :set-page-code="setPageCode"
@@ -156,12 +158,18 @@ const launchConfig = parseSandboxLaunchConfig(searchParams, {
 })
 const LAUNCH_NOTICE_STORAGE_KEY = 'v1-sandbox:launch-notice'
 const fixture = ref(launchConfig.fixture)
+const code = ref(launchConfig.code)
 const manifestUrl = ref(launchConfig.manifestUrl)
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
 const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
+const extensionHttpBaseUrl = ref<string | null>(null)
+const extensionModuleCode = ref(launchConfig.code)
 const sandbox = createOrderSandboxController(launchConfig.fixture, {
+  getHttpCallBaseUrl: () => extensionHttpBaseUrl.value,
+  getModuleCode: () => extensionModuleCode.value || launchConfig.code,
   globalBridge: {},
+  moduleCode: launchConfig.code,
 })
 const mounts = createMounts(launchConfig)
 const runtime = ref<SandboxRuntime | null>(null)
@@ -198,6 +206,9 @@ const mountExtension = async () => {
     const extensionSource = await resolveSandboxExtensionSource(launchConfig)
 
     if (redirectToInferredPageMode(extensionSource.descriptor)) return
+
+    extensionHttpBaseUrl.value = extensionSource.httpBaseUrl
+    extensionModuleCode.value = extensionSource.descriptor.uuid
 
     const diagnostic = createLaunchDiagnostic(extensionSource.descriptor)
 
@@ -471,6 +482,7 @@ const flushRemoteUpdates = () => {
 
 const applyLaunchConfig = () => {
   window.location.href = updateSandboxLaunchQuery({
+    code: code.value,
     extensionUrl: '',
     fixture: fixture.value,
     manifestUrl: manifestUrl.value,
@@ -506,6 +518,10 @@ const setContextJson = (value: string | number) => {
 
 const setFixture = (value: string) => {
   fixture.value = value
+}
+
+const setCode = (value: string) => {
+  code.value = value
 }
 
 const setManifestUrl = (value: string) => {

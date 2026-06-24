@@ -60,6 +60,8 @@ Playwright feedback loop.
 - `target` — один поддержанный `order/card:*` target для одиночного запуска;
 - `targets` — список `order/card:*` targets через запятую для запуска
   нескольких widget instances;
+- `code` — code JS-модуля в CRM, который sandbox использует как module
+  identity для `host.httpCall`. Например `returnsModule`;
 - `widgetId` — базовый идентификатор widget instance, по умолчанию
   `sandbox-widget`;
 - `pageCode` — page code для `mode=page`, по умолчанию `orders-dashboard`;
@@ -75,24 +77,25 @@ Playwright feedback loop.
   `http://web-extensions-server.simla.test`, `https://ycp-retail.ru` или другой адрес;
 - `%extension-id%` — идентификатор записи JS-модуля/расширения на extension server.
   Это не `pageCode` и не target; один такой модуль может содержать страницы и виджеты;
+- `%module-code%` — code JS-модуля в CRM. Он используется в HostAPI/httpCall;
 - `%page-code%` — page code, который расширение регистрирует в runner.
 
 Пример запуска widget:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&targets=order/card:common.after&fixture=order-basic
 ```
 
 Пример запуска page runner:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=%page-code%
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&mode=page&pageCode=%page-code%
 ```
 
 Пример запуска нескольких widget targets:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.before,order/card:common.after&fixture=order-basic
+%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&code=%module-code%&targets=order/card:common.before,order/card:common.after&fixture=order-basic
 ```
 
 `manifestUrl` — основной dev contract. Sandbox загружает внешний URL по сети:

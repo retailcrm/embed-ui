@@ -13,17 +13,16 @@ import { clone } from '@/utils'
 
 export type SandboxHttpCallRequest = {
   action: string;
+  httpBaseUrl?: string | null;
   payload?: Parameters<HostApi['httpCall']>[1];
+  uuid?: string;
 }
 
 export type SandboxHttpCallResponse = Awaited<ReturnType<HostApi['httpCall']>>
 
-export type SandboxHostMiddlewareNext = () => MaybePromise<SandboxHttpCallResponse>
-
 export type SandboxHostMiddleware<M extends ContextSchemaList> = (
   request: SandboxHttpCallRequest,
-  state: SandboxState<M>,
-  next: SandboxHostMiddlewareNext
+  state: SandboxState<M>
 ) => MaybePromise<SandboxHttpCallResponse>
 
 export type SandboxHostApiOptions<M extends ContextSchemaList> = {
@@ -31,7 +30,11 @@ export type SandboxHostApiOptions<M extends ContextSchemaList> = {
     request: SandboxHttpCallRequest,
     state: SandboxState<M>
   ) => MaybePromise<SandboxHttpCallResponse>;
-  httpMiddlewares?: SandboxHostMiddleware<M>[];
+  httpMiddleware?: SandboxHostMiddleware<M>;
+  getHttpCallBaseUrl?: () => string | null | undefined;
+  getModuleCode?: () => string | undefined;
+  httpCallBaseUrl?: string | null;
+  moduleCode?: string;
 }
 
 export const createSandboxHostApi = <M extends ContextSchemaList>(
@@ -43,7 +46,13 @@ export const createSandboxHostApi = <M extends ContextSchemaList>(
     },
 
     async httpCall(action, payload) {
-      const request = { action, payload }
+      const moduleCode = options.getModuleCode?.() ?? options.moduleCode
+      const request = {
+        action,
+        httpBaseUrl: options.getHttpCallBaseUrl?.() ?? options.httpCallBaseUrl,
+        payload,
+        uuid: moduleCode,
+      }
 
       debugHttpCall('request', request)
 
@@ -58,6 +67,7 @@ export const createSandboxHostApi = <M extends ContextSchemaList>(
         action,
         payload: clone(payload),
         response: clone(response),
+        uuid: moduleCode,
       })
 
       return response
@@ -99,7 +109,11 @@ const resolveHttpCall = async <M extends ContextSchemaList>(
   options: SandboxHostApiOptions<M>
 ): Promise<SandboxHttpCallResponse> => {
   try {
-    return await createHttpCallPipeline(state, options)(request)
+    if (options.httpMiddleware) {
+      return await options.httpMiddleware(request, state)
+    } else {
+      return createFallbackHttpCall()
+    }
   } catch (error) {
     return {
       body: JSON.stringify({
@@ -111,46 +125,16 @@ const resolveHttpCall = async <M extends ContextSchemaList>(
   }
 }
 
+const createFallbackHttpCall = (): SandboxHttpCallResponse => ({
+  body: JSON.stringify({
+    ok: true,
+  }),
+  status: 200,
+})
+
 const debugHttpCall = (event: string, details: unknown): void => {
   if (typeof console !== 'undefined') {
     console.info(`[sandbox:host:httpCall] ${event}`, details)
-  }
-}
-
-const createHttpCallPipeline = <M extends ContextSchemaList>(
-  state: SandboxState<M>,
-  options: SandboxHostApiOptions<M>
-) => {
-  const fallback = () => options.httpCall
-    ? options.httpCall
-    : async () => ({
-      body: JSON.stringify({
-        ok: true,
-      }),
-      status: 200,
-    })
-  const middlewares = options.httpMiddlewares ?? []
-
-  return (request: SandboxHttpCallRequest): MaybePromise<SandboxHttpCallResponse> => {
-    let index = -1
-
-    const dispatch = (nextIndex: number): MaybePromise<SandboxHttpCallResponse> => {
-      if (nextIndex <= index) {
-        throw new Error('[sandbox:host] httpCall middleware called next() more than once.')
-      }
-
-      index = nextIndex
-
-      const middleware = middlewares[nextIndex]
-
-      if (!middleware) {
-        return fallback()(request, state)
-      }
-
-      return middleware(request, state, () => dispatch(nextIndex + 1))
-    }
-
-    return dispatch(0)
   }
 }
 
