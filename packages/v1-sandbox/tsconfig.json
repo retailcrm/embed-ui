@@ -42,6 +42,7 @@
     "src/**/*.ts",
     "src/**/*.vue",
     "tests/**/*.ts",
+    "vitest.config.playwright.ts",
     "vite.config*.ts"
   ]
 }

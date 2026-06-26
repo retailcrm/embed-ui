@@ -1,7 +1,7 @@
 <template>
     <section
         :class="$style['widget-mount']"
-        :aria-label="`Widget target: ${mount.label}`"
+        :aria-label="t('ariaLabel', { target: mount.label })"
         role="region"
     >
         <div :class="$style['widget-mount__label']">
@@ -19,26 +19,47 @@
 </template>
 
 <script setup lang="ts">
-import type { HostedTreeRef, SandboxMount } from '@/app/types'
 import type { VNodeRef } from 'vue'
+
+import type { HostedTreeRef, SandboxMount } from '@/app/types'
 
 import {
   createProvider as createHostProvider,
 } from '@retailcrm/embed-ui-v1-components/host'
 import { HostedTree } from '@omnicajs/vue-remote/host'
 import { markRaw } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   mount: SandboxMount;
   setTree(mount: SandboxMount, tree: HostedTreeRef | null): void;
 }>()
 
+const { t } = useI18n()
 const provider = markRaw(createHostProvider())
 
 const setTree: VNodeRef = (tree) => {
   props.setTree(props.mount, tree as HostedTreeRef | null)
 }
 </script>
+
+<i18n locale="en-GB">
+{
+  "ariaLabel": "Widget target: {target}"
+}
+</i18n>
+
+<i18n locale="es-ES">
+{
+  "ariaLabel": "Target de widget: {target}"
+}
+</i18n>
+
+<i18n locale="ru-RU">
+{
+  "ariaLabel": "Цель виджета: {target}"
+}
+</i18n>
 
 <style lang="less" module>
 @import (reference) "~assets/stylesheets/palette.less";

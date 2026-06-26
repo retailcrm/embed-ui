@@ -11,7 +11,6 @@ export type SandboxSlotDefinition = {
 export type SandboxLaunchMode = 'page' | 'widget'
 
 export type SandboxLaunchConfig = {
-  code: string;
   extensionUrl: string;
   fixture: string;
   manifestUrl: string;

@@ -23,77 +23,77 @@ export const ORDER_SANDBOX_TARGETS = [
 export const ORDER_SANDBOX_SLOTS: SandboxSlotDefinition[] = [
   {
     id: 'common-before',
-    label: 'Перед общими данными',
+    label: 'Before common data',
     target: 'order/card:common.before',
   },
   {
     id: 'common-after',
-    label: 'После общих данных',
+    label: 'After common data',
     target: 'order/card:common.after',
   },
   {
     id: 'customer-before',
-    label: 'Перед покупателем',
+    label: 'Before customer',
     target: 'order/card:customer.before',
   },
   {
     id: 'customer-after',
-    label: 'После покупателя',
+    label: 'After customer',
     target: 'order/card:customer.after',
   },
   {
     id: 'customer-email',
-    label: 'Email покупателя',
+    label: 'Customer email',
     target: 'order/card:customer.email',
   },
   {
     id: 'customer-phone',
-    label: 'Телефон покупателя',
+    label: 'Customer phone',
     target: 'order/card:customer.phone',
   },
   {
     id: 'list-before',
-    label: 'Перед составом заказа',
+    label: 'Before order items',
     target: 'order/card:list.before',
   },
   {
     id: 'list-after',
-    label: 'После состава заказа',
+    label: 'After order items',
     target: 'order/card:list.after',
   },
   {
     id: 'store-before',
-    label: 'Перед складом',
+    label: 'Before store',
     target: 'order/card:store.before',
   },
   {
     id: 'dimensions-before',
-    label: 'Перед габаритами',
+    label: 'Before dimensions',
     target: 'order/card:dimensions.before',
   },
   {
     id: 'delivery-before',
-    label: 'Перед доставкой',
+    label: 'Before delivery',
     target: 'order/card:delivery.before',
   },
   {
     id: 'delivery-after',
-    label: 'После доставки',
+    label: 'After delivery',
     target: 'order/card:delivery.after',
   },
   {
     id: 'delivery-address',
-    label: 'Адрес доставки',
+    label: 'Delivery address',
     target: 'order/card:delivery.address',
   },
   {
     id: 'payment-before',
-    label: 'Перед оплатой',
+    label: 'Before payment',
     target: 'order/card:payment.before',
   },
   {
     id: 'comment-manager-before',
-    label: 'Перед комментарием менеджера',
+    label: 'Before manager comment',
     target: 'order/card:comment.manager.before',
   },
 ]

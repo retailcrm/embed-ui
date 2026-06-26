@@ -22,7 +22,7 @@ export type SandboxHttpCallResponse = Awaited<ReturnType<HostApi['httpCall']>>
 
 export type SandboxHostMiddleware<M extends ContextSchemaList> = (
   request: SandboxHttpCallRequest,
-  state: SandboxState<M>
+  state?: SandboxState<M>
 ) => MaybePromise<SandboxHttpCallResponse>
 
 export type SandboxHostApiOptions<M extends ContextSchemaList> = {
@@ -31,10 +31,10 @@ export type SandboxHostApiOptions<M extends ContextSchemaList> = {
     state: SandboxState<M>
   ) => MaybePromise<SandboxHttpCallResponse>;
   httpMiddleware?: SandboxHostMiddleware<M>;
+  descriptorUuid?: string;
+  getDescriptorUuid?: () => string | undefined;
   getHttpCallBaseUrl?: () => string | null | undefined;
-  getModuleCode?: () => string | undefined;
   httpCallBaseUrl?: string | null;
-  moduleCode?: string;
 }
 
 export const createSandboxHostApi = <M extends ContextSchemaList>(
@@ -46,28 +46,21 @@ export const createSandboxHostApi = <M extends ContextSchemaList>(
     },
 
     async httpCall(action, payload) {
-      const moduleCode = options.getModuleCode?.() ?? options.moduleCode
+      const descriptorUuid = options.getDescriptorUuid?.() ?? options.descriptorUuid
       const request = {
         action,
         httpBaseUrl: options.getHttpCallBaseUrl?.() ?? options.httpCallBaseUrl,
         payload,
-        uuid: moduleCode,
+        uuid: descriptorUuid,
       }
 
-      debugHttpCall('request', request)
-
       const response = await resolveHttpCall(request, state, options)
-
-      debugHttpCall('response', {
-        action,
-        response,
-      })
 
       state.host.http.push({
         action,
         payload: clone(payload),
         response: clone(response),
-        uuid: moduleCode,
+        uuid: descriptorUuid,
       })
 
       return response
@@ -110,7 +103,7 @@ const resolveHttpCall = async <M extends ContextSchemaList>(
 ): Promise<SandboxHttpCallResponse> => {
   try {
     if (options.httpMiddleware) {
-      return await options.httpMiddleware(request, state)
+      return await options.httpMiddleware(request)
     } else {
       return createFallbackHttpCall()
     }
@@ -131,12 +124,6 @@ const createFallbackHttpCall = (): SandboxHttpCallResponse => ({
   }),
   status: 200,
 })
-
-const debugHttpCall = (event: string, details: unknown): void => {
-  if (typeof console !== 'undefined') {
-    console.info(`[sandbox:host:httpCall] ${event}`, details)
-  }
-}
 
 const applyQuery = (
   location: HostLocation,

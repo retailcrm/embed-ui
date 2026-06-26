@@ -1,7 +1,7 @@
 <template>
     <section
         :class="$style['widget-mounts']"
-        aria-label="Widget targets"
+        :aria-label="t('ariaLabel')"
         role="region"
     >
         <WidgetMount
@@ -16,13 +16,35 @@
 <script setup lang="ts">
 import type { HostedTreeRef, SandboxMount } from '@/app/types'
 
+import { useI18n } from 'vue-i18n'
+
 import WidgetMount from '@/app/components/WidgetMount.vue'
 
 defineProps<{
   mounts: SandboxMount[];
   setTree(mount: SandboxMount, tree: HostedTreeRef | null): void;
 }>()
+
+const { t } = useI18n()
 </script>
+
+<i18n locale="en-GB">
+{
+  "ariaLabel": "Widget targets"
+}
+</i18n>
+
+<i18n locale="es-ES">
+{
+  "ariaLabel": "Targets de widgets"
+}
+</i18n>
+
+<i18n locale="ru-RU">
+{
+  "ariaLabel": "Места встраивания виджетов"
+}
+</i18n>
 
 <style lang="less" module>
 @import (reference) "~assets/stylesheets/layout.less";

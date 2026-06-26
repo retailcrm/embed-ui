@@ -1,7 +1,7 @@
 <template>
     <section
         :class="$style['page-mount']"
-        :aria-label="`Page extension: ${mount.label}`"
+        :aria-label="t('ariaLabel', { page: mount.label })"
         role="region"
     >
         <HostedTree
@@ -13,26 +13,47 @@
 </template>
 
 <script setup lang="ts">
-import type { HostedTreeRef, SandboxMount } from '@/app/types'
 import type { VNodeRef } from 'vue'
+
+import type { HostedTreeRef, SandboxMount } from '@/app/types'
 
 import {
   createProvider as createHostProvider,
 } from '@retailcrm/embed-ui-v1-components/host'
 import { HostedTree } from '@omnicajs/vue-remote/host'
 import { markRaw } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   mount: SandboxMount;
   setTree(mount: SandboxMount, tree: HostedTreeRef | null): void;
 }>()
 
+const { t } = useI18n()
 const provider = markRaw(createHostProvider())
 
 const setTree: VNodeRef = (tree) => {
   props.setTree(props.mount, tree as HostedTreeRef | null)
 }
 </script>
+
+<i18n locale="en-GB">
+{
+  "ariaLabel": "Page extension: {page}"
+}
+</i18n>
+
+<i18n locale="es-ES">
+{
+  "ariaLabel": "Extensión de página: {page}"
+}
+</i18n>
+
+<i18n locale="ru-RU">
+{
+  "ariaLabel": "Страница расширения: {page}"
+}
+</i18n>
 
 <style lang="less" module>
 @import (reference) "~assets/stylesheets/palette.less";

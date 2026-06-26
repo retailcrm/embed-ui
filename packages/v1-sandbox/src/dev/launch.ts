@@ -27,11 +27,6 @@ export const parseSandboxLaunchConfig = (
   ]
 
   return {
-    code: readOptionalStringParam(
-      params,
-      'code',
-      options.code ?? ''
-    ),
     extensionUrl: readStringParam(
       params,
       'extensionUrl',
@@ -69,7 +64,6 @@ export const updateSandboxLaunchQuery = (
   const url = new URL(base)
 
   url.searchParams.set('extensionUrl', config.extensionUrl)
-  url.searchParams.set('code', config.code)
   url.searchParams.set('fixture', config.fixture)
   url.searchParams.set('manifestUrl', config.manifestUrl)
   url.searchParams.set('mode', config.mode)

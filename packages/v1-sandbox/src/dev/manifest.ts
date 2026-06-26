@@ -64,7 +64,7 @@ const createFallbackDescriptor = (config: SandboxLaunchConfig): SandboxExtension
   runner: 'worker',
   stylesheet: null,
   targets: config.targets,
-  uuid: config.code || config.widgetId,
+  uuid: config.widgetId,
 })
 
 const createDescriptorFromEntrypoint = (
@@ -79,7 +79,7 @@ const createDescriptorFromEntrypoint = (
   runner,
   stylesheet,
   targets: config.targets,
-  uuid: config.code || config.widgetId,
+  uuid: config.widgetId,
 })
 
 const resolveEntrypointSource = async (

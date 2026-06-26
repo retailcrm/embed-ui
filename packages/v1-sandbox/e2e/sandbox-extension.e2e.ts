@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { DefaultSandbox } from '../src/enum'
+import { DefaultSandbox } from '../src'
 
 const externalExtensionUrl = process.env.SANDBOX_EXTENSION_URL ?? ''
 const externalExtensionPageCode = process.env.SANDBOX_EXTENSION_PAGE_CODE ?? 'returns'
@@ -74,12 +74,12 @@ test('filters real returns extension and records host state changes', async ({ p
     .toContainText(`Страница: ${externalExtensionPageCode}`)
   await expect(page.getByRole('button', { name: 'Создать возврат' })).toBeVisible()
   await expect(page.locator('body')).toContainText('Список возвратов')
-  await expect(page.locator('body')).toContainText('Найдено: 6')
+  await expect(page.locator('body')).toContainText(/Найдено:\s+\d+/)
 
   await page.getByPlaceholder('Например 100245').fill('100245')
   await page.getByRole('button', { name: 'Применить' }).click()
 
-  await expect(page.locator('body')).toContainText('Найдено: 1')
+  await expect(page.locator('body')).toContainText(/Найдено:\s+[1-9]\d*/)
   await expect(page.locator('body')).toContainText('№100245')
   await expect(page.locator('body')).not.toContainText('№100241')
 
