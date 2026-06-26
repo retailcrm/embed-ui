@@ -10,7 +10,6 @@ import {
 import { resolveSandboxExtensionSource } from '@/dev/manifest'
 
 const config = (overrides: Partial<SandboxLaunchConfig> = {}): SandboxLaunchConfig => ({
-  code: 'returnsModule',
   extensionUrl: '/src/direct-extension.js',
   fixture: 'order-basic',
   manifestUrl: '/extension/manifest.json',
@@ -65,7 +64,7 @@ describe('resolveSandboxExtensionSource', () => {
     expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/html/assets/entry.js')
     expect(source.httpBaseUrl).toBe('http://sandbox.test/')
     expect(source.descriptor.runner).toBe('worker')
-    expect(source.descriptor.uuid).toBe('returnsModule')
+    expect(source.descriptor.uuid).toBe('sandbox-widget')
     expect(fetcher).toHaveBeenCalledTimes(2)
   })
 
@@ -205,7 +204,7 @@ describe('resolveSandboxExtensionSource', () => {
     })
 
     expect(source.descriptor.entrypoint).toBe('/src/direct-extension.js')
-    expect(source.descriptor.uuid).toBe('returnsModule')
+    expect(source.descriptor.uuid).toBe('sandbox-widget')
     expect(source.entrypoint.href).toBe('http://localhost/src/direct-extension.js')
     expect(source.httpBaseUrl).toBeNull()
   })

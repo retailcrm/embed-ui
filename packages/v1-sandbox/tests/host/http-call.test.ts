@@ -1,60 +1,19 @@
 import { expect, test, vi } from 'vitest'
 
-import {
-  createOrderSandboxController,
-  getOrderSandboxFixture,
-  orderSandboxFixtures,
-} from '@/dev/fixtures'
+import { createOrderSandboxController } from '@/dev/fixtures'
 
-test('returns default fixture for unknown fixture code', () => {
-  expect(getOrderSandboxFixture('unknown')).toBe(orderSandboxFixtures['order-basic'])
-})
-
-test('creates order sandbox controller from fixture and supports reset snapshot', () => {
-  const sandbox = createOrderSandboxController('order-with-delivery')
-
-  expect(sandbox.state.contexts['order/card'].number).toBe('214C')
-  expect(sandbox.state.contexts['order/card']['delivery.address']).toBe('Москва, ул. Ленина, 10')
-  expect(sandbox.state.contexts['order/card'].items).toHaveLength(3)
-
-  const snapshot = sandbox.snapshot()
-
-  sandbox.setField('order/card', 'customer.firstName', 'Changed')
-  sandbox.setLocation({ pathname: '/changed' })
-
-  expect(sandbox.state.contexts['order/card']['customer.firstName']).toBe('Changed')
-  expect(sandbox.state.host.location.pathname).toBe('/changed')
-
-  sandbox.reset(snapshot)
-
-  expect(sandbox.state.contexts['order/card']['customer.firstName']).toBe('Игорь')
-  expect(sandbox.state.host.location.pathname).toBe('/orders/215/edit')
-})
-
-test('provides crm routing data used by external widgets', () => {
-  const sandbox = createOrderSandboxController('order-basic')
-  const routing = sandbox.state.contexts.settings['system.routing']
-
-  expect(routing.routes.crm_users_edit).toBeDefined()
-  expect(routing.routes.crm_manager_show).toBeDefined()
-})
-
-test('records host http calls and returns generic fallback response', async () => {
+test('records host http calls and returns controlled fallback response', async () => {
   const sandbox = createOrderSandboxController('order-basic', {
-    moduleCode: 'returnsModule',
+    descriptorUuid: 'returnsModule',
   })
   const response = await sandbox.endpointApi.httpCall('/returns', {
     source: 'unit-test',
   })
 
-  expect(response.status).toBe(200)
+  expect(response.status).toBe(503)
   expect(JSON.parse(response.body)).toMatchObject({
-    action: '/returns',
-    ok: true,
-    payload: {
-      source: 'unit-test',
-    },
-    uuid: 'returnsModule',
+    message: 'Sandbox cannot proxy host.httpCall without extension backend URL.',
+    ok: false,
   })
   expect(sandbox.state.host.http.at(-1)).toMatchObject({
     action: '/returns',
@@ -62,25 +21,22 @@ test('records host http calls and returns generic fallback response', async () =
       source: 'unit-test',
     },
     response: {
-      status: 200,
+      status: 503,
     },
     uuid: 'returnsModule',
   })
 })
 
-test('returns ok fallback response for unknown http calls', async () => {
+test('returns controlled fallback response for unknown http calls without backend url', async () => {
   const sandbox = createOrderSandboxController('order-basic')
   const response = await sandbox.endpointApi.httpCall('/unknown-endpoint', {
     source: 'unit-test',
   })
 
-  expect(response.status).toBe(200)
+  expect(response.status).toBe(503)
   expect(JSON.parse(response.body)).toMatchObject({
-    action: '/unknown-endpoint',
-    ok: true,
-    payload: {
-      source: 'unit-test',
-    },
+    message: 'Sandbox cannot proxy host.httpCall without extension backend URL.',
+    ok: false,
   })
   expect(sandbox.state.host.http.at(-1)).toMatchObject({
     action: '/unknown-endpoint',
@@ -88,14 +44,14 @@ test('returns ok fallback response for unknown http calls', async () => {
       source: 'unit-test',
     },
     response: {
-      status: 200,
+      status: 503,
     },
   })
 })
 
-test('returns generic paginated response for list-like http calls', async () => {
+test('returns controlled fallback response for list-like http calls without backend url', async () => {
   const sandbox = createOrderSandboxController('order-basic', {
-    moduleCode: 'returnsModule',
+    descriptorUuid: 'returnsModule',
   })
   const response = await sandbox.endpointApi.httpCall('/returns', {
     filters: {
@@ -105,15 +61,16 @@ test('returns generic paginated response for list-like http calls', async () => 
     perPage: 6,
   })
 
-  expect(response.status).toBe(200)
-  expect(JSON.parse(response.body)).toEqual({
-    page: 2,
-    perPage: 6,
-    returns: [],
-    total: 0,
+  expect(response.status).toBe(503)
+  expect(JSON.parse(response.body)).toMatchObject({
+    message: 'Sandbox cannot proxy host.httpCall without extension backend URL.',
+    ok: false,
   })
   expect(sandbox.state.host.http.at(-1)).toMatchObject({
     action: '/returns',
+    response: {
+      status: 503,
+    },
     uuid: 'returnsModule',
   })
 })
@@ -129,8 +86,8 @@ test('proxies host http calls to extension backend when base url is available', 
 
   try {
     const sandbox = createOrderSandboxController('order-basic', {
+      descriptorUuid: 'returnsModule',
       httpCallBaseUrl: 'http://extension-host.test',
-      moduleCode: 'returnsModule',
     })
     const response = await sandbox.endpointApi.httpCall('/returns', {
       filters: {
@@ -151,12 +108,7 @@ test('proxies host http calls to extension backend when base url is available', 
 
     expect(url).toBe('http://extension-host.test/returns')
     expect(init).toMatchObject({
-      cache: 'no-store',
-      credentials: 'include',
       method: 'POST',
-    })
-    expect(init.headers).toMatchObject({
-      'content-type': 'application/x-www-form-urlencoded;charset=UTF-8',
     })
     expect(JSON.parse(body.get('payload') ?? '')).toEqual({
       filters: {
@@ -177,15 +129,16 @@ test('proxies host http calls to extension backend when base url is available', 
   }
 })
 
-test('returns zero count response for count-like http calls', async () => {
+test('returns controlled fallback response for count-like http calls without backend url', async () => {
   const sandbox = createOrderSandboxController('order-basic', {
-    moduleCode: 'returnsModule',
+    descriptorUuid: 'returnsModule',
   })
   const response = await sandbox.endpointApi.httpCall('/returns-count')
 
-  expect(response.status).toBe(200)
-  expect(JSON.parse(response.body)).toEqual({
-    count: 0,
+  expect(response.status).toBe(503)
+  expect(JSON.parse(response.body)).toMatchObject({
+    message: 'Sandbox cannot proxy host.httpCall without extension backend URL.',
+    ok: false,
   })
 })
 

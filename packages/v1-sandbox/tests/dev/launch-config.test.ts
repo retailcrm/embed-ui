@@ -14,7 +14,6 @@ test('does not assume bundled external extension server', () => {
 
 test('parses sandbox launch config from url params', () => {
   const config = parseSandboxLaunchConfig(new URLSearchParams({
-    code: 'returnsModule',
     extensionUrl: '/extension.js',
     fixture: 'order-with-delivery',
     manifestUrl: '/extension/manifest.json',
@@ -24,7 +23,6 @@ test('parses sandbox launch config from url params', () => {
   }))
 
   expect(config).toEqual({
-    code: 'returnsModule',
     extensionUrl: '/extension.js',
     fixture: 'order-with-delivery',
     manifestUrl: '/extension/manifest.json',
@@ -43,7 +41,6 @@ test('parses multiple widget targets and page mode', () => {
   }))
 
   expect(config).toEqual({
-    code: '',
     extensionUrl: '',
     fixture: 'order-basic',
     manifestUrl: DefaultSandbox.Url,
@@ -66,7 +63,6 @@ test('falls back to safe defaults for empty and unsupported values', () => {
   }))
 
   expect(config).toEqual({
-    code: '',
     extensionUrl: '',
     fixture: 'order-basic',
     manifestUrl: DefaultSandbox.Url,
