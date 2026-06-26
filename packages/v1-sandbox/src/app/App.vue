@@ -80,20 +80,18 @@
                 :apply-context-json="applyContextJson"
                 :context-json="contextJson"
                 :context-json-changed="contextJsonChanged"
-                :context-json-error="contextJsonError"
                 :fixture="fixture"
-                :code="code"
                 :manifest-url="manifestUrl"
                 :mode="mode"
                 :page-code="pageCode"
                 :selected-targets="selectedTargets"
                 :set-context-json="setContextJson"
                 :set-fixture="setFixture"
-                :set-code="setCode"
                 :set-manifest-url="setManifestUrl"
                 :set-mode="setMode"
                 :set-page-code="setPageCode"
                 :set-target-selected="setTargetSelected"
+                :validation-errors="devPanelValidationErrors"
             />
         </UiModalSidebar>
 
@@ -111,6 +109,11 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  DevPanelField,
+  DevPanelValidationErrors,
+  DevPanelValidationMessages,
+} from '@/dev/validation'
 import type { HostedTreeRef } from '@/app/types'
 import type { SandboxExtensionDescriptor } from '@/dev/types'
 import type { SandboxIframeWidgetApi, SandboxLaunchDiagnostic } from '@/app/types'
@@ -144,10 +147,11 @@ import { createDefaultSandboxManifestUrl } from '@/dev/launch'
 import { createMounts } from '@/app/runtime/mounts'
 import { createOrderSandboxController } from '@/dev/fixtures'
 import { DEFAULT_SANDBOX_TARGETS } from '@/app/runtime/mounts'
-import { isContextName, isRecord, isWorkerReadyMessage } from '@/app/predicates'
+import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxLaunchConfig } from '@/dev/launch'
 import { resolveSandboxExtensionSource } from '@/dev/manifest'
 import { updateSandboxLaunchQuery } from '@/dev/launch'
+import { validateContextJsonInput, validateLaunchConfigInput } from '@/dev/validation'
 
 const searchParams = new URLSearchParams(window.location.search)
 const hasExplicitExtensionUrl = Boolean(searchParams.get('extensionUrl')?.trim())
@@ -158,18 +162,16 @@ const launchConfig = parseSandboxLaunchConfig(searchParams, {
 })
 const LAUNCH_NOTICE_STORAGE_KEY = 'v1-sandbox:launch-notice'
 const fixture = ref(launchConfig.fixture)
-const code = ref(launchConfig.code)
 const manifestUrl = ref(launchConfig.manifestUrl)
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
 const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
 const extensionHttpBaseUrl = ref<string | null>(null)
-const extensionModuleCode = ref(launchConfig.code)
+const extensionDescriptorUuid = ref<string | undefined>()
 const sandbox = createOrderSandboxController(launchConfig.fixture, {
+  getDescriptorUuid: () => extensionDescriptorUuid.value,
   getHttpCallBaseUrl: () => extensionHttpBaseUrl.value,
-  getModuleCode: () => extensionModuleCode.value || launchConfig.code,
   globalBridge: {},
-  moduleCode: launchConfig.code,
 })
 const mounts = createMounts(launchConfig)
 const runtime = ref<SandboxRuntime | null>(null)
@@ -178,7 +180,7 @@ const isSidebarOpen = ref(true)
 const { locale, t } = useI18n()
 const uid = useId()
 const contextJson = ref(formatContextJson())
-const contextJsonError = ref('')
+const devPanelValidationErrors = ref<DevPanelValidationErrors>({})
 
 const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExplicitExtensionUrl)
 const runModeLabel = computed(() => launchConfig.mode === 'page'
@@ -208,7 +210,7 @@ const mountExtension = async () => {
     if (redirectToInferredPageMode(extensionSource.descriptor)) return
 
     extensionHttpBaseUrl.value = extensionSource.httpBaseUrl
-    extensionModuleCode.value = extensionSource.descriptor.uuid
+    extensionDescriptorUuid.value = extensionSource.descriptor.uuid
 
     const diagnostic = createLaunchDiagnostic(extensionSource.descriptor)
 
@@ -481,15 +483,30 @@ const flushRemoteUpdates = () => {
 }
 
 const applyLaunchConfig = () => {
-  window.location.href = updateSandboxLaunchQuery({
-    code: code.value,
-    extensionUrl: '',
+  const validationResult = validateLaunchConfigInput({
     fixture: fixture.value,
     manifestUrl: manifestUrl.value,
     mode: mode.value,
     pageCode: pageCode.value,
-    targets: selectedTargets.value.length > 0
-      ? selectedTargets.value
+    targets: selectedTargets.value,
+  }, createDevPanelValidationMessages())
+
+  if (!validationResult.success) {
+    devPanelValidationErrors.value = validationResult.errors
+    isDevPanelOpen.value = true
+    return
+  }
+
+  devPanelValidationErrors.value = {}
+
+  window.location.href = updateSandboxLaunchQuery({
+    extensionUrl: '',
+    fixture: validationResult.data.fixture,
+    manifestUrl: validationResult.data.manifestUrl,
+    mode: validationResult.data.mode,
+    pageCode: validationResult.data.pageCode,
+    targets: validationResult.data.targets.length > 0
+      ? validationResult.data.targets
       : DEFAULT_SANDBOX_TARGETS,
     widgetId: launchConfig.widgetId,
   }).toString()
@@ -501,45 +518,59 @@ const reloadExtension = async () => {
 }
 
 const applyContextJson = async () => {
-  try {
-    applyContextJsonValue(contextJson.value)
-    contextJson.value = formatContextJson()
-    contextJsonError.value = ''
-    await reloadExtension()
-  } catch (error) {
-    contextJsonError.value = getErrorMessage(error)
+  const validationResult = validateContextJsonInput(
+    contextJson.value,
+    Object.keys(sandbox.state.contexts),
+    createDevPanelValidationMessages()
+  )
+
+  if (!validationResult.success) {
+    devPanelValidationErrors.value = {
+      ...devPanelValidationErrors.value,
+      ...validationResult.errors,
+    }
+
+    return
   }
+
+  applyContextJsonValue(validationResult.data)
+  contextJson.value = formatContextJson()
+  clearDevPanelValidationError('contextJson')
+  await reloadExtension()
 }
 
 const setContextJson = (value: string | number) => {
   contextJson.value = String(value)
-  contextJsonError.value = ''
+  clearDevPanelValidationError('contextJson')
 }
 
 const setFixture = (value: string) => {
   fixture.value = value
-}
-
-const setCode = (value: string) => {
-  code.value = value
+  clearDevPanelValidationError('fixture')
 }
 
 const setManifestUrl = (value: string) => {
   manifestUrl.value = value
+  clearDevPanelValidationError('manifestUrl')
 }
 
 const setMode = (value: SandboxLaunchMode) => {
   mode.value = value
+  clearDevPanelValidationError('mode')
+  clearDevPanelValidationError('pageCode')
+  clearDevPanelValidationError('targets')
 }
 
 const setPageCode = (value: string) => {
   pageCode.value = value
+  clearDevPanelValidationError('pageCode')
 }
 
 const setTargetSelected = (target: SandboxOrderTarget, checked: boolean) => {
   selectedTargets.value = checked
     ? Array.from(new Set([...selectedTargets.value, target]))
     : selectedTargets.value.filter(item => item !== target)
+  clearDevPanelValidationError('targets')
 }
 
 const setMountTree = (mount: SandboxMount, tree: HostedTreeRef | null) => {
@@ -641,21 +672,9 @@ function formatContextJson(): string {
   return JSON.stringify(sandbox.snapshot().contexts, null, 2)
 }
 
-const applyContextJsonValue = (value: string) => {
-  const parsed = JSON.parse(value) as unknown
-
-  if (!isRecord(parsed)) {
-    throw new Error(t('app.contextEditor.errors.rootObject'))
-  }
-
-  Object.entries(parsed).forEach(([context, contextValue]) => {
-    if (!isOrderContextName(context)) {
-      throw new Error(t('app.contextEditor.errors.unknownContext', { context }))
-    }
-
-    if (!isRecord(contextValue)) {
-      throw new Error(t('app.contextEditor.errors.contextObject', { context }))
-    }
+const applyContextJsonValue = (contexts: Record<string, Record<string, unknown>>) => {
+  Object.entries(contexts).forEach(([context, contextValue]) => {
+    if (!isOrderContextName(context)) return
 
     sandbox.patchContext(context, contextValue)
   })
@@ -671,6 +690,30 @@ const getErrorMessage = (error: unknown): string => {
 
   return String(error)
 }
+
+const clearDevPanelValidationError = (field: DevPanelField) => {
+  if (!devPanelValidationErrors.value[field]) return
+
+  const rest = { ...devPanelValidationErrors.value }
+
+  delete rest[field]
+
+  devPanelValidationErrors.value = rest
+}
+
+const createDevPanelValidationMessages = (): DevPanelValidationMessages => ({
+  contextJsonContextObject: context => t('app.validation.contextJson.contextObject', { context }),
+  contextJsonInvalidJson: t('app.validation.contextJson.invalidJson'),
+  contextJsonRootObject: t('app.validation.contextJson.rootObject'),
+  contextJsonUnknownContext: context => t('app.validation.contextJson.unknownContext', { context }),
+  fixture: t('app.validation.fixture'),
+  manifestUrlEndpoint: t('app.validation.manifestUrl.endpoint'),
+  manifestUrlFormat: t('app.validation.manifestUrl.format'),
+  mode: t('app.validation.mode'),
+  pageCodeRequired: t('app.validation.pageCodeRequired'),
+  targetRequired: t('app.validation.targetRequired'),
+  targetUnknown: target => t('app.validation.targetUnknown', { target }),
+})
 
 const readLaunchNotice = (): StoredLaunchNotice | null => {
   const rawNotice = window.sessionStorage.getItem(LAUNCH_NOTICE_STORAGE_KEY)

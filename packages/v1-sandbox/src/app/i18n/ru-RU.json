@@ -39,6 +39,23 @@
     },
     "runModeAriaLabel": "Режим запуска песочницы",
     "sidebarCollapse": "Свернуть боковую панель",
-    "sidebarExpand": "Развернуть боковую панель"
+    "sidebarExpand": "Развернуть боковую панель",
+    "validation": {
+      "contextJson": {
+        "contextObject": "Контекст \"{context}\" должен быть JSON-объектом.",
+        "invalidJson": "Введите валидный JSON.",
+        "rootObject": "Переопределения контекста должны быть JSON-объектом.",
+        "unknownContext": "Неизвестный контекст \"{context}\"."
+      },
+      "fixture": "Выберите существующую фикстуру.",
+      "manifestUrl": {
+        "endpoint": "URL должен быть вида %extension-url%/extension/%extension-id%.",
+        "format": "Введите абсолютный http/https URL или оставьте поле пустым."
+      },
+      "mode": "Выберите режим запуска.",
+      "pageCodeRequired": "Укажите код страницы для page mode.",
+      "targetRequired": "Выберите хотя бы одно место встраивания для widget mode.",
+      "targetUnknown": "Неизвестное место встраивания \"{target}\"."
+    }
   }
 }

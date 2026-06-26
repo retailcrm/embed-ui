@@ -22,29 +22,22 @@
 
                 <UiTextbox
                     :id="uid + '-dev-panel-manifest-url'"
+                    :aria-describedby="getErrorDescribedBy('manifestUrl')"
                     :class="$style['dev-panel__control']"
+                    :invalid="Boolean(props.validationErrors.manifestUrl)"
                     :value="props.manifestUrl"
                     type="text"
                     @update:value="updateManifestUrl"
                 />
-            </label>
 
-            <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">
-                    {{ t('devPanel.code') }}
-                </span>
-
-                <span :class="$style['dev-panel__field-hint']">
-                    {{ t('devPanel.codeHint') }}
-                </span>
-
-                <UiTextbox
-                    :id="uid + '-dev-panel-code'"
-                    :class="$style['dev-panel__control']"
-                    :value="props.code"
-                    type="text"
-                    @update:value="updateCode"
-                />
+                <p
+                    v-if="props.validationErrors.manifestUrl"
+                    :id="getErrorId('manifestUrl')"
+                    :class="$style['dev-panel__error']"
+                    role="alert"
+                >
+                    {{ props.validationErrors.manifestUrl }}
+                </p>
             </label>
 
             <div :class="$style['dev-panel__field']">
@@ -58,11 +51,21 @@
 
                 <SandboxSelect
                     :id="uid + '-dev-panel-mode'"
+                    :aria-describedby="getErrorDescribedBy('mode')"
                     :labelled-by="uid + '-dev-panel-mode-label'"
                     :options="modeOptions"
                     :value="props.mode"
                     @update:value="value => props.setMode(value as SandboxLaunchMode)"
                 />
+
+                <p
+                    v-if="props.validationErrors.mode"
+                    :id="getErrorId('mode')"
+                    :class="$style['dev-panel__error']"
+                    role="alert"
+                >
+                    {{ props.validationErrors.mode }}
+                </p>
             </div>
 
             <div :class="$style['dev-panel__field']">
@@ -76,11 +79,21 @@
 
                 <SandboxSelect
                     :id="uid + '-dev-panel-fixture'"
+                    :aria-describedby="getErrorDescribedBy('fixture')"
                     :labelled-by="uid + '-dev-panel-fixture-label'"
                     :options="fixtureOptions"
                     :value="props.fixture"
                     @update:value="props.setFixture"
                 />
+
+                <p
+                    v-if="props.validationErrors.fixture"
+                    :id="getErrorId('fixture')"
+                    :class="$style['dev-panel__error']"
+                    role="alert"
+                >
+                    {{ props.validationErrors.fixture }}
+                </p>
             </div>
 
             <label :class="$style['dev-panel__field']">
@@ -90,12 +103,23 @@
 
                 <UiTextbox
                     :id="uid + '-dev-panel-page-code'"
+                    :aria-describedby="getErrorDescribedBy('pageCode')"
                     :class="$style['dev-panel__control']"
                     :disabled="props.mode !== 'page'"
+                    :invalid="Boolean(props.validationErrors.pageCode)"
                     :value="props.pageCode"
                     type="text"
                     @update:value="updatePageCode"
                 />
+
+                <p
+                    v-if="props.validationErrors.pageCode"
+                    :id="getErrorId('pageCode')"
+                    :class="$style['dev-panel__error']"
+                    role="alert"
+                >
+                    {{ props.validationErrors.pageCode }}
+                </p>
             </label>
 
             <div :class="$style['dev-panel__field']">
@@ -112,6 +136,7 @@
 
                 <div
                     :class="$style['dev-panel__target-checklist']"
+                    :aria-describedby="getErrorDescribedBy('targets')"
                     :aria-labelledby="uid + '-dev-panel-targets-label'"
                     role="group"
                 >
@@ -129,6 +154,15 @@
                         <label :for="`sandbox-target-${index}`">{{ slot.target }}</label>
                     </div>
                 </div>
+
+                <p
+                    v-if="props.validationErrors.targets"
+                    :id="getErrorId('targets')"
+                    :class="$style['dev-panel__error']"
+                    role="alert"
+                >
+                    {{ props.validationErrors.targets }}
+                </p>
             </div>
 
             <label :class="$style['dev-panel__field']">
@@ -142,22 +176,24 @@
 
                 <UiTextbox
                     :id="uid + '-dev-panel-context-json'"
+                    :aria-describedby="getErrorDescribedBy('contextJson')"
                     :class="$style['dev-panel__control']"
-                    :invalid="Boolean(props.contextJsonError)"
+                    :invalid="Boolean(props.validationErrors.contextJson)"
                     :value="props.contextJson"
                     multiline
                     rows="14"
                     @update:value="props.setContextJson"
                 />
-            </label>
 
-            <p
-                v-if="props.contextJsonError"
-                :class="$style['dev-panel__error']"
-                role="alert"
-            >
-                {{ props.contextJsonError }}
-            </p>
+                <p
+                    v-if="props.validationErrors.contextJson"
+                    :id="getErrorId('contextJson')"
+                    :class="$style['dev-panel__error']"
+                    role="alert"
+                >
+                    {{ props.validationErrors.contextJson }}
+                </p>
+            </label>
 
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
                 <UiButton
@@ -180,6 +216,7 @@
 </template>
 
 <script setup lang="ts">
+import type { DevPanelField, DevPanelValidationErrors } from '@/dev/validation'
 import type { SandboxLaunchMode, SandboxOrderTarget } from '@/dev/types'
 
 import { computed } from 'vue'
@@ -196,10 +233,8 @@ import { orderSandboxFixtures } from '@/dev/fixtures'
 const props = defineProps<{
   applyLaunchConfig(): void;
   applyContextJson(): Promise<void>;
-  code: string;
   contextJson: string;
   contextJsonChanged: boolean;
-  contextJsonError: string;
   fixture: string;
   manifestUrl: string;
   mode: SandboxLaunchMode;
@@ -207,11 +242,11 @@ const props = defineProps<{
   selectedTargets: SandboxOrderTarget[];
   setContextJson(value: string | number): void;
   setFixture(value: string): void;
-  setCode(value: string): void;
   setManifestUrl(value: string): void;
   setMode(value: SandboxLaunchMode): void;
   setPageCode(value: string): void;
   setTargetSelected(target: SandboxOrderTarget, checked: boolean): void;
+  validationErrors: DevPanelValidationErrors;
 }>()
 
 const { t } = useI18n()
@@ -243,10 +278,6 @@ const updateManifestUrl = (value: string | number) => {
   props.setManifestUrl(String(value))
 }
 
-const updateCode = (value: string | number) => {
-  props.setCode(String(value))
-}
-
 const updatePageCode = (value: string | number) => {
   props.setPageCode(String(value))
 }
@@ -254,6 +285,11 @@ const updatePageCode = (value: string | number) => {
 const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
   props.setTargetSelected(target, checked)
 }
+
+const getErrorId = (field: DevPanelField): string => `${uid}-dev-panel-${field}-error`
+
+const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
+  props.validationErrors[field] ? getErrorId(field) : undefined
 </script>
 
 <i18n locale="en-GB">
@@ -263,8 +299,6 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
             "apply": "Apply",
             "applyContextJson": "Apply context"
         },
-        "code": "Module code",
-        "codeHint": "Used as descriptor uuid for host.httpCall, matching CRM module code, for example returnsModule.",
         "contextJson": "Context JSON",
         "contextJsonHint": "Edit fixture-backed contexts for the current run. Applying this JSON reloads the extension.",
         "delivery": {
@@ -299,8 +333,6 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
             "apply": "Aplicar",
             "applyContextJson": "Aplicar contexto"
         },
-        "code": "Código del módulo",
-        "codeHint": "Se usa como descriptor uuid para host.httpCall, igual que el module code en CRM, por ejemplo returnsModule.",
         "contextJson": "Contexto JSON",
         "contextJsonHint": "Edita los contextos basados en fixture para la ejecución actual. Al aplicar este JSON se recarga la extensión.",
         "delivery": {
@@ -335,8 +367,6 @@ const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
             "apply": "Применить",
             "applyContextJson": "Применить контекст"
         },
-        "code": "Код модуля",
-        "codeHint": "Используется как descriptor uuid для host.httpCall, как code модуля в CRM, например returnsModule.",
         "contextJson": "Context JSON",
         "contextJsonHint": "Меняет fixture-backed contexts для текущего запуска. После применения расширение перезапускается.",
         "delivery": {

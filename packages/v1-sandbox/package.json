@@ -73,6 +73,7 @@
     "build": "yarn build:code",
     "build:code": "vite build -c ./vite.config.ts",
     "dev:e2e": "vite --host 0.0.0.0 --port 4173",
+    "test:coverage": "vitest --run --coverage",
     "test": "vitest --run",
     "e2e": "playwright test -c vitest.config.playwright.ts"
   },
@@ -87,7 +88,8 @@
     "@retailcrm/embed-ui-v1-contexts": "^0.9.26",
     "@retailcrm/embed-ui-v1-endpoint": "^0.9.26",
     "@retailcrm/embed-ui-v1-testing": "^0.9.26",
-    "@retailcrm/embed-ui-v1-types": "^0.9.26"
+    "@retailcrm/embed-ui-v1-types": "^0.9.26",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^11.2",
@@ -96,6 +98,9 @@
     "@remote-ui/rpc": "^1.4.7",
     "@types/node": "^25.6.0",
     "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/coverage-istanbul": "4.1.8",
+    "@vue/test-utils": "^2.4.6",
+    "dotenv": "^17.4.2",
     "less": "^4.4.2",
     "pinia": "^2.2.8",
     "typescript": "^5.9.3",

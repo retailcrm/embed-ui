@@ -39,6 +39,23 @@
     },
     "runModeAriaLabel": "Modo de ejecución de sandbox",
     "sidebarCollapse": "Contraer barra lateral",
-    "sidebarExpand": "Expandir barra lateral"
+    "sidebarExpand": "Expandir barra lateral",
+    "validation": {
+      "contextJson": {
+        "contextObject": "El contexto \"{context}\" debe ser un objeto JSON.",
+        "invalidJson": "Introduce JSON válido.",
+        "rootObject": "Las sobrescrituras de contexto deben ser un objeto JSON.",
+        "unknownContext": "Contexto desconocido \"{context}\"."
+      },
+      "fixture": "Elige una fixture existente.",
+      "manifestUrl": {
+        "endpoint": "La URL debe tener el formato %extension-url%/extension/%extension-id%.",
+        "format": "Introduce una URL http/https absoluta o deja el campo vacío."
+      },
+      "mode": "Elige un modo de inicio.",
+      "pageCodeRequired": "Introduce un código de página para el modo page.",
+      "targetRequired": "Elige al menos un target de montaje para el modo widget.",
+      "targetUnknown": "Target de montaje desconocido \"{target}\"."
+    }
   }
 }

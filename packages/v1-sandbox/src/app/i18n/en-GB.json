@@ -39,6 +39,23 @@
     },
     "runModeAriaLabel": "Sandbox run mode",
     "sidebarCollapse": "Collapse sidebar",
-    "sidebarExpand": "Expand sidebar"
+    "sidebarExpand": "Expand sidebar",
+    "validation": {
+      "contextJson": {
+        "contextObject": "Context \"{context}\" must be a JSON object.",
+        "invalidJson": "Enter valid JSON.",
+        "rootObject": "Context overrides must be a JSON object.",
+        "unknownContext": "Unknown context \"{context}\"."
+      },
+      "fixture": "Choose an existing fixture.",
+      "manifestUrl": {
+        "endpoint": "URL must match %extension-url%/extension/%extension-id%.",
+        "format": "Enter an absolute http/https URL or leave the field empty."
+      },
+      "mode": "Choose a launch mode.",
+      "pageCodeRequired": "Enter a page code for page mode.",
+      "targetRequired": "Choose at least one mount target for widget mode.",
+      "targetUnknown": "Unknown mount target \"{target}\"."
+    }
   }
 }
