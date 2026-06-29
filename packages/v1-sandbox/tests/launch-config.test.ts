@@ -1,8 +1,9 @@
 import { expect, test } from 'vitest'
 
 import { createDefaultSandboxManifestUrl } from '@/dev/launch'
+import { DEFAULT_SANDBOX_TARGET } from '@/dev/targets'
 import { DefaultSandbox } from '@/enum'
-import { parseSandboxLaunchConfig } from '@/dev/launch'
+import { parseSandboxLaunchConfig, updateSandboxLaunchQuery } from '@/dev/launch'
 
 test('does not use bundled extension entrypoint by default', () => {
   expect(DefaultSandbox.Url).toBe('')
@@ -81,4 +82,46 @@ test('allows empty manifest url to use direct extension fallback', () => {
 
   expect(config.manifestUrl).toBe('')
   expect(config.extensionUrl).toBe('/extension.js')
+})
+
+test('updates sandbox launch query from config', () => {
+  const url = updateSandboxLaunchQuery({
+    extensionUrl: '',
+    fixture: 'order-with-delivery',
+    manifestUrl: 'http://extension.test/extension/module-id',
+    mode: 'page',
+    pageCode: 'returns',
+    targets: [
+      'order/card:common.before',
+      'order/card:common.after',
+    ],
+    widgetId: 'returns-widget',
+  }, 'http://sandbox.test/?old=value')
+
+  expect(url.href).toBe(
+    'http://sandbox.test/?old=value'
+    + '&extensionUrl='
+    + '&fixture=order-with-delivery'
+    + '&manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fmodule-id'
+    + '&mode=page'
+    + '&pageCode=returns'
+    + '&target=order%2Fcard%3Acommon.before'
+    + '&targets=order%2Fcard%3Acommon.before%2Corder%2Fcard%3Acommon.after'
+    + '&widgetId=returns-widget'
+  )
+})
+
+test('uses default target when updating query without targets', () => {
+  const url = updateSandboxLaunchQuery({
+    extensionUrl: '',
+    fixture: 'order-basic',
+    manifestUrl: '',
+    mode: 'widget',
+    pageCode: '',
+    targets: [],
+    widgetId: 'sandbox-widget',
+  }, 'http://sandbox.test/')
+
+  expect(url.searchParams.get('target')).toBe(DEFAULT_SANDBOX_TARGET)
+  expect(url.searchParams.get('targets')).toBe('')
 })

@@ -137,6 +137,9 @@ const hostComponentStubs = {
       />
     `,
   },
+  UiTooltip: {
+    template: '<span><slot /></span>',
+  },
 }
 
 const mountWithApp = <T extends Component>(
@@ -366,7 +369,7 @@ test('dev panel updates launch fields and context', async () => {
     contextJson: '{"order/card":{"number":"215C"}}',
     contextJsonChanged: false,
     fixture: 'order-basic',
-    manifestUrl: '',
+    manifestUrl: 'http://extension.test/extension/id',
     mode: 'widget' as const,
     pageCode: 'returns',
     selectedTargets: [ORDER_SANDBOX_SLOTS[0].target],
@@ -395,7 +398,7 @@ test('dev panel updates launch fields and context', async () => {
   await wrapper.findAll('select')[1].setValue('order-with-delivery')
   await wrapper.get('input[id$="dev-panel-context-json"]').setValue('{"order/card":{"number":"999C"}}')
   await wrapper.findAll('input[type="checkbox"]')[0].setValue(false)
-  await wrapper.findAll('button')[0].trigger('click')
+  await wrapper.findAll('button').find(button => button.text() === 'Применить')?.trigger('click')
 
   expect(props.setManifestUrl).toHaveBeenCalledWith('http://extension.test/extension/id')
   expect(props.setMode).toHaveBeenCalledWith('page')
@@ -409,7 +412,7 @@ test('dev panel updates launch fields and context', async () => {
     mode: 'page',
   })
   await wrapper.findAll('input[type="text"]')[1].setValue('orders-dashboard')
-  await wrapper.findAll('button')[1].trigger('click')
+  await wrapper.findAll('button').find(button => button.text() === 'Применить контекст')?.trigger('click')
 
   expect(props.setPageCode).toHaveBeenCalledWith('orders-dashboard')
   expect(props.applyContextJson).toHaveBeenCalledOnce()
@@ -446,7 +449,8 @@ test('dev panel shows context json errors and disables page code in widget mode'
 
   expect(wrapper.get('[role="alert"]').text()).toBe('Invalid JSON')
   expect(wrapper.findAll('input[type="text"]')[1].attributes('disabled')).toBeDefined()
-  expect(wrapper.findAll('button')[1].attributes('disabled')).toBeDefined()
+  expect(wrapper.findAll('button').find(button => button.text() === 'Применить контекст')?.attributes('disabled'))
+    .toBeDefined()
 })
 
 test('host controls render widget and page run modes', async () => {

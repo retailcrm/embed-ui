@@ -101,15 +101,19 @@ In the control panel, normally paste the full extension endpoint URL:
 The control panel validates values only when you click `Apply` or
 `Apply context`. It does not check network availability.
 
-- `Manifest / extension URL` may be empty. If it is filled, it must be an
-  absolute `http` or `https` URL and, for the standard extension server, include
-  `/extension/%extension-id%`.
+- `Manifest / extension URL` is required before applying the launch settings.
+  It must be an absolute `http` or `https` URL and, for the standard extension
+  server, include `/extension/%extension-id%`.
 - `Mode` must be `Widgets` or `Page`.
 - `Fixture` must be one of the sandbox fixtures.
 - `Page code` is required only in `Page` mode.
 - `Widget targets` require at least one valid target only in `Widgets` mode.
 - `Context JSON` must be a JSON object. Top-level keys must be known context
   keys, and each context value must be an object.
+
+The `Apply` button is disabled until the required launch fields are filled:
+extension URL, mode, fixture, at least one widget target in `Widgets` mode, and
+page code in `Page` mode.
 
 ## Running a Widget
 

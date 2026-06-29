@@ -133,10 +133,10 @@ const openDevPanel = () => props.openDevPanel()
 </i18n>
 
 <style lang="less" module>
-@import (reference) "~assets/stylesheets/palette.less";
-@import (reference) "~assets/stylesheets/layout.less";
-@import (reference) "~assets/stylesheets/geometry.less";
-@import (reference) "~assets/stylesheets/variables.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
 
 .extension-onboarding {
     align-items: center;

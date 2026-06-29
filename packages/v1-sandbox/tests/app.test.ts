@@ -197,7 +197,7 @@ test('app validates launch config before updating URL', async () => {
   await wrapper.get('button[aria-label="apply launch"]').trigger('click')
 
   expect(window.location.href).toBe(currentUrl)
-  expect(wrapper.get('[role="alert"]').text()).toBe('Введите абсолютный http/https URL или оставьте поле пустым.')
+  expect(wrapper.get('[role="alert"]').text()).toBe('Введите абсолютный http/https URL.')
 })
 
 test('app blocks page launch when descriptor does not contain requested page', async () => {

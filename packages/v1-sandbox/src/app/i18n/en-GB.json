@@ -50,7 +50,8 @@
       "fixture": "Choose an existing fixture.",
       "manifestUrl": {
         "endpoint": "URL must match %extension-url%/extension/%extension-id%.",
-        "format": "Enter an absolute http/https URL or leave the field empty."
+        "format": "Enter an absolute http/https URL.",
+        "required": "Enter the extension URL."
       },
       "mode": "Choose a launch mode.",
       "pageCodeRequired": "Enter a page code for page mode.",

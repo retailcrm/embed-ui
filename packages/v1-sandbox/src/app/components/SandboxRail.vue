@@ -92,14 +92,13 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
+import IconChart from '@retailcrm/embed-ui-v1-components/assets/sprites/technology-and-data/chart-bar-2.svg'
 import IconCode from '@retailcrm/embed-ui-v1-components/assets/sprites/technology-and-data/code.svg'
-
-import IconChart from '~assets/sprites/technology-and-data/chart_bar_2.svg'
-import IconLocation from '~assets/sprites/map-and-places/my_location.svg'
-import IconNotifications from '~assets/sprites/alerts/notifications_outlined.svg'
-import IconRobot from '~assets/sprites/premium/robot_upper.svg'
-import IconSettings from '~assets/sprites/ui/settings_outlined.svg'
-import IconShoppingBasket from '~assets/sprites/actions/shopping_cart_outlined.svg'
+import IconLocation from '@retailcrm/embed-ui-v1-components/assets/sprites/map-and-places/my-location.svg'
+import IconNotifications from '@retailcrm/embed-ui-v1-components/assets/sprites/alerts/notifications.svg'
+import IconRobot from '@retailcrm/embed-ui-v1-components/assets/sprites/premium/robot-upper.svg'
+import IconSettings from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/settings-outlined.svg'
+import IconShoppingBasket from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/shopping-cart-outlined.svg'
 
 import { UiButton } from '@/app/host-components'
 
@@ -209,10 +208,10 @@ const bottomItems = computed<RailItem[]>(() => [
 </i18n>
 
 <style lang="less" module>
-@import (reference) "~assets/stylesheets/palette.less";
-@import (reference) "~assets/stylesheets/layout.less";
-@import (reference) "~assets/stylesheets/geometry.less";
-@import (reference) "~assets/stylesheets/variables.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
 
 .sandbox-rail {
     align-items: center;

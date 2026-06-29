@@ -47,8 +47,8 @@ const { t } = useI18n()
 </i18n>
 
 <style lang="less" module>
-@import (reference) "~assets/stylesheets/layout.less";
-@import (reference) "~assets/stylesheets/variables.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
 
 .widget-mounts {
     display: grid;

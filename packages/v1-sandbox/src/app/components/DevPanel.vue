@@ -15,10 +15,28 @@
                 <span>{{ t('devPanel.delivery.workflow') }}</span>
             </div>
 
-            <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">
-                    {{ t('devPanel.extensionUrl') }}
-                </span>
+            <div :class="$style['dev-panel__field']">
+                <div :class="$style['dev-panel__field-heading']">
+                    <label
+                        :class="$style['dev-panel__field-label']"
+                        :for="uid + '-dev-panel-manifest-url'"
+                    >
+                        {{ t('devPanel.extensionUrl') }}
+                    </label>
+
+                    <UiPopperConnector>
+                        <UiButton
+                            appearance="tertiary"
+                            size="xs"
+                        >
+                            <HelpOutlined aria-hidden="true" />
+                        </UiButton>
+
+                        <UiTooltip :offset-main-axis="4">
+                            <span>{{ t('devPanel.tooltips.extensionUrl') }}</span>
+                        </UiTooltip>
+                    </UiPopperConnector>
+                </div>
 
                 <UiTextbox
                     :id="uid + '-dev-panel-manifest-url'"
@@ -30,24 +48,39 @@
                     @update:value="updateManifestUrl"
                 />
 
-                <p
+                <span
                     v-if="props.validationErrors.manifestUrl"
                     :id="getErrorId('manifestUrl')"
                     :class="$style['dev-panel__error']"
                     role="alert"
                 >
                     {{ props.validationErrors.manifestUrl }}
-                </p>
-            </label>
+                </span>
+            </div>
 
             <div :class="$style['dev-panel__field']">
-                <label
-                    :id="uid + '-dev-panel-mode-label'"
-                    :class="$style['dev-panel__field-label']"
-                    :for="uid + '-dev-panel-mode'"
-                >
-                    {{ t('devPanel.mode') }}
-                </label>
+                <div :class="$style['dev-panel__field-heading']">
+                    <label
+                        :id="uid + '-dev-panel-mode-label'"
+                        :class="$style['dev-panel__field-label']"
+                        :for="uid + '-dev-panel-mode'"
+                    >
+                        {{ t('devPanel.mode') }}
+                    </label>
+
+                    <UiPopperConnector>
+                        <UiButton
+                            appearance="tertiary"
+                            size="xs"
+                        >
+                            <HelpOutlined aria-hidden="true" />
+                        </UiButton>
+
+                        <UiTooltip :offset-main-axis="4">
+                            <span>{{ t('devPanel.tooltips.mode') }}</span>
+                        </UiTooltip>
+                    </UiPopperConnector>
+                </div>
 
                 <SandboxSelect
                     :id="uid + '-dev-panel-mode'"
@@ -58,24 +91,39 @@
                     @update:value="value => props.setMode(value as SandboxLaunchMode)"
                 />
 
-                <p
+                <span
                     v-if="props.validationErrors.mode"
                     :id="getErrorId('mode')"
                     :class="$style['dev-panel__error']"
                     role="alert"
                 >
                     {{ props.validationErrors.mode }}
-                </p>
+                </span>
             </div>
 
             <div :class="$style['dev-panel__field']">
-                <label
-                    :id="uid + '-dev-panel-fixture-label'"
-                    :class="$style['dev-panel__field-label']"
-                    :for="uid + '-dev-panel-fixture'"
-                >
-                    {{ t('devPanel.fixture') }}
-                </label>
+                <div :class="$style['dev-panel__field-heading']">
+                    <label
+                        :id="uid + '-dev-panel-fixture-label'"
+                        :class="$style['dev-panel__field-label']"
+                        :for="uid + '-dev-panel-fixture'"
+                    >
+                        {{ t('devPanel.fixture') }}
+                    </label>
+
+                    <UiPopperConnector>
+                        <UiButton
+                            appearance="tertiary"
+                            size="xs"
+                        >
+                            <HelpOutlined aria-hidden="true" />
+                        </UiButton>
+
+                        <UiTooltip :offset-main-axis="4">
+                            <span>{{ t('devPanel.tooltips.fixture') }}</span>
+                        </UiTooltip>
+                    </UiPopperConnector>
+                </div>
 
                 <SandboxSelect
                     :id="uid + '-dev-panel-fixture'"
@@ -86,20 +134,38 @@
                     @update:value="props.setFixture"
                 />
 
-                <p
+                <span
                     v-if="props.validationErrors.fixture"
                     :id="getErrorId('fixture')"
                     :class="$style['dev-panel__error']"
                     role="alert"
                 >
                     {{ props.validationErrors.fixture }}
-                </p>
+                </span>
             </div>
 
-            <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">
-                    {{ t('devPanel.pageCode') }}
-                </span>
+            <div :class="$style['dev-panel__field']">
+                <div :class="$style['dev-panel__field-heading']">
+                    <label
+                        :class="$style['dev-panel__field-label']"
+                        :for="uid + '-dev-panel-page-code'"
+                    >
+                        {{ t('devPanel.pageCode') }}
+                    </label>
+
+                    <UiPopperConnector>
+                        <UiButton
+                            appearance="tertiary"
+                            size="xs"
+                        >
+                            <HelpOutlined aria-hidden="true" />
+                        </UiButton>
+
+                        <UiTooltip :offset-main-axis="4">
+                            <span>{{ t('devPanel.tooltips.pageCode') }}</span>
+                        </UiTooltip>
+                    </UiPopperConnector>
+                </div>
 
                 <UiTextbox
                     :id="uid + '-dev-panel-page-code'"
@@ -112,22 +178,37 @@
                     @update:value="updatePageCode"
                 />
 
-                <p
+                <span
                     v-if="props.validationErrors.pageCode"
                     :id="getErrorId('pageCode')"
                     :class="$style['dev-panel__error']"
                     role="alert"
                 >
                     {{ props.validationErrors.pageCode }}
-                </p>
-            </label>
+                </span>
+            </div>
 
             <div :class="$style['dev-panel__field']">
-                <div
-                    :id="uid + '-dev-panel-targets-label'"
-                    :class="$style['dev-panel__field-label']"
-                >
-                    {{ t('devPanel.targets') }}
+                <div :class="$style['dev-panel__field-heading']">
+                    <div
+                        :id="uid + '-dev-panel-targets-label'"
+                        :class="$style['dev-panel__field-label']"
+                    >
+                        {{ t('devPanel.targets') }}
+                    </div>
+
+                    <UiPopperConnector>
+                        <UiButton
+                            appearance="tertiary"
+                            size="xs"
+                        >
+                            <HelpOutlined aria-hidden="true" />
+                        </UiButton>
+
+                        <UiTooltip :offset-main-axis="4">
+                            <span>{{ t('devPanel.tooltips.targets') }}</span>
+                        </UiTooltip>
+                    </UiPopperConnector>
                 </div>
 
                 <span :class="$style['dev-panel__field-hint']">
@@ -155,20 +236,38 @@
                     </div>
                 </div>
 
-                <p
+                <span
                     v-if="props.validationErrors.targets"
                     :id="getErrorId('targets')"
                     :class="$style['dev-panel__error']"
                     role="alert"
                 >
                     {{ props.validationErrors.targets }}
-                </p>
+                </span>
             </div>
 
-            <label :class="$style['dev-panel__field']">
-                <span :class="$style['dev-panel__field-label']">
-                    {{ t('devPanel.contextJson') }}
-                </span>
+            <div :class="$style['dev-panel__field']">
+                <div :class="$style['dev-panel__field-heading']">
+                    <label
+                        :class="$style['dev-panel__field-label']"
+                        :for="uid + '-dev-panel-context-json'"
+                    >
+                        {{ t('devPanel.contextJson') }}
+                    </label>
+
+                    <UiPopperConnector>
+                        <UiButton
+                            appearance="tertiary"
+                            size="xs"
+                        >
+                            <HelpOutlined aria-hidden="true" />
+                        </UiButton>
+
+                        <UiTooltip :offset-main-axis="4">
+                            <span>{{ t('devPanel.tooltips.contextJson') }}</span>
+                        </UiTooltip>
+                    </UiPopperConnector>
+                </div>
 
                 <span :class="$style['dev-panel__field-hint']">
                     {{ t('devPanel.contextJsonHint') }}
@@ -185,26 +284,27 @@
                     @update:value="props.setContextJson"
                 />
 
-                <p
+                <span
                     v-if="props.validationErrors.contextJson"
                     :id="getErrorId('contextJson')"
                     :class="$style['dev-panel__error']"
                     role="alert"
                 >
                     {{ props.validationErrors.contextJson }}
-                </p>
-            </label>
+                </span>
+            </div>
 
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
                 <UiButton
                     appearance="primary"
+                    :disabled="isApplyDisabled"
                     @click="props.applyLaunchConfig"
                 >
                     {{ t('devPanel.actions.apply') }}
                 </UiButton>
 
                 <UiButton
-                    appearance="outlined"
+                    appearance="secondary"
                     :disabled="!props.contextJsonChanged"
                     @click="props.applyContextJson"
                 >
@@ -225,7 +325,15 @@ import { useId } from 'vue'
 
 import SandboxSelect from '@/app/components/SandboxSelect.vue'
 
-import { UiButton, UiCheckbox, UiTextbox } from '@/app/host-components'
+import HelpOutlined from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/help-outlined.svg'
+
+import {
+  UiButton,
+  UiCheckbox,
+  UiPopperConnector,
+  UiTextbox,
+  UiTooltip,
+} from '@/app/host-components'
 
 import { ORDER_SANDBOX_SLOTS } from '@/dev/targets'
 import { orderSandboxFixtures } from '@/dev/fixtures'
@@ -273,6 +381,13 @@ const fixtureOptions = computed(() => Object.entries(orderSandboxFixtures).map((
   label: fixtureLabelKeys[code] ? t(fixtureLabelKeys[code]) : fixture.name,
   value: code,
 })))
+const isApplyDisabled = computed(() => {
+  if (!props.manifestUrl.trim() || !props.fixture || !props.mode) return true
+
+  if (props.mode === 'page') return !props.pageCode.trim()
+
+  return props.selectedTargets.length === 0
+})
 
 const updateManifestUrl = (value: string | number) => {
   props.setManifestUrl(String(value))
@@ -321,7 +436,15 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "pageCode": "Page code",
         "targets": "Widget mount targets",
         "targetsHint": "Targets are CRM slots where widget runners are mounted. They are used only in widget mode.",
-        "title": "Sandbox controls"
+        "title": "Sandbox controls",
+        "tooltips": {
+            "contextJson": "Current fixture context. Edit it to simulate another CRM state, then apply context.",
+            "extensionUrl": "Required full extension endpoint: %extension-url%/extension/%extension-id%. The extension server must be available from the browser.",
+            "fixture": "Fixture defines mock CRM data: order context, user, settings, custom fields and initial host state.",
+            "mode": "Widgets mount into selected CRM targets. Page mounts a page runner by page code.",
+            "pageCode": "Required only in Page mode. Use the page code from the extension pages registration, not the extension id.",
+            "targets": "Targets are widget mount slots. Select the same targets that the extension registers."
+        }
     }
 }
 </i18n>
@@ -355,7 +478,15 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "pageCode": "Código de página",
         "targets": "Puntos de montaje de widgets",
         "targetsHint": "Los targets son slots de CRM donde se montan los widget runners. Se usan solo en modo widget.",
-        "title": "Controles de sandbox"
+        "title": "Controles de sandbox",
+        "tooltips": {
+            "contextJson": "Contexto actual de la fixture. Edítalo para simular otro estado de CRM y aplica el contexto.",
+            "extensionUrl": "Endpoint completo obligatorio de la extensión: %extension-url%/extension/%extension-id%. El servidor debe estar disponible desde el navegador.",
+            "fixture": "La fixture define datos mock de CRM: contexto del pedido, usuario, ajustes, campos personalizados y estado inicial del host.",
+            "mode": "Widgets monta en los targets CRM seleccionados. Página monta un page runner por código de página.",
+            "pageCode": "Obligatorio solo en modo Página. Usa el código de página del registro pages, no el id de la extensión.",
+            "targets": "Los targets son slots de montaje de widgets. Selecciona los mismos targets que registra la extensión."
+        }
     }
 }
 </i18n>
@@ -389,16 +520,24 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "pageCode": "Код страницы",
         "targets": "Места встраивания виджетов",
         "targetsHint": "Targets — это CRM-слоты, куда монтируются widget runners. Они используются только в режиме виджетов.",
-        "title": "Управление песочницей"
+        "title": "Управление песочницей",
+        "tooltips": {
+            "contextJson": "Текущий контекст из фикстуры. Можно изменить его, чтобы симулировать другое состояние CRM, затем применить контекст.",
+            "extensionUrl": "Обязательный полный endpoint расширения: %extension-url%/extension/%extension-id%. Сервер расширения должен быть доступен из браузера.",
+            "fixture": "Фикстура задаёт моковые данные CRM: контекст заказа, пользователя, настройки, пользовательские поля и начальное состояние host.",
+            "mode": "Виджеты монтируются в выбранные CRM targets. Страница монтирует page runner по коду страницы.",
+            "pageCode": "Обязателен только в режиме страницы. Укажите код из pages регистрации расширения, а не id расширения.",
+            "targets": "Targets — это слоты для встраивания виджетов. Выберите те же targets, которые регистрирует расширение."
+        }
     }
 }
 </i18n>
 
 <style lang="less" module>
-@import (reference) "~assets/stylesheets/palette.less";
-@import (reference) "~assets/stylesheets/layout.less";
-@import (reference) "~assets/stylesheets/geometry.less";
-@import (reference) "~assets/stylesheets/variables.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/geometry.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
 
 .dev-panel {
     align-content: start;
@@ -414,6 +553,20 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         min-width: 0;
         overflow: hidden;
         padding: 18px;
+    }
+
+    &__field-heading {
+        align-items: center;
+        display: flex;
+        gap: @spacing-xxs;
+        justify-content: space-between;
+        min-width: 0;
+
+        :global(.ui-v1-add-button__content),
+        :global(.ui-v1-add-button__content:active),
+        :global(.ui-v1-add-button:active .ui-v1-add-button__content) {
+            border: none;
+        }
     }
 
     &__card-title {
@@ -484,9 +637,11 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
     }
 
     &__actions {
+        align-items: center;
         display: flex;
         flex-wrap: nowrap;
         gap: @spacing-xs;
+        justify-content: space-between;
 
         &_wrap {
             flex-wrap: wrap;

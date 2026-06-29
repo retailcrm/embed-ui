@@ -50,7 +50,8 @@
       "fixture": "Выберите существующую фикстуру.",
       "manifestUrl": {
         "endpoint": "URL должен быть вида %extension-url%/extension/%extension-id%.",
-        "format": "Введите абсолютный http/https URL или оставьте поле пустым."
+        "format": "Введите абсолютный http/https URL.",
+        "required": "Укажите URL расширения."
       },
       "mode": "Выберите режим запуска.",
       "pageCodeRequired": "Укажите код страницы для page mode.",

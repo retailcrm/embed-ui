@@ -12,7 +12,6 @@ const baseConfig: SandboxLaunchConfig = {
   manifestUrl: '',
   mode: 'widget',
   pageCode: 'returns',
-  target: 'order/card:common.after',
   targets: DEFAULT_SANDBOX_TARGETS,
   widgetId: 'sandbox-widget',
 }

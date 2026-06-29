@@ -12,6 +12,7 @@ const messages: DevPanelValidationMessages = {
   fixture: 'Unknown fixture.',
   manifestUrlEndpoint: 'Manifest URL must include /extension/%extension-id%.',
   manifestUrlFormat: 'Manifest URL must be an absolute http/https URL.',
+  manifestUrlRequired: 'Manifest URL is required.',
   mode: 'Unknown mode.',
   pageCodeRequired: 'Page code is required.',
   targetRequired: 'Select at least one target.',
@@ -26,17 +27,18 @@ const validLaunchInput = {
   targets: ['order/card:common.after'],
 }
 
-test('validates launch config with empty manifest url', () => {
+test('rejects empty manifest urls', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
     manifestUrl: '',
   }, messages)
 
-  expect(result.success).toBe(true)
-
-  if (result.success) {
-    expect(result.data.manifestUrl).toBe('')
-  }
+  expect(result).toEqual({
+    errors: {
+      manifestUrl: 'Manifest URL is required.',
+    },
+    success: false,
+  })
 })
 
 test('rejects malformed manifest urls', () => {

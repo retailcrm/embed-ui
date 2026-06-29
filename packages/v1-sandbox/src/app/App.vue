@@ -709,6 +709,7 @@ const createDevPanelValidationMessages = (): DevPanelValidationMessages => ({
   fixture: t('app.validation.fixture'),
   manifestUrlEndpoint: t('app.validation.manifestUrl.endpoint'),
   manifestUrlFormat: t('app.validation.manifestUrl.format'),
+  manifestUrlRequired: t('app.validation.manifestUrl.required'),
   mode: t('app.validation.mode'),
   pageCodeRequired: t('app.validation.pageCodeRequired'),
   targetRequired: t('app.validation.targetRequired'),
@@ -761,9 +762,9 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="less" module>
-@import (reference) "~assets/stylesheets/palette.less";
-@import (reference) "~assets/stylesheets/layout.less";
-@import (reference) "~assets/stylesheets/variables.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/palette.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/layout.less";
+@import (reference) "@retailcrm/embed-ui-v1-components/assets/stylesheets/variables.less";
 
 .sandbox-app {
     background: @grey-200;

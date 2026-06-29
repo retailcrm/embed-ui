@@ -14,9 +14,6 @@ dotenv.config({ path: path.resolve(__dirname, '.env') })
 
 const baseURL = process.env.SANDBOX_BASE_URL ?? 'http://127.0.0.1:4173'
 const useExternalSandbox = Boolean(process.env.SANDBOX_BASE_URL)
-const extensionURL = process.env.SANDBOX_EXTENSION_URL
-const extensionPageCode = process.env.SANDBOX_EXTENSION_PAGE_CODE
-const extensionTarget = process.env.SANDBOX_EXTENSION_TARGET
 
 export default defineConfig({
   testDir: './e2e',
@@ -29,9 +26,6 @@ export default defineConfig({
   outputDir: 'artifacts/playwright/results',
   use: {
     baseURL,
-    extensionURL,
-    extensionPageCode,
-    extensionTarget,
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
   },

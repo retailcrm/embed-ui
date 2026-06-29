@@ -23,6 +23,7 @@ export type DevPanelValidationMessages = {
   fixture: string;
   manifestUrlEndpoint: string;
   manifestUrlFormat: string;
+  manifestUrlRequired: string;
   mode: string;
   pageCodeRequired: string;
   targetRequired: string;
@@ -119,7 +120,14 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
   manifestUrl: z.string()
     .transform(value => value.trim())
     .superRefine((value, context) => {
-      if (!value) return
+      if (!value) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: messages.manifestUrlRequired,
+        })
+
+        return
+      }
 
       let url: URL
 

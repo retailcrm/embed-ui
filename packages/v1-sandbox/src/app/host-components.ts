@@ -11,6 +11,7 @@ import {
   UiSelectTrigger as HostUiSelectTrigger,
   UiSkeleton as HostUiSkeleton,
   UiTextbox as HostUiTextbox,
+  UiTooltip as HostUiTooltip,
 } from '@retailcrm/embed-ui-v1-components/host'
 
 export const UiButton = HostUiButton as unknown as HostComponent
@@ -23,3 +24,4 @@ export const UiSelectPopper = HostUiSelectPopper as unknown as HostComponent
 export const UiSelectTrigger = HostUiSelectTrigger as unknown as HostComponent
 export const UiSkeleton = HostUiSkeleton as unknown as HostComponent
 export const UiTextbox = HostUiTextbox as unknown as HostComponent
+export const UiTooltip = HostUiTooltip as unknown as HostComponent
