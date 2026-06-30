@@ -41,14 +41,90 @@ await remote.call.set('article', 'title', 'Preview title')
 - `automation`: sandbox control through the bridge/API;
 - `standalone-test`: unit, integration, and e2e scenarios without CRM.
 
-## Dev Sandbox
+## Browser Sandbox App
 
-The workspace includes a dev sandbox for running widget and page extensions in a
-CRM-like shell. The current focus is `order/card` targets, multiple widget
-instances from one extension, page runners by `code`, and a Playwright feedback
-loop.
+The package includes a browser sandbox app for running widget and page
+extensions in a CRM-like shell. The current focus is `order/card` targets,
+multiple widget instances from one extension, page runners by `code`, and a
+Playwright feedback loop.
 
 Full user guide: [docs/usage-guide.md](./docs/usage-guide.md).
+
+### Running From An Installed Package
+
+Install the package in your extension project:
+
+```bash
+npm i --save-dev @retailcrm/embed-ui-v1-sandbox
+```
+
+or:
+
+```bash
+yarn add -D @retailcrm/embed-ui-v1-sandbox
+```
+
+The package build contains both the runtime library artifacts and the browser
+sandbox app:
+
+- `dist/*.js`, `dist/*.cjs`, `dist/*.d.ts`: programmatic runtime API;
+- `dist/app`: static browser sandbox app.
+
+Serve the built app from the installed package:
+
+```bash
+npx @retailcrm/embed-ui-v1-sandbox serve
+```
+
+or, after installation, through the package binary:
+
+```bash
+yarn embed-ui-v1-sandbox serve
+```
+
+If the command runs inside a Docker container and must be reachable from the
+host machine, bind it explicitly:
+
+```bash
+embed-ui-v1-sandbox serve --host 0.0.0.0 --port 4173
+```
+
+The CLI serves `dist/app` and falls back to `index.html` for sandbox routes.
+
+### E2E Environment Template
+
+The package also ships `.env.dist` as a template for extension projects that
+want to run Playwright against the sandbox.
+
+After installing the package, create a project-specific env file and adjust
+values:
+
+```bash
+yarn embed-ui-v1-sandbox init-env
+```
+
+or:
+
+```bash
+npx @retailcrm/embed-ui-v1-sandbox init-env --output .env.sandbox
+```
+
+Important variables:
+
+- `SANDBOX_BASE_URL`: already running sandbox URL. Leave it empty when your
+  Playwright config starts the sandbox through its own `webServer`.
+- `SANDBOX_EXTENSION_URL`: common extension URL used by page and widget tests,
+  expected as `%extension-url%/extension/%extension-id%`.
+- `SANDBOX_EXTENSION_PAGE_CODE`: page runner code, for example `returns`.
+- `SANDBOX_EXTENSION_TARGET`: widget target, for example
+  `order/card:common.after`.
+- `SANDBOX_EXTENSION_FIXTURE`: fixture code, for example `order-basic`.
+- `SANDBOX_PAGE_EXTENSION_URL` / `SANDBOX_WIDGET_EXTENSION_URL`: optional split
+  URLs when page and widget scenarios use different extensions.
+
+If `SANDBOX_BASE_URL` is set, Playwright should use that running sandbox and
+must not start another one. If it is empty, the test config can start the
+sandbox through its own `webServer`.
 
 ### URL Contract
 
@@ -181,58 +257,30 @@ controlled fallback response instead of crashing the page.
 
 ## Playwright
 
-Start the dev sandbox:
+In an extension project, run the sandbox as a Playwright `webServer`:
 
-```bash
-docker compose up v1-sandbox
+```ts
+import { defineConfig } from '@playwright/test'
+
+export default defineConfig({
+  use: {
+    baseURL: 'http://127.0.0.1:4173',
+  },
+  webServer: {
+    command: 'yarn embed-ui-v1-sandbox serve',
+    reuseExistingServer: true,
+    url: 'http://127.0.0.1:4173',
+  },
+})
 ```
 
-Makefile shortcut:
+Then pass the extension URL through the sandbox query contract:
 
-```bash
-make sandbox.serve
-```
-
-Run Playwright:
-
-```bash
-yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
-```
-
-Makefile path:
-
-```bash
-make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox
-```
-
-Real-extension e2e scenarios run only when an external extension URL is provided:
-
-```bash
-SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
-make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox
-```
-
-Local workspace script:
-
-```bash
-SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
-yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
-```
-
-Without `SANDBOX_EXTENSION_URL`, real-extension scenarios are skipped so local
-and CI runs do not depend on a specific external server. A normal run may show
-`1 skipped`; with `SANDBOX_EXTENSION_URL` set and the extension server
-available, the full e2e set should run.
-
-Useful parameters:
-
-- `workspace=...`: select the workspace that contains
-  `vitest.config.playwright.ts`;
-- `cli='--project chromium'`: pass flags directly to `playwright test`;
-- `cli='e2e/sandbox-extension.e2e.ts'`: run one e2e file.
-
-Open the Playwright report:
-
-```bash
-make playwright-report workspace=@retailcrm/embed-ui-v1-sandbox cli='--port 9324'
+```ts
+await page.goto(
+  `/?manifestUrl=${encodeURIComponent('%extension-url%/extension/%extension-id%')}`
+  + '&mode=widget'
+  + '&fixture=order-basic'
+  + '&targets=order/card:common.after'
+)
 ```

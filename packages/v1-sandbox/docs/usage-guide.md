@@ -7,10 +7,16 @@ context, and simulates HostAPI.
 
 ## Quick Start
 
-1. Start the sandbox:
+1. Start the sandbox from an installed package:
 
 ```bash
-docker compose up v1-sandbox
+npx @retailcrm/embed-ui-v1-sandbox serve
+```
+
+or, after installation:
+
+```bash
+yarn embed-ui-v1-sandbox serve
 ```
 
 2. Open the sandbox page:
@@ -54,6 +60,42 @@ and `%extension-id%`.
 - `Page`: mount a page runner by `pageCode`.
 
 7. Click `Apply`. The sandbox updates the URL contract and starts the extension.
+
+## Running The Built Package App
+
+The published package contains a static sandbox app in `dist/app`. It is built
+separately from the programmatic runtime API.
+
+After installing the package in your extension project:
+
+```bash
+npm i --save-dev @retailcrm/embed-ui-v1-sandbox
+```
+
+or:
+
+```bash
+yarn add -D @retailcrm/embed-ui-v1-sandbox
+```
+
+run:
+
+```bash
+npx @retailcrm/embed-ui-v1-sandbox serve
+```
+
+If your project runs the sandbox inside Docker, bind the server to all
+interfaces and publish the port from the container:
+
+```bash
+embed-ui-v1-sandbox serve --host 0.0.0.0 --port 4173
+```
+
+The CLI prints the URL it serves. Use that URL as `%sandbox-url%` in the
+examples below.
+
+The built app does not contain extension code. Your extension server still runs
+separately, and the sandbox receives it through `Manifest / extension URL`.
 
 ## What to Paste into Manifest / Extension URL
 
@@ -283,61 +325,93 @@ If the page is blank:
 
 ## Playwright
 
-Run e2e through Docker:
+In an extension project, start the sandbox from Playwright:
 
-```bash
-make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox
+```ts
+import { defineConfig } from '@playwright/test'
+
+export default defineConfig({
+  use: {
+    baseURL: 'http://127.0.0.1:4173',
+  },
+  webServer: {
+    command: 'yarn embed-ui-v1-sandbox serve',
+    reuseExistingServer: true,
+    url: 'http://127.0.0.1:4173',
+  },
+})
 ```
 
-Run one file:
+Then open the sandbox with the extension URL in the test:
 
-```bash
-make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox cli='e2e/sandbox-extension.e2e.ts'
+```ts
+import { expect, test } from '@playwright/test'
+
+test('mounts widget extension in sandbox', async ({ page }) => {
+  const extensionUrl = '%extension-url%/extension/%extension-id%'
+
+  await page.goto(
+    `/?manifestUrl=${encodeURIComponent(extensionUrl)}`
+    + '&mode=widget'
+    + '&fixture=order-basic'
+    + '&targets=order/card:common.after'
+  )
+
+  await expect(page.getByText('ORDER/CARD:COMMON.AFTER')).toBeVisible()
+})
 ```
 
-`sandbox-extension.e2e.ts` checks a real extension only when an external URL is
-provided:
+If your extension project also needs an extension dev server, add it as a
+second Playwright `webServer`.
+
+## E2E Environment Variables
+
+`@retailcrm/embed-ui-v1-sandbox` ships `.env.dist` as a template for e2e runs.
+Create an environment file used by your project and adjust values:
 
 ```bash
-SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
-make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox cli='e2e/sandbox-extension.e2e.ts'
+yarn embed-ui-v1-sandbox init-env
 ```
 
-Local workspace script:
+or:
 
 ```bash
-SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
-yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+npx @retailcrm/embed-ui-v1-sandbox init-env --output .env.sandbox
 ```
 
-Example for OrbStack/macOS:
+In this repository, copy it to the package-local `.env`:
 
 ```bash
-SANDBOX_EXTENSION_URL="http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7" \
-yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+cp packages/v1-sandbox/.env.dist packages/v1-sandbox/.env
 ```
 
-Example for Linux/Traefik:
+Variables:
 
-```bash
-SANDBOX_EXTENSION_URL="http://web-extensions-server.simla.test/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7" \
-yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
-```
-
-Additional environment variables:
-
-- `SANDBOX_EXTENSION_PAGE_CODE`: extension page code, default is `returns`;
-- `SANDBOX_EXTENSION_TARGET`: widget target, default is
+- `SANDBOX_BASE_URL`: sandbox shell URL. Empty means the local Playwright config
+  can start the sandbox server itself. Set it when the sandbox is already
+  running, for example `http://v1.embed-ui-sandbox.local` on OrbStack/macOS or
+  `http://v1.embed-ui-sandbox.test` on Linux/Traefik.
+- `SANDBOX_EXTENSION_URL`: common page/widget extension URL in the form
+  `%extension-url%/extension/%extension-id%`.
+- `SANDBOX_EXTENSION_PAGE_CODE`: page runner code, default example is
+  `returns`.
+- `SANDBOX_EXTENSION_TARGET`: widget target, for example
   `order/card:common.after`.
+- `SANDBOX_EXTENSION_FIXTURE`: fixture code, for example `order-basic`.
+- `SANDBOX_PAGE_EXTENSION_URL`: optional page-only extension URL. It overrides
+  `SANDBOX_EXTENSION_URL` for page e2e.
+- `SANDBOX_PAGE_EXTENSION_CODE`: optional page-only page code.
+- `SANDBOX_WIDGET_EXTENSION_URL`: optional widget-only extension URL.
+- `SANDBOX_WIDGET_EXTENSION_TARGET`: optional widget-only target.
 
-If `SANDBOX_EXTENSION_URL` is not set, the real-extension scenario is skipped.
-Seeing `1 skipped` is expected in that case. With the variable set and the
-extension server available, the full e2e set should pass.
+Typical local page test values:
 
-Open the HTML report:
-
-```bash
-make playwright-report workspace=@retailcrm/embed-ui-v1-sandbox
+```dotenv
+SANDBOX_BASE_URL=http://v1.embed-ui-sandbox.local
+SANDBOX_EXTENSION_URL=http://web-extensions-server.simla.local/extension/79aa7a7a-3b66-4e85-b623-f7c1fef97bc7
+SANDBOX_EXTENSION_PAGE_CODE=returns
+SANDBOX_EXTENSION_TARGET=order/card:common.after
+SANDBOX_EXTENSION_FIXTURE=order-basic
 ```
 
 Playwright covers:

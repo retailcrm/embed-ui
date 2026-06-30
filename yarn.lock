@@ -2058,6 +2058,8 @@ __metadata:
     "@remote-ui/rpc": ^1.4
     pinia: ^2.2
     vue: ^3.5
+  bin:
+    embed-ui-v1-sandbox: bin/embed-ui-v1-sandbox.mjs
   languageName: unknown
   linkType: soft
 

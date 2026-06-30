@@ -11,6 +11,8 @@ API и компоненты для создания расширений инт�
 - `v1-components` — UI-компоненты и сопутствующая документация, [README.md пакета](./packages/v1-components/README.md).
 - `v1-contexts` — реактивные контексты и доступ к данным RetailCRM JS API, [README.md пакета](./packages/v1-contexts/README.md).
 - `v1-endpoint` — endpoint API для встраиваемых страниц и виджетов, [README.md пакета](./packages/v1-endpoint/README.md).
+- `v1-sandbox` — песочница для запуска и тестирования JS-расширений вне CRM,
+  [README.md пакета](./packages/v1-sandbox/README.md).
 - `v1-testing` — тестовые утилиты и вспомогательные типы для интеграций, [README.md пакета](./packages/v1-testing/README.md).
 - `v1-types` — базовые type declarations для публичного API, [README.md пакета](./packages/v1-types/README.md).
 
@@ -20,6 +22,82 @@ API и компоненты для создания расширений инт�
 ```bash
 npx @retailcrm/embed-ui-v1-components init-agents
 ```
+
+## Разработка `v1-sandbox` в этом репозитории
+
+Команды ниже относятся только к монорепозиторию `embed-ui`. Они используют корневой `Makefile` и не входят в
+поставку npm-пакета `@retailcrm/embed-ui-v1-sandbox`.
+
+Docker-first запуск dev-песочницы:
+
+```bash
+docker compose up v1-sandbox
+```
+
+Makefile shortcut:
+
+```bash
+make sandbox.serve
+```
+
+Локальный Vite dev server без Docker:
+
+```bash
+yarn workspace @retailcrm/embed-ui-v1-sandbox dev:e2e
+```
+
+E2E через Makefile:
+
+```bash
+make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox
+```
+
+Для локальных e2e-параметров можно скопировать шаблон:
+
+```bash
+cp packages/v1-sandbox/.env.dist packages/v1-sandbox/.env
+```
+
+Если `SANDBOX_BASE_URL` не задан или пустой, Playwright сам поднимет локальный Vite server на
+`http://127.0.0.1:4173`. Если песочница уже запущена снаружи, укажите полный URL в `SANDBOX_BASE_URL`.
+
+E2E с реальным внешним расширением:
+
+```bash
+SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
+make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox
+```
+
+Локальный workspace script для e2e:
+
+```bash
+SANDBOX_EXTENSION_URL=%extension-url%/extension/%extension-id% \
+yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+```
+
+HTML-отчёт Playwright:
+
+```bash
+make playwright-report workspace=@retailcrm/embed-ui-v1-sandbox cli='--port 9324'
+```
+
+Проверка поставки пакета перед публикацией:
+
+```bash
+yarn workspace @retailcrm/embed-ui-v1-sandbox build
+yarn workspace @retailcrm/embed-ui-v1-sandbox pack --dry-run
+```
+
+Ожидаемые артефакты сборки:
+
+- `packages/v1-sandbox/dist/index.js`;
+- `packages/v1-sandbox/dist/index.cjs`;
+- `packages/v1-sandbox/dist/index.d.ts`;
+- `packages/v1-sandbox/dist/app/index.html`;
+- `packages/v1-sandbox/dist/app/assets/...`.
+
+В пакет должны попадать `dist`, `dist/app`, `bin`, `docs`, `AGENTS.md` и `README.md`. В пакет не должны попадать
+`src`, `tests`, `e2e`, `coverage`, `artifacts` и `playwright-report`.
 
 ## CLI `@retailcrm/embed-ui`
 

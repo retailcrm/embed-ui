@@ -18,6 +18,7 @@ const isPackageExternal = (id: string): boolean => externalPackages.some(
 
 export default mergeConfig(basic, defineConfig({
   build: {
+    emptyOutDir: true,
     lib: {
       formats: ['es', 'cjs'],
       entry: {
@@ -34,19 +35,31 @@ export default mergeConfig(basic, defineConfig({
       }[format as 'es' | 'cjs']}`,
     },
     minify: false,
+    outDir: path.join(__dirname, '/dist'),
     rollupOptions: {
       external: id => isPackageExternal(id),
       output: {
-        exports: 'named',
-        dir: path.join(__dirname, '/dist'),
         chunkFileNames: '[name].[format].js',
+        exports: 'named',
       },
     },
   },
   plugins: [dts({
+    copyDtsFiles: true,
+    entryRoot: 'src',
+    exclude: [
+      'src/app/**/*.vue',
+      'src/app/host-components.ts',
+      'src/app/i18n/**/*.ts',
+      'src/app/main.ts',
+      'src/app/predicates.ts',
+      'src/app/runtime/**/*.ts',
+    ],
+    include: ['src'],
     insertTypesEntry: true,
     staticImport: true,
   })],
+  publicDir: false,
   server: {
     allowedHosts: true,
   },

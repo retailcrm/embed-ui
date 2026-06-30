@@ -6,6 +6,7 @@
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
   "repository": "git@github.com:retailcrm/embed-ui.git",
+  "bin": "bin/embed-ui-v1-sandbox.mjs",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -66,16 +67,23 @@
     }
   },
   "files": [
+    ".env.dist",
+    "AGENTS.md",
+    "bin",
+    "docs",
     "dist",
     "README.md"
   ],
   "scripts": {
-    "build": "yarn build:code",
+    "build": "yarn build:code && yarn build:app",
+    "build:app": "vite build -c ./vite.config.app.ts",
     "build:code": "vite build -c ./vite.config.ts",
     "dev:e2e": "vite --host 0.0.0.0 --port 4173",
+    "serve": "node ./bin/embed-ui-v1-sandbox.mjs serve",
     "test:coverage": "vitest --run --coverage",
     "test": "vitest --run",
-    "e2e": "playwright test -c vitest.config.playwright.ts"
+    "e2e": "playwright test -c vitest.config.playwright.ts",
+    "sandbox:env": "cp node_modules/@retailcrm/embed-ui-v1-sandbox/.env.dist .env.sandbox"
   },
   "peerDependencies": {
     "@omnicajs/vue-remote": "^0.2.24",

@@ -16,7 +16,7 @@ function readEnv(...keys: string[]): string {
 
 const pageExtensionUrl = readEnv('SANDBOX_PAGE_EXTENSION_URL', 'SANDBOX_EXTENSION_URL')
 const pageExtensionCode = readEnv('SANDBOX_PAGE_EXTENSION_CODE', 'SANDBOX_EXTENSION_PAGE_CODE') || 'returns'
-const widgetExtensionUrl = readEnv('SANDBOX_WIDGET_EXTENSION_URL')
+const widgetExtensionUrl = readEnv('SANDBOX_WIDGET_EXTENSION_URL', 'SANDBOX_EXTENSION_URL')
 const widgetExtensionTarget = readEnv('SANDBOX_WIDGET_EXTENSION_TARGET', 'SANDBOX_EXTENSION_TARGET')
   || 'order/card:common.after'
 const extensionFixture = readEnv('SANDBOX_EXTENSION_FIXTURE') || DefaultSandbox.Fixture

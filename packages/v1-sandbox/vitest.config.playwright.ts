@@ -12,8 +12,15 @@ const __dirname = dirname(__filename)
 
 dotenv.config({ path: path.resolve(__dirname, '.env') })
 
-const baseURL = process.env.SANDBOX_BASE_URL ?? 'http://127.0.0.1:4173'
-const useExternalSandbox = Boolean(process.env.SANDBOX_BASE_URL)
+const readEnv = (key: string): string | undefined => {
+  const value = process.env[key]?.trim()
+
+  return value || undefined
+}
+
+const sandboxBaseURL = readEnv('SANDBOX_BASE_URL')
+const baseURL = sandboxBaseURL ?? 'http://127.0.0.1:4173'
+const useExternalSandbox = Boolean(sandboxBaseURL)
 
 export default defineConfig({
   testDir: './e2e',

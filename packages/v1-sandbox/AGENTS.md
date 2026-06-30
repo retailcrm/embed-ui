@@ -9,16 +9,16 @@ This file defines package-level instructions for `packages/v1-sandbox`.
 - Update `packages/v1-sandbox/docs/usage-guide.md` when user-facing sandbox behavior changes.
 
 ## Development
-- Main local URL depends on the local container/DNS setup. Linux Docker uses Traefik and the `.test` top-level domain; OrbStack on macOS uses `.local` from its domain namespace. Do not hardcode a concrete top-level domain in docs or tests.
-- Docker-first dev server:
+- Main local URL depends on the local container/DNS setup. Linux Docker usually uses Traefik and the `.test` top-level domain; OrbStack on macOS uses `.local` from its domain namespace. Do not hardcode a concrete top-level domain in package docs or tests.
+- The package-level CLI serves the built sandbox app from `dist/app`:
 ```bash
-docker compose up v1-sandbox
+embed-ui-v1-sandbox serve
 ```
-- Prefer Docker/Makefile commands for sandbox verification when Rollup or browser dependencies are involved.
-- Run Playwright through the workspace Makefile path when possible:
+- If the CLI runs inside a container and must be reachable from the host machine, bind it explicitly:
 ```bash
-make tests-playwright workspace=@retailcrm/embed-ui-v1-sandbox
+embed-ui-v1-sandbox serve --host 0.0.0.0 --port 4173
 ```
+- Repository-only Docker and Makefile commands live in the root `README.md`; do not document them as package usage.
 
 ## UI
 - Use Vue SFCs for sandbox shell UI.
