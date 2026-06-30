@@ -19,7 +19,7 @@ export type ResolveProps<PropsOrPropOptions, E extends EmitsOptions> = Readonly<
   PropsOrPropOptions extends ComponentPropsOptions
     ? ExtractPropTypes<PropsOrPropOptions>
     : PropsOrPropOptions
-> & (Record<string, never> extends E ? Record<string, never> : EmitsToProps<E>);
+> & (E extends Record<string, never> ? object : EmitsToProps<E>);
 
 export type DefineComponent<
   PropsOrPropOptions = object,
