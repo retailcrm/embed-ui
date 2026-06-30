@@ -69,7 +69,7 @@ import {
   UiPopperTarget,
   UiSelectPopper,
   UiSelectTrigger,
-} from '@/app/host-components'
+} from '@retailcrm/embed-ui-v1-components/host'
 
 const props = withDefaults(defineProps<{
   id: string;

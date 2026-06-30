@@ -53,7 +53,7 @@
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
-import { UiButton } from '@/app/host-components'
+import { UiButton } from '@retailcrm/embed-ui-v1-components/host'
 
 const props = defineProps<{
   openDevPanel(): void;

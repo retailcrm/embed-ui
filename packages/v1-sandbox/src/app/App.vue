@@ -133,6 +133,8 @@ import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 import { watch } from 'vue'
 
+import { UiButton, UiModalSidebar } from '@retailcrm/embed-ui-v1-components/host'
+
 import DevPanel from '@/app/components/DevPanel.vue'
 import ExtensionOnboarding from '@/app/components/ExtensionOnboarding.vue'
 import PageMount from '@/app/components/PageMount.vue'
@@ -140,8 +142,6 @@ import SandboxRail from '@/app/components/SandboxRail.vue'
 import SandboxSidebar from '@/app/components/SandboxSidebar.vue'
 
 import WidgetMounts from '@/app/components/WidgetMounts.vue'
-
-import { UiButton, UiModalSidebar } from '@/app/host-components'
 
 import { createDefaultSandboxManifestUrl } from '@/dev/launch'
 import { createMounts } from '@/app/runtime/mounts'

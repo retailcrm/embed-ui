@@ -92,6 +92,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
+import { UiButton } from '@retailcrm/embed-ui-v1-components/host'
+
 import IconChart from '@retailcrm/embed-ui-v1-components/assets/sprites/technology-and-data/chart-bar-2.svg'
 import IconCode from '@retailcrm/embed-ui-v1-components/assets/sprites/technology-and-data/code.svg'
 import IconLocation from '@retailcrm/embed-ui-v1-components/assets/sprites/map-and-places/my-location.svg'
@@ -99,8 +101,6 @@ import IconNotifications from '@retailcrm/embed-ui-v1-components/assets/sprites/
 import IconRobot from '@retailcrm/embed-ui-v1-components/assets/sprites/premium/robot-upper.svg'
 import IconSettings from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/settings-outlined.svg'
 import IconShoppingBasket from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/shopping-cart-outlined.svg'
-
-import { UiButton } from '@/app/host-components'
 
 type RailItem = {
   action?: () => void;

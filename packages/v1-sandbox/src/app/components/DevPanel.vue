@@ -32,7 +32,7 @@
                             <HelpOutlined aria-hidden="true" />
                         </UiButton>
 
-                        <UiTooltip :offset-main-axis="4">
+                        <UiTooltip>
                             <span>{{ t('devPanel.tooltips.extensionUrl') }}</span>
                         </UiTooltip>
                     </UiPopperConnector>
@@ -230,7 +230,7 @@
                             :id="`sandbox-target-${index}`"
                             :disabled="props.mode !== 'widget'"
                             :model="props.selectedTargets.includes(slot.target)"
-                            @update:model="value => updateTarget(slot.target, Boolean(value))"
+                            @update:model="updateTargetModel(slot.target, $event)"
                         />
                         <label :for="`sandbox-target-${index}`">{{ slot.target }}</label>
                     </div>
@@ -323,17 +323,17 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
-import SandboxSelect from '@/app/components/SandboxSelect.vue'
-
-import HelpOutlined from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/help-outlined.svg'
-
 import {
   UiButton,
   UiCheckbox,
   UiPopperConnector,
   UiTextbox,
   UiTooltip,
-} from '@/app/host-components'
+} from '@retailcrm/embed-ui-v1-components/host'
+
+import SandboxSelect from '@/app/components/SandboxSelect.vue'
+
+import HelpOutlined from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/help-outlined.svg'
 
 import { ORDER_SANDBOX_SLOTS } from '@/dev/targets'
 import { orderSandboxFixtures } from '@/dev/fixtures'
@@ -399,6 +399,10 @@ const updatePageCode = (value: string | number) => {
 
 const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
   props.setTargetSelected(target, checked)
+}
+
+const updateTargetModel = (target: SandboxOrderTarget, value: unknown) => {
+  updateTarget(target, Boolean(value))
 }
 
 const getErrorId = (field: DevPanelField): string => `${uid}-dev-panel-${field}-error`

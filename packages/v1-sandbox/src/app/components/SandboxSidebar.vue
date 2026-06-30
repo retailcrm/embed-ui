@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { UiSkeleton } from '@/app/host-components'
+import { UiSkeleton } from '@retailcrm/embed-ui-v1-components/host'
 
 defineProps<{
   id: string;
