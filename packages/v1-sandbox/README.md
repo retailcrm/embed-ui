@@ -220,6 +220,29 @@ extension server, use `%extension-url%/extension/%extension-id%`. `Page code` is
 required only in page mode, at least one target is required in widget mode, and
 `Context JSON` accepts only known context keys with object values.
 
+## Browser Automation API
+
+The sandbox exposes a browser-side launch bridge for e2e and browser-mode tests:
+
+```ts
+import { requireSandboxAppBridge } from '@retailcrm/embed-ui-v1-sandbox'
+
+requireSandboxAppBridge().launch({
+  manifestUrl: '%extension-url%/extension/%extension-id%',
+  mode: 'widget',
+  targets: ['order/card:common.after'],
+  fixture: 'order-basic',
+})
+```
+
+`launch(...)` uses the same public URL contract as the dev panel: it writes the
+launch config into the query string and reloads the sandbox. Tests can also call
+`createLaunchUrl(...)` to build the URL without navigating, and
+`getLaunchConfig()` to inspect the current launch config. The bridge is installed
+on `window.__CRM_EMBED_SANDBOX_APP__`; use `getSandboxAppBridge()` or
+`requireSandboxAppBridge()` instead of reaching into `window` directly when your
+test runner can import package helpers.
+
 ## HostAPI Simulation
 
 The sandbox provides HostAPI to the extension. Calls to `host.httpCall(action,

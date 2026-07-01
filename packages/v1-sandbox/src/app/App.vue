@@ -115,8 +115,12 @@ import type {
   DevPanelValidationMessages,
 } from '@/dev/validation'
 import type { HostedTreeRef } from '@/app/types'
+import type { SandboxAppBridge } from '@/app/automation'
 import type { SandboxExtensionDescriptor } from '@/dev/types'
-import type { SandboxIframeWidgetApi, SandboxLaunchDiagnostic } from '@/app/types'
+import type { SandboxIframeWidgetApi } from '@/app/types'
+import type { SandboxLaunchConfig } from '@/dev/types'
+import type { SandboxLaunchDiagnostic } from '@/app/types'
+import type { SandboxLaunchInput } from '@/app/automation'
 import type { SandboxLaunchMode } from '@/dev/types'
 import type { SandboxMount } from '@/app/types'
 import type { SandboxOrderTarget } from '@/dev/types'
@@ -138,10 +142,13 @@ import { UiButton, UiModalSidebar } from '@retailcrm/embed-ui-v1-components/host
 import DevPanel from '@/app/components/DevPanel.vue'
 import ExtensionOnboarding from '@/app/components/ExtensionOnboarding.vue'
 import PageMount from '@/app/components/PageMount.vue'
+
 import SandboxRail from '@/app/components/SandboxRail.vue'
 import SandboxSidebar from '@/app/components/SandboxSidebar.vue'
 
 import WidgetMounts from '@/app/components/WidgetMounts.vue'
+
+import RemoteBootstrapWorker from '@/app/runtime/remoteBootstrap.worker.ts?worker'
 
 import { createDefaultSandboxManifestUrl } from '@/dev/launch'
 import { createMounts } from '@/app/runtime/mounts'
@@ -150,6 +157,7 @@ import { DEFAULT_SANDBOX_TARGETS } from '@/app/runtime/mounts'
 import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxLaunchConfig } from '@/dev/launch'
 import { resolveSandboxExtensionSource } from '@/dev/manifest'
+import { SANDBOX_APP_BRIDGE_GLOBAL_KEY } from '@/app/automation'
 import { updateSandboxLaunchQuery } from '@/dev/launch'
 import { validateContextJsonInput, validateLaunchConfigInput } from '@/dev/validation'
 
@@ -319,14 +327,17 @@ const mountWorkerExtension = async (
   uuid: string,
   entrypoint: URL
 ): Promise<SandboxRuntime['connections']> => {
-  const worker = createExtensionWorker(uuid, entrypoint)
+  const readyChannel = new MessageChannel()
+  const worker = createExtensionWorker(uuid, entrypoint, readyChannel.port2)
   const endpoint = createRpcEndpoint<SandboxWorkerApi>(fromWebWorker(worker))
 
   try {
-    await waitForExtensionWorkerReady(worker, uuid)
+    await waitForExtensionWorkerReady(readyChannel.port1, worker, uuid)
   } catch (error) {
     endpoint.terminate()
     throw error
+  } finally {
+    readyChannel.port1.close()
   }
 
   const endpointApi = sandbox.endpointApi
@@ -577,15 +588,68 @@ const setMountTree = (mount: SandboxMount, tree: HostedTreeRef | null) => {
   mount.tree = tree
 }
 
-const createExtensionWorker = (uuid: string, entrypoint: URL): Worker => {
-  const bootstrap = new URL('./runtime/remoteBootstrap.worker.ts', import.meta.url)
+const getCurrentLaunchConfig = (): SandboxLaunchConfig => ({
+  extensionUrl: launchConfig.extensionUrl,
+  fixture: fixture.value,
+  manifestUrl: manifestUrl.value,
+  mode: mode.value,
+  pageCode: pageCode.value,
+  targets: [...selectedTargets.value],
+  widgetId: launchConfig.widgetId,
+})
 
-  bootstrap.searchParams.set('extension', entrypoint.href)
+const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchConfig => ({
+  ...getCurrentLaunchConfig(),
+  ...input,
+  targets: input.targets
+    ? [...input.targets]
+    : [...selectedTargets.value],
+})
 
-  return new Worker(bootstrap, {
+const createSandboxAppBridge = (): SandboxAppBridge => ({
+  createLaunchUrl(config) {
+    return updateSandboxLaunchQuery(createLaunchConfigFromInput(config)).toString()
+  },
+
+  getLaunchConfig() {
+    return getCurrentLaunchConfig()
+  },
+
+  launch(config) {
+    window.location.href = this.createLaunchUrl(config)
+  },
+})
+
+const installSandboxAppBridge = (): (() => void) => {
+  const bridge = createSandboxAppBridge()
+
+  window[SANDBOX_APP_BRIDGE_GLOBAL_KEY] = bridge
+
+  return () => {
+    if (window[SANDBOX_APP_BRIDGE_GLOBAL_KEY] === bridge) {
+      delete window[SANDBOX_APP_BRIDGE_GLOBAL_KEY]
+    }
+  }
+}
+
+const uninstallSandboxAppBridge = installSandboxAppBridge()
+
+const createExtensionWorker = (
+  uuid: string,
+  entrypoint: URL,
+  readyPort: MessagePort
+): Worker => {
+  const worker = new RemoteBootstrapWorker({
     name: `sandbox:${uuid}`,
     type: 'module',
   })
+
+  worker.postMessage({
+    extensionUrl: entrypoint.href,
+    readyPort,
+  }, [readyPort])
+
+  return worker
 }
 
 const mountExtensionStylesheet = (href: string | null): HTMLLinkElement | null => {
@@ -610,6 +674,7 @@ enum ExtensionWorkerMessageType {
 }
 
 const waitForExtensionWorkerReady = async (
+  readyPort: MessagePort,
   worker: Worker,
   uuid: string,
   timeoutMs = 10_000
@@ -622,7 +687,7 @@ const waitForExtensionWorkerReady = async (
 
     const cleanup = () => {
       window.clearTimeout(timerId)
-      worker.removeEventListener('message', onMessage)
+      readyPort.removeEventListener('message', onMessage)
       worker.removeEventListener('error', onError)
     }
 
@@ -648,8 +713,9 @@ const waitForExtensionWorkerReady = async (
       reject(event.error ?? new Error(event.message || `[sandbox:manifest] Worker error for '${uuid}'`))
     }
 
-    worker.addEventListener('message', onMessage)
+    readyPort.addEventListener('message', onMessage)
     worker.addEventListener('error', onError)
+    readyPort.start()
   }).catch((error) => {
     worker.terminate()
     throw error
@@ -756,6 +822,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  uninstallSandboxAppBridge()
   void disposeRuntime()
   sandbox.dispose()
 })

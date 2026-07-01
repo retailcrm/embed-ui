@@ -38,6 +38,7 @@
     "useDefineForClassFields": true
   },
   "include": [
+    "e2e/**/*.ts",
     "shims-*.d.ts",
     "src/**/*.ts",
     "src/**/*.vue",

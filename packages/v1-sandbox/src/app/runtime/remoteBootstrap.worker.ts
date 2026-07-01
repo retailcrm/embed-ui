@@ -1,24 +1,70 @@
 const WORKER_READY = 'sandbox:extension-worker-ready'
 const WORKER_READY_ERROR = 'sandbox:extension-worker-error'
 
-const extensionUrl = new URL(self.location.href).searchParams.get('extension')
+type BootstrapMessage = {
+  extensionUrl?: unknown;
+  readyPort?: unknown;
+}
 
-if (!extensionUrl) {
-  self.postMessage({
-    error: '[sandbox:manifest] Missing extension worker URL.',
+const toErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message
+
+  return String(error)
+}
+
+let bootstrapReadyPort: MessagePort | null = null
+
+const postReadyMessage = (message: Record<string, unknown>) => {
+  if (bootstrapReadyPort) {
+    bootstrapReadyPort.postMessage(message)
+    return
+  }
+
+  self.postMessage(message)
+}
+
+const postReadyError = (error: unknown) => {
+  postReadyMessage({
+    error: toErrorMessage(error),
     type: WORKER_READY_ERROR,
   })
-} else {
+}
+
+self.addEventListener('error', (event) => {
+  postReadyError(event.error ?? event.message)
+})
+
+self.addEventListener('unhandledrejection', (event) => {
+  postReadyError(event.reason)
+})
+
+const runExtension = (extensionUrl: unknown) => {
+  if (typeof extensionUrl !== 'string' || !extensionUrl) {
+    postReadyError('[sandbox:manifest] Missing extension worker URL.')
+    return
+  }
+
   import(/* @vite-ignore */ extensionUrl)
     .then(() => {
-      self.postMessage({
+      postReadyMessage({
         type: WORKER_READY,
       })
     })
     .catch((error) => {
-      self.postMessage({
-        error: error instanceof Error ? error.message : String(error),
-        type: WORKER_READY_ERROR,
-      })
+      postReadyError(error)
     })
+}
+
+const initialExtensionUrl = new URL(self.location.href).searchParams.get('extension')
+
+if (initialExtensionUrl) {
+  runExtension(initialExtensionUrl)
+} else {
+  self.addEventListener('message', (event: MessageEvent<BootstrapMessage>) => {
+    if (event.data.readyPort instanceof MessagePort) {
+      bootstrapReadyPort = event.data.readyPort
+    }
+
+    runExtension(event.data.extensionUrl)
+  }, { once: true })
 }

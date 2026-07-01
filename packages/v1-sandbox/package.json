@@ -80,6 +80,7 @@
     "build:code": "vite build -c ./vite.config.ts",
     "dev:e2e": "vite --host 0.0.0.0 --port 4173",
     "serve": "node ./bin/embed-ui-v1-sandbox.mjs serve",
+    "serve:fixture": "node ./tests/__fixtures__/serve-extension-fixture.mjs",
     "test:coverage": "vitest --run --coverage",
     "test": "vitest --run",
     "e2e": "playwright test -c vitest.config.playwright.ts",

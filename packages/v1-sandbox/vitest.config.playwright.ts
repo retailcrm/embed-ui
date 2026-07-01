@@ -21,6 +21,28 @@ const readEnv = (key: string): string | undefined => {
 const sandboxBaseURL = readEnv('SANDBOX_BASE_URL')
 const baseURL = sandboxBaseURL ?? 'http://127.0.0.1:4173'
 const useExternalSandbox = Boolean(sandboxBaseURL)
+const extensionFixtureBaseURL = readEnv('SANDBOX_FIXTURE_BASE_URL') ?? 'http://127.0.0.1:4274'
+const useExternalFixture = Boolean(readEnv('SANDBOX_FIXTURE_BASE_URL'))
+
+const webServer = [
+  ...useExternalSandbox
+    ? []
+    : [{
+      command: 'yarn workspaces foreach -A --topological-dev run build'
+          + ' && yarn workspace @retailcrm/embed-ui-v1-sandbox run serve --host 127.0.0.1 --port 4173',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+      url: 'http://127.0.0.1:4173',
+    }],
+  ...useExternalFixture
+    ? []
+    : [{
+      command: 'yarn workspace @retailcrm/embed-ui-v1-sandbox run serve:fixture'
+          + ' --fixture example-order-sidebar --host 127.0.0.1 --port 4274',
+      reuseExistingServer: false,
+      url: extensionFixtureBaseURL,
+    }],
+]
 
 export default defineConfig({
   testDir: './e2e',
@@ -42,11 +64,5 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: useExternalSandbox ? undefined : [
-    {
-      command: 'yarn dev:e2e',
-      url: 'http://127.0.0.1:4173',
-      reuseExistingServer: !process.env.CI,
-    },
-  ],
+  webServer: webServer.length > 0 ? webServer : undefined,
 })
