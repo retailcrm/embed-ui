@@ -1,8 +1,8 @@
-import type { SandboxLaunchInput } from '@/app/automation'
+import type { SandboxLaunchInput } from '@/automation'
 
 import { expect, test } from '@playwright/test'
 
-import { SANDBOX_APP_BRIDGE_GLOBAL_KEY } from '@/app/automation'
+import { launchSandboxExtension } from '@/automation/playwright'
 
 const readEnv = (key: string): string | undefined => {
   const value = process.env[key]?.trim()
@@ -21,9 +21,6 @@ test('mounts fixture extension in built sandbox and renders remote details', asy
   })
 
   await page.goto('/')
-  await page.waitForFunction((key) => {
-    return Boolean(window[key as typeof SANDBOX_APP_BRIDGE_GLOBAL_KEY])
-  }, SANDBOX_APP_BRIDGE_GLOBAL_KEY)
 
   const launchConfig = {
     fixture: 'order-basic',
@@ -32,19 +29,7 @@ test('mounts fixture extension in built sandbox and renders remote details', asy
     targets: ['order/card:common.after'],
   } satisfies SandboxLaunchInput
 
-  await Promise.all([
-    page.waitForURL((url) => {
-      return url.searchParams.get('manifestUrl') === extensionUrl
-        && url.searchParams.get('mode') === 'widget'
-        && url.searchParams.get('targets') === 'order/card:common.after'
-    }),
-    page.evaluate(({ config, key }) => {
-      window[key]?.launch(config)
-    }, {
-      config: launchConfig,
-      key: SANDBOX_APP_BRIDGE_GLOBAL_KEY,
-    }),
-  ])
+  await launchSandboxExtension(page, launchConfig)
 
   const { contentType, script, status } = await page.evaluate(async (url) => {
     const response = await fetch(url, {

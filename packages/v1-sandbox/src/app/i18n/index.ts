@@ -4,7 +4,7 @@ import messages_en_GB from './en-GB.json'
 import messages_es_ES from './es-ES.json'
 import messages_ru_RU from './ru-RU.json'
 
-export const sandboxI18n = createI18n({
+const i18n = createI18n({
   fallbackLocale: 'en-GB',
   globalInjection: true,
   legacy: false,
@@ -15,3 +15,5 @@ export const sandboxI18n = createI18n({
     'ru-RU': messages_ru_RU,
   },
 })
+
+export default i18n

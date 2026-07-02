@@ -14,55 +14,82 @@
       "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     },
-    "./bridge": {
-      "types": "./dist/bridge.d.ts",
-      "import": "./dist/bridge.js",
-      "require": "./dist/bridge.cjs",
-      "default": "./dist/bridge.js"
+    "./app": {
+      "types": "./dist/app/index.d.ts",
+      "import": "./dist/app/index.js",
+      "require": "./dist/app/index.cjs",
+      "default": "./dist/app/index.js"
     },
-    "./controller": {
-      "types": "./dist/controller.d.ts",
-      "import": "./dist/controller.js",
-      "require": "./dist/controller.cjs",
-      "default": "./dist/controller.js"
+    "./automation": {
+      "types": "./dist/automation/index.d.ts",
+      "import": "./dist/automation/index.js",
+      "require": "./dist/automation/index.cjs",
+      "default": "./dist/automation/index.js"
     },
-    "./host": {
-      "types": "./dist/host.d.ts",
-      "import": "./dist/host.js",
-      "require": "./dist/host.cjs",
-      "default": "./dist/host.js"
+    "./automation/browser": {
+      "types": "./dist/automation/browser.d.ts",
+      "import": "./dist/automation/browser.js",
+      "require": "./dist/automation/browser.cjs",
+      "default": "./dist/automation/browser.js"
     },
-    "./rpc": {
-      "types": "./dist/rpc.d.ts",
-      "import": "./dist/rpc.js",
-      "require": "./dist/rpc.cjs",
-      "default": "./dist/rpc.js"
+    "./automation/playwright": {
+      "types": "./dist/automation/playwright.d.ts",
+      "import": "./dist/automation/playwright.js",
+      "require": "./dist/automation/playwright.cjs",
+      "default": "./dist/automation/playwright.js"
     },
-    "./state": {
-      "types": "./dist/state.d.ts",
-      "import": "./dist/state.js",
-      "require": "./dist/state.cjs",
-      "default": "./dist/state.js"
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "require": "./dist/core/index.cjs",
+      "default": "./dist/core/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.js",
+      "require": "./dist/node/index.cjs",
+      "default": "./dist/node/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "import": "./dist/runtime/index.js",
+      "require": "./dist/runtime/index.cjs",
+      "default": "./dist/runtime/index.js"
+    },
+    "./scenario": {
+      "types": "./dist/scenario/index.d.ts",
+      "import": "./dist/scenario/index.js",
+      "require": "./dist/scenario/index.cjs",
+      "default": "./dist/scenario/index.js"
     },
     "./dist/*": "./dist/*",
     "./*": "./*"
   },
   "typesVersions": {
     "*": {
-      "bridge": [
-        "./dist/bridge.d.ts"
+      "app": [
+        "./dist/app/index.d.ts"
       ],
-      "controller": [
-        "./dist/controller.d.ts"
+      "automation": [
+        "./dist/automation/index.d.ts"
       ],
-      "host": [
-        "./dist/host.d.ts"
+      "automation/browser": [
+        "./dist/automation/browser.d.ts"
       ],
-      "rpc": [
-        "./dist/rpc.d.ts"
+      "automation/playwright": [
+        "./dist/automation/playwright.d.ts"
       ],
-      "state": [
-        "./dist/state.d.ts"
+      "core": [
+        "./dist/core/index.d.ts"
+      ],
+      "node": [
+        "./dist/node/index.d.ts"
+      ],
+      "runtime": [
+        "./dist/runtime/index.d.ts"
+      ],
+      "scenario": [
+        "./dist/scenario/index.d.ts"
       ]
     }
   },
@@ -77,11 +104,13 @@
   "scripts": {
     "build": "yarn build:code && yarn build:app",
     "build:app": "vite build -c ./vite.config.app.ts",
-    "build:code": "vite build -c ./vite.config.ts",
+    "build:code": "vite build -c ./vite.config.ts && vite build -c ./vite.config.node.ts",
     "dev:e2e": "vite --host 0.0.0.0 --port 4173",
     "serve": "node ./bin/embed-ui-v1-sandbox.mjs serve",
     "serve:fixture": "node ./tests/__fixtures__/serve-extension-fixture.mjs",
-    "test:coverage": "vitest --run --coverage",
+    "test:browser": "vitest --run --config ./vitest.config.browser.ts",
+    "test:coverage": "vitest --run --coverage --coverage.all",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest --run",
     "e2e": "playwright test -c vitest.config.playwright.ts",
     "sandbox:env": "cp node_modules/@retailcrm/embed-ui-v1-sandbox/.env.dist .env.sandbox"
@@ -105,13 +134,17 @@
     "@omnicajs/vue-remote": "^0.2.24",
     "@playwright/test": "1.58.2",
     "@remote-ui/rpc": "^1.4.7",
+    "@testing-library/dom": "^10.4.1",
     "@types/node": "^25.6.0",
     "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/browser": "4.1.8",
+    "@vitest/browser-playwright": "4.1.8",
     "@vitest/coverage-istanbul": "4.1.8",
     "@vue/test-utils": "^2.4.6",
     "dotenv": "^17.4.2",
     "less": "^4.4.2",
     "pinia": "^2.2.8",
+    "playwright": "1.58.2",
     "typescript": "^5.9.3",
     "vite": "^7.3.2",
     "vite-plugin-dts": "^4.5.4",

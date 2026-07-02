@@ -43,7 +43,10 @@
     "src/**/*.ts",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "vitest.config.playwright.ts",
+    "vitest.config*.ts",
     "vite.config*.ts"
+  ],
+  "exclude": [
+    "tests/__fixtures__/**/*.ts"
   ]
 }

@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
-import { DefaultSandbox } from '../src'
+import { DefaultSandbox } from '../src/scenario'
 
 function readEnv(...keys: string[]): string {
   for (const key of keys) {

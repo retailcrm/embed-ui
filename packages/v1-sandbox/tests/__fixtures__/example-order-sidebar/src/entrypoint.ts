@@ -1,9 +1,14 @@
-import { defineComponent, h } from 'vue'
+import type { Component } from 'vue'
 
-import { definePageRunner, defineRunner } from '@retailcrm/embed-ui-v1-endpoint/remote'
+import { defineComponent, h, onMounted } from 'vue'
+
+import { defineRunner } from '@retailcrm/embed-ui-v1-endpoint/remote'
 import { runEndpoint } from '@retailcrm/embed-ui-v1-endpoint/remote'
+import {
+  useContext as useOrderContext,
+} from '@retailcrm/embed-ui-v1-contexts/remote/order/card'
 
-const OrderSidebarWidget = defineComponent({
+const OrderSidebarWidget: Component = defineComponent({
   props: {
     target: {
       required: true,
@@ -12,6 +17,12 @@ const OrderSidebarWidget = defineComponent({
   },
 
   setup(props: { target: string }) {
+    const order = useOrderContext()
+
+    onMounted(() => {
+      void order.initialize()
+    })
+
     return () => h('section', {
       'aria-label': `Example order sidebar widget: ${props.target}`,
     }, [
@@ -23,7 +34,7 @@ const OrderSidebarWidget = defineComponent({
         'aria-label': 'Order details',
       }, [
         h('h3', 'Order details'),
-        h('p', 'Order #215C'),
+        h('p', `Order #${order.number}`),
         h('p', 'Fixture: order-basic'),
         h('p', `Target: ${props.target}`),
       ]),
@@ -31,7 +42,7 @@ const OrderSidebarWidget = defineComponent({
   },
 })
 
-const OrderDemoPage = defineComponent({
+const OrderDemoPage: Component = defineComponent({
   props: {
     code: {
       required: true,
@@ -51,8 +62,6 @@ const OrderDemoPage = defineComponent({
 })
 
 runEndpoint(defineRunner({
-  pages: [{
-    'orders-dashboard': definePageRunner(OrderDemoPage),
-  }],
+  pages: [OrderDemoPage],
   widgets: [OrderSidebarWidget],
 }))

@@ -9,9 +9,9 @@ import process from 'node:process'
 import { build } from 'vite'
 import vueRemoteVitePlugin from '@omnicajs/vue-remote/vite-plugin'
 
-const DEFAULT_FIXTURE = 'example-order-sidebar'
-const DEFAULT_HOST = '127.0.0.1'
-const DEFAULT_PORT = 4274
+export const DEFAULT_FIXTURE = 'example-order-sidebar'
+export const DEFAULT_HOST = '127.0.0.1'
+export const DEFAULT_PORT = 4274
 
 const currentFile = fileURLToPath(import.meta.url)
 const fixturesRoot = path.dirname(currentFile)
@@ -91,7 +91,7 @@ const createStaticServer = root => http.createServer((request, response) => {
   })
 })
 
-const parseArgs = (rawArgs) => {
+export const parseArgs = (rawArgs) => {
   const options = {
     fixture: DEFAULT_FIXTURE,
     host: DEFAULT_HOST,
@@ -128,10 +128,15 @@ const parseArgs = (rawArgs) => {
   return options
 }
 
-const serve = async () => {
-  const options = parseArgs(process.argv.slice(2))
-  const fixtureRoot = path.resolve(fixturesRoot, options.fixture)
-  const fixtureOutDir = path.join(serveRoot, options.fixture)
+export const startExtensionFixtureServer = async (options = {}) => {
+  const serverOptions = {
+    fixture: DEFAULT_FIXTURE,
+    host: DEFAULT_HOST,
+    port: DEFAULT_PORT,
+    ...options,
+  }
+  const fixtureRoot = path.resolve(fixturesRoot, serverOptions.fixture)
+  const fixtureOutDir = path.join(serveRoot, serverOptions.fixture)
 
   if (!fixtureRoot.startsWith(`${fixturesRoot}${path.sep}`)) {
     throw new Error(`Fixture must be inside ${fixturesRoot}`)
@@ -158,22 +163,42 @@ const serve = async () => {
 
   await new Promise((resolve, reject) => {
     server.once('error', reject)
-    server.listen(options.port, options.host, resolve)
+    server.listen(serverOptions.port, serverOptions.host, resolve)
   })
 
-  console.log(`  ➜  Local:   http://${options.host}:${options.port}/`)
+  return {
+    baseUrl: `http://${serverOptions.host}:${serverOptions.port}/`,
+    close: () => new Promise((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error)
+          return
+        }
+
+        resolve()
+      })
+    }),
+    server,
+  }
+}
+
+const serve = async () => {
+  const fixtureServer = await startExtensionFixtureServer(parseArgs(process.argv.slice(2)))
+
+  console.log(`  ➜  Local:   ${fixtureServer.baseUrl}`)
 
   const close = async () => {
-    server.close(() => {
-      process.exit(0)
-    })
+    await fixtureServer.close()
+    process.exit(0)
   }
 
   process.once('SIGINT', () => { void close() })
   process.once('SIGTERM', () => { void close() })
 }
 
-serve().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error))
-  process.exitCode = 1
-})
+if (process.argv[1] === currentFile) {
+  serve().catch((error) => {
+    console.error(error instanceof Error ? error.message : String(error))
+    process.exitCode = 1
+  })
+}

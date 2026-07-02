@@ -28,7 +28,7 @@ const webServer = [
   ...useExternalSandbox
     ? []
     : [{
-      command: 'yarn workspaces foreach -A --topological-dev run build'
+      command: 'yarn workspace @retailcrm/embed-ui-v1-sandbox run build'
           + ' && yarn workspace @retailcrm/embed-ui-v1-sandbox run serve --host 127.0.0.1 --port 4173',
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

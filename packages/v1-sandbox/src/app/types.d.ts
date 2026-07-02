@@ -8,9 +8,9 @@ import type {
   WidgetRunIdentity,
 } from '@retailcrm/embed-ui-v1-endpoint/remote'
 
-import type { OrderSandboxSchemas } from '@/dev/fixtures'
-import type { SandboxEndpointApi } from '@/controller'
-import type { SandboxOrderTarget } from '@/dev/types'
+import type { OrderSandboxSchemas } from '@/scenario/fixtures'
+import type { SandboxEndpointApi } from '@/core/controller'
+import type { SandboxOrderTarget } from '@/scenario/types'
 
 export type HostComponent = DefineComponent<Record<string, unknown>>
 
@@ -66,7 +66,7 @@ export type SandboxMount = {
   type: 'page' | 'widget';
 }
 
-export type SandboxSelectOption = {
+export type VSelectOption = {
   disabled?: boolean;
   label: string;
   value: string;

@@ -5,14 +5,14 @@
             !isSidebarOpen && $style['sandbox-app_sidebar-closed'],
         ]"
     >
-        <SandboxRail
+        <NavigationRail
             :dev-panel-controls-id="uid + '-sandbox-dev-panel-drawer'"
             :dev-panel-open="isDevPanelOpen"
             @open-dev-panel="openDevPanel"
         />
 
-        <SandboxSidebar
-            :id="uid + '-sandbox-sidebar'"
+        <NavigationSidebar
+            :id="uid + '-navigation-sidebar'"
             :open="isSidebarOpen"
         />
 
@@ -20,7 +20,7 @@
             :class="$style['sandbox-app__sidebar-toggle']"
             :aria-label="isSidebarOpen ? t('app.sidebarCollapse') : t('app.sidebarExpand')"
             :aria-expanded="isSidebarOpen"
-            :aria-controls="uid + '-sandbox-sidebar'"
+            :aria-controls="uid + '-navigation-sidebar'"
             type="button"
             @click="toggleSidebar"
         >
@@ -52,7 +52,7 @@
                     :set-tree="setMountTree"
                 />
 
-                <WidgetMounts
+                <WidgetTargetList
                     v-else
                     :mounts="mounts"
                     :set-tree="setMountTree"
@@ -113,17 +113,17 @@ import type {
   DevPanelField,
   DevPanelValidationErrors,
   DevPanelValidationMessages,
-} from '@/dev/validation'
+} from '@/scenario/validation'
 import type { HostedTreeRef } from '@/app/types'
-import type { SandboxAppBridge } from '@/app/automation'
-import type { SandboxExtensionDescriptor } from '@/dev/types'
+import type { SandboxExtensionDescriptor } from '@/scenario/types'
 import type { SandboxIframeWidgetApi } from '@/app/types'
-import type { SandboxLaunchConfig } from '@/dev/types'
+import type { SandboxLaunchBridge } from '@/automation/bridge'
+import type { SandboxLaunchConfig } from '@/scenario/types'
 import type { SandboxLaunchDiagnostic } from '@/app/types'
-import type { SandboxLaunchInput } from '@/app/automation'
-import type { SandboxLaunchMode } from '@/dev/types'
+import type { SandboxLaunchInput } from '@/automation/bridge'
+import type { SandboxLaunchMode } from '@/scenario/types'
 import type { SandboxMount } from '@/app/types'
-import type { SandboxOrderTarget } from '@/dev/types'
+import type { SandboxOrderTarget } from '@/scenario/types'
 import type { SandboxRuntime, SandboxWorkerApi, StoredLaunchNotice } from '@/app/types'
 
 import { computed } from 'vue'
@@ -139,27 +139,28 @@ import { watch } from 'vue'
 
 import { UiButton, UiModalSidebar } from '@retailcrm/embed-ui-v1-components/host'
 
-import DevPanel from '@/app/components/DevPanel.vue'
-import ExtensionOnboarding from '@/app/components/ExtensionOnboarding.vue'
-import PageMount from '@/app/components/PageMount.vue'
+import DevPanel from '@/components/DevPanel.vue'
+import ExtensionOnboarding from '@/components/ExtensionOnboarding.vue'
+import NavigationRail from '@/components/NavigationRail.vue'
+import NavigationSidebar from '@/components/NavigationSidebar.vue'
+import PageMount from '@/components/PageMount.vue'
+import WidgetTargetList from '@/components/WidgetTargetList.vue'
 
-import SandboxRail from '@/app/components/SandboxRail.vue'
-import SandboxSidebar from '@/app/components/SandboxSidebar.vue'
+import RemoteBootstrapWorker from '@/runtime/remoteBootstrap.worker.ts?worker'
 
-import WidgetMounts from '@/app/components/WidgetMounts.vue'
-
-import RemoteBootstrapWorker from '@/app/runtime/remoteBootstrap.worker.ts?worker'
-
-import { createDefaultSandboxManifestUrl } from '@/dev/launch'
-import { createMounts } from '@/app/runtime/mounts'
-import { createOrderSandboxController } from '@/dev/fixtures'
-import { DEFAULT_SANDBOX_TARGETS } from '@/app/runtime/mounts'
+import { createDefaultSandboxManifestUrl } from '@/scenario/launch'
+import { createMounts } from '@/runtime/mount'
+import { createOrderSandboxController } from '@/scenario/fixtures'
+import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
 import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
-import { parseSandboxLaunchConfig } from '@/dev/launch'
-import { resolveSandboxExtensionSource } from '@/dev/manifest'
-import { SANDBOX_APP_BRIDGE_GLOBAL_KEY } from '@/app/automation'
-import { updateSandboxLaunchQuery } from '@/dev/launch'
-import { validateContextJsonInput, validateLaunchConfigInput } from '@/dev/validation'
+import { parseSandboxLaunchConfig } from '@/scenario/launch'
+import { resolveSandboxExtensionSource } from '@/scenario/manifest'
+import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
+import { updateSandboxLaunchQuery } from '@/scenario/launch'
+import {
+  validateContextJsonInput,
+  validateLaunchConfigInput,
+} from '@/scenario/validation'
 
 const searchParams = new URLSearchParams(window.location.search)
 const hasExplicitExtensionUrl = Boolean(searchParams.get('extensionUrl')?.trim())
@@ -399,7 +400,7 @@ const mountIframeExtension = async (
         mount,
       })
 
-      await endpoint.call.run(mount.receiver.receive, getWidgetMountTarget(mount))
+      await endpoint.call.run(mount.receiver.receive, getWidgetOrderTarget(mount))
     }
   } catch (error) {
     connections.forEach(disposeRuntimeConnection)
@@ -409,7 +410,7 @@ const mountIframeExtension = async (
   return connections
 }
 
-const getWidgetMountTarget = (mount: SandboxMount): SandboxOrderTarget => {
+const getWidgetOrderTarget = (mount: SandboxMount): SandboxOrderTarget => {
   if (!('target' in mount.runConfig)) {
     throw new Error(`[sandbox:manifest] Mount '${mount.id}' is not a widget target.`)
   }
@@ -606,7 +607,7 @@ const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchCo
     : [...selectedTargets.value],
 })
 
-const createSandboxAppBridge = (): SandboxAppBridge => ({
+const createLaunchBridge = (): SandboxLaunchBridge => ({
   createLaunchUrl(config) {
     return updateSandboxLaunchQuery(createLaunchConfigFromInput(config)).toString()
   },
@@ -620,19 +621,19 @@ const createSandboxAppBridge = (): SandboxAppBridge => ({
   },
 })
 
-const installSandboxAppBridge = (): (() => void) => {
-  const bridge = createSandboxAppBridge()
+const installSandboxLaunchBridge = (): (() => void) => {
+  const bridge = createLaunchBridge()
 
-  window[SANDBOX_APP_BRIDGE_GLOBAL_KEY] = bridge
+  window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY] = bridge
 
   return () => {
-    if (window[SANDBOX_APP_BRIDGE_GLOBAL_KEY] === bridge) {
-      delete window[SANDBOX_APP_BRIDGE_GLOBAL_KEY]
+    if (window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY] === bridge) {
+      delete window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]
     }
   }
 }
 
-const uninstallSandboxAppBridge = installSandboxAppBridge()
+const uninstallSandboxLaunchBridge = installSandboxLaunchBridge()
 
 const createExtensionWorker = (
   uuid: string,
@@ -822,7 +823,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  uninstallSandboxAppBridge()
+  uninstallSandboxLaunchBridge()
   void disposeRuntime()
   sandbox.dispose()
 })
