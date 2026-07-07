@@ -4,7 +4,7 @@ import type { Ref } from 'vue'
 import type { UiPopperMethods, UiPopperProperties } from '@/common/components/popper'
 
 declare const UiTooltip: DefineComponent<
-  UiPopperProperties & { target: Ref<HTMLElement | null> },
+  UiPopperProperties & { target?: Ref<HTMLElement | null> },
   UiPopperMethods
 >
 
