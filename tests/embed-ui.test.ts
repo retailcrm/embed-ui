@@ -347,12 +347,20 @@ describe('embed-ui CLI', () => {
       eslint: 'eslint .',
       'eslint:fix': 'eslint --fix .',
       'publish-extension': 'node scripts/publish-extension.mjs',
+      'sandbox:serve': 'embed-ui-v1-sandbox serve --host 127.0.0.1 --port 4173',
+      'serve:extension': 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175',
+      test: 'npm run test:unit && npm run test:browser && npm run test:e2e',
+      'test:browser': 'vitest --run --config vitest.config.browser.ts',
+      'test:browsers:install': 'playwright install chromium',
+      'test:e2e': 'playwright test -c vitest.config.playwright.ts',
+      'test:unit': 'vitest --run --config vitest.config.ts',
     })
     expect(packageJson.dependencies).toMatchObject({
       '@retailcrm/embed-ui': '^1.2.3',
       '@retailcrm/embed-ui-v1-components': '^1.2.3',
       '@retailcrm/embed-ui-v1-contexts': '^1.2.3',
       '@retailcrm/embed-ui-v1-endpoint': '^1.2.3',
+      '@retailcrm/embed-ui-v1-sandbox': '^1.2.3',
       '@retailcrm/embed-ui-v1-types': '^1.2.3',
       '@omnicajs/vue-remote': '^0.2.24',
       '@remote-ui/rpc': '^1.4.7',
@@ -366,23 +374,34 @@ describe('embed-ui CLI', () => {
       '@intlify/eslint-plugin-vue-i18n': '^4.4',
       '@intlify/unplugin-vue-i18n': '^11.2',
       '@omnicajs/eslint-plugin-dependencies': '^0.0.2',
+      '@playwright/test': '^1.58',
+      '@testing-library/dom': '^10.4',
       '@types/node': '^22.19',
       '@vitejs/plugin-vue': '^6.0',
+      '@vitest/browser': '^4.1',
+      '@vitest/browser-playwright': '^4.1',
       '@vue/language-server': '^3.2',
+      dotenv: '^17.4',
       eslint: '^9.39',
       'eslint-plugin-vue': '^10.9',
       globals: '^16.5',
+      jsdom: '^27.3',
       'jsonc-eslint-parser': '^3.1',
       less: '^4.6',
+      playwright: '^1.58',
       typescript: '^5.9',
       'typescript-eslint': '^8.59',
       vite: '^7.3',
       'vite-svg-loader': '^5.1',
+      vitest: '^4.1',
       'vue-eslint-parser': '^10.4',
       'yaml-eslint-parser': '^2.0',
     })
 
     expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(true)
+    expect(fs.existsSync(path.join(tempDir, 'vitest.config.ts'))).toBe(true)
+    expect(fs.existsSync(path.join(tempDir, 'vitest.config.browser.ts'))).toBe(true)
+    expect(fs.existsSync(path.join(tempDir, 'vitest.config.playwright.ts'))).toBe(true)
     expect(fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8')).toContain('node_modules/')
     expect(fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8')).toContain('dist/')
     expect(fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8')).toContain('.env')
@@ -417,6 +436,30 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain('vueI18n({')
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain(
       '\'@\': path.resolve(root, \'web\')'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.ts'), 'utf8')).toContain(
+      'include: [\'web/sandbox/tests/unit/**/*.test.ts\']'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.browser.ts'), 'utf8')).toContain(
+      'include: [\'web/sandbox/tests/browser/**/*.browser.test.ts\']'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.browser.ts'), 'utf8')).toContain(
+      '@retailcrm/embed-ui-v1-components/remote'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.browser.ts'), 'utf8')).toContain(
+      '\'vue-i18n\''
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
+      'testDir: \'./web/sandbox/tests/e2e\''
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
+      'command: \'npm run sandbox:serve\''
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
+      'command: \'npm run build && npm run serve:extension\''
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
+      'http://127.0.0.1:4175/extension/'
     )
     expect(fs.readFileSync(path.join(tempDir, 'web/i18n/index.ts'), 'utf8')).toContain('./locales/en-GB.json')
     expect(fs.existsSync(path.join(tempDir, 'web/i18n/locales/ru-RU.json'))).toBe(true)
@@ -509,6 +552,21 @@ describe('embed-ui CLI', () => {
       'UiModalWindow'
     )
     expect(fs.existsSync(path.join(tempDir, 'web/shared/assets/extension.svg'))).toBe(true)
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/unit/extensionrc.test.ts'), 'utf8')).toContain(
+      'expect(extensionrc.targets).toContain(\'order/card:common.after\')'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.browser.test.ts'), 'utf8')).toContain(
+      'createSandboxWorkerRuntime'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.browser.test.ts'), 'utf8')).toContain(
+      'new URL(\'/web/endpoint/endpoint.worker.ts\', window.location.href)'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+      'await expect(page).toHaveURL(/mode=page/u)'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+      '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
+    )
     const extensionConfig = readJsonFile<{
       pages: Array<{
         code: string;
@@ -538,6 +596,18 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'scripts/publish-extension.mjs'), 'utf8')).toContain(
       'uses deprecated string page form'
     )
+    expect(fs.readFileSync(path.join(tempDir, 'scripts/serve-extension.mjs'), 'utf8')).toContain(
+      'const registry = createExtensionRegistry()'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'scripts/serve-extension.mjs'), 'utf8')).toContain(
+      'Extension server: http://\' + host + \':\' + port'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+      'settings-page-addon__icon'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+      'const extensionUrl = new URL(extensionrc.uuid, extensionBaseURL).href'
+    )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       '# Фронтенд расширения RetailCRM'
     )
@@ -553,6 +623,44 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       'npm run eslint'
     )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      'npm run test:e2e'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      '`vitest.config.ts`, `vitest.config.browser.ts` и `vitest.config.playwright.ts`'
+    )
+  })
+
+  test('init dry-run reports Playwright Chromium install command', async () => {
+    const tempDir = createTempDir()
+    const logs: string[] = []
+
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'yarn',
+        '--no-agents',
+        '--no-mcp',
+        '--no-skills',
+        '--no-template',
+        '--dry-run',
+      ]),
+      version: '1.2.3',
+    })
+
+    const output = logs.join('\n')
+
+    expect(output).toContain('install')
+    expect(output).toContain('yarn install')
+    expect(output).toContain('browser install')
+    expect(output).toContain('yarn test:browsers:install')
   })
 
   test('init mode can initialize Git metadata', async () => {
@@ -777,6 +885,9 @@ describe('embed-ui CLI', () => {
     expect(output).toContain('configs: disabled')
     expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(false)
     expect(fs.existsSync(path.join(tempDir, 'vite.config.ts'))).toBe(false)
+    expect(fs.existsSync(path.join(tempDir, 'vitest.config.ts'))).toBe(false)
+    expect(fs.existsSync(path.join(tempDir, 'vitest.config.browser.ts'))).toBe(false)
+    expect(fs.existsSync(path.join(tempDir, 'vitest.config.playwright.ts'))).toBe(false)
     expect(fs.existsSync(path.join(tempDir, 'eslint.config.js'))).toBe(false)
     expect(fs.existsSync(path.join(tempDir, 'env.d.ts'))).toBe(false)
   })
@@ -811,6 +922,7 @@ describe('embed-ui CLI', () => {
     expect(output).toContain('MCP client configs requested: cursor, vscode')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-contexts@1.2.3 -- embed-ui-v1-contexts init-config')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-config')
+    expect(output).toContain(`npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-sandbox@1.2.3 -- embed-ui-v1-sandbox init-env ${tempDir}`)
     expect(output).toContain('--mcp-client-configs cursor,vscode')
   })
 
@@ -847,6 +959,36 @@ describe('embed-ui CLI', () => {
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-components@1.2.3 -- embed-ui-v1-components init-skills')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-contexts@1.2.3 -- embed-ui-v1-contexts init-skills')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-skills')
+  })
+
+  test('init agents-only mode delegates sandbox agent setup to selected packages', async () => {
+    const tempDir = createTempDir()
+    const logs: string[] = []
+    const options = parseInitArgs([
+      '--cwd',
+      tempDir,
+      '--package-manager',
+      'npm',
+      '--packages',
+      'components,sandbox',
+      '--agents-only',
+      '--dry-run',
+    ])
+
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
+      logs.push(args.join(' '))
+    })
+
+    await runInit({
+      ...options,
+      version: '1.2.3',
+    })
+
+    const output = logs.join('\n')
+
+    expect(output).toContain('agents-only mode: package.json, configs, and template files are skipped')
+    expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-components@1.2.3 -- embed-ui-v1-components init-agents')
+    expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-sandbox@1.2.3 -- embed-ui-v1-sandbox init-agents')
   })
 
   test('package hooks prefer local bin and pick compatible transient commands', () => {
@@ -1144,6 +1286,57 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf8')).toContain(
       './node_modules/@retailcrm/embed-ui-v1-components/README.md'
     )
+  })
+
+  test('v1-sandbox init-agents supports transient execution before install', () => {
+    const tempDir = createTempDir()
+    const sandboxBin = path.resolve('packages/v1-sandbox/bin/embed-ui-v1-sandbox.mjs')
+
+    execFileSync('node', [
+      sandboxBin,
+      'init-agents',
+      tempDir,
+    ])
+
+    const agentsContent = fs.readFileSync(path.join(tempDir, 'AGENTS.md'), 'utf8')
+
+    expect(agentsContent).toContain('./node_modules/@retailcrm/embed-ui-v1-sandbox/README.md')
+    expect(agentsContent).toContain('<!-- embed-ui-agents:@retailcrm/embed-ui-v1-sandbox:start -->')
+  })
+
+  test('v1-sandbox init-env creates project env template safely', () => {
+    const tempDir = createTempDir()
+    const sandboxBin = path.resolve('packages/v1-sandbox/bin/embed-ui-v1-sandbox.mjs')
+    const envTemplatePath = path.resolve('packages/v1-sandbox/.env.sandbox.dist')
+    const envPath = path.join(tempDir, '.env.sandbox')
+    const envTemplate = fs.readFileSync(envTemplatePath, 'utf8')
+
+    execFileSync(process.execPath, [
+      sandboxBin,
+      'init-env',
+      tempDir,
+    ])
+
+    expect(fs.readFileSync(envPath, 'utf8')).toBe(envTemplate)
+
+    fs.writeFileSync(envPath, 'SANDBOX_BASE_URL=http://already-configured.test\n', 'utf8')
+
+    execFileSync(process.execPath, [
+      sandboxBin,
+      'init-env',
+      tempDir,
+    ])
+
+    expect(fs.readFileSync(envPath, 'utf8')).toBe('SANDBOX_BASE_URL=http://already-configured.test\n')
+
+    execFileSync(process.execPath, [
+      sandboxBin,
+      'init-env',
+      tempDir,
+      '--force',
+    ])
+
+    expect(fs.readFileSync(envPath, 'utf8')).toBe(envTemplate)
   })
 
   test('package init-skills commands create project-level skills', () => {

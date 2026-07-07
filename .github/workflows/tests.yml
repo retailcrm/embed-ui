@@ -87,6 +87,18 @@ jobs:
         if: ${{ startsWith(matrix.node-version, '24.') }}
         run: yarn workspace @retailcrm/embed-ui-v1-endpoint exec playwright install --with-deps chromium
 
+      - name: Run v1-sandbox browser mode tests
+        if: ${{ startsWith(matrix.node-version, '24.') }}
+        run: yarn test:browser
+
+      - name: Upload v1-sandbox browser screenshots
+        if: ${{ failure() && startsWith(matrix.node-version, '24.') }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: v1-sandbox-browser-screenshots-${{ matrix.node-version }}
+          path: packages/v1-sandbox/artifacts/browser/screenshots
+          if-no-files-found: ignore
+
       - name: Run v1-endpoint e2e tests
         if: ${{ startsWith(matrix.node-version, '24.') }}
         run: yarn workspace @retailcrm/embed-ui-v1-endpoint run test:e2e

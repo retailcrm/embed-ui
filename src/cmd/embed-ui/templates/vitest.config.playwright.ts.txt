@@ -1,0 +1,49 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
+import dotenv from 'dotenv'
+
+import { defineConfig, devices } from '@playwright/test'
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.sandbox') })
+
+const sandboxBaseURL = process.env.SANDBOX_BASE_URL || 'http://127.0.0.1:4173'
+const extensionBaseURL = process.env.SANDBOX_EXTENSION_URL || 'http://127.0.0.1:4175/extension/'
+const extensionrc = JSON.parse(
+  fs.readFileSync(path.resolve(process.cwd(), 'extensionrc.json'), 'utf8')
+) as { uuid: string }
+const extensionURL = new URL(extensionrc.uuid, extensionBaseURL).href
+
+export default defineConfig({
+  testDir: './__SOURCE_ROOT__/sandbox/tests/e2e',
+  testMatch: '**/*.e2e.ts',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  outputDir: 'artifacts/playwright/results',
+  use: {
+    baseURL: sandboxBaseURL,
+    screenshot: 'only-on-failure',
+    trace: 'on-first-retry',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
+  webServer: [
+    {
+      command: '__PACKAGE_MANAGER_RUN__ sandbox:serve',
+      url: sandboxBaseURL,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: '__PACKAGE_MANAGER_RUN__ build && __PACKAGE_MANAGER_RUN__ serve:extension',
+      url: extensionURL,
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
+})

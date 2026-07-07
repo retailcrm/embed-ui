@@ -14,6 +14,7 @@ export const createInitChanges = (): InitChanges => ({
   git: [],
   hooks: [],
   install: null,
+  browserInstall: null,
   skipped: [],
   warnings: [],
 })
@@ -132,6 +133,12 @@ export const printInitReport = (
     console.log(`  ${changes.install}`)
   }
 
+  if (changes.browserInstall) {
+    console.log('')
+    console.log('browser install')
+    console.log(`  ${changes.browserInstall}`)
+  }
+
   if (changes.skipped.length > 0) {
     console.log('')
     console.log('skipped')
@@ -176,6 +183,7 @@ const printInitSummary = (
     changes.git.length ? `git: ${changes.git.join(', ')}` : null,
     changes.hooks.length ? `package hooks ran: ${changes.hooks.length}` : null,
     changes.install ? `install: ${changes.install}` : null,
+    changes.browserInstall ? `browser install: ${changes.browserInstall}` : null,
   ].filter((item): item is string => typeof item === 'string')
 
   if (summary.length > 0) {

@@ -1,0 +1,57 @@
+{
+  "app": {
+    "alerts": {
+      "inferredPageMode": {
+        "message": "The URL did not include mode. Sandbox found the \"{pageCode}\" page in the extension and switched the launch to page mode.",
+        "title": "Page mode was selected automatically"
+      },
+      "missingPageCode": {
+        "message": "The extension does not expose the \"{pageCode}\" page. Available pages: {pages}.",
+        "title": "Extension page was not found"
+      },
+      "runtimeError": {
+        "message": "{message}",
+        "title": "Failed to start extension"
+      },
+      "workerPageInWidgetMode": {
+        "message": "The extension exposes pages: {pages}. Widgets mode is selected now; switch mode to page if you expected a page extension.",
+        "title": "Check launch mode"
+      }
+    },
+    "contextEditor": {
+      "errors": {
+        "contextObject": "Context \"{context}\" must be a JSON object.",
+        "rootObject": "Context overrides must be a JSON object.",
+        "unknownContext": "Unknown context \"{context}\"."
+      }
+    },
+    "contentAriaLabel": "Sandbox content",
+    "devPanelAriaLabel": "Sandbox controls",
+    "devPanelClose": "Close sandbox controls",
+    "extensionCanvasAriaLabel": "Extension canvas",
+    "runMode": {
+      "page": "Page: {pageCode}",
+      "widgets": "Widgets: {count}"
+    },
+    "sidebarCollapse": "Collapse sidebar",
+    "sidebarExpand": "Expand sidebar",
+    "validation": {
+      "contextJson": {
+        "contextObject": "Context \"{context}\" must be a JSON object.",
+        "invalidJson": "Enter valid JSON.",
+        "rootObject": "Context overrides must be a JSON object.",
+        "unknownContext": "Unknown context \"{context}\"."
+      },
+      "fixture": "Choose an existing fixture.",
+      "manifestUrl": {
+        "endpoint": "URL must match %extension-url%/extension/%extension-id%.",
+        "format": "Enter an absolute http/https URL.",
+        "required": "Enter the extension URL."
+      },
+      "mode": "Choose a launch mode.",
+      "pageCodeRequired": "Enter a page code for page mode.",
+      "targetRequired": "Choose at least one mount target for widget mode.",
+      "targetUnknown": "Unknown mount target \"{target}\"."
+    }
+  }
+}

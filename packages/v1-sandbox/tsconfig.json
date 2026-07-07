@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable",
+      "ScriptHost"
+    ],
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "outDir": "./dist",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@retailcrm/embed-ui-v1-types/*": [
+        "../v1-types/*.d.ts"
+      ],
+      "@retailcrm/embed-ui-v1-testing/*": [
+        "../v1-testing/*.ts"
+      ]
+    },
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "strict": true,
+    "target": "ES2017",
+    "resolveJsonModule": true,
+    "types": [
+      "node"
+    ],
+    "useDefineForClassFields": true
+  },
+  "include": [
+    "e2e/**/*.ts",
+    "shims-*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "vitest.config*.ts",
+    "vite.config*.ts"
+  ],
+  "exclude": [
+    "tests/__fixtures__/**/*.ts"
+  ]
+}

@@ -1,0 +1,39 @@
+import { defineConfig, mergeConfig } from 'vitest/config'
+import { playwright } from '@vitest/browser-playwright'
+
+import viteConfig from './vite.config'
+
+export default mergeConfig(viteConfig, defineConfig({
+  optimizeDeps: {
+    include: [
+      '@omnicajs/vue-remote/host',
+      '@omnicajs/vue-remote/remote',
+      '@remote-ui/rpc',
+      '@retailcrm/embed-ui',
+      '@retailcrm/embed-ui-v1-components/host',
+      '@retailcrm/embed-ui-v1-components/remote',
+      '@retailcrm/embed-ui-v1-contexts/remote/settings',
+      '@retailcrm/embed-ui-v1-endpoint/remote',
+      'vue',
+      'vue-i18n',
+    ],
+  },
+  server: {
+    allowedHosts: true,
+  },
+  test: {
+    include: ['__SOURCE_ROOT__/sandbox/tests/browser/**/*.browser.test.ts'],
+    browser: {
+      enabled: true,
+      provider: playwright({
+        launchOptions: {
+          channel: 'chromium',
+        },
+      }),
+      headless: true,
+      screenshotFailures: true,
+      screenshotDirectory: 'artifacts/browser/screenshots',
+      instances: [{ browser: 'chromium' }],
+    },
+  },
+}))

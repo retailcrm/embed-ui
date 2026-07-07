@@ -11,13 +11,20 @@ import eslintConfigTemplate from './templates/eslint.config.js.txt?raw'
 import extensionIconTemplate from './templates/extension.svg.txt?raw'
 import i18nIndexTemplate from './templates/i18n-index.ts.txt?raw'
 import orderWidgetTemplate from './templates/OrderCommonAfterWidget.vue.txt?raw'
+import playwrightConfigTemplate from './templates/vitest.config.playwright.ts.txt?raw'
 import publishScriptTemplate from './templates/publish-extension.mjs.txt?raw'
 import readmeEnGBTemplate from './templates/README.en-GB.md.txt?raw'
 import readmeEsESTemplate from './templates/README.es-ES.md.txt?raw'
 import readmeRuRUTemplate from './templates/README.ru-RU.md.txt?raw'
+import sandboxBrowserTestTemplate from './templates/sandbox-browser.browser.test.ts.txt?raw'
+import sandboxE2eTestTemplate from './templates/sandbox-e2e.e2e.ts.txt?raw'
+import sandboxUnitTestTemplate from './templates/sandbox-unit.test.ts.txt?raw'
+import serveScriptTemplate from './templates/serve-extension.mjs.txt?raw'
 import settingsPageTemplate from './templates/SettingsPage.vue.txt?raw'
 import tsConfigTemplate from './templates/tsconfig.json.txt?raw'
 import viteConfigTemplate from './templates/vite.config.ts.txt?raw'
+import vitestBrowserConfigTemplate from './templates/vitest.config.browser.ts.txt?raw'
+import vitestConfigTemplate from './templates/vitest.config.ts.txt?raw'
 
 import { DEFAULT_NEWLINE } from './package-json'
 
@@ -117,6 +124,32 @@ export const createViteConfig = (cwd: string, sourceRoot: string): string => rep
   }
 )
 
+export const createVitestConfig = (cwd: string, sourceRoot: string): string => replaceTemplateVars(
+  vitestConfigTemplate,
+  {
+    SOURCE_ROOT: toPosixRelative(cwd, sourceRoot),
+  }
+)
+
+export const createVitestBrowserConfig = (cwd: string, sourceRoot: string): string => replaceTemplateVars(
+  vitestBrowserConfigTemplate,
+  {
+    SOURCE_ROOT: toPosixRelative(cwd, sourceRoot),
+  }
+)
+
+export const createPlaywrightConfig = (
+  cwd: string,
+  sourceRoot: string,
+  packageManager: PackageManager
+): string => replaceTemplateVars(
+  playwrightConfigTemplate,
+  {
+    PACKAGE_MANAGER_RUN: createPackageManagerRunCommand(packageManager),
+    SOURCE_ROOT: toPosixRelative(cwd, sourceRoot),
+  }
+)
+
 export const createEslintConfig = (cwd: string, sourceRoot: string): string => replaceTemplateVars(
   eslintConfigTemplate,
   {
@@ -137,6 +170,30 @@ export const createI18nIndex = (): string => i18nIndexTemplate
 export const createSettingsPage = (): string => settingsPageTemplate
 
 export const createOrderWidget = (): string => orderWidgetTemplate
+
+export const createSandboxUnitTest = (options: InitOptions): string => replaceTemplateVars(
+  sandboxUnitTestTemplate,
+  {
+    PAGE_CODE: options.pageCode,
+    WIDGET_TARGET: options.widgetTarget,
+  }
+)
+
+export const createSandboxBrowserTest = (cwd: string, sourceRoot: string, options: InitOptions): string => replaceTemplateVars(
+  sandboxBrowserTestTemplate,
+  {
+    PAGE_CODE: options.pageCode,
+    SOURCE_ROOT: toPosixRelative(cwd, sourceRoot),
+    WIDGET_TARGET: options.widgetTarget,
+  }
+)
+
+export const createSandboxE2eTest = (cwd: string, sourceRoot: string): string => replaceTemplateVars(
+  sandboxE2eTestTemplate,
+  {
+    SOURCE_ROOT: toPosixRelative(cwd, sourceRoot),
+  }
+)
 
 export const createMessages = (): string => `${JSON.stringify({}, null, 2)}${DEFAULT_NEWLINE}`
 
@@ -166,6 +223,8 @@ export const createExtensionConfig = (options: InitOptions): string => `${JSON.s
 export const createExtensionIcon = (): string => extensionIconTemplate
 
 export const createPublishScript = (): string => publishScriptTemplate
+
+export const createServeScript = (): string => serveScriptTemplate
 
 export const createReadme = (
   cwd: string,

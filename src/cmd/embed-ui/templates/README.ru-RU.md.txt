@@ -10,7 +10,10 @@
 - `__SOURCE_ROOT__/pages/SettingsPage.vue` как стартовая страница настроек.
 - `__SOURCE_ROOT__/widgets/OrderCommonAfterWidget.vue` как стартовый виджет заказа.
 - `__SOURCE_ROOT__/i18n/` с общими JSON-файлами переводов.
+- `__SOURCE_ROOT__/sandbox/tests/` со стартовыми unit, browser и e2e тестами.
+- `vitest.config.ts`, `vitest.config.browser.ts` и `vitest.config.playwright.ts` для запуска тестов.
 - `scripts/publish-extension.mjs` для создания `dist/extension.zip` и публикации интеграционного модуля через RetailCRM API.
+- `scripts/serve-extension.mjs` для отдачи собранных manifest, script и stylesheet расширения во время e2e-тестов.
 - `AGENTS.md`, если при инициализации были включены инструкции для агентов.
 
 ## Замените Generic Значения
@@ -47,7 +50,24 @@
 __PACKAGE_MANAGER__ install
 __PACKAGE_MANAGER_RUN__ eslint
 __PACKAGE_MANAGER_RUN__ build
+__PACKAGE_MANAGER_RUN__ test:unit
+__PACKAGE_MANAGER_RUN__ test:browser
+__PACKAGE_MANAGER_RUN__ test:e2e
+__PACKAGE_MANAGER_RUN__ serve:extension
 __PACKAGE_MANAGER_RUN__ publish-extension -- --archive-only
+```
+
+## Тестирование
+
+- `__PACKAGE_MANAGER_RUN__ test:unit` проверяет быстрые unit-тесты без браузера.
+- `__PACKAGE_MANAGER_RUN__ test:browser` запускает стартовую страницу и виджет в Chromium через Vitest Browser.
+- `__PACKAGE_MANAGER_RUN__ test:e2e` собирает расширение, поднимает sandbox-приложение и локальный extension server, затем проверяет расширение через Playwright.
+- `__PACKAGE_MANAGER_RUN__ serve:extension` после сборки запускает `http://127.0.0.1:4175`. Тесты собирают конкретный manifest URL как `http://127.0.0.1:4175/extension/<uuid>`.
+
+Перед первым browser/e2e запуском может потребоваться установить Chromium:
+
+```bash
+__PACKAGE_MANAGER_RUN__ test:browsers:install
 ```
 
 ## Публикация
@@ -62,6 +82,7 @@ MODULE_URL=https://example.com
 
 Перед публикацией выполните `__PACKAGE_MANAGER_RUN__ build`. Режим archive-only создает `dist/extension.zip` без API-запросов.
 
-Для локальной проверки в CRM `MODULE_URL` должен указывать на dev/static server, который отдаёт
-`/extension/<uuid>/script` и `/extension/<uuid>/stylesheet`. `publish-extension` регистрирует эти URL в CRM,
-но сам dev-server не запускает.
+Для локальной проверки в CRM `MODULE_URL` должен указывать на dev/static server. `__PACKAGE_MANAGER_RUN__ serve:extension`
+запускает такой локальный сервер для текущей сборки `dist` и резолвит `/extension/<uuid>`,
+`/extension/<uuid>/script` и `/extension/<uuid>/stylesheet` из `extensionrc.json`.
+`publish-extension` регистрирует эти URL в CRM, но сам dev-server не запускает.

@@ -23,12 +23,26 @@ services:
       traefik.http.services.embed-ui-v1-components.loadbalancer.server.port: '6006'
       dev.orbstack.domains: 'v1.embed-ui.local'
 
+  v1-sandbox:
+    <<: *node
+    command: 'yarn run dev:e2e'
+    working_dir: /project/packages/v1-sandbox
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.embed-ui-v1-sandbox.rule: 'HostRegexp(`v1.embed-ui-sandbox.{[^.]+}`)'
+      traefik.http.routers.embed-ui-v1-sandbox.priority: 1
+      traefik.http.routers.embed-ui-v1-sandbox.service: embed-ui-v1-sandbox
+      traefik.http.services.embed-ui-v1-sandbox.loadbalancer.server.port: '4173'
+      dev.orbstack.domains: 'v1.embed-ui-sandbox.local'
+
   playwright:
     image: mcr.microsoft.com/playwright:v1.58.2-noble
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ./:/project
     working_dir: /project
+    ports:
+      - "9323:9323"
 
   actionlint:
     image: rhysd/actionlint:latest

@@ -28,7 +28,7 @@ export const applyInitPackageConfigHooks = async (
 
       const args = [hook.command, cwd]
 
-      if (hook.requiresMcp && (options.force || options.forceMcp)) {
+      if (options.force || (hook.requiresMcp && options.forceMcp)) {
         args.push('--force')
       }
 
