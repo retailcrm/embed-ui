@@ -15,16 +15,18 @@ import type {
   SlotsType,
 } from 'vue'
 
+type EmptyEmitsOptions = Record<string, never>
+
 export type ResolveProps<PropsOrPropOptions, E extends EmitsOptions> = Readonly<
   PropsOrPropOptions extends ComponentPropsOptions
     ? ExtractPropTypes<PropsOrPropOptions>
     : PropsOrPropOptions
-> & (Record<string, never> extends E ? Record<string, never> : EmitsToProps<E>);
+> & (E extends EmptyEmitsOptions ? unknown : EmitsToProps<E>);
 
 export type DefineComponent<
   PropsOrPropOptions = object,
   M extends MethodOptions = MethodOptions,
-  E extends EmitsOptions = EmitsOptions,
+  E extends EmitsOptions = EmptyEmitsOptions,
   EE extends string = string,
   PP = PublicProps,
   Props = ResolveProps<PropsOrPropOptions, E>,
