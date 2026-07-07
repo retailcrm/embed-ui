@@ -1,0 +1,57 @@
+{
+  "app": {
+    "alerts": {
+      "inferredPageMode": {
+        "message": "В ссылке не был указан mode. Sandbox нашёл страницу \"{pageCode}\" в расширении и переключил запуск в режим страницы.",
+        "title": "Режим страницы выбран автоматически"
+      },
+      "missingPageCode": {
+        "message": "В расширении нет страницы \"{pageCode}\". Доступные страницы: {pages}.",
+        "title": "Страница расширения не найдена"
+      },
+      "runtimeError": {
+        "message": "{message}",
+        "title": "Не удалось запустить расширение"
+      },
+      "workerPageInWidgetMode": {
+        "message": "Расширение содержит страницы: {pages}. Сейчас выбран режим виджетов; если ожидается страница, переключите mode на page.",
+        "title": "Проверьте режим запуска"
+      }
+    },
+    "contextEditor": {
+      "errors": {
+        "contextObject": "Контекст \"{context}\" должен быть JSON-объектом.",
+        "rootObject": "Переопределения контекста должны быть JSON-объектом.",
+        "unknownContext": "Неизвестный контекст \"{context}\"."
+      }
+    },
+    "contentAriaLabel": "Контент песочницы",
+    "devPanelAriaLabel": "Управление песочницей",
+    "devPanelClose": "Закрыть управление песочницей",
+    "extensionCanvasAriaLabel": "Область расширения",
+    "runMode": {
+      "page": "Страница: {pageCode}",
+      "widgets": "Виджеты: {count}"
+    },
+    "sidebarCollapse": "Свернуть боковую панель",
+    "sidebarExpand": "Развернуть боковую панель",
+    "validation": {
+      "contextJson": {
+        "contextObject": "Контекст \"{context}\" должен быть JSON-объектом.",
+        "invalidJson": "Введите валидный JSON.",
+        "rootObject": "Переопределения контекста должны быть JSON-объектом.",
+        "unknownContext": "Неизвестный контекст \"{context}\"."
+      },
+      "fixture": "Выберите существующую фикстуру.",
+      "manifestUrl": {
+        "endpoint": "URL должен быть вида %extension-url%/extension/%extension-id%.",
+        "format": "Введите абсолютный http/https URL.",
+        "required": "Укажите URL расширения."
+      },
+      "mode": "Выберите режим запуска.",
+      "pageCodeRequired": "Укажите код страницы для page mode.",
+      "targetRequired": "Выберите хотя бы одно место встраивания для widget mode.",
+      "targetUnknown": "Неизвестное место встраивания \"{target}\"."
+    }
+  }
+}

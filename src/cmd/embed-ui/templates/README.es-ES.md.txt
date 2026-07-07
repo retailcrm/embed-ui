@@ -10,7 +10,10 @@ Este proyecto fue generado por `embed-ui init`.
 - `__SOURCE_ROOT__/pages/SettingsPage.vue` como pagina inicial de configuracion.
 - `__SOURCE_ROOT__/widgets/OrderCommonAfterWidget.vue` como widget inicial del pedido.
 - `__SOURCE_ROOT__/i18n/` con archivos JSON de mensajes compartidos.
+- `__SOURCE_ROOT__/sandbox/tests/` con pruebas iniciales unit, browser y e2e.
+- `vitest.config.ts`, `vitest.config.browser.ts` y `vitest.config.playwright.ts` para ejecutar pruebas.
 - `scripts/publish-extension.mjs` para crear `dist/extension.zip` y publicar el modulo de integracion por RetailCRM API.
+- `scripts/serve-extension.mjs` para servir manifest, script y stylesheet compilados durante las pruebas e2e.
 - `AGENTS.md` si las instrucciones para agentes estaban activadas durante init.
 
 ## Sustituya Los Valores Genericos
@@ -47,7 +50,24 @@ Use la misma idea para su codigo: `LoyaltySettingsPage.vue`, `OrderNotesWidget.v
 __PACKAGE_MANAGER__ install
 __PACKAGE_MANAGER_RUN__ eslint
 __PACKAGE_MANAGER_RUN__ build
+__PACKAGE_MANAGER_RUN__ test:unit
+__PACKAGE_MANAGER_RUN__ test:browser
+__PACKAGE_MANAGER_RUN__ test:e2e
+__PACKAGE_MANAGER_RUN__ serve:extension
 __PACKAGE_MANAGER_RUN__ publish-extension -- --archive-only
+```
+
+## Pruebas
+
+- `__PACKAGE_MANAGER_RUN__ test:unit` ejecuta pruebas unitarias rapidas sin navegador.
+- `__PACKAGE_MANAGER_RUN__ test:browser` ejecuta la pagina y el widget iniciales en Chromium mediante Vitest Browser.
+- `__PACKAGE_MANAGER_RUN__ test:e2e` compila la extension, inicia la sandbox app y el servidor local de extension, luego comprueba la extension con Playwright.
+- `__PACKAGE_MANAGER_RUN__ serve:extension` inicia `http://127.0.0.1:4175` despues de compilar. Las pruebas construyen el manifest URL concreto como `http://127.0.0.1:4175/extension/<uuid>`.
+
+Antes del primer lanzamiento browser/e2e, instale Chromium si hace falta:
+
+```bash
+__PACKAGE_MANAGER_RUN__ test:browsers:install
 ```
 
 ## Publicacion
@@ -62,6 +82,7 @@ MODULE_URL=https://example.com
 
 Ejecute `__PACKAGE_MANAGER_RUN__ build` antes de publicar. El modo archive-only crea `dist/extension.zip` sin enviar peticiones API.
 
-Para comprobar localmente en CRM, `MODULE_URL` debe apuntar a un dev/static server que sirva
-`/extension/<uuid>/script` y `/extension/<uuid>/stylesheet`. `publish-extension` registra estas URL en CRM,
-pero no arranca ese servidor.
+Para comprobar localmente en CRM, `MODULE_URL` debe apuntar a un dev/static server. `__PACKAGE_MANAGER_RUN__ serve:extension`
+inicia ese servidor local para el build actual de `dist` y resuelve `/extension/<uuid>`,
+`/extension/<uuid>/script` y `/extension/<uuid>/stylesheet` desde `extensionrc.json`.
+`publish-extension` registra estas URL en CRM, pero no arranca ese servidor.

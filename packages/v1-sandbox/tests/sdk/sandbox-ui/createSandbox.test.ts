@@ -1,0 +1,191 @@
+import type { SandboxLaunchBridgeHost } from '@/automation/bridge'
+
+import { afterEach, expect } from 'vitest'
+import { fireEvent } from '@testing-library/dom'
+import { nextTick } from 'vue'
+import { screen } from '@testing-library/dom'
+import { test, vi } from 'vitest'
+import { waitFor, within } from '@testing-library/dom'
+
+import { getSandboxLaunchBridge } from '@/automation/bridge'
+import { mountSandbox } from '@/app/createSandbox'
+
+let app: ReturnType<typeof mountSandbox> | null = null
+let root: HTMLElement | null = null
+
+const mountSandboxApp = () => {
+  root = document.createElement('div')
+  document.body.append(root)
+  app = mountSandbox(root)
+
+  return root
+}
+
+const readLaunchBridge = () => getSandboxLaunchBridge(window as SandboxLaunchBridgeHost)
+
+afterEach(async () => {
+  app?.unmount()
+  root?.remove()
+  app = null
+  root = null
+  document.body.innerHTML = ''
+  await new Promise(resolve => window.setTimeout(resolve, 0))
+  vi.restoreAllMocks()
+  window.history.replaceState(null, '', '/')
+  window.sessionStorage.clear()
+})
+
+test('mounts sandbox with default onboarding screen', () => {
+  const sandboxRoot = mountSandboxApp()
+
+  expect(sandboxRoot.textContent).toContain('Подключите внешнее расширение')
+  expect(sandboxRoot.querySelector('[role="status"]')?.textContent).toBe('Виджеты: 2')
+})
+
+test('toggles sandbox sidebar state', async () => {
+  mountSandboxApp()
+
+  const collapseButton = screen.getByRole('button', {
+    name: 'Свернуть боковую панель',
+  })
+
+  expect(collapseButton.getAttribute('aria-expanded')).toBe('true')
+
+  fireEvent.click(collapseButton)
+  await nextTick()
+
+  const expandButton = screen.getByRole('button', {
+    name: 'Развернуть боковую панель',
+  })
+
+  expect(expandButton.getAttribute('aria-expanded')).toBe('false')
+
+  fireEvent.click(expandButton)
+  await nextTick()
+
+  expect(screen.getByRole('button', {
+    name: 'Свернуть боковую панель',
+  }).getAttribute('aria-expanded')).toBe('true')
+})
+
+test('opens dev panel and validates launch config input', async () => {
+  vi.spyOn(window, 'alert').mockImplementation(() => {})
+  mountSandboxApp()
+
+  fireEvent.click(screen.getByRole('button', {
+    name: 'Открыть управление песочницей',
+  }))
+
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Управление песочницей',
+  })
+  const applyButton = within(dialog).getByRole('button', {
+    name: 'Применить',
+  }) as HTMLButtonElement
+
+  expect(applyButton.disabled).toBe(true)
+
+  const manifestInput = within(dialog).getByLabelText('Manifest / URL расширения') as HTMLInputElement
+
+  fireEvent.input(manifestInput, {
+    target: {
+      value: 'http://extension.test/not-extension/id',
+    },
+  })
+  await nextTick()
+
+  expect(applyButton.disabled).toBe(false)
+
+  fireEvent.click(applyButton)
+
+  expect((await within(dialog).findByRole('alert')).textContent?.trim())
+    .toBe('URL должен быть вида %extension-url%/extension/%extension-id%.')
+})
+
+test('installs launch bridge and creates launch urls from current config', () => {
+  mountSandboxApp()
+
+  const bridge = readLaunchBridge()
+
+  expect(bridge).toBeDefined()
+  expect(bridge?.getLaunchConfig()).toMatchObject({
+    fixture: 'order-basic',
+    mode: 'widget',
+    pageCode: 'orders-dashboard',
+  })
+
+  const launchUrl = new URL(bridge?.createLaunchUrl({
+    manifestUrl: 'http://extension.test/extension/returns-module',
+    mode: 'page',
+    pageCode: 'returns',
+    targets: ['order/card:payment.before'],
+  }) ?? '')
+
+  expect(launchUrl.searchParams.get('manifestUrl')).toBe('http://extension.test/extension/returns-module')
+  expect(launchUrl.searchParams.get('mode')).toBe('page')
+  expect(launchUrl.searchParams.get('pageCode')).toBe('returns')
+  expect(launchUrl.searchParams.get('target')).toBe('order/card:payment.before')
+  expect(launchUrl.searchParams.get('targets')).toBe('order/card:payment.before')
+
+  app?.unmount()
+  app = null
+
+  expect(readLaunchBridge()).toBeUndefined()
+})
+
+test('applies context json through dev panel', async () => {
+  vi.spyOn(window, 'alert').mockImplementation(() => {})
+  mountSandboxApp()
+
+  fireEvent.click(screen.getByRole('button', {
+    name: 'Открыть управление песочницей',
+  }))
+
+  const dialog = await screen.findByRole('dialog', {
+    name: 'Управление песочницей',
+  })
+  const contextEditor = within(dialog).getByLabelText('Context JSON') as HTMLTextAreaElement
+  const context = JSON.parse(contextEditor.value) as {
+    'order/card': {
+      number: string;
+    };
+  }
+
+  context['order/card'].number = '999C'
+
+  fireEvent.input(contextEditor, {
+    target: {
+      value: JSON.stringify(context),
+    },
+  })
+  await nextTick()
+
+  const applyContextButton = within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }) as HTMLButtonElement
+
+  expect(applyContextButton.disabled).toBe(false)
+
+  fireEvent.click(applyContextButton)
+
+  await waitFor(() => {
+    expect(contextEditor.value).toContain('"number": "999C"')
+  })
+})
+
+test('shows stored inferred page mode launch notice once', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+
+  window.sessionStorage.setItem('v1-sandbox:launch-notice', JSON.stringify({
+    pageCode: 'returns',
+    type: 'inferred-page-mode',
+  }))
+
+  mountSandboxApp()
+  await nextTick()
+
+  expect(alertSpy).toHaveBeenCalledWith(
+    'Режим страницы выбран автоматически\n\nВ ссылке не был указан mode. Sandbox нашёл страницу "returns" в расширении и переключил запуск в режим страницы.'
+  )
+  expect(window.sessionStorage.getItem('v1-sandbox:launch-notice')).toBeNull()
+})

@@ -1,0 +1,386 @@
+#!/usr/bin/env node
+
+import { fileURLToPath } from 'node:url'
+
+import fs from 'node:fs'
+
+import http from 'node:http'
+
+import path from 'node:path'
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.resolve(scriptDir, '..')
+const DEFAULT_HOST = '127.0.0.1'
+const DEFAULT_PORT = 4175
+
+const parseArgs = () => {
+  const result = {
+    host: DEFAULT_HOST,
+    port: DEFAULT_PORT,
+  }
+  const args = process.argv.slice(2)
+
+  for (let index = 0; index < args.length; index++) {
+    const arg = args[index]
+
+    if (arg === '--host') {
+      result.host = args[++index] || DEFAULT_HOST
+      continue
+    }
+
+    if (arg === '--port') {
+      const port = Number(args[++index])
+
+      if (!Number.isInteger(port) || port <= 0) {
+        throw new Error('Invalid --port value')
+      }
+
+      result.port = port
+    }
+  }
+
+  return result
+}
+
+const readJsonFile = (filePath) => JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+const listFiles = (directoryPath, basePath = directoryPath) => {
+  const result = []
+
+  for (const entry of fs.readdirSync(directoryPath, { withFileTypes: true })) {
+    const entryPath = path.join(directoryPath, entry.name)
+    const relativePath = path.relative(basePath, entryPath).split(path.sep).join('/')
+
+    if (entry.isDirectory()) {
+      result.push(...listFiles(entryPath, basePath))
+      continue
+    }
+
+    if (entry.isFile()) {
+      result.push(relativePath)
+    }
+  }
+
+  return result
+}
+
+const normalizeManifestPath = (value) => typeof value === 'string' && value.startsWith('./')
+  ? value.slice(2)
+  : value
+
+const pickBuildArtifacts = (distDir) => {
+  const files = listFiles(distDir)
+    .filter(file => file !== 'manifest.json')
+    .filter(file => file !== 'extension.zip')
+    .filter(file => !file.endsWith('.map'))
+
+  const viteManifestPath = path.join(distDir, '.vite/manifest.json')
+
+  if (fs.existsSync(viteManifestPath)) {
+    const viteManifest = readJsonFile(viteManifestPath)
+    const entries = Object.values(viteManifest)
+    const entry = entries.find(item => item && item.isEntry) ?? entries[0]
+
+    if (entry?.file) {
+      return {
+        scriptFile: normalizeManifestPath(entry.file),
+        styleFile: Array.isArray(entry.css) ? normalizeManifestPath(entry.css[0]) : null,
+      }
+    }
+  }
+
+  return {
+    scriptFile: files.find(file => file.endsWith('.js')) ?? null,
+    styleFile: files.find(file => file.endsWith('.css')) ?? null,
+  }
+}
+
+const assertFileInside = (root, relativePath) => {
+  const filePath = path.resolve(root, relativePath)
+
+  if (!filePath.startsWith(root + path.sep) && filePath !== root) {
+    throw new Error('Resolved file path is outside dist: ' + relativePath)
+  }
+
+  return filePath
+}
+
+const resolveFileInside = (root, relativePath) => {
+  const filePath = path.resolve(root, relativePath)
+
+  if (!filePath.startsWith(root + path.sep) && filePath !== root) {
+    return null
+  }
+
+  return filePath
+}
+
+const getContentType = (filePath) => {
+  if (filePath.endsWith('.js')) return 'application/javascript; charset=utf-8'
+  if (filePath.endsWith('.css')) return 'text/css; charset=utf-8'
+  if (filePath.endsWith('.html')) return 'text/html; charset=utf-8'
+  if (filePath.endsWith('.json')) return 'application/json; charset=utf-8'
+  if (filePath.endsWith('.svg')) return 'image/svg+xml'
+  if (filePath.endsWith('.png')) return 'image/png'
+  if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) return 'image/jpeg'
+  if (filePath.endsWith('.woff2')) return 'font/woff2'
+
+  return 'application/octet-stream'
+}
+
+const send = (request, response, status, body, headers = {}) => {
+  const origin = request.headers.origin || '*'
+  const responseBody = Buffer.isBuffer(body) ? body : Buffer.from(String(body))
+
+  response.writeHead(status, {
+    'access-control-allow-credentials': 'true',
+    'access-control-allow-origin': origin,
+    'content-length': responseBody.byteLength,
+    'vary': 'Origin',
+    ...headers,
+  })
+
+  if (request.method !== 'HEAD') {
+    response.end(responseBody)
+    return
+  }
+
+  response.end()
+}
+
+const sendFile = (request, response, filePath) => {
+  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+    send(request, response, 404, 'Not found', { 'content-type': 'text/plain; charset=utf-8' })
+    return
+  }
+
+  const body = fs.readFileSync(filePath)
+
+  send(request, response, 200, body, {
+    'content-length': body.byteLength,
+    'content-type': getContentType(filePath),
+  })
+}
+
+const createHtmlManifest = (scriptUrl, stylesheetUrl) => [
+  '<!doctype html>',
+  '<html>',
+  '<head>',
+  '<meta charset="utf-8">',
+  stylesheetUrl ? '<link rel="stylesheet" href="' + stylesheetUrl + '">' : '',
+  '<script type="module" src="' + scriptUrl + '"></script>',
+  '</head>',
+  '<body></body>',
+  '</html>',
+  '',
+].filter(Boolean).join('\n')
+
+const normalizeExtensionUuid = (value, source) => {
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error('Field "uuid" must be a non-empty string in ' + source)
+  }
+
+  return value
+}
+
+const createRootRegistryEntry = () => {
+  const configPath = path.join(projectRoot, 'extensionrc.json')
+  const distDir = path.join(projectRoot, 'dist')
+
+  if (!fs.existsSync(configPath)) {
+    return null
+  }
+
+  if (!fs.existsSync(distDir)) {
+    throw new Error('Build directory not found: ' + distDir + '. Run build before serve:extension.')
+  }
+
+  const config = readJsonFile(configPath)
+  const uuid = normalizeExtensionUuid(config.uuid, configPath)
+  const { scriptFile, styleFile } = pickBuildArtifacts(distDir)
+
+  if (!scriptFile) {
+    throw new Error('Missing JS build artifact. Run build before serve:extension.')
+  }
+
+  const distRoot = path.resolve(distDir)
+
+  return {
+    config,
+    distRoot,
+    scriptPath: assertFileInside(distRoot, scriptFile),
+    stylePath: styleFile ? assertFileInside(distRoot, styleFile) : null,
+    uuid,
+  }
+}
+
+const createCasesRegistryEntries = () => {
+  const casesPath = path.join(projectRoot, 'cases.json')
+
+  if (!fs.existsSync(casesPath)) {
+    return []
+  }
+
+  const cases = readJsonFile(casesPath)
+
+  if (!Array.isArray(cases.items)) {
+    throw new Error('Field "items" must be an array in ' + casesPath)
+  }
+
+  return cases.items.map((record, index) => {
+    const source = casesPath + '#items[' + index + ']'
+    const uuid = normalizeExtensionUuid(record.uuid, source)
+    const name = typeof record.name === 'string' && record.name.trim()
+      ? record.name
+      : null
+
+    if (!name) {
+      throw new Error('Field "name" must be a non-empty string in ' + source)
+    }
+
+    const distRoot = path.resolve(projectRoot, 'dist', name)
+    const manifestPath = path.join(distRoot, 'manifest.json')
+
+    if (!fs.existsSync(manifestPath)) {
+      throw new Error('Build manifest not found: ' + manifestPath)
+    }
+
+    const manifest = readJsonFile(manifestPath)
+    const scriptFile = normalizeManifestPath(manifest[record.script])
+    const styleFile = record.stylesheet ? normalizeManifestPath(manifest[record.stylesheet]) : null
+
+    if (!scriptFile) {
+      throw new Error('Missing JS build artifact for ' + uuid)
+    }
+
+    return {
+      config: record,
+      distRoot,
+      scriptPath: assertFileInside(distRoot, scriptFile),
+      stylePath: styleFile ? assertFileInside(distRoot, styleFile) : null,
+      uuid,
+    }
+  })
+}
+
+const createExtensionRegistry = () => {
+  const registry = new Map()
+  const entries = [
+    createRootRegistryEntry(),
+    ...createCasesRegistryEntries(),
+  ].filter(Boolean)
+
+  if (entries.length === 0) {
+    throw new Error('No extensions found. Add extensionrc.json or cases.json.')
+  }
+
+  for (const entry of entries) {
+    if (registry.has(entry.uuid)) {
+      throw new Error('Duplicate extension uuid: ' + entry.uuid)
+    }
+
+    registry.set(entry.uuid, entry)
+  }
+
+  return registry
+}
+
+const parseExtensionRequest = (pathname) => {
+  const match = pathname.match(/^\/extension\/([^/]+)(?:\/(.*))?$/u)
+
+  if (!match) {
+    return null
+  }
+
+  return {
+    resource: (match[2] ?? '').replace(/\/$/u, ''),
+    uuid: decodeURIComponent(match[1]),
+  }
+}
+
+const start = () => {
+  const { host, port } = parseArgs()
+  const registry = createExtensionRegistry()
+  const server = http.createServer((request, response) => {
+    const url = new URL(request.url || '/', 'http://extension.local')
+
+    if (request.method === 'OPTIONS') {
+      send(request, response, 204, '', {
+        'access-control-allow-headers': 'content-type',
+        'access-control-allow-methods': 'GET,HEAD,OPTIONS,POST',
+      })
+      return
+    }
+
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      send(request, response, 405, 'Method not allowed', { 'content-type': 'text/plain; charset=utf-8' })
+      return
+    }
+
+    const extensionRequest = parseExtensionRequest(url.pathname)
+
+    if (!extensionRequest) {
+      send(request, response, 404, 'Not found', { 'content-type': 'text/plain; charset=utf-8' })
+      return
+    }
+
+    const entry = registry.get(extensionRequest.uuid)
+
+    if (!entry) {
+      send(request, response, 404, 'Not found', { 'content-type': 'text/plain; charset=utf-8' })
+      return
+    }
+
+    const extensionPrefix = '/extension/' + entry.uuid
+
+    if (!extensionRequest.resource) {
+      send(request, response, 200, createHtmlManifest(
+        extensionPrefix + '/script',
+        entry.stylePath && entry.config.stylesheet !== false ? extensionPrefix + '/stylesheet' : null
+      ), {
+        'content-type': 'text/html; charset=utf-8',
+      })
+      return
+    }
+
+    if (extensionRequest.resource === 'script') {
+      sendFile(request, response, entry.scriptPath)
+      return
+    }
+
+    if (extensionRequest.resource === 'stylesheet') {
+      if (!entry.stylePath || entry.config.stylesheet === false) {
+        send(request, response, 404, 'Not found', { 'content-type': 'text/plain; charset=utf-8' })
+        return
+      }
+
+      sendFile(request, response, entry.stylePath)
+      return
+    }
+
+    if (extensionRequest.resource) {
+      const filePath = resolveFileInside(entry.distRoot, decodeURIComponent(extensionRequest.resource))
+
+      if (!filePath) {
+        send(request, response, 404, 'Not found', { 'content-type': 'text/plain; charset=utf-8' })
+        return
+      }
+
+      sendFile(request, response, filePath)
+      return
+    }
+
+    send(request, response, 404, 'Not found', { 'content-type': 'text/plain; charset=utf-8' })
+  })
+
+  server.listen(port, host, () => {
+    console.log('Extension server: http://' + host + ':' + port)
+  })
+}
+
+try {
+  start()
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error)
+  process.exit(1)
+}

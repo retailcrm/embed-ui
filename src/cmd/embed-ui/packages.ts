@@ -16,7 +16,7 @@ import { parsePackageList } from './args'
 import { TARGET_SECTIONS } from './types'
 
 export const ROOT_PACKAGE = '@retailcrm/embed-ui'
-export const DEFAULT_INIT_PACKAGE_IDS = ['embed-ui', 'components', 'contexts', 'types', 'endpoint']
+export const DEFAULT_INIT_PACKAGE_IDS = ['embed-ui', 'components', 'contexts', 'types', 'endpoint', 'sandbox']
 
 export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
   {
@@ -110,6 +110,26 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
         command: 'init-config',
         failureMode: 'advisory',
         requiresMcp: true,
+      },
+    ],
+  },
+  {
+    id: 'sandbox',
+    name: '@retailcrm/embed-ui-v1-sandbox',
+    section: 'dependencies',
+    description: 'Песочница и тестовый стек для проверки расширений без CRM.',
+    hooks: [
+      {
+        type: 'agents',
+        binName: 'embed-ui-v1-sandbox',
+        command: 'init-agents',
+        failureMode: 'advisory',
+      },
+      {
+        type: 'config',
+        binName: 'embed-ui-v1-sandbox',
+        command: 'init-env',
+        failureMode: 'advisory',
       },
     ],
   },

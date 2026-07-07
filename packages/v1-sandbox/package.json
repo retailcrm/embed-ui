@@ -1,0 +1,156 @@
+{
+  "name": "@retailcrm/embed-ui-v1-sandbox",
+  "type": "module",
+  "version": "0.9.29",
+  "description": "Sandbox host emulator for previewing and testing RetailCRM UI extensions",
+  "license": "MIT",
+  "author": "RetailDriverLLC <integration@retailcrm.ru>",
+  "repository": "git@github.com:retailcrm/embed-ui.git",
+  "bin": "bin/embed-ui-v1-sandbox.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    },
+    "./app": {
+      "types": "./dist/app/index.d.ts",
+      "import": "./dist/app/index.js",
+      "require": "./dist/app/index.cjs",
+      "default": "./dist/app/index.js"
+    },
+    "./automation": {
+      "types": "./dist/automation/index.d.ts",
+      "import": "./dist/automation/index.js",
+      "require": "./dist/automation/index.cjs",
+      "default": "./dist/automation/index.js"
+    },
+    "./automation/browser": {
+      "types": "./dist/automation/browser.d.ts",
+      "import": "./dist/automation/browser.js",
+      "require": "./dist/automation/browser.cjs",
+      "default": "./dist/automation/browser.js"
+    },
+    "./automation/playwright": {
+      "types": "./dist/automation/playwright.d.ts",
+      "import": "./dist/automation/playwright.js",
+      "require": "./dist/automation/playwright.cjs",
+      "default": "./dist/automation/playwright.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "require": "./dist/core/index.cjs",
+      "default": "./dist/core/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.js",
+      "require": "./dist/node/index.cjs",
+      "default": "./dist/node/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "import": "./dist/runtime/index.js",
+      "require": "./dist/runtime/index.cjs",
+      "default": "./dist/runtime/index.js"
+    },
+    "./scenario": {
+      "types": "./dist/scenario/index.d.ts",
+      "import": "./dist/scenario/index.js",
+      "require": "./dist/scenario/index.cjs",
+      "default": "./dist/scenario/index.js"
+    },
+    "./dist/*": "./dist/*"
+  },
+  "typesVersions": {
+    "*": {
+      "app": [
+        "./dist/app/index.d.ts"
+      ],
+      "automation": [
+        "./dist/automation/index.d.ts"
+      ],
+      "automation/browser": [
+        "./dist/automation/browser.d.ts"
+      ],
+      "automation/playwright": [
+        "./dist/automation/playwright.d.ts"
+      ],
+      "core": [
+        "./dist/core/index.d.ts"
+      ],
+      "node": [
+        "./dist/node/index.d.ts"
+      ],
+      "runtime": [
+        "./dist/runtime/index.d.ts"
+      ],
+      "scenario": [
+        "./dist/scenario/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    ".env.sandbox.dist",
+    "AGENTS.md",
+    "bin",
+    "docs",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "yarn build:code && yarn build:app",
+    "build:app": "vite build -c ./vite.config.app.ts",
+    "build:code": "vite build -c ./vite.config.ts && vite build -c ./vite.config.node.ts",
+    "postinstall": "node ./bin/postinstall.mjs",
+    "test:browser": "vitest --run --config ./vitest.config.browser.ts",
+    "test:coverage": "vitest --run --coverage --coverage.all",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest --run",
+    "e2e": "playwright test -c vitest.config.playwright.ts",
+    "dev:e2e": "yarn vite --host 0.0.0.0 --port 4173"
+  },
+  "peerDependencies": {
+    "@omnicajs/vue-remote": "^0.2.24",
+    "@remote-ui/rpc": "^1.4",
+    "vue": "^3.5"
+  },
+  "dependencies": {
+    "@retailcrm/embed-ui": "^0.9.29",
+    "@retailcrm/embed-ui-v1-components": "^0.9.29",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.29",
+    "@retailcrm/embed-ui-v1-endpoint": "^0.9.29",
+    "@retailcrm/embed-ui-v1-testing": "^0.9.29",
+    "@retailcrm/embed-ui-v1-types": "^0.9.29"
+  },
+  "devDependencies": {
+    "@intlify/unplugin-vue-i18n": "^11.2",
+    "@omnicajs/vue-remote": "^0.2.24",
+    "@playwright/test": "1.58.2",
+    "@remote-ui/rpc": "^1.4.7",
+    "@testing-library/dom": "^10.4.1",
+    "@types/node": "^25.6.0",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/browser": "4.1.8",
+    "@vitest/browser-playwright": "4.1.8",
+    "@vitest/coverage-istanbul": "4.1.8",
+    "@vue/test-utils": "^2.4.6",
+    "dotenv": "^17.4.2",
+    "less": "^4.4.2",
+    "playwright": "1.58.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.2",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-svg-loader": "^5.1.0",
+    "vitest": "4.1.8",
+    "vue": "^3.5.32",
+    "vue-i18n": "10.0.8",
+    "vue-tsc": "^3.3.5",
+    "zod": "^3.25.76"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

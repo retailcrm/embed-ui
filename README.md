@@ -11,6 +11,8 @@ API и компоненты для создания расширений инт�
 - `v1-components` — UI-компоненты и сопутствующая документация, [README.md пакета](./packages/v1-components/README.md).
 - `v1-contexts` — реактивные контексты и доступ к данным RetailCRM JS API, [README.md пакета](./packages/v1-contexts/README.md).
 - `v1-endpoint` — endpoint API для встраиваемых страниц и виджетов, [README.md пакета](./packages/v1-endpoint/README.md).
+- `v1-sandbox` — песочница для запуска и тестирования JS-расширений вне CRM,
+  [README.md пакета](./packages/v1-sandbox/README.md).
 - `v1-testing` — тестовые утилиты и вспомогательные типы для интеграций, [README.md пакета](./packages/v1-testing/README.md).
 - `v1-types` — базовые type declarations для публичного API, [README.md пакета](./packages/v1-types/README.md).
 

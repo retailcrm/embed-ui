@@ -28,12 +28,28 @@ const CONFIG_FILES = [
   'vite.config.ts',
   'vite.config.js',
   'vite.config.mts',
+  'vitest.config.ts',
+  'vitest.config.browser.ts',
+  'vitest.config.playwright.ts',
   'eslint.config.js',
   'eslint.config.mjs',
   'env.d.ts',
 ] as const
 
-const SCRIPT_NAMES = ['build', 'dev', 'eslint', 'eslint:fix', 'lint', 'test'] as const
+const SCRIPT_NAMES = [
+  'build',
+  'dev',
+  'eslint',
+  'eslint:fix',
+  'lint',
+  'sandbox:serve',
+  'serve:extension',
+  'test',
+  'test:browser',
+  'test:browsers:install',
+  'test:e2e',
+  'test:unit',
+] as const
 
 const VITE_CONFIG_FILES = [
   'vite.config.ts',
@@ -66,6 +82,18 @@ const TEMPLATE_FILE_IMPACTS = [
   {
     relativePath: 'i18n/locales/en-GB.json',
     impact: 'starter English locale messages will not be generated',
+  },
+  {
+    relativePath: 'sandbox/tests/unit/extensionrc.test.ts',
+    impact: 'starter unit test will not be generated',
+  },
+  {
+    relativePath: 'sandbox/tests/browser/starter.browser.test.ts',
+    impact: 'starter browser test will not be generated',
+  },
+  {
+    relativePath: 'sandbox/tests/e2e/starter.e2e.ts',
+    impact: 'starter e2e test will not be generated',
   },
 ] as const
 
@@ -372,7 +400,7 @@ const analyzeTemplateFileSkips = (
     }
   }
 
-  for (const relativePath of ['extensionrc.json', 'scripts/publish-extension.mjs', 'README.md']) {
+  for (const relativePath of ['extensionrc.json', 'scripts/publish-extension.mjs', 'scripts/serve-extension.mjs', 'README.md']) {
     if (fs.existsSync(path.join(cwd, relativePath))) {
       changes.warnings.push(`${relativePath} already exists; generated project-level starter file will be skipped`)
     }

@@ -49,6 +49,7 @@
     "release:dry": "conventional-release --dry --verbose --tags",
     "release:rc": "conventional-release --prerelease rc --tags",
     "test": "vitest --run",
+    "test:browser": "yarn workspace @retailcrm/embed-ui-v1-sandbox run test:browser",
     "test:coverage": "vitest --run --coverage"
   },
   "release": {

@@ -25,10 +25,19 @@ import {
   createI18nIndex,
 } from './templates'
 import { createInitChanges } from './report'
-import { createMessages, createOrderWidget, createPublishScript } from './templates'
+import { createMessages, createOrderWidget } from './templates'
+import { createPlaywrightConfig } from './templates'
+import { createPublishScript } from './templates'
 import { createRange } from './packages'
 import { createReadme } from './templates'
+import {
+  createSandboxBrowserTest,
+  createSandboxE2eTest,
+  createSandboxUnitTest,
+} from './templates'
+import { createServeScript } from './templates'
 import { createSettingsPage, createTsConfig, createViteConfig } from './templates'
+import { createVitestBrowserConfig, createVitestConfig } from './templates'
 import { DEFAULT_INIT_PACKAGE_IDS } from './packages'
 import { ensureDirectory } from './filesystem'
 import { hasExistingDependency } from './package-json'
@@ -121,6 +130,18 @@ const resolvePackageManager = async (
   }
 
   return 'npm'
+}
+
+const createPackageManagerRunCommand = (packageManager: PackageManager): string => {
+  if (packageManager === 'npm') {
+    return 'npm run'
+  }
+
+  if (packageManager === 'bun') {
+    return 'bun run'
+  }
+
+  return packageManager
 }
 
 const resolveInitPackages = (
@@ -311,6 +332,13 @@ const applyInitPackageJson = (
   setMissingScript(packageJson, 'eslint', 'eslint .', changes)
   setMissingScript(packageJson, 'eslint:fix', 'eslint --fix .', changes)
   setMissingScript(packageJson, 'publish-extension', 'node scripts/publish-extension.mjs', changes)
+  setMissingScript(packageJson, 'test', `${createPackageManagerRunCommand(packageManager)} test:unit && ${createPackageManagerRunCommand(packageManager)} test:browser && ${createPackageManagerRunCommand(packageManager)} test:e2e`, changes)
+  setMissingScript(packageJson, 'test:unit', 'vitest --run --config vitest.config.ts', changes)
+  setMissingScript(packageJson, 'test:browser', 'vitest --run --config vitest.config.browser.ts', changes)
+  setMissingScript(packageJson, 'test:e2e', 'playwright test -c vitest.config.playwright.ts', changes)
+  setMissingScript(packageJson, 'test:browsers:install', 'playwright install chromium', changes)
+  setMissingScript(packageJson, 'serve:extension', 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175', changes)
+  setMissingScript(packageJson, 'sandbox:serve', 'embed-ui-v1-sandbox serve --host 127.0.0.1 --port 4173', changes)
 
   for (const selectedPackage of selectedPackages) {
     setDependency(
@@ -389,6 +417,7 @@ const applyInitDirectories = (sourceRoot: string, options: InitOptions, changes:
 const applyInitConfigs = (
   cwd: string,
   sourceRoot: string,
+  packageManager: PackageManager,
   options: InitOptions,
   changes: InitChanges
 ): void => {
@@ -398,6 +427,9 @@ const applyInitConfigs = (
 
   writeFileIfAllowed(path.join(cwd, 'tsconfig.json'), createTsConfig(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'vite.config.ts'), createViteConfig(cwd, sourceRoot), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'vitest.config.ts'), createVitestConfig(cwd, sourceRoot), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'vitest.config.browser.ts'), createVitestBrowserConfig(cwd, sourceRoot), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'vitest.config.playwright.ts'), createPlaywrightConfig(cwd, sourceRoot, packageManager), options, changes)
   writeFileIfAllowed(path.join(cwd, 'env.d.ts'), createEnvDts(), options, changes)
   writeFileIfAllowed(path.join(cwd, 'eslint.config.js'), createEslintConfig(cwd, sourceRoot), options, changes)
 }
@@ -430,8 +462,12 @@ const applyInitTemplate = (
   writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/ru-RU.json'), createMessages(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'pages/SettingsPage.vue'), createSettingsPage(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'widgets/OrderCommonAfterWidget.vue'), createOrderWidget(), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/unit/extensionrc.test.ts'), createSandboxUnitTest(options), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/browser/starter.browser.test.ts'), createSandboxBrowserTest(cwd, sourceRoot, options), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/e2e/starter.e2e.ts'), createSandboxE2eTest(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'extensionrc.json'), createExtensionConfig(options), options, changes)
   writeFileIfAllowed(path.join(cwd, 'scripts/publish-extension.mjs'), createPublishScript(), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'scripts/serve-extension.mjs'), createServeScript(), options, changes)
   writeFileIfAllowed(path.join(cwd, 'README.md'), createReadme(cwd, sourceRoot, options, packageManager), options, changes)
 }
 
@@ -464,6 +500,54 @@ const runInstall = async (
       args,
       { cwd },
       `Installing dependencies with ${packageManager}`
+    )
+  } catch (error) {
+    printExecErrorOutput(error)
+    throw error
+  }
+}
+
+const resolveRunScriptArgs = (packageManager: PackageManager, scriptName: string): string[] => {
+  if (packageManager === 'npm' || packageManager === 'bun') {
+    return ['run', scriptName]
+  }
+
+  return [scriptName]
+}
+
+const createRunScriptCommand = (packageManager: PackageManager, scriptName: string): string =>
+  `${createPackageManagerRunCommand(packageManager)} ${scriptName}`
+
+const runBrowserInstall = async (
+  cwd: string,
+  packageManager: PackageManager,
+  options: InitOptions,
+  changes: InitChanges,
+  packageJsonChanged: boolean
+): Promise<void> => {
+  if (options.noInstall || isGuidanceOnlyInit(options)) {
+    return
+  }
+
+  if (!packageJsonChanged && !options.force) {
+    changes.skipped.push('browser install skipped because package.json was not changed')
+    return
+  }
+
+  const scriptName = 'test:browsers:install'
+  const args = resolveRunScriptArgs(packageManager, scriptName)
+  changes.browserInstall = createRunScriptCommand(packageManager, scriptName)
+
+  if (options.dryRun) {
+    return
+  }
+
+  try {
+    await runCommandWithTerminalStatus(
+      packageManager,
+      args,
+      { cwd },
+      'Installing Playwright Chromium'
     )
   } catch (error) {
     printExecErrorOutput(error)
@@ -564,11 +648,14 @@ export const runInit = async (options: InitOptions): Promise<void> => {
     packageJsonPath = applyInitPackageJson(cwd, selectedPackages, version, packageManager, resolvedOptions, changes)
     updateGitignore(cwd, resolvedOptions, changes)
     applyInitDirectories(sourceRoot, resolvedOptions, changes)
-    applyInitConfigs(cwd, sourceRoot, resolvedOptions, changes)
+    applyInitConfigs(cwd, sourceRoot, packageManager, resolvedOptions, changes)
     applyInitTemplate(cwd, sourceRoot, packageManager, resolvedOptions, changes)
   }
 
-  await runInstall(cwd, packageManager, resolvedOptions, changes, Boolean(packageJsonPath && changes.packageJson.length > 0))
+  const packageJsonChanged = Boolean(packageJsonPath && changes.packageJson.length > 0)
+
+  await runInstall(cwd, packageManager, resolvedOptions, changes, packageJsonChanged)
+  await runBrowserInstall(cwd, packageManager, resolvedOptions, changes, packageJsonChanged)
   await applyInitPackageConfigHooks(cwd, selectedPackages, packageManager, resolvedOptions, changes)
   await applyInitSkills(cwd, selectedPackages, packageManager, resolvedOptions, changes)
   await applyInitAgents(cwd, selectedPackages, packageManager, resolvedOptions, changes)
