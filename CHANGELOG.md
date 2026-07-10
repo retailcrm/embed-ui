@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.30-alpha.1
+
+### Features
+
+* **v1-components:** Added v1-sandbox ([7530f77](https://github.com/retailcrm/embed-ui/commit/7530f77f5cec41c154c2f8992cb39ab02d3c2cc4))
+* **v1-sandbox:** Created v1-sandbox for embed-ui ([f337c9d](https://github.com/retailcrm/embed-ui/commit/f337c9dd257ae87cec23ea4edefc41a8ba099c45))
 
 ## [0.9.29](https://github.com/retailcrm/embed-ui/compare/v0.9.28...v0.9.29) (2026-06-10)
 
@@ -972,3 +978,4 @@ order.templates.number.crm из контекста settings
 ### Features
 
 * Added basic types ([6bb2706](https://github.com/retailcrm/embed-ui/commit/6bb27060b3a9eca281865029e1688e44117f03f7))
+
