@@ -52,6 +52,8 @@ class FakeWorker extends EventTarget {
 const resolveSandboxExtensionSourceMock = vi.fn<() => Promise<SandboxExtensionSource>>()
 const createEndpointMock = vi.fn<() => FakeEndpoint>()
 const fromWebWorkerMock = vi.fn((worker: Worker) => worker)
+const disposeContextSubscriptionsMock = vi.fn()
+const patchContextMock = vi.fn()
 const fakeWorkers: FakeWorker[] = []
 let app: VueApp<Element> | null = null
 let root: HTMLElement | null = null
@@ -88,7 +90,16 @@ vi.mock('@/components/DevPanel.vue', async () => {
   return {
     default: defineComponent({
       name: 'DevPanelStub',
-      setup: () => () => h('div'),
+      props: {
+        applyContextJson: {
+          required: true,
+          type: Function,
+        },
+      },
+      setup: props => () => h('button', {
+        'data-testid': 'apply-context-json',
+        onClick: () => props.applyContextJson(),
+      }),
     }),
   }
 })
@@ -206,6 +217,7 @@ vi.mock('@/scenario/fixtures', () => ({
 
     return {
       dispose: vi.fn(),
+      disposeContextSubscriptions: disposeContextSubscriptionsMock,
       endpointApi: {
         get: vi.fn(),
         getCustomDictionary: vi.fn(),
@@ -222,7 +234,7 @@ vi.mock('@/scenario/fixtures', () => ({
         set: vi.fn(),
         setCustomField: vi.fn(),
       },
-      patchContext: vi.fn(),
+      patchContext: patchContextMock,
       snapshot: () => ({
         contexts,
         host: {
@@ -394,4 +406,36 @@ test('shows runtime error and disposes worker when endpoint run fails', async ()
   })
   expect(currentEndpoint.terminate).toHaveBeenCalledOnce()
   expect(fakeWorkers[0]?.terminate).toHaveBeenCalledOnce()
+  expect(disposeContextSubscriptionsMock).toHaveBeenCalledOnce()
+})
+
+test('disposes context subscriptions before patching context and restarting worker', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+    pages: ['settings'],
+    targets: [],
+  }))
+
+  const { endpoint, wrapper } = await mountAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+  })
+
+  await wrapper.find('[data-testid="apply-context-json"]').trigger('click')
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledTimes(2)
+  })
+
+  expect(disposeContextSubscriptionsMock).toHaveBeenCalledOnce()
+  expect(patchContextMock).toHaveBeenCalledWith('settings', {
+    'system.locale': 'ru-RU',
+  })
+  expect(disposeContextSubscriptionsMock.mock.invocationCallOrder[0])
+    .toBeLessThan(endpoint.terminate.mock.invocationCallOrder[0] as number)
+  expect(endpoint.terminate.mock.invocationCallOrder[0])
+    .toBeLessThan(patchContextMock.mock.invocationCallOrder[0] as number)
+  expect(patchContextMock.mock.invocationCallOrder[0])
+    .toBeLessThan(endpoint.call.run.mock.invocationCallOrder[1] as number)
 })

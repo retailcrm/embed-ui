@@ -45,6 +45,7 @@ export type CreateSandboxControllerOptions<M extends ContextSchemaList> =
 export type SandboxController<M extends ContextSchemaList> = {
   bridge: SandboxBridge<M>;
   dispose(): void;
+  disposeContextSubscriptions(): void;
   endpointApi: SandboxEndpointApi<M>;
   installGlobalBridge(key?: string): void;
   patchContext<C extends keyof M>(context: C, patch: Partial<Context<M[C]>>): void;
@@ -66,9 +67,12 @@ export const createSandboxController = <const M extends ContextSchemaList>(
 ): SandboxController<M> => {
   const state = createSandboxState(options)
   const initialSnapshot = captureSandboxSnapshot(state)
+  const contextSubscriptionCleanups = new Set<() => void>()
   const endpointApi = Object.assign(
     {},
-    createSandboxContextAccessor(options.schemas, state),
+    createSandboxContextAccessor(options.schemas, state, cleanup => {
+      contextSubscriptionCleanups.add(cleanup)
+    }),
     createSandboxCustomContextAccessor(state),
     createSandboxHostApi(state, options)
   ) as SandboxEndpointApi<M>
@@ -79,7 +83,15 @@ export const createSandboxController = <const M extends ContextSchemaList>(
     bridge: null as unknown as SandboxBridge<M>,
 
     dispose() {
+      controller.disposeContextSubscriptions()
       controller.uninstallGlobalBridge()
+    },
+
+    disposeContextSubscriptions() {
+      const cleanups = [...contextSubscriptionCleanups]
+
+      contextSubscriptionCleanups.clear()
+      cleanups.forEach(cleanup => cleanup())
     },
 
     endpointApi,

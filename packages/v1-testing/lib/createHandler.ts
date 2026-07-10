@@ -6,12 +6,19 @@ import type {
   TypeOf,
 } from '@retailcrm/embed-ui-v1-types/context'
 
-import { retain } from '@remote-ui/rpc'
+import { release, retain } from '@remote-ui/rpc'
 import { watch } from 'vue'
 
 const keysOf = <T extends object>(o: T): (keyof T)[] => Object.keys(o) as (keyof T)[]
 
-export const createHandler = <S extends ContextSchema>(id: string, getters: FieldGetters<S>) => {
+export type HandlerCleanup = () => void
+export type RegisterHandlerCleanup = (cleanup: HandlerCleanup) => void
+
+export const createHandler = <S extends ContextSchema>(
+  id: string,
+  getters: FieldGetters<S>,
+  registerCleanup?: RegisterHandlerCleanup
+) => {
   type EventName = keyof EventMap<S>
   type FieldName = keyof S
 
@@ -28,6 +35,11 @@ export const createHandler = <S extends ContextSchema>(id: string, getters: Fiel
 
     retain(handler)
 
-    watch(getters[map[event] as FieldName], handler as (payload: TypeOf<S[FieldName]>) => void)
+    const stop = watch(getters[map[event] as FieldName], payload => (handler as (payload: TypeOf<S[FieldName]>) => void)(payload))
+
+    registerCleanup?.(() => {
+      stop()
+      release(handler)
+    })
   }
 }

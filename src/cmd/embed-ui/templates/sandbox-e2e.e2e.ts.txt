@@ -14,13 +14,25 @@ type ExtensionConfig = {
   uuid: string
 }
 
-const extensionBaseURL = process.env.SANDBOX_EXTENSION_URL || 'http://127.0.0.1:4175/extension/'
+const extensionBaseURL = process.env.SANDBOX_EXTENSION_URL?.trim()
 const extensionrc = JSON.parse(
   fs.readFileSync(path.resolve(process.cwd(), 'extensionrc.json'), 'utf8')
 ) as ExtensionConfig
-const extensionUrl = new URL(extensionrc.uuid, extensionBaseURL).href
+const extensionUrl = extensionBaseURL
+  ? new URL(extensionrc.uuid, extensionBaseURL).href
+  : ''
 const [pageDescriptor] = extensionrc.pages
 const [target] = extensionrc.targets
+const missingExtensionUrlMessage = 'Fill SANDBOX_EXTENSION_URL in .env.sandbox before running starter.e2e.ts.'
+
+if (!extensionBaseURL) {
+  console.warn(`[sandbox:e2e] ${missingExtensionUrlMessage}`)
+}
+
+test.skip(
+  !extensionBaseURL,
+  missingExtensionUrlMessage
+)
 
 test('loads generated settings page extension and saves settings', async ({ page }) => {
   await page.goto(createSandboxPagePath({

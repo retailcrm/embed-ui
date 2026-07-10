@@ -606,7 +606,13 @@ describe('embed-ui CLI', () => {
       'settings-page-addon__icon'
     )
     expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
-      'const extensionUrl = new URL(extensionrc.uuid, extensionBaseURL).href'
+      '? new URL(extensionrc.uuid, extensionBaseURL).href'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+      'Fill SANDBOX_EXTENSION_URL in .env.sandbox before running starter.e2e.ts.'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+      'console.warn(`[sandbox:e2e] ${missingExtensionUrlMessage}`)'
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       '# Фронтенд расширения RetailCRM'

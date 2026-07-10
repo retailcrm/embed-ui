@@ -1,9 +1,9 @@
 <template>
     <div
-        :class="[
-            $style['sandbox-app'],
-            !isSidebarOpen && $style['sandbox-app_sidebar-closed'],
-        ]"
+        :class="{
+            [$style['sandbox-app']]: true,
+            [$style['sandbox-app_sidebar-closed']]: !isSidebarOpen,
+        }"
     >
         <NavigationRail
             :dev-panel-controls-id="uid + '-sandbox-dev-panel-drawer'"
@@ -341,6 +341,7 @@ const mountWorkerExtension = async (
       await endpoint.call.run(mount.receiver.receive, mount.runConfig)
     }
   } catch (error) {
+    sandbox.disposeContextSubscriptions()
     endpoint.terminate()
     worker.terminate()
     throw error
@@ -372,7 +373,10 @@ const releaseRuntimeConnection = async (
 const disposeRuntime = async () => {
   const current = runtime.value
 
-  if (!current) return
+  if (!current) {
+    sandbox.disposeContextSubscriptions()
+    return
+  }
 
   window.clearInterval(current.flushTimer)
 
@@ -382,13 +386,13 @@ const disposeRuntime = async () => {
         await releaseRuntimeConnection(connection)
       } catch (error) {
         console.warn('[sandbox:manifest] Failed to release extension runtime', error)
-      } finally {
-        disposeRuntimeConnection(connection)
       }
     }
 
+    sandbox.disposeContextSubscriptions()
     await flushReceiver()
   } finally {
+    current.connections.forEach(disposeRuntimeConnection)
     current.stylesheet?.remove()
     runtime.value = null
   }
@@ -434,11 +438,6 @@ const applyLaunchConfig = () => {
   }).toString()
 }
 
-const reloadExtension = async () => {
-  await disposeRuntime()
-  await mountExtension()
-}
-
 const applyContextJson = async () => {
   const validationResult = validateContextJsonInput(
     contextJson.value,
@@ -455,10 +454,11 @@ const applyContextJson = async () => {
     return
   }
 
+  await disposeRuntime()
   applyContextJsonValue(validationResult.data)
   contextJson.value = formatContextJson()
   clearDevPanelValidationError('contextJson')
-  await reloadExtension()
+  await mountExtension()
 }
 
 const setContextJson = (value: string | number) => {

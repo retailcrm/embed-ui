@@ -232,6 +232,7 @@ export const createSandboxWorkerRuntime = async ({
     const config = currentRunConfig
 
     await runWorkerCall(worker, () => endpoint.call.release(config))
+    controller.disposeContextSubscriptions()
     currentRunConfig = null
     await flush()
   }
@@ -274,11 +275,11 @@ export const createSandboxWorkerRuntime = async ({
         await resetEndpoint(endpoint)
       }
 
+      controller.dispose()
       endpoint.terminate()
       worker.terminate()
       unmountHost()
       container.remove()
-      controller.dispose()
     },
     unmountHost,
   }
