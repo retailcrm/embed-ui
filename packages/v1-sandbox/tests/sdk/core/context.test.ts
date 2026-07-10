@@ -175,6 +175,28 @@ test('sets custom fields and notifies watchers', async () => {
   expect(handler).toHaveBeenCalledTimes(1)
 })
 
+test('disposes context field subscriptions', async () => {
+  const sandbox = createCustomSandbox()
+  const handler = vi.fn()
+
+  sandbox.endpointApi.on('order/card', 'change:number', handler)
+  sandbox.patchContext('order/card', {
+    number: '216C',
+  })
+  await nextTick()
+
+  expect(handler).toHaveBeenCalledOnce()
+  expect(handler).toHaveBeenLastCalledWith('216C')
+
+  sandbox.disposeContextSubscriptions()
+  sandbox.patchContext('order/card', {
+    number: '217C',
+  })
+  await nextTick()
+
+  expect(handler).toHaveBeenCalledOnce()
+})
+
 test('rejects missing custom dictionary requests', async () => {
   const sandbox = createCustomSandbox()
   const onReject = vi.fn<(rejection: Rejection) => void>()

@@ -1,10 +1,10 @@
 <template>
     <aside
         :id="id"
-        :class="[
-            $style['navigation-sidebar'],
-            !open && $style['navigation-sidebar_closed'],
-        ]"
+        :class="{
+            [$style['navigation-sidebar']]: true,
+            [$style['navigation-sidebar_closed']]: !open,
+        }"
     >
         <UiSkeleton
             :class="$style['navigation-sidebar__section-title']"
@@ -16,10 +16,10 @@
             <div
                 v-for="item in menuItems"
                 :key="item.width"
-                :class="[
-                    $style['navigation-sidebar__menu-item'],
-                    item.active && $style['navigation-sidebar__menu-item_active'],
-                ]"
+                :class="{
+                    [$style['navigation-sidebar__menu-item']]: true,
+                    [$style['navigation-sidebar__menu-item_active']]: item.active,
+                }"
             >
                 <UiSkeleton
                     :class="$style['navigation-sidebar__menu-item-skeleton']"

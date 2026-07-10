@@ -15,11 +15,16 @@ import type {
 
 import type { SandboxState } from '@/core/state'
 
+import type {
+  RegisterHandlerCleanup,
+} from '@retailcrm/embed-ui-v1-testing/lib/createHandler'
+
 import { release, retain } from '@remote-ui/rpc'
 import { watch } from 'vue'
 
 import { createContextAccessor, createGetter } from '@retailcrm/embed-ui-v1-contexts/host'
 import { createHandler } from '@retailcrm/embed-ui-v1-testing/lib/createHandler'
+
 import { createSetter, LogicalError } from '@retailcrm/embed-ui-v1-contexts/host'
 
 import { clone } from '@/lib/clone'
@@ -27,13 +32,15 @@ import { keysOf } from '@/lib/keysOf'
 
 export const createSandboxContextAccessor = <M extends ContextSchemaList>(
   schemas: M,
-  state: SandboxState<M>
+  state: SandboxState<M>,
+  registerCleanup?: RegisterHandlerCleanup
 ): ContextAccessor<M> => createContextAccessor(
     keysOf(schemas).reduce((accessors, context) => {
       accessors[context] = createFieldAccessor(
         String(context),
         schemas[context],
-        state.contexts[context]
+        state.contexts[context],
+        registerCleanup
       )
 
       return accessors
@@ -147,7 +154,8 @@ export const createSandboxCustomContextAccessor = <M extends ContextSchemaList>(
 const createFieldAccessor = <S extends ContextSchema>(
   id: string,
   schema: S,
-  values: Context<S>
+  values: Context<S>,
+  registerCleanup?: RegisterHandlerCleanup
 ): FieldAccessor<S> => {
   const getters = keysOf(schema).reduce((all, field) => {
     all[field] = () => values[field]
@@ -169,7 +177,7 @@ const createFieldAccessor = <S extends ContextSchema>(
 
   return {
     get: createGetter(id, getters),
-    on: createHandler(id, getters),
+    on: createHandler(id, getters, registerCleanup),
     set: createSetter(id, setters),
   }
 }

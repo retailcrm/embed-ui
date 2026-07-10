@@ -32,14 +32,12 @@
                     v-for="option in options"
                     :id="optionId(option.value)"
                     :key="option.value"
-                    :class="[
-                        'ui-v1-select-option',
-                        $style['v-select__option'],
-                        option.value === value && [
-                            'ui-v1-select-option_selected',
-                            $style['v-select__option_selected'],
-                        ],
-                    ]"
+                    :class="{
+                        [$style['v-select__option']]: true,
+                        [$style['v-select__option_selected']]: option.value === value,
+                        'ui-v1-select-option': true,
+                        'ui-v1-select-option_selected': option.value === value,
+                    }"
                     :aria-selected="option.value === value"
                     :disabled="option.disabled"
                     role="option"

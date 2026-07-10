@@ -106,6 +106,7 @@ const createController = () => {
 
   return {
     dispose: vi.fn(),
+    disposeContextSubscriptions: vi.fn(),
     endpointApi: {
       get: vi.fn(),
       httpCall: vi.fn(),
@@ -288,6 +289,7 @@ describe('sandbox worker runtime', () => {
 
     expect(endpoint.call.run).toHaveBeenNthCalledWith(1, receiver.receive, { code: 'returns' })
     expect(endpoint.call.release).toHaveBeenCalledWith({ code: 'returns' })
+    expect(controller.disposeContextSubscriptions).toHaveBeenCalledOnce()
     expect(endpoint.call.run).toHaveBeenNthCalledWith(2, receiver.receive, {
       id: 'browser-widget:order/card:common.after',
       target: 'order/card:common.after',
@@ -300,6 +302,7 @@ describe('sandbox worker runtime', () => {
     runtime.unmountHost()
     await runtime.teardown()
 
+    expect(controller.disposeContextSubscriptions).toHaveBeenCalledTimes(2)
     expect(endpoint.terminate).toHaveBeenCalledOnce()
     expect(worker.terminate).toHaveBeenCalledOnce()
     expect(controller.dispose).toHaveBeenCalledOnce()

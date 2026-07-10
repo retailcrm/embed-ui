@@ -11,10 +11,10 @@
             <li
                 v-for="item in topItems"
                 :key="item.label"
-                :class="[
-                    $style['navigation-rail__item'],
-                    item.current && $style['navigation-rail__item_current'],
-                ]"
+                :class="{
+                    [$style['navigation-rail__item']]: true,
+                    [$style['navigation-rail__item_current']]: item.current,
+                }"
             >
                 <a
                     :class="$style['navigation-rail__link']"
@@ -38,10 +38,10 @@
             <li
                 v-for="item in bottomItems"
                 :key="item.label"
-                :class="[
-                    $style['navigation-rail__item'],
-                    item.open && $style['navigation-rail__item_open'],
-                ]"
+                :class="{
+                    [$style['navigation-rail__item']]: true,
+                    [$style['navigation-rail__item_open']]: item.open,
+                }"
             >
                 <UiButton
                     v-if="item.action"
