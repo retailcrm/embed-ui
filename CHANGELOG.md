@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.30-alpha.2
+
+### Bug Fixes
+
+* **v1-sandbox:** corrected sandbox context reload lifecycle and refactor class style, added skip e2e block without env value ([88866f0](https://github.com/retailcrm/embed-ui/commit/88866f0d9ea2a6cd61fe6ef9c5d5448b67965d39))
+
 ## 0.9.30-alpha.1
 
 ### Features
