@@ -65,6 +65,34 @@ test('rejects malformed manifest urls', () => {
   })
 })
 
+test('rejects manifest urls with unsupported protocols', () => {
+  const result = validateLaunchConfigInput({
+    ...validLaunchInput,
+    manifestUrl: 'ftp://extension.test/extension/module-id',
+  }, messages)
+
+  expect(result).toEqual({
+    errors: {
+      manifestUrl: 'Manifest URL must be an absolute http/https URL.',
+    },
+    success: false,
+  })
+})
+
+test('keeps the first validation error for each field', () => {
+  const result = validateLaunchConfigInput({
+    ...validLaunchInput,
+    targets: ['unknown-first', 'unknown-second'],
+  }, messages)
+
+  expect(result).toEqual({
+    errors: {
+      targets: 'Unknown target "unknown-first".',
+    },
+    success: false,
+  })
+})
+
 test('requires page code only for page mode', () => {
   const pageResult = validateLaunchConfigInput({
     ...validLaunchInput,

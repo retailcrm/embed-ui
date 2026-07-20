@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest'
 
-import { createOrderSandboxController } from '@/scenario'
+import { createOrderSandboxController, createSandboxHttpMiddleware } from '@/scenario'
 
 test('records host http calls and returns controlled fallback response', async () => {
   const sandbox = createOrderSandboxController('order-basic', {
@@ -156,4 +156,65 @@ test('returns controlled response when http middleware fails', async () => {
     ok: false,
   })
   expect(sandbox.state.host.http.at(-1)?.response.status).toBe(500)
+})
+
+test('proxies absolute actions and preserves string or empty payloads', async () => {
+  const fetcher = vi.fn(async () => new Response('ok', {
+    status: 202,
+  }))
+  const middleware = createSandboxHttpMiddleware()
+
+  vi.stubGlobal('fetch', fetcher)
+
+  try {
+    await expect(middleware({
+      action: 'https://extension.test/direct',
+      payload: 'raw payload',
+    })).resolves.toEqual({
+      body: 'ok',
+      status: 202,
+    })
+    await middleware({
+      action: 'http://extension.test/empty',
+    })
+
+    const [, stringRequest] = fetcher.mock.calls[0] as unknown as [string, RequestInit]
+    const [, emptyRequest] = fetcher.mock.calls[1] as unknown as [string, RequestInit]
+
+    expect((stringRequest.body as URLSearchParams).get('payload')).toBe('raw payload')
+    expect((emptyRequest.body as URLSearchParams).has('payload')).toBe(false)
+  } finally {
+    vi.unstubAllGlobals()
+  }
+})
+
+test('normalizes relative action against backend path and removes query and hash', async () => {
+  const fetcher = vi.fn(async () => new Response('{}'))
+  const middleware = createSandboxHttpMiddleware()
+
+  vi.stubGlobal('fetch', fetcher)
+
+  try {
+    await middleware({
+      action: 'returns',
+      httpBaseUrl: 'http://extension.test/backend/?token=secret#section',
+    })
+
+    expect(fetcher).toHaveBeenCalledWith(
+      'http://extension.test/backend/returns',
+      expect.objectContaining({ method: 'POST' })
+    )
+  } finally {
+    vi.unstubAllGlobals()
+  }
+})
+
+test('rejects unsupported absolute protocols without a backend url', async () => {
+  const middleware = createSandboxHttpMiddleware()
+
+  await expect(middleware({
+    action: 'ftp://extension.test/returns',
+  })).resolves.toMatchObject({
+    status: 503,
+  })
 })

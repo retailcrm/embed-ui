@@ -16,6 +16,7 @@ export default mergeConfig(basic, defineConfig({
   },
   test: {
     include: ['tests/**/*.browser.test.ts'],
+    reporters: ['dot'],
     browser: {
       enabled: true,
       provider: playwright({
@@ -27,6 +28,16 @@ export default mergeConfig(basic, defineConfig({
       screenshotFailures: true,
       screenshotDirectory: 'artifacts/browser/screenshots',
       instances: [{ browser: 'chromium' }],
+    },
+    coverage: {
+      provider: 'istanbul',
+      exclude: ['src/**/*.d.ts'],
+      reportsDirectory: 'artifacts/coverage/vitest-browser',
+      reporter: [
+        'html',
+        'json',
+        'text-summary',
+      ],
     },
   },
 }))

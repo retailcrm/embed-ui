@@ -87,6 +87,20 @@ describe('playwright automation helpers', () => {
       .toBe('order/card:common.before')
   })
 
+  test('creates browser path with default options', () => {
+    const path = createSandboxBrowserPath({
+      extensionUrl: '',
+      fixture: DefaultSandbox.Fixture,
+      manifestUrl: '',
+      mode: 'widget',
+      pageCode: DefaultSandbox.PageCode,
+      targets: [],
+      widgetId: DefaultSandbox.WidgetId,
+    })
+
+    expect(new URL(path, 'http://127.0.0.1:4173').pathname).toBe('/')
+  })
+
   test('reads fixture descriptor values', () => {
     const descriptor = {
       pages: [{ code: 'settings' }],
@@ -98,6 +112,17 @@ describe('playwright automation helpers', () => {
     expect(getExtensionTargets(descriptor)).toEqual(['order/card:common.after'])
     expect(createExternalExtensionUrl(descriptor, 'http://extension.test/extension/')).toBe('http://extension.test/extension/extension-id')
     expect(createExtensionManifestUrl(descriptor, 'http://extension.test/extension/')).toBe('http://extension.test/extension/extension-id')
+  })
+
+  test('creates manifest url from environment by default', () => {
+    vi.stubEnv('SANDBOX_EXTENSION_URL', 'http://extension.test/extension/')
+
+    try {
+      expect(createExtensionManifestUrl({ uuid: 'extension-id' }))
+        .toBe('http://extension.test/extension/extension-id')
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   test('returns empty descriptor values and requires extension base URL', () => {

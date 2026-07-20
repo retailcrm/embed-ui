@@ -178,6 +178,18 @@ describe('browser sandbox mounting', () => {
     expect(document.body.contains(root)).toBe(true)
   })
 
+  test('launches extension with default mount options', async () => {
+    installSandboxAppMock(createLaunchBridge())
+
+    const sandbox = await launchSandboxExtension({})
+
+    expect(sandbox.root.id).toBe('app')
+
+    sandbox.unmount()
+
+    expect(document.querySelector('#app')).toBeNull()
+  })
+
   test('waits for bridge and reports timeout', async () => {
     const bridge = createLaunchBridge()
 
@@ -248,6 +260,22 @@ describe('extension source worker', () => {
     worker.dispatchEvent(new ErrorEvent('error', { error }))
 
     await expect(source.ready).rejects.toBe(error)
+  })
+
+  test('uses fallback messages for source worker failures', async () => {
+    const protocolFailure = createExtensionSourceWorker('http://extension.test/protocol.ts')
+
+    protocolFailure.worker.dispatchEvent(new MessageEvent('message', {
+      data: { type: 'sandbox:test-worker-error' },
+    }))
+
+    await expect(protocolFailure.ready).rejects.toThrow('[sandbox:test] Extension worker failed.')
+
+    const nativeFailure = createExtensionSourceWorker('http://extension.test/native.ts')
+
+    nativeFailure.worker.dispatchEvent(new ErrorEvent('error'))
+
+    await expect(nativeFailure.ready).rejects.toThrow('[sandbox:test] Extension worker failed.')
   })
 })
 
@@ -364,6 +392,32 @@ describe('sandbox worker runtime', () => {
     }))
 
     await expect(runPromise).rejects.toThrow('Worker crashed (extension.worker.ts:12:7)')
+    await runtime.teardown()
+  })
+
+  test('reports fallback worker error without native error details', async () => {
+    const endpoint = createEndpoint()
+    const controller = createController()
+    const worker = new WorkerStub()
+
+    mocks.createEndpoint.mockReturnValue(endpoint)
+    mocks.createController.mockReturnValue(controller)
+    mocks.createReceiver.mockReturnValue({
+      flush: vi.fn(async () => undefined),
+      receive: vi.fn(),
+    })
+    endpoint.call.run.mockImplementationOnce(() => new Promise(() => {}))
+
+    const runtime = await createSandboxWorkerRuntime({
+      worker: worker as unknown as Worker,
+    })
+    const runPromise = runtime.runPage('returns')
+
+    await Promise.resolve()
+    await Promise.resolve()
+    worker.dispatchEvent(new ErrorEvent('error'))
+
+    await expect(runPromise).rejects.toThrow('[sandbox:test] Worker failed.')
     await runtime.teardown()
   })
 })

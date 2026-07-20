@@ -44,7 +44,7 @@ test('serves reactive context access through rpc bridge', async () => {
   })
 
   const { dispose, remote } = createSandboxRpc(sandbox)
-  const endpoint = remote.call as {
+  const endpoint = remote.call as unknown as {
     get(context: string, field: string): Promise<unknown>;
     set(context: string, field: string, value: unknown): Promise<void>;
   }
@@ -67,7 +67,7 @@ test('keeps endpoint context references valid after reset', async () => {
   })
 
   const { dispose, remote } = createSandboxRpc(sandbox)
-  const endpoint = remote.call as {
+  const endpoint = remote.call as unknown as {
     get(context: string, field: string): Promise<unknown>;
     set(context: string, field: string, value: unknown): Promise<void>;
   }
@@ -90,7 +90,7 @@ test('keeps endpoint context references valid after patchContext', async () => {
   })
 
   const { dispose, remote } = createSandboxRpc(sandbox)
-  const endpoint = remote.call as {
+  const endpoint = remote.call as unknown as {
     get(context: string, field: string): Promise<unknown>;
   }
 
@@ -132,4 +132,54 @@ test('installs global bridge for automation mode', () => {
   expect((globalThis as typeof globalThis & {
     __TEST_SANDBOX__?: unknown;
   }).__TEST_SANDBOX__).toBeUndefined()
+})
+
+test('supports controller without global bridge and creates missing custom entity', () => {
+  const sandbox = createSandboxController<typeof schemas>({
+    globalBridge: false,
+    schemas,
+  })
+
+  sandbox.setCustomField('order', 'comment', 'Created on demand')
+
+  expect(sandbox.state.custom.entities.order).toEqual({
+    schema: {
+      entity: 'order',
+      fields: [],
+    },
+    values: {
+      comment: 'Created on demand',
+    },
+  })
+  sandbox.uninstallGlobalBridge()
+  sandbox.dispose()
+})
+
+test('resets controller to an explicit snapshot', () => {
+  const sandbox = createSandboxController<typeof schemas>({
+    globalBridge: false,
+    schemas,
+  })
+  const snapshot = sandbox.snapshot()
+
+  snapshot.contexts.article.title = 'Snapshot title'
+  sandbox.reset(snapshot)
+
+  expect(sandbox.state.contexts.article.title).toBe('Snapshot title')
+})
+
+test('creates rpc directly from endpoint api', async () => {
+  const sandbox = createSandboxController<typeof schemas>({
+    globalBridge: false,
+    schemas,
+  })
+  const { dispose, remote } = createSandboxRpc<typeof schemas>(sandbox.endpointApi)
+  const endpoint = remote.call as unknown as {
+    get(context: 'article', field: 'title'): Promise<unknown>;
+  }
+
+  await expect(endpoint.get('article', 'title')).resolves.toBe('Draft')
+
+  dispose()
+  sandbox.dispose()
 })

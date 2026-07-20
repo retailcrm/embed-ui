@@ -554,7 +554,7 @@ key business flow when possible.
 Run in this repository:
 
 ```bash
-yarn workspace @retailcrm/embed-ui-v1-sandbox e2e
+yarn workspace @retailcrm/embed-ui-v1-sandbox test:e2e
 ```
 
 The repository examples use fixture extensions that look like real extensions:

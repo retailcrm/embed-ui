@@ -128,3 +128,27 @@ test('uses default target when updating query without targets', () => {
   expect(url.searchParams.get('target')).toBe(DEFAULT_SANDBOX_TARGET)
   expect(url.searchParams.get('targets')).toBe('')
 })
+
+test('uses option target when query target is missing', () => {
+  const config = parseSandboxLaunchConfig(new URLSearchParams(), {
+    targets: ['order/card:common.after'],
+  })
+
+  expect(config.targets).toEqual(['order/card:common.after'])
+})
+
+test('updates current browser query when base is omitted', () => {
+  window.history.replaceState(null, '', '/existing')
+
+  const url = updateSandboxLaunchQuery({
+    extensionUrl: '',
+    fixture: 'order-basic',
+    manifestUrl: '',
+    mode: 'widget',
+    pageCode: '',
+    targets: ['order/card:common.before'],
+    widgetId: 'sandbox-widget',
+  })
+
+  expect(url.pathname).toBe('/existing')
+})
