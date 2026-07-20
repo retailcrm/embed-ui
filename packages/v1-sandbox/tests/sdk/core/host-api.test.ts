@@ -1,6 +1,6 @@
 import type { Field } from '@retailcrm/embed-ui-v1-types/context'
 
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 
 import { createSandboxHostApi, createSandboxState } from '@/core'
 
@@ -133,4 +133,68 @@ test('host api resolves dynamic descriptor and backend url for http middleware',
     uuid: 'dynamic-module',
   })
   expect(state.host.http.at(-1)?.uuid).toBe('dynamic-module')
+})
+
+test('host api handles relative routes, array params and empty query', () => {
+  const state = createSandboxState({
+    schemas,
+  })
+  const hostApi = createSandboxHostApi(state)
+  const leaveHook = vi.fn()
+
+  hostApi.onBeforeRouteLeave(leaveHook)
+  hostApi.goTo('orders?source=url', {
+    ids: [1, 2],
+    skipped: undefined,
+  })
+
+  expect(state.host.location).toEqual({
+    hash: '',
+    pathname: '/orders',
+    query: {
+      ids: ['1', '2'],
+    },
+    search: '?ids=1&ids=2',
+  })
+
+  hostApi.goTo('', {})
+
+  expect(state.host.location.pathname).toBe('')
+
+  hostApi.replaceQuery({})
+
+  expect(state.host.location.search).toBe('')
+  expect(leaveHook).not.toHaveBeenCalled()
+})
+
+test('host api keeps route query when navigation params are omitted', () => {
+  const state = createSandboxState({
+    schemas,
+  })
+  const hostApi = createSandboxHostApi(state)
+
+  hostApi.goTo('/orders?source=url')
+
+  expect(state.host.location).toMatchObject({
+    pathname: '/orders',
+    query: {},
+    search: '?source=url',
+  })
+})
+
+test('host api serializes non-error middleware failures', async () => {
+  const state = createSandboxState({
+    schemas,
+  })
+  const hostApi = createSandboxHostApi(state, {
+    httpMiddleware: () => Promise.reject('middleware failed'),
+  })
+
+  await expect(hostApi.httpCall('/returns')).resolves.toEqual({
+    body: JSON.stringify({
+      error: 'middleware failed',
+      ok: false,
+    }),
+    status: 500,
+  })
 })

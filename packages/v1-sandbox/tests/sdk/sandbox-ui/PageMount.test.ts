@@ -60,4 +60,8 @@ test('page mount exposes accessible region', () => {
 
   expect(wrapper.get('[role="region"]').attributes('aria-label')).toBe('Страница расширения: returns')
   expect(setTree).toHaveBeenCalled()
+
+  wrapper.unmount()
+
+  expect(setTree).toHaveBeenLastCalledWith(mount, null)
 })

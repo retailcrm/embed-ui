@@ -12,6 +12,7 @@ import { waitFor } from '@testing-library/dom'
 import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
 import messagesRuRu from '@/app/i18n/ru-RU.json'
+import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
 
 type FakeEndpoint = {
   call: {
@@ -22,7 +23,7 @@ type FakeEndpoint = {
   terminate: ReturnType<typeof vi.fn>;
 }
 
-type WorkerReadyMode = 'ready' | 'ready-error' | 'silent'
+type WorkerReadyMode = 'ignored-then-ready' | 'ready' | 'ready-error' | 'silent' | 'worker-error'
 
 class FakeWorker extends EventTarget {
   readonly options: WorkerOptions
@@ -31,6 +32,23 @@ class FakeWorker extends EventTarget {
     readyPort?: MessagePort;
   }) => {
     if (workerReadyMode === 'silent') return
+
+    if (workerReadyMode === 'worker-error') {
+      queueMicrotask(() => {
+        this.dispatchEvent(new ErrorEvent('error', {
+          message: 'worker crashed',
+        }))
+      })
+
+      return
+    }
+
+    if (workerReadyMode === 'ignored-then-ready') {
+      message.readyPort?.postMessage({ type: 'unrelated-message' })
+      message.readyPort?.postMessage({ type: 'sandbox:extension-worker-ready' })
+
+      return
+    }
 
     message.readyPort?.postMessage(workerReadyMode === 'ready'
       ? { type: 'sandbox:extension-worker-ready' }
@@ -54,7 +72,14 @@ const createEndpointMock = vi.fn<() => FakeEndpoint>()
 const fromWebWorkerMock = vi.fn((worker: Worker) => worker)
 const disposeContextSubscriptionsMock = vi.fn()
 const patchContextMock = vi.fn()
+const endpointGetMock = vi.fn()
+const endpointHttpCallMock = vi.fn()
+const forceUpdateMock = vi.fn()
 const fakeWorkers: FakeWorker[] = []
+let controllerOptions: {
+  getDescriptorUuid: () => string | undefined;
+  getHttpCallBaseUrl: () => string | null;
+} | null = null
 let app: VueApp<Element> | null = null
 let root: HTMLElement | null = null
 let currentEndpoint: FakeEndpoint
@@ -74,7 +99,10 @@ vi.mock('@retailcrm/embed-ui-v1-components/host', async () => {
     }),
     UiModalSidebar: defineComponent({
       name: 'UiModalSidebar',
-      setup: (_props, { slots }) => () => h('div', slots.default?.()),
+      setup: (_props, { slots }) => () => h('div', [
+        slots.title?.(),
+        slots.default?.(),
+      ]),
     }),
   }
 })
@@ -91,9 +119,41 @@ vi.mock('@/components/DevPanel.vue', async () => {
     default: defineComponent({
       name: 'DevPanelStub',
       props: {
+        applyLaunchConfig: {
+          required: true,
+          type: Function,
+        },
         applyContextJson: {
           required: true,
           type: Function,
+        },
+        setContextJson: {
+          required: true,
+          type: Function,
+        },
+        setFixture: {
+          required: true,
+          type: Function,
+        },
+        setManifestUrl: {
+          required: true,
+          type: Function,
+        },
+        setMode: {
+          required: true,
+          type: Function,
+        },
+        setPageCode: {
+          required: true,
+          type: Function,
+        },
+        setTargetSelected: {
+          required: true,
+          type: Function,
+        },
+        validationErrors: {
+          required: true,
+          type: Object,
         },
       },
       setup: props => () => h('button', {
@@ -121,6 +181,7 @@ vi.mock('@/components/NavigationRail.vue', async () => {
   return {
     default: defineComponent({
       name: 'NavigationRailStub',
+      emits: ['openDevPanel'],
       setup: () => () => h('div'),
     }),
   }
@@ -138,12 +199,30 @@ vi.mock('@/components/NavigationSidebar.vue', async () => {
 })
 
 vi.mock('@/components/PageMount.vue', async () => {
-  const { defineComponent, h } = await import('vue')
+  const { defineComponent, h, onMounted } = await import('vue')
 
   return {
     default: defineComponent({
       name: 'PageMountStub',
-      setup: () => () => h('div'),
+      props: {
+        mount: {
+          required: true,
+          type: Object,
+        },
+        setTree: {
+          required: true,
+          type: Function,
+        },
+      },
+      setup: props => {
+        onMounted(() => {
+          props.setTree(props.mount, {
+            forceUpdate: forceUpdateMock,
+          })
+        })
+
+        return () => h('div')
+      },
     }),
   }
 })
@@ -208,7 +287,12 @@ vi.mock('@/runtime/mount', () => ({
 }))
 
 vi.mock('@/scenario/fixtures', () => ({
-  createOrderSandboxController: () => {
+  orderSandboxFixtures: {
+    'order-basic': {},
+    'order-with-delivery': {},
+  },
+  createOrderSandboxController: (_fixture: string, options: typeof controllerOptions) => {
+    controllerOptions = options
     const contexts = {
       settings: {
         'system.locale': 'ru-RU',
@@ -219,13 +303,13 @@ vi.mock('@/scenario/fixtures', () => ({
       dispose: vi.fn(),
       disposeContextSubscriptions: disposeContextSubscriptionsMock,
       endpointApi: {
-        get: vi.fn(),
+        get: endpointGetMock,
         getCustomDictionary: vi.fn(),
         getCustomField: vi.fn(),
         getCustomSchema: vi.fn(),
         getLocation: vi.fn(),
         goTo: vi.fn(),
-        httpCall: vi.fn(),
+        httpCall: endpointHttpCallMock,
         on: vi.fn(),
         onBeforeRouteLeave: vi.fn(),
         onCustomFieldChange: vi.fn(),
@@ -321,6 +405,7 @@ afterEach(async () => {
   document.head.querySelectorAll('[data-sandbox-extension-stylesheet]').forEach(node => node.remove())
   document.body.innerHTML = ''
   fakeWorkers.splice(0)
+  controllerOptions = null
   workerReadyMode = 'ready'
   await new Promise(resolve => window.setTimeout(resolve, 0))
   vi.clearAllMocks()
@@ -438,4 +523,231 @@ test('disposes context subscriptions before patching context and restarting work
     .toBeLessThan(patchContextMock.mock.invocationCallOrder[0] as number)
   expect(patchContextMock.mock.invocationCallOrder[0])
     .toBeLessThan(endpoint.call.run.mock.invocationCallOrder[1] as number)
+})
+
+test('mounts page runtime with stylesheet, host api and launch bridge', async () => {
+  workerReadyMode = 'ignored-then-ready'
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+    pages: ['settings'],
+    stylesheet: 'http://extension.test/extension/demo/stylesheet',
+    targets: [],
+  }))
+
+  const { endpoint, wrapper } = await mountAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+    expect(forceUpdateMock).toHaveBeenCalled()
+  })
+
+  const stylesheet = document.head.querySelector<HTMLLinkElement>(
+    '[data-sandbox-extension-stylesheet]'
+  )
+  const options = controllerOptions as NonNullable<typeof controllerOptions>
+  const exposedApi = endpoint.expose.mock.calls[0]?.[0] as {
+    get: (...args: unknown[]) => unknown;
+    httpCall: (...args: unknown[]) => unknown;
+  }
+
+  expect(stylesheet?.href).toBe('http://extension.test/extension/demo/stylesheet')
+  expect(stylesheet?.rel).toBe('stylesheet')
+  expect(options.getDescriptorUuid()).toBe('demo-extension')
+  expect(options.getHttpCallBaseUrl()).toBe('http://extension.test/')
+
+  exposedApi.get('settings', 'system.locale')
+  exposedApi.httpCall('/returns', { page: 1 })
+
+  expect(endpointGetMock).toHaveBeenCalledWith('settings', 'system.locale')
+  expect(endpointHttpCallMock).toHaveBeenCalledWith('/returns', { page: 1 })
+
+  const bridge = window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]
+
+  expect(bridge?.getLaunchConfig()).toMatchObject({
+    mode: 'page',
+    pageCode: 'settings',
+  })
+  expect(bridge?.createLaunchUrl({
+    mode: 'widget',
+    targets: ['order/card:common.after'],
+  })).toContain('mode=widget')
+  expect(bridge?.createLaunchUrl({
+    pageCode: 'returns',
+  })).toContain('pageCode=returns')
+
+  const updatesBeforeClick = forceUpdateMock.mock.calls.length
+
+  await wrapper.get('[role="region"]').trigger('click')
+  await waitFor(() => {
+    expect(forceUpdateMock.mock.calls.length).toBeGreaterThan(updatesBeforeClick)
+  })
+
+  wrapper.unmount()
+  app = null
+
+  await waitFor(() => {
+    expect(endpoint.call.release).toHaveBeenCalledOnce()
+    expect(endpoint.terminate).toHaveBeenCalledOnce()
+    expect(fakeWorkers[0]?.terminate).toHaveBeenCalledOnce()
+    expect(stylesheet?.isConnected).toBe(false)
+  })
+})
+
+test('updates dev panel fields and reports validation errors', async () => {
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
+  const callProp = (name: string, ...args: unknown[]) => {
+    const callback = panel.props(name) as (...values: unknown[]) => unknown
+
+    return callback(...args)
+  }
+
+  callProp('setManifestUrl', '')
+  callProp('applyLaunchConfig')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toMatchObject({
+    manifestUrl: 'Укажите URL расширения.',
+  })
+
+  callProp('setManifestUrl', 'http://extension.test/extension/demo')
+  callProp('setFixture', 'order-with-delivery')
+  callProp('setMode', 'page')
+  callProp('setPageCode', 'settings')
+  callProp('setTargetSelected', 'order/card:common.before', false)
+  callProp('setTargetSelected', 'order/card:common.after', true)
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toEqual({})
+
+  callProp('setMode', 'widget')
+  callProp('setTargetSelected', 'unknown/target', true)
+  callProp('applyLaunchConfig')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toMatchObject({
+    targets: 'Неизвестное место встраивания "unknown/target".',
+  })
+
+  callProp('setTargetSelected', 'unknown/target', false)
+
+  callProp('setContextJson', '{')
+  await callProp('applyContextJson')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toMatchObject({
+    contextJson: 'Введите валидный JSON.',
+  })
+
+  callProp('setContextJson', '{}')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toEqual({})
+
+  callProp('setContextJson', '{"settings":[]}')
+  await callProp('applyContextJson')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toMatchObject({
+    contextJson: 'Контекст "settings" должен быть JSON-объектом.',
+  })
+
+  callProp('setContextJson', '{"unknown":{}}')
+  await callProp('applyContextJson')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toMatchObject({
+    contextJson: 'Неизвестный контекст "unknown".',
+  })
+
+  await wrapper.get('[role="region"]').trigger('click')
+  await wrapper.get('button[aria-label="Свернуть боковую панель"]').trigger('click')
+
+  expect(wrapper.get('button[aria-label="Развернуть боковую панель"]')).toBeDefined()
+
+  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
+  wrapper.findComponent({ name: 'UiModalSidebar' }).vm.$emit('update:opened', false)
+  await wrapper.vm.$nextTick()
+})
+
+test('reports worker error event and non-error manifest rejection', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+
+  workerReadyMode = 'worker-error'
+  resolveSandboxExtensionSourceMock.mockResolvedValueOnce(createExtensionSource())
+  await mountAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
+  )
+
+  await waitFor(() => {
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Не удалось запустить расширение\n\nworker crashed'
+    )
+  })
+
+  app?.unmount()
+  app = null
+  resolveSandboxExtensionSourceMock.mockRejectedValueOnce('manifest unavailable')
+  await mountAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
+  )
+
+  await waitFor(() => {
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Не удалось запустить расширение\n\nmanifest unavailable'
+    )
+  })
+})
+
+test('continues runtime disposal when release fails', async () => {
+  const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  const endpoint = createEndpoint()
+
+  endpoint.call.release.mockRejectedValueOnce(new Error('release failed'))
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
+
+  const { wrapper } = await mountAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget',
+    endpoint
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledTimes(2)
+  })
+
+  wrapper.unmount()
+  app = null
+
+  await waitFor(() => {
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[sandbox:manifest] Failed to release extension runtime',
+      expect.any(Error)
+    )
+    expect(endpoint.terminate).toHaveBeenCalledOnce()
+  })
+})
+
+test('ignores malformed stored launch notice', async () => {
+  window.sessionStorage.setItem('v1-sandbox:launch-notice', '{')
+
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+
+  expect(window.sessionStorage.getItem('v1-sandbox:launch-notice')).toBeNull()
+  expect(wrapper.text()).not.toContain('Режим страницы выбран автоматически')
+})
+
+test('shows stored inferred page mode notice', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+
+  window.sessionStorage.setItem('v1-sandbox:launch-notice', JSON.stringify({
+    pageCode: 'settings',
+    type: 'inferred-page-mode',
+  }))
+
+  await mountAppWithRuntime('/?manifestUrl=&mode=page&pageCode=settings')
+
+  expect(alertSpy).toHaveBeenCalledWith(
+    'Режим страницы выбран автоматически\n\nВ ссылке не был указан mode. Sandbox нашёл страницу "settings" в расширении и переключил запуск в режим страницы.'
+  )
 })

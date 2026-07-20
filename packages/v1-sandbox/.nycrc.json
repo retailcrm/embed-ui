@@ -1,0 +1,16 @@
+{
+  "extension": [
+    ".js",
+    ".ts",
+    ".vue"
+  ],
+  "temp-dir": "artifacts/coverage/merged",
+  "report-dir": "artifacts/coverage/report",
+  "reporter": [
+    "html",
+    "lcov",
+    "json",
+    "cobertura",
+    "text-summary"
+  ]
+}

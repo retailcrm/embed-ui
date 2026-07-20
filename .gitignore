@@ -11,6 +11,7 @@ dist
 generated
 node_modules
 coverage
+!packages/v1-sandbox/scripts/coverage/
 artifacts/
 /bin/
 packages/v1-endpoint/docs/targets/

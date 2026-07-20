@@ -62,3 +62,14 @@ test('widget target list renders every provided mount', () => {
   expect(wrapper.get('[role="region"]').attributes('aria-label')).toBe('Места встраивания виджетов')
   expect(wrapper.findAll('[role="region"][aria-label^="Цель виджета:"]')).toHaveLength(2)
 })
+
+test('widget target list supports an empty mount collection', () => {
+  const wrapper = mountWithApp(WidgetTargetList, {
+    props: {
+      mounts: [],
+      setTree: vi.fn(),
+    },
+  })
+
+  expect(wrapper.findAll('[role="region"][aria-label^="Цель виджета:"]')).toHaveLength(0)
+})

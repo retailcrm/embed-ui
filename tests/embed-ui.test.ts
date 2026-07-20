@@ -637,6 +637,40 @@ describe('embed-ui CLI', () => {
     )
   })
 
+  test('init uses a custom source root in the generated browser test worker URL', async () => {
+    const tempDir = createTempDir()
+
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+    await runInit({
+      ...parseInitArgs([
+        '--cwd',
+        tempDir,
+        '--src-dir',
+        'frontend',
+        '--packages',
+        'embed-ui',
+        '--package-manager',
+        'npm',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-skills',
+      ]),
+      version: '1.2.3',
+    })
+
+    const browserTest = fs.readFileSync(
+      path.join(tempDir, 'frontend/sandbox/tests/browser/starter.browser.test.ts'),
+      'utf8'
+    )
+
+    expect(browserTest).toContain(
+      'new URL(\'/frontend/endpoint/endpoint.worker.ts\', window.location.href)'
+    )
+    expect(browserTest).not.toContain('/web/endpoint/endpoint.worker.ts')
+  })
+
   test('init dry-run reports Playwright Chromium install command', async () => {
     const tempDir = createTempDir()
     const logs: string[] = []

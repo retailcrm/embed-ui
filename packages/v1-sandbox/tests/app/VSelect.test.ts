@@ -6,7 +6,7 @@ import { createI18n } from 'vue-i18n'
 import { expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import { test } from 'vitest'
+import { test, vi } from 'vitest'
 
 import VSelect from '@/components/VSelect.vue'
 
@@ -105,4 +105,59 @@ test('v-select renders selected value', () => {
   })
 
   expect((wrapper.get('[role="combobox"]').element as HTMLInputElement).value).toBe('Базовый заказ')
+
+  const trigger = wrapper.findComponent({ name: 'UiSelectTrigger' })
+  const selection = trigger.props('selection') as Array<{
+    isMatched: () => boolean;
+  }>
+
+  expect(selection[0].isMatched()).toBe(true)
+})
+
+test('v-select handles keyboard selection and empty value', async () => {
+  const wrapper = mountWithApp(VSelect, {
+    props: {
+      id: 'mode',
+      options: [{
+        label: 'Виджеты',
+        value: 'widget',
+      }],
+      value: 'widget',
+    },
+  })
+  const trigger = wrapper.findComponent({ name: 'UiSelectTrigger' })
+  const preventDefault = vi.fn()
+
+  trigger.vm.$emit('keydown', {
+    key: 'Escape',
+    preventDefault,
+  })
+  trigger.vm.$emit('keydown', {
+    key: 'Enter',
+    preventDefault,
+  })
+
+  expect(preventDefault).toHaveBeenCalledOnce()
+  expect(wrapper.emitted('update:value')).toEqual([['widget']])
+
+  const emptyWrapper = mountWithApp(VSelect, {
+    props: {
+      id: 'empty-mode',
+      options: [{
+        label: 'Виджеты',
+        value: 'widget',
+      }],
+      value: 'missing',
+    },
+  })
+  const emptyTrigger = emptyWrapper.findComponent({ name: 'UiSelectTrigger' })
+
+  emptyTrigger.vm.$emit('keydown', {
+    key: 'Enter',
+    preventDefault,
+  })
+
+  expect(emptyTrigger.props('selection')).toEqual([])
+  expect(emptyTrigger.props('activeDescendant')).toBeNull()
+  expect(emptyWrapper.emitted('update:value')).toBeUndefined()
 })

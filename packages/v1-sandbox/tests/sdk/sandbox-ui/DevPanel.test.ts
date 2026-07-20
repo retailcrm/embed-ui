@@ -62,6 +62,13 @@ test('dev panel updates launch fields and context', async () => {
   }
   const wrapper = mountWithApp(DevPanel, {
     props,
+    global: {
+      stubs: {
+        UiTooltip: {
+          template: '<div><slot /></div>',
+        },
+      },
+    },
   })
 
   expect(wrapper.text()).toContain('Доставка JS-модуля')
@@ -86,6 +93,14 @@ test('dev panel updates launch fields and context', async () => {
   expect(devPanel.getByRole('button', {
     name: 'Текущий контекст из фикстуры. Можно изменить его, чтобы симулировать другое состояние CRM, затем применить контекст.',
   })).toBeInstanceOf(HTMLButtonElement)
+
+  const selects = wrapper.findAllComponents({ name: 'VSelect' })
+
+  selects[0].vm.$emit('update:value', 'page')
+  selects[1].vm.$emit('update:value', 'order-with-delivery')
+
+  expect(props.setMode).toHaveBeenCalledWith('page')
+  expect(props.setFixture).toHaveBeenCalledWith('order-with-delivery')
 
   await wrapper.get('input[id$="dev-panel-manifest-url"]').setValue('http://extension.test/extension/changed')
   await wrapper.get('textarea').setValue('{"order/card":{"number":"999C"}}')
@@ -128,11 +143,21 @@ test('dev panel shows context json errors and disables page code in widget mode'
       setTargetSelected: vi.fn(),
       validationErrors: {
         contextJson: 'Invalid JSON',
+        fixture: 'Invalid fixture',
+        mode: 'Invalid mode',
+        pageCode: 'Invalid page code',
+        targets: 'Invalid targets',
       },
     },
   })
 
-  expect(wrapper.get('[role="alert"]').text()).toBe('Invalid JSON')
+  expect(wrapper.findAll('[role="alert"]').map(alert => alert.text())).toEqual([
+    'Invalid mode',
+    'Invalid fixture',
+    'Invalid page code',
+    'Invalid targets',
+    'Invalid JSON',
+  ])
   expect(wrapper.get('input[id$="dev-panel-page-code"]').attributes('disabled')).toBeDefined()
   expect(wrapper.findAll('button').find(button => button.text() === 'Применить контекст')?.attributes('disabled'))
     .toBeDefined()

@@ -42,6 +42,15 @@ test('mounts sandbox with default onboarding screen', () => {
   expect(sandboxRoot.querySelector('[role="status"]')?.textContent).toBe('Виджеты: 2')
 })
 
+test('mounts sandbox into default app target', () => {
+  root = document.createElement('div')
+  root.id = 'app'
+  document.body.append(root)
+  app = mountSandbox()
+
+  expect(root.textContent).toContain('Подключите внешнее расширение')
+})
+
 test('toggles sandbox sidebar state', async () => {
   mountSandboxApp()
 

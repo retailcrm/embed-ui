@@ -48,6 +48,7 @@ test('navigation rail emits dev panel open action', async () => {
   })
 
   await wrapper.get('a[aria-label="Раздел заказов"]').trigger('click')
+  await wrapper.get('a[aria-label="Уведомления"]').trigger('click')
   await wrapper.get('button[aria-label="Открыть управление песочницей"]').trigger('click')
 
   expect(wrapper.get('a[aria-label="Раздел заказов"]').attributes('aria-current')).toBe('page')
