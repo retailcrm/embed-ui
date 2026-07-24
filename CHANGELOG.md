@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.30-alpha.3
+
+### Features
+
+* **v1-sandbox:** Updated coverage config, improved tests coverage ([2c023b0](https://github.com/retailcrm/embed-ui/commit/2c023b03695fd2aed465f67e4b0e98095c3f9a76))
+
 ## 0.9.30-alpha.2
 
 ### Bug Fixes
