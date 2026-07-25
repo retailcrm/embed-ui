@@ -103,6 +103,7 @@ yarn workspace @retailcrm/embed-ui-v1-components run storybook:build
   - `.agents/skills/commit-workflow/SKILL.md`
   - `.agents/skills/local-ci-simulation/SKILL.md`
   - `.agents/skills/sync-remote-host-registry/SKILL.md`
+  - `.agents/skills/test-workflow/SKILL.md`
   - `.agents/skills/yarn-lock-conflict-resolution/SKILL.md`
 
 ## Notes
