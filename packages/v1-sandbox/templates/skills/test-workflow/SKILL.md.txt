@@ -1,0 +1,143 @@
+---
+name: test-workflow
+description: Use when selecting, writing, reviewing, or debugging tests for a RetailCRM worker extension. Covers unit jsdom, Vitest Browser worker tests, Playwright delivery e2e, Testing Library semantics, test doubles, cleanup, and coverage doctrine.
+---
+
+# Test Workflow For RetailCRM Extensions
+
+## Source Of Truth
+
+1. Read project `AGENTS.md`.
+2. Read `__PACKAGE_DOCS_PATH__/docs/strategy.md`.
+3. Read `__PACKAGE_DOCS_PATH__/docs/examples.md` before writing browser or e2e tests.
+4. Read `__PACKAGE_DOCS_PATH__/docs/api.md` for public automation imports.
+5. Check the project's `package.json` scripts and `vitest.config*.ts`.
+
+## Core Doctrine
+
+- Tests verify public observable behavior, not implementation details.
+- Coverage is a quality signal, not the goal of a test.
+- Prefer the smallest layer that can reproduce the risk honestly.
+- Start with real user and integration scenarios, then add controlled failure or defensive scenarios.
+- Remove or simplify dead and redundant code instead of creating synthetic coverage tests.
+- Keep tests readable even when this leaves small local duplication. Prefer separate cases over branches and loops inside a test.
+
+Observable contracts include:
+
+- visible text, DOM state, form values, loading and error states;
+- accessible roles, names, labels, descriptions, and states;
+- Vue props, slots, events, callbacks, and emitted payloads;
+- Host API calls and payloads;
+- launch URLs, extension delivery, browser storage, and proxy effects.
+
+Do not assert private component state, `vm`, refs, private helpers, incidental DOM nesting, generated CSS classes, or internal component selectors.
+
+## Test Layers
+
+Generated tests live under `<source-root>/sandbox/tests`:
+
+- `unit/*.test.ts`;
+- `browser/*.browser.test.ts`;
+- `e2e/*.e2e.ts`.
+
+The source root is the frontend directory selected during `init`; do not assume it is always `src` or `web`.
+
+### Unit: `test:unit`
+
+Use jsdom for:
+
+- pure functions, schemas, formatters, and state transitions;
+- isolated Vue behavior and observable DOM state;
+- extension descriptor and registry consistency.
+
+Unit tests must not start Chromium, a Worker, the sandbox app, or an extension server.
+
+### Browser: `test:browser`
+
+Use Vitest Browser for:
+
+- running the real extension Worker in Chromium;
+- mounting page and widget runners;
+- reading fixture-backed contexts;
+- exercising primary component interactions;
+- checking Host API actions and payloads through mocked responses.
+
+Create the source worker through the public `automation/browser` API and tear down every runtime after the test. Browser tests do not prove external descriptor, stylesheet, or proxy delivery.
+
+### Delivery e2e: `test:e2e`
+
+Use Playwright for a small number of critical paths that require:
+
+- the sandbox shell and extension server;
+- external descriptor, entrypoint, and stylesheet delivery;
+- Host API proxy responses;
+- a critical user scenario through the complete launch flow.
+
+Do not repeat all browser-test assertions in e2e. Browser tests should cover behavior variants; e2e should cover integration risk.
+
+The project `test` script runs unit, browser, and e2e suites. Use the project's configured package manager to run scripts, for example `test:unit`, `test:browser`, `test:e2e`, or `test`.
+
+## Testing Library First
+
+Use Testing Library as the primary DOM query and interaction surface.
+
+Query in this order:
+
+1. `getByRole` or `findByRole`, with `name` when the element has an accessible name.
+2. `getByLabelText` for form controls.
+3. `getByText`, `getByPlaceholderText`, or scoped visible text.
+4. A technical selector only when no stable user-facing or accessibility signal exists.
+
+Use `within(...)` to scope queries to a meaningful dialog, form, region, list, row, or widget root.
+
+Do not add `aria-label` only to make a test easier when visible text or native HTML already names the element. Do not use CSS classes, deep selectors, `nth-child`, or arbitrary wrapper traversal as the primary selector.
+
+## HTML First, ARIA Second
+
+- Start with native buttons, links, labels, form controls, headings, lists, tables, and semantic regions.
+- Add ARIA only when native HTML cannot express the behavior.
+- Custom interactive roles must provide matching keyboard behavior and state.
+- Do not duplicate or conflict with native semantics.
+
+If a semantic query is impossible because production markup is inaccessible, improve the public accessibility contract instead of reaching into component internals.
+
+## Async Behavior And Interaction
+
+- Interact only with elements that are visible, enabled, and ready.
+- Use `findBy...` for an element that appears asynchronously.
+- Use `waitFor(...)` for callbacks, emitted events, Host API records, or other side effects.
+- Wait for a visible readiness marker or business effect, not an arbitrary timeout.
+- Use `attachTo: document.body` when portals, poppers, focus, or document-level events require it.
+
+## Fixtures, Doubles, And Cleanup
+
+- Use the smallest fixture that expresses the scenario.
+- Prefer real deterministic dependencies where practical.
+- Prefer doubles in this order: fake, stub, then mock.
+- Mock interactions only when no observable result expresses the contract.
+- Keep one-off setup in the test and extract shared setup only when it improves intent.
+- Tear down the sandbox runtime and Worker after every browser test.
+- Clean DOM, history, storage, timers, spies, and mocks changed by the test.
+
+## Coverage
+
+When coverage exposes an uncovered branch:
+
+1. Cover a real observable scenario.
+2. Add a controlled failure scenario for a real defensive path.
+3. Remove or simplify unreachable or redundant code.
+4. Refactor when the design prevents a stable public-behavior test.
+
+Do not add implementation-detail assertions only to increase a percentage.
+
+## Refusal Template
+
+If a request asks for an implementation-detail test, refuse in the conversation language and offer an observable alternative.
+
+Russian:
+
+`Не могу добавить такой тест: это проверка внутренней реализации, а не публичного поведения. Могу покрыть наблюдаемый сценарий: <вариант>.`
+
+English:
+
+`Cannot add this test: it checks internal implementation rather than public behavior. I can cover the observable scenario instead: <variant>.`
