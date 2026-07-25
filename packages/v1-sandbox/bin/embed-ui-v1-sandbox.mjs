@@ -14,16 +14,19 @@ const DEFAULT_ENV_OUTPUT = '.env.sandbox'
 const AGENTS_SECTION_HEADER = '## @retailcrm/embed-ui-v1-sandbox'
 const AGENTS_SECTION_START = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-sandbox:start -->'
 const AGENTS_SECTION_END = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-sandbox:end -->'
+const SKILL_NAME = 'test-workflow'
+const SKILL_TEMPLATE_PATH = `templates/skills/${SKILL_NAME}/SKILL.md.txt`
 const HELP_TEXT = `Usage:
   npx ${PACKAGE_NAME} serve [--host 0.0.0.0] [--port 4173]
   npx ${PACKAGE_NAME} init-env [target] [--output .env.sandbox] [--force]
   npx ${PACKAGE_NAME} init-agents [target] [--force]
+  npx ${PACKAGE_NAME} init-skills [target] [--force]
 
 Options:
   --host <host>        Host to listen on. Default: ${DEFAULT_HOST}
   --port <port>        Port to listen on. Default: ${DEFAULT_PORT}
   --output <path>      Env file path for init-env. Default: ${DEFAULT_ENV_OUTPUT}
-  --force              Overwrite env file or refresh managed AGENTS.md section
+  --force              Overwrite env file or refresh managed AGENTS.md section or skill
   -h, --help           Show this help
 
 Examples:
@@ -34,6 +37,8 @@ Examples:
   npx ${PACKAGE_NAME} init-env --output .env.sandbox.local --force
   npx ${PACKAGE_NAME} init-agents
   npx ${PACKAGE_NAME} init-agents ./my-project --force
+  npx ${PACKAGE_NAME} init-skills
+  npx ${PACKAGE_NAME} init-skills ./my-project --force
 `
 
 const CONTENT_TYPES = {
@@ -55,6 +60,7 @@ const packageRoot = path.resolve(path.dirname(currentFile), '..')
 const appDir = path.join(packageRoot, 'dist/app')
 const indexPath = path.join(appDir, 'index.html')
 const envDistPath = path.join(packageRoot, '.env.sandbox.dist')
+const skillTemplatePath = path.join(packageRoot, SKILL_TEMPLATE_PATH)
 
 const printUsage = () => {
   console.log(HELP_TEXT)
@@ -107,7 +113,12 @@ const parseArgs = (rawArgs) => {
     throw new Error('Too many positional arguments')
   }
 
-  if (positionals.length === 1 && command !== 'init-agents' && command !== 'init-env') {
+  if (
+    positionals.length === 1
+    && command !== 'init-agents'
+    && command !== 'init-env'
+    && command !== 'init-skills'
+  ) {
     throw new Error(`Unexpected positional argument for ${command}: ${positionals[0]}`)
   }
 
@@ -195,6 +206,15 @@ When working with \`${PACKAGE_NAME}\` in this project:
 7. \`docs/api.md\`
 ${AGENTS_SECTION_END}
 `
+
+const createSkill = (packageDocsPath) => {
+  if (!fs.existsSync(skillTemplatePath)) {
+    throw new Error(`Skill template was not found at ${skillTemplatePath}.`)
+  }
+
+  return fs.readFileSync(skillTemplatePath, 'utf8')
+    .replaceAll('__PACKAGE_DOCS_PATH__', packageDocsPath)
+}
 
 const findMarkedSectionRange = (content) => {
   const start = content.indexOf(AGENTS_SECTION_START)
@@ -410,6 +430,32 @@ const initAgents = ({ force, target }) => {
   console.log(`The ${PACKAGE_NAME} instructions were appended to the end of the file.`)
 }
 
+const initSkills = ({ force, target }) => {
+  if (!fs.existsSync(target)) {
+    throw new Error(`Target path does not exist: ${target}`)
+  }
+
+  if (!fs.statSync(target).isDirectory()) {
+    throw new Error(`Target path is not a directory: ${target}`)
+  }
+
+  const packageDocsPath = createPackageDocsPath(target)
+  const skillPath = path.join(target, '.agents', 'skills', SKILL_NAME, 'SKILL.md')
+  const fileExists = fs.existsSync(skillPath)
+
+  if (fileExists && !force) {
+    console.log(`${skillPath} already exists`)
+    console.log('Nothing was changed. Re-run with --force to refresh that skill.')
+    return
+  }
+
+  fs.mkdirSync(path.dirname(skillPath), { recursive: true })
+  fs.writeFileSync(skillPath, createSkill(packageDocsPath), 'utf8')
+
+  const action = fileExists ? 'updated' : 'created'
+  console.log(`SKILL: ${action} ${skillPath}`)
+}
+
 try {
   const options = parseArgs(process.argv.slice(2))
 
@@ -419,6 +465,8 @@ try {
     initAgents(options)
   } else if (options.command === 'init-env') {
     initEnv(options)
+  } else if (options.command === 'init-skills') {
+    initSkills(options)
   } else if (options.command === 'serve') {
     serve(options)
   } else {

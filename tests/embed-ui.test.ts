@@ -1090,7 +1090,8 @@ describe('embed-ui CLI', () => {
       '--package-manager',
       'npm',
       '--packages',
-      'components,contexts,endpoint',
+      'components,contexts,endpoint,sandbox',
+      '--force-skills',
       '--dry-run',
     ])
 
@@ -1113,6 +1114,9 @@ describe('embed-ui CLI', () => {
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-components@1.2.3 -- embed-ui-v1-components init-skills')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-contexts@1.2.3 -- embed-ui-v1-contexts init-skills')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-skills')
+    expect(output).toContain(
+      `npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-sandbox@1.2.3 -- embed-ui-v1-sandbox init-skills ${tempDir} --force`
+    )
   })
 
   test('init agents-only mode delegates sandbox agent setup to selected packages', async () => {
@@ -1458,6 +1462,18 @@ describe('embed-ui CLI', () => {
     expect(agentsContent).toContain('<!-- embed-ui-agents:@retailcrm/embed-ui-v1-sandbox:start -->')
   })
 
+  test('v1-sandbox documents init-skills in CLI help', () => {
+    const sandboxBin = path.resolve('packages/v1-sandbox/bin/embed-ui-v1-sandbox.mjs')
+    const output = execFileSync(process.execPath, [
+      sandboxBin,
+      '--help',
+    ], {
+      encoding: 'utf8',
+    })
+
+    expect(output).toContain('init-skills [target] [--force]')
+  })
+
   test('v1-sandbox init-env creates project env template safely', () => {
     const tempDir = createTempDir()
     const sandboxBin = path.resolve('packages/v1-sandbox/bin/embed-ui-v1-sandbox.mjs')
@@ -1498,10 +1514,13 @@ describe('embed-ui CLI', () => {
     const componentsBin = path.resolve('packages/v1-components/bin/embed-ui-v1-components.mjs')
     const contextsBin = path.resolve('packages/v1-contexts/bin/embed-ui-v1-contexts.mjs')
     const endpointBin = path.resolve('packages/v1-endpoint/bin/embed-ui-v1-endpoint.mjs')
+    const sandboxBin = path.resolve('packages/v1-sandbox/bin/embed-ui-v1-sandbox.mjs')
+    const sandboxSkillPath = path.join(tempDir, '.agents/skills/test-workflow/SKILL.md')
 
     execFileSync(process.execPath, [componentsBin, 'init-skills', tempDir])
     execFileSync(process.execPath, [contextsBin, 'init-skills', tempDir])
     execFileSync(process.execPath, [endpointBin, 'init-skills', tempDir])
+    execFileSync(process.execPath, [sandboxBin, 'init-skills', tempDir])
 
     expect(fs.readFileSync(
       path.join(tempDir, '.agents/skills/embed-ui-v1-components-ui/SKILL.md'),
@@ -1515,6 +1534,38 @@ describe('embed-ui CLI', () => {
       path.join(tempDir, '.agents/skills/embed-ui-v1-endpoint-runtime/SKILL.md'),
       'utf8'
     )).toContain('page/menu hierarchy')
+
+    const sandboxSkill = fs.readFileSync(sandboxSkillPath, 'utf8')
+
+    expect(sandboxSkill).toContain('name: test-workflow')
+    expect(sandboxSkill).toContain('./node_modules/@retailcrm/embed-ui-v1-sandbox/docs/strategy.md')
+    expect(sandboxSkill).toContain('## Testing Library First')
+    expect(sandboxSkill).toContain('### Browser: `test:browser`')
+    expect(sandboxSkill).toContain('### Delivery e2e: `test:e2e`')
+    expect(sandboxSkill).toContain('Coverage is a quality signal, not the goal of a test.')
+  })
+
+  test('v1-sandbox init-skills preserves an existing skill unless forced', () => {
+    const tempDir = createTempDir()
+    const sandboxBin = path.resolve('packages/v1-sandbox/bin/embed-ui-v1-sandbox.mjs')
+    const sandboxSkillPath = path.join(tempDir, '.agents/skills/test-workflow/SKILL.md')
+
+    execFileSync(process.execPath, [sandboxBin, 'init-skills', tempDir])
+    fs.writeFileSync(sandboxSkillPath, 'project-specific test doctrine\n', 'utf8')
+
+    execFileSync(process.execPath, [sandboxBin, 'init-skills', tempDir])
+    expect(fs.readFileSync(sandboxSkillPath, 'utf8')).toBe('project-specific test doctrine\n')
+
+    execFileSync(process.execPath, [sandboxBin, 'init-skills', tempDir, '--force'])
+    expect(fs.readFileSync(sandboxSkillPath, 'utf8')).toContain('name: test-workflow')
+  })
+
+  test('v1-sandbox publishes project skill templates', () => {
+    const packageJson = readJsonFile<{ files: string[] }>(
+      path.resolve('packages/v1-sandbox/package.json')
+    )
+
+    expect(packageJson.files).toContain('templates')
   })
 
   test('init can force dependency ranges and fix dependency sections', async () => {
