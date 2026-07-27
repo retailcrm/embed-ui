@@ -18,6 +18,7 @@ export type DevPanelValidationErrors = Partial<Record<DevPanelField, string>>
 export type DevPanelValidationMessages = {
   contextJsonContextObject(context: string): string;
   contextJsonInvalidJson: string;
+  contextJsonInvalidJsonAt(line: number, column: number): string;
   contextJsonRootObject: string;
   contextJsonUnknownContext(context: string): string;
   fixture: string;
@@ -25,10 +26,16 @@ export type DevPanelValidationMessages = {
   manifestUrlFormat: string;
   manifestUrlRequired: string;
   mode: string;
+  pageCodeFormat: string;
   pageCodeRequired: string;
   targetRequired: string;
   targetUnknown(target: string): string;
 }
+
+const SANDBOX_PAGE_CODE_PATTERN = /^[A-Za-z-]+$/u
+
+export const isValidSandboxPageCode = (value: string): boolean =>
+  SANDBOX_PAGE_CODE_PATTERN.test(value)
 
 export type LaunchConfigValidationInput = {
   fixture: string;
@@ -88,10 +95,14 @@ export const validateContextJsonInput = (
 
   try {
     parsed = JSON.parse(value) as unknown
-  } catch {
+  } catch (error) {
+    const location = getJsonParseErrorLocation(value, error)
+
     return {
       errors: {
-        contextJson: messages.contextJsonInvalidJson,
+        contextJson: location
+          ? messages.contextJsonInvalidJsonAt(location.line, location.column)
+          : messages.contextJsonInvalidJson,
       },
       success: false,
     }
@@ -162,7 +173,7 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
     invalid_type_error: messages.mode,
     required_error: messages.mode,
   }),
-  pageCode: z.string().transform(value => value.trim()),
+  pageCode: z.string(),
   targets: z.array(z.string().transform(value => value.trim())).superRefine((targets, context) => {
     targets.forEach((target, index) => {
       if (isSandboxOrderTarget(target)) return
@@ -175,10 +186,16 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
     })
   }),
 }).superRefine((value, context) => {
-  if (value.mode === 'page' && !value.pageCode) {
+  if (value.mode === 'page' && !value.pageCode.trim()) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
       message: messages.pageCodeRequired,
+      path: ['pageCode'],
+    })
+  } else if (value.mode === 'page' && !isValidSandboxPageCode(value.pageCode)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: messages.pageCodeFormat,
       path: ['pageCode'],
     })
   }
@@ -263,3 +280,32 @@ const hasExtensionEndpoint = (url: URL): boolean => {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
+
+const getJsonParseErrorLocation = (
+  value: string,
+  error: unknown
+): { column: number; line: number } | null => {
+  if (!(error instanceof SyntaxError)) return null
+
+  const lineAndColumn = error.message.match(/line\s+(\d+)\s+column\s+(\d+)/i)
+
+  if (lineAndColumn) {
+    return {
+      column: Number(lineAndColumn[2]),
+      line: Number(lineAndColumn[1]),
+    }
+  }
+
+  const position = error.message.match(/position\s+(\d+)/i)
+
+  if (!position) return null
+
+  const offset = Number(position[1])
+  const prefix = value.slice(0, offset)
+  const lastLineBreak = prefix.lastIndexOf('\n')
+
+  return {
+    column: offset - lastLineBreak,
+    line: prefix.split('\n').length,
+  }
+}

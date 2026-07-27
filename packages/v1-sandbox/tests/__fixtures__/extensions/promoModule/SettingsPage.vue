@@ -439,7 +439,7 @@ const useStoreTimezone = ref(true)
 const autoExtend = ref(false)
 
 const reportEmail = ref('marketing@company.test')
-const webhook = ref('https://example.com/hooks/promotions')
+const webhook = ref('https://example.test/hooks/promotions')
 </script>
 
 <style module lang="less">
@@ -682,7 +682,7 @@ const webhook = ref('https://example.com/hooks/promotions')
         "name": "Spring sale, for example",
         "description": "Shortly describe mechanics and constraints",
         "email": "marketing (at) company.test",
-        "webhook": "https://example.com/hooks/promotions"
+        "webhook": "https://example.test/hooks/promotions"
     },
     "hints": {
         "code": "Used in links and logs"
@@ -800,7 +800,7 @@ const webhook = ref('https://example.com/hooks/promotions')
         "name": "Например, Весенняя распродажа",
         "description": "Кратко опишите механику и ограничения",
         "email": "marketing (at) company.test",
-        "webhook": "https://example.com/hooks/promotions"
+        "webhook": "https://example.test/hooks/promotions"
     },
     "hints": {
         "code": "Используется в ссылках и логах"

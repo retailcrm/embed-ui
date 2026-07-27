@@ -27,7 +27,7 @@ test('creates order sandbox controller from fixture and supports reset snapshot'
 
   sandbox.reset(snapshot)
 
-  expect(sandbox.state.contexts['order/card']['customer.firstName']).toBe('Игорь')
+  expect(sandbox.state.contexts['order/card']['customer.firstName']).toBe('Иван')
   expect(sandbox.state.host.location.pathname).toBe('/orders/215/edit')
 })
 

@@ -41,7 +41,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: '__PACKAGE_MANAGER_RUN__ build && __PACKAGE_MANAGER_RUN__ serve:extension',
+      command: '__PACKAGE_MANAGER_RUN__ build && __PACKAGE_MANAGER_RUN__ extension:serve',
       url: extensionURL,
       reuseExistingServer: !process.env.CI,
     },

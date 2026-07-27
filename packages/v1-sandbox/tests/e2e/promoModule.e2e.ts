@@ -28,7 +28,7 @@ test('loads promo module widget extension from target descriptor', async ({ page
   await page.goto(createSandboxWidgetPath(extension, target))
 
   const widgetMount = page.getByRole('region', {
-    name: `Цель виджета: ${target}`,
+    name: `Место встраивания виджета: ${target}`,
   })
 
   await expect(widgetMount).toBeVisible()

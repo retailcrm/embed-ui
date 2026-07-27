@@ -16,19 +16,19 @@
                     [$style['navigation-rail__item_current']]: item.current,
                 }"
             >
-                <a
-                    :class="$style['navigation-rail__link']"
-                    :aria-label="item.label"
-                    :aria-current="item.current ? 'page' : undefined"
-                    href="#"
-                    @click.prevent="item.action?.()"
+                <span
+                    :class="[
+                        $style['navigation-rail__link'],
+                        $style['navigation-rail__decoration'],
+                    ]"
+                    aria-hidden="true"
                 >
                     <component
                         :is="item.icon"
                         :class="$style['navigation-rail__icon']"
                         aria-hidden="true"
                     />
-                </a>
+                </span>
             </li>
         </ul>
 
@@ -61,19 +61,20 @@
                     />
                 </UiButton>
 
-                <a
+                <span
                     v-else
-                    :class="$style['navigation-rail__link']"
-                    :aria-label="item.label"
-                    href="#"
-                    @click.prevent
+                    :class="[
+                        $style['navigation-rail__link'],
+                        $style['navigation-rail__decoration'],
+                    ]"
+                    aria-hidden="true"
                 >
                     <component
                         :is="item.icon"
                         :class="$style['navigation-rail__icon']"
                         aria-hidden="true"
                     />
-                </a>
+                </span>
             </li>
         </ul>
 
@@ -305,6 +306,10 @@ const bottomItems = computed<RailItem[]>(() => [
         [stroke]:not([stroke="none"]) {
             stroke: currentColor;
         }
+    }
+
+    &__decoration {
+        cursor: default;
     }
 
     &__item_current &__link {

@@ -167,6 +167,42 @@ export const setMissingScript = (
   })
 }
 
+export const renameGeneratedScript = (
+  packageJson: PackageJson,
+  currentName: string,
+  nextName: string,
+  currentCommand: string,
+  nextCommand: string,
+  changes: InitChanges
+): void => {
+  const scripts = ensureObjectField(packageJson, 'scripts')
+
+  if (typeof scripts[currentName] !== 'string') return
+
+  if (scripts[currentName] !== currentCommand) {
+    changes.warnings.push(
+      `script "${currentName}" has a custom command and will not be removed`
+    )
+    return
+  }
+
+  if (typeof scripts[nextName] === 'string' && scripts[nextName] !== nextCommand) {
+    changes.warnings.push(
+      `script "${nextName}" already exists; generated "${currentName}" script will not be removed`
+    )
+    return
+  }
+
+  delete scripts[currentName]
+  scripts[nextName] = nextCommand
+
+  changes.packageJson.push({
+    type: 'script',
+    name: `${currentName} -> ${nextName}`,
+    nextRange: nextCommand,
+  })
+}
+
 export const setDependency = (
   packageJson: PackageJson,
   section: DependencySection,

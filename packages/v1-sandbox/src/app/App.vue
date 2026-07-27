@@ -16,7 +16,7 @@
             :open="isSidebarOpen"
         />
 
-        <UiButton
+        <button
             :class="$style['sandbox-app__sidebar-toggle']"
             :aria-label="isSidebarOpen ? t('app.sidebarCollapse') : t('app.sidebarExpand')"
             :aria-expanded="isSidebarOpen"
@@ -24,12 +24,11 @@
             type="button"
             @click="toggleSidebar"
         >
-            <span
+            <IconLess
                 :class="$style['sandbox-app__sidebar-toggle-glyph']"
-            >
-                ‹
-            </span>
-        </UiButton>
+                aria-hidden="true"
+            />
+        </button>
 
         <main
             :class="$style['sandbox-app__content-panel']"
@@ -52,11 +51,17 @@
                     :set-tree="setMountTree"
                 />
 
-                <WidgetTargetList
-                    v-else
-                    :mounts="mounts"
-                    :set-tree="setMountTree"
-                />
+                <template v-else-if="launchConfig.mode === 'widget'">
+                    <WidgetRunSummary
+                        :fixture="launchConfig.fixture"
+                        :targets="launchConfig.targets"
+                    />
+
+                    <WidgetTargetList
+                        :mounts="mounts"
+                        :set-tree="setMountTree"
+                    />
+                </template>
             </div>
         </main>
 
@@ -80,12 +85,16 @@
             <DevPanel
                 :apply-launch-config="applyLaunchConfig"
                 :apply-context-json="applyContextJson"
+                :applying-launch-config="isApplyingLaunchConfig"
                 :context-json="contextJson"
                 :context-json-changed="contextJsonChanged"
+                :download-context-json="downloadContextJson"
                 :fixture="fixture"
+                :format-context-json="formatContextJsonEditor"
                 :manifest-url="manifestUrl"
                 :mode="mode"
                 :page-code="pageCode"
+                :reset-context-json="resetContextJson"
                 :selected-targets="selectedTargets"
                 :set-context-json="setContextJson"
                 :set-fixture="setFixture"
@@ -134,20 +143,26 @@ import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 import { watch } from 'vue'
 
-import { UiButton, UiModalSidebar } from '@retailcrm/embed-ui-v1-components/host'
+import { UiModalSidebar } from '@retailcrm/embed-ui-v1-components/host'
+
+import IconLess from '@retailcrm/embed-ui-v1-components/assets/sprites/arrows/less.svg'
 
 import DevPanel from '@/components/DevPanel.vue'
 import ExtensionOnboarding from '@/components/ExtensionOnboarding.vue'
 import NavigationRail from '@/components/NavigationRail.vue'
 import NavigationSidebar from '@/components/NavigationSidebar.vue'
 import PageMount from '@/components/PageMount.vue'
+import WidgetRunSummary from '@/components/WidgetRunSummary.vue'
 import WidgetTargetList from '@/components/WidgetTargetList.vue'
 
 import RemoteBootstrapWorker from '@/runtime/remoteBootstrap.worker.ts?worker'
 
 import { createDefaultSandboxManifestUrl } from '@/scenario/launch'
 import { createMounts } from '@/runtime/mount'
-import { createOrderSandboxController } from '@/scenario/fixtures'
+import {
+  createOrderSandboxController,
+  getOrderSandboxFixture,
+} from '@/scenario/fixtures'
 import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
 import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxLaunchConfig } from '@/scenario/launch'
@@ -181,6 +196,7 @@ const sandbox = createOrderSandboxController(launchConfig.fixture, {
 })
 const mounts = createMounts(launchConfig)
 const runtime = ref<SandboxRuntime | null>(null)
+const isApplyingLaunchConfig = ref(false)
 const isDevPanelOpen = ref(false)
 const isSidebarOpen = ref(true)
 const { locale, t } = useI18n()
@@ -408,7 +424,9 @@ const flushRemoteUpdates = () => {
   })
 }
 
-const applyLaunchConfig = () => {
+const applyLaunchConfig = async () => {
+  if (isApplyingLaunchConfig.value) return
+
   const validationResult = validateLaunchConfigInput({
     fixture: fixture.value,
     manifestUrl: manifestUrl.value,
@@ -425,7 +443,7 @@ const applyLaunchConfig = () => {
 
   devPanelValidationErrors.value = {}
 
-  window.location.href = updateSandboxLaunchQuery({
+  const config: SandboxLaunchConfig = {
     extensionUrl: '',
     fixture: validationResult.data.fixture,
     manifestUrl: validationResult.data.manifestUrl,
@@ -435,7 +453,41 @@ const applyLaunchConfig = () => {
       ? validationResult.data.targets
       : DEFAULT_SANDBOX_TARGETS,
     widgetId: launchConfig.widgetId,
-  }).toString()
+  }
+
+  if (config.mode === 'widget') {
+    window.location.href = updateSandboxLaunchQuery(config).toString()
+    return
+  }
+
+  isApplyingLaunchConfig.value = true
+
+  try {
+    const extensionSource = await resolveSandboxExtensionSource(config)
+
+    if (!extensionSource.descriptor.pages.includes(config.pageCode)) {
+      devPanelValidationErrors.value = {
+        ...devPanelValidationErrors.value,
+        pageCode: t('app.alerts.missingPageCode.message', {
+          pageCode: config.pageCode,
+          pages: extensionSource.descriptor.pages.join(', ') || '—',
+        }),
+      }
+      isDevPanelOpen.value = true
+      return
+    }
+
+    isDevPanelOpen.value = false
+    window.location.href = updateSandboxLaunchQuery(config).toString()
+  } catch (error) {
+    isDevPanelOpen.value = true
+    showSandboxAlert(
+      t('app.alerts.runtimeError.title'),
+      t('app.alerts.runtimeError.message', { message: getErrorMessage(error) })
+    )
+  } finally {
+    isApplyingLaunchConfig.value = false
+  }
 }
 
 const applyContextJson = async () => {
@@ -466,17 +518,83 @@ const setContextJson = (value: string | number) => {
   clearDevPanelValidationError('contextJson')
 }
 
+const formatContextJsonEditor = () => {
+  try {
+    contextJson.value = JSON.stringify(JSON.parse(contextJson.value), null, 2)
+    clearDevPanelValidationError('contextJson')
+  } catch {
+    const validationResult = validateContextJsonInput(
+      contextJson.value,
+      Object.keys(sandbox.state.contexts),
+      createDevPanelValidationMessages()
+    )
+
+    if (!validationResult.success) {
+      devPanelValidationErrors.value = {
+        ...devPanelValidationErrors.value,
+        ...validationResult.errors,
+      }
+    }
+  }
+}
+
+const resetContextJson = () => {
+  contextJson.value = JSON.stringify(getOrderSandboxFixture(fixture.value).contexts, null, 2)
+  clearDevPanelValidationError('contextJson')
+}
+
+const downloadContextJson = () => {
+  const blob = new Blob([contextJson.value], {
+    type: 'application/json;charset=utf-8',
+  })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+
+  link.download = `v1-sandbox-${fixture.value}-context.json`
+  link.href = url
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
 const setFixture = (value: string) => {
   fixture.value = value
   clearDevPanelValidationError('fixture')
 }
 
+const getPageCodeValidationError = (value: string): string | undefined => {
+  const validationResult = validateLaunchConfigInput({
+    fixture: fixture.value,
+    manifestUrl: manifestUrl.value,
+    mode: mode.value,
+    pageCode: value,
+    targets: selectedTargets.value,
+  }, createDevPanelValidationMessages())
+
+  return validationResult.success
+    ? undefined
+    : validationResult.errors.pageCode
+}
+
 const setManifestUrl = (value: string) => {
   manifestUrl.value = value
   clearDevPanelValidationError('manifestUrl')
+  clearDevPanelValidationError('pageCode')
+
+  const pageCodeError = getPageCodeValidationError(pageCode.value)
+
+  if (pageCode.value && pageCodeError) {
+    devPanelValidationErrors.value = {
+      ...devPanelValidationErrors.value,
+      pageCode: pageCodeError,
+    }
+  }
 }
 
 const setMode = (value: SandboxLaunchMode) => {
+  if (value === 'page' && mode.value !== 'page') {
+    pageCode.value = ''
+  }
+
   mode.value = value
   clearDevPanelValidationError('mode')
   clearDevPanelValidationError('pageCode')
@@ -485,6 +603,18 @@ const setMode = (value: SandboxLaunchMode) => {
 
 const setPageCode = (value: string) => {
   pageCode.value = value
+
+  const pageCodeError = getPageCodeValidationError(value)
+
+  if (pageCodeError) {
+    devPanelValidationErrors.value = {
+      ...devPanelValidationErrors.value,
+      pageCode: pageCodeError,
+    }
+
+    return
+  }
+
   clearDevPanelValidationError('pageCode')
 }
 
@@ -681,13 +811,21 @@ const clearDevPanelValidationError = (field: DevPanelField) => {
 const createDevPanelValidationMessages = (): DevPanelValidationMessages => ({
   contextJsonContextObject: context => t('app.validation.contextJson.contextObject', { context }),
   contextJsonInvalidJson: t('app.validation.contextJson.invalidJson'),
+  contextJsonInvalidJsonAt: (line, column) => t('app.validation.contextJson.invalidJsonAt', {
+    column,
+    line,
+  }),
   contextJsonRootObject: t('app.validation.contextJson.rootObject'),
   contextJsonUnknownContext: context => t('app.validation.contextJson.unknownContext', { context }),
   fixture: t('app.validation.fixture'),
   manifestUrlEndpoint: t('app.validation.manifestUrl.endpoint'),
-  manifestUrlFormat: t('app.validation.manifestUrl.format'),
+  manifestUrlFormat: t('app.validation.manifestUrl.format', {
+    close: '>',
+    open: '<',
+  }),
   manifestUrlRequired: t('app.validation.manifestUrl.required'),
   mode: t('app.validation.mode'),
+  pageCodeFormat: t('app.validation.pageCodeFormat'),
   pageCodeRequired: t('app.validation.pageCodeRequired'),
   targetRequired: t('app.validation.targetRequired'),
   targetUnknown: target => t('app.validation.targetUnknown', { target }),
@@ -782,16 +920,19 @@ onBeforeUnmount(() => {
 
     &__sidebar-toggle {
         align-items: center;
+        appearance: none;
         background: #fff;
         border: 1px solid @grey-400;
         border-radius: 50%;
         box-shadow: @drop-shadow-s;
+        box-sizing: border-box;
         color: @grey-900;
         cursor: pointer;
         display: flex;
         height: 24px;
         justify-content: center;
         left: 306px;
+        line-height: 0;
         min-height: 24px;
         min-width: 24px;
         padding: 0;
@@ -801,26 +942,28 @@ onBeforeUnmount(() => {
         width: 24px;
         z-index: 4;
 
-        &:global(.ui-v1-button) {
-            border-radius: 50%;
-            height: 24px;
-            min-height: 24px;
-            min-width: 24px;
-            padding: 0;
-            width: 24px;
+        &:hover,
+        &:active {
+            background: #fff;
+            border-color: @grey-400;
+            color: @grey-900;
         }
 
-        :global(.ui-v1-button__content) {
-            height: 24px;
-            width: 24px;
+        &:focus {
+            outline: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid @blue-500;
+            outline-offset: 2px;
         }
     }
 
     &__sidebar-toggle-glyph {
         display: block;
-        font-size: 18px;
-        line-height: 1;
-        transform: translateY(-1px);
+        flex: 0 0 20px;
+        height: 20px;
+        width: 20px;
     }
 
     &__dev-panel-drawer {

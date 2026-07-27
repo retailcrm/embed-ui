@@ -41,9 +41,9 @@ const SCRIPT_NAMES = [
   'dev',
   'eslint',
   'eslint:fix',
+  'extension:serve',
   'lint',
   'sandbox:serve',
-  'serve:extension',
   'test',
   'test:browser',
   'test:browsers:install',
@@ -400,7 +400,13 @@ const analyzeTemplateFileSkips = (
     }
   }
 
-  for (const relativePath of ['extensionrc.json', 'scripts/publish-extension.mjs', 'scripts/serve-extension.mjs', 'README.md']) {
+  for (const relativePath of [
+    'extensionrc.json',
+    'scripts/dev.mjs',
+    'scripts/publish-extension.mjs',
+    'scripts/serve-extension.mjs',
+    'README.md',
+  ]) {
     if (fs.existsSync(path.join(cwd, relativePath))) {
       changes.warnings.push(`${relativePath} already exists; generated project-level starter file will be skipped`)
     }

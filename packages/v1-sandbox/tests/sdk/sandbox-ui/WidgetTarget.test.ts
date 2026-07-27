@@ -58,7 +58,8 @@ test('widget target exposes accessible region', () => {
     },
   })
 
-  expect(wrapper.get('[role="region"]').attributes('aria-label')).toBe('Цель виджета: order/card:common.after')
+  expect(wrapper.get('[role="region"]').attributes('aria-label'))
+    .toBe('Место встраивания виджета: order/card:common.after')
   expect(wrapper.text()).toContain('order/card:common.after')
   expect(setTree).toHaveBeenCalled()
 

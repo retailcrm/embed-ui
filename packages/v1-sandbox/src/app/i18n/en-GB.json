@@ -29,26 +29,50 @@
     "devPanelAriaLabel": "Sandbox controls",
     "devPanelClose": "Close sandbox controls",
     "extensionCanvasAriaLabel": "Extension canvas",
+    "fixtures": {
+      "orderBasic": {
+        "description": "A regular order without delivery, suitable for testing common blocks.",
+        "name": "Basic order"
+      },
+      "orderReadonlyError": {
+        "description": "A cancelled order with read-only settings for testing disabled states.",
+        "name": "Read-only cancelled order"
+      },
+      "orderWithDelivery": {
+        "description": "An order with an address and amount for testing delivery and payment widgets.",
+        "name": "Order with delivery"
+      }
+    },
     "runMode": {
       "page": "Page: {pageCode}",
       "widgets": "Widgets: {count}"
     },
     "sidebarCollapse": "Collapse sidebar",
     "sidebarExpand": "Expand sidebar",
+    "widgetRunSummary": {
+      "component": "Component",
+      "targets": "Mount targets",
+      "testData": "Test data",
+      "title": "Current run",
+      "widget": "Widget",
+      "widgets": "Widgets ({count})"
+    },
     "validation": {
       "contextJson": {
         "contextObject": "Context \"{context}\" must be a JSON object.",
         "invalidJson": "Enter valid JSON.",
+        "invalidJsonAt": "Enter valid JSON. Error at line {line}, column {column}.",
         "rootObject": "Context overrides must be a JSON object.",
         "unknownContext": "Unknown context \"{context}\"."
       },
       "fixture": "Choose an existing fixture.",
       "manifestUrl": {
         "endpoint": "URL must match %extension-url%/extension/%extension-id%.",
-        "format": "Enter an absolute http/https URL.",
+        "format": "Enter an absolute http/https URL. Example: http://127.0.0.1:4175/extension/{open}uuid{close}",
         "required": "Enter the extension URL."
       },
       "mode": "Choose a launch mode.",
+      "pageCodeFormat": "The page code may contain only Latin letters (A–Z, a–z) and hyphens.",
       "pageCodeRequired": "Enter a page code for page mode.",
       "targetRequired": "Choose at least one mount target for widget mode.",
       "targetUnknown": "Unknown mount target \"{target}\"."

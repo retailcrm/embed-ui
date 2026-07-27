@@ -87,6 +87,9 @@ test('v-select emits selected value', async () => {
   await nextTick()
 
   expect(wrapper.emitted('update:value')).toEqual([['page']])
+
+  wrapper.unmount()
+  await nextTick()
 })
 
 test('v-select renders selected value', () => {
@@ -112,6 +115,76 @@ test('v-select renders selected value', () => {
   }>
 
   expect(selection[0].isMatched()).toBe(true)
+})
+
+test('v-select closes popper on repeated trigger click', async () => {
+  const wrapper = mountWithApp(VSelect, {
+    props: {
+      id: 'fixture-toggle',
+      options: [{
+        label: 'Базовый заказ',
+        value: 'order-basic',
+      }],
+      value: 'order-basic',
+    },
+  })
+  const trigger = wrapper.get('[role="combobox"]')
+
+  await trigger.trigger('click')
+  await nextTick()
+
+  expect(trigger.attributes('aria-expanded')).toBe('true')
+
+  await trigger.trigger('click')
+  await nextTick()
+
+  expect(trigger.attributes('aria-expanded')).toBe('false')
+
+  wrapper.unmount()
+  await nextTick()
+})
+
+test('v-select supports multiple selection', async () => {
+  const wrapper = mountWithApp(VSelect, {
+    props: {
+      id: 'targets',
+      multiple: true,
+      options: [
+        {
+          label: 'order/card:common.before',
+          value: 'order/card:common.before',
+        },
+        {
+          label: 'order/card:common.after',
+          value: 'order/card:common.after',
+        },
+      ],
+      value: ['order/card:common.before'],
+    },
+  })
+
+  await wrapper.get('[role="combobox"]').trigger('click')
+  await nextTick()
+
+  const listbox = document.body.querySelector('#targets-popper')
+  const options = listbox?.querySelectorAll('[role="option"]')
+
+  expect(listbox?.getAttribute('aria-multiselectable')).toBe('true')
+  expect(options?.[0].getAttribute('aria-selected')).toBe('true')
+  expect(options?.[1].getAttribute('aria-selected')).toBe('false')
+
+  options?.[1].dispatchEvent(new MouseEvent('click', {
+    bubbles: true,
+  }))
+  await nextTick()
+
+  expect(wrapper.emitted('update:value')).toEqual([[
+    ['order/card:common.before', 'order/card:common.after'],
+  ]])
+  expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
+
+  wrapper.unmount()
+  await nextTick()
 })
 
 test('v-select handles keyboard selection and empty value', async () => {
