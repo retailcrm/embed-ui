@@ -93,7 +93,13 @@
     box-shadow: none;
   }
 
-  &_filterable {
+  .ui-v1-textbox input {
+    caret-color: transparent;
+    cursor: pointer;
+  }
+
+  &_filterable .ui-v1-textbox input {
+    caret-color: auto;
     cursor: text;
   }
 }
