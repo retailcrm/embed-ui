@@ -2,11 +2,11 @@
   "app": {
     "alerts": {
       "inferredPageMode": {
-        "message": "В ссылке не был указан mode. Sandbox нашёл страницу \"{pageCode}\" в расширении и переключил запуск в режим страницы.",
+        "message": "В ссылке не был указан режим. Песочница нашла страницу «{pageCode}» в расширении и переключила запуск в режим «Страница».",
         "title": "Режим страницы выбран автоматически"
       },
       "missingPageCode": {
-        "message": "В расширении нет страницы \"{pageCode}\". Доступные страницы: {pages}.",
+        "message": "В расширении нет страницы «{pageCode}». Доступные страницы: {pages}.",
         "title": "Страница расширения не найдена"
       },
       "runtimeError": {
@@ -14,44 +14,68 @@
         "title": "Не удалось запустить расширение"
       },
       "workerPageInWidgetMode": {
-        "message": "Расширение содержит страницы: {pages}. Сейчас выбран режим виджетов; если ожидается страница, переключите mode на page.",
+        "message": "Расширение содержит страницы: {pages}. Сейчас выбран режим «Виджеты»; если ожидается страница, выберите режим «Страница».",
         "title": "Проверьте режим запуска"
       }
     },
     "contextEditor": {
       "errors": {
-        "contextObject": "Контекст \"{context}\" должен быть JSON-объектом.",
+        "contextObject": "Контекст «{context}» должен быть JSON-объектом.",
         "rootObject": "Переопределения контекста должны быть JSON-объектом.",
-        "unknownContext": "Неизвестный контекст \"{context}\"."
+        "unknownContext": "Неизвестный контекст «{context}»."
       }
     },
     "contentAriaLabel": "Контент песочницы",
     "devPanelAriaLabel": "Управление песочницей",
     "devPanelClose": "Закрыть управление песочницей",
     "extensionCanvasAriaLabel": "Область расширения",
+    "fixtures": {
+      "orderBasic": {
+        "description": "Обычный заказ без доставки, подходит для проверки общих блоков.",
+        "name": "Базовый заказ"
+      },
+      "orderReadonlyError": {
+        "description": "Отменённый заказ с настройками только для чтения для проверки неактивных состояний.",
+        "name": "Отменённый заказ только для чтения"
+      },
+      "orderWithDelivery": {
+        "description": "Заказ с адресом и суммой для проверки виджетов доставки и оплаты.",
+        "name": "Заказ с доставкой"
+      }
+    },
     "runMode": {
       "page": "Страница: {pageCode}",
       "widgets": "Виджеты: {count}"
     },
     "sidebarCollapse": "Свернуть боковую панель",
     "sidebarExpand": "Развернуть боковую панель",
+    "widgetRunSummary": {
+      "component": "Компонент",
+      "targets": "Места встраивания",
+      "testData": "Тестовые данные",
+      "title": "Текущий запуск",
+      "widget": "Виджет",
+      "widgets": "Виджеты ({count})"
+    },
     "validation": {
       "contextJson": {
-        "contextObject": "Контекст \"{context}\" должен быть JSON-объектом.",
+        "contextObject": "Контекст «{context}» должен быть JSON-объектом.",
         "invalidJson": "Введите валидный JSON.",
+        "invalidJsonAt": "Введите валидный JSON. Ошибка в строке {line}, столбце {column}.",
         "rootObject": "Переопределения контекста должны быть JSON-объектом.",
-        "unknownContext": "Неизвестный контекст \"{context}\"."
+        "unknownContext": "Неизвестный контекст «{context}»."
       },
       "fixture": "Выберите существующую фикстуру.",
       "manifestUrl": {
         "endpoint": "URL должен быть вида %extension-url%/extension/%extension-id%.",
-        "format": "Введите абсолютный http/https URL.",
+        "format": "Введите абсолютный http/https URL. Например: http://127.0.0.1:4175/extension/{open}uuid{close}",
         "required": "Укажите URL расширения."
       },
       "mode": "Выберите режим запуска.",
-      "pageCodeRequired": "Укажите код страницы для page mode.",
-      "targetRequired": "Выберите хотя бы одно место встраивания для widget mode.",
-      "targetUnknown": "Неизвестное место встраивания \"{target}\"."
+      "pageCodeFormat": "Код страницы может содержать только латинские буквы (A–Z, a–z) и дефисы.",
+      "pageCodeRequired": "Укажите код страницы для режима «Страница».",
+      "targetRequired": "Выберите хотя бы одно место встраивания для режима «Виджеты».",
+      "targetUnknown": "Неизвестное место встраивания «{target}»."
     }
   }
 }

@@ -7,6 +7,7 @@ import { validateContextJsonInput, validateLaunchConfigInput } from '@/scenario'
 const messages: DevPanelValidationMessages = {
   contextJsonContextObject: context => `Context "${context}" must be an object.`,
   contextJsonInvalidJson: 'Context JSON must be valid JSON.',
+  contextJsonInvalidJsonAt: (line, column) => `Invalid JSON at ${line}:${column}.`,
   contextJsonRootObject: 'Context JSON must be an object.',
   contextJsonUnknownContext: context => `Unknown context "${context}".`,
   fixture: 'Unknown fixture.',
@@ -14,6 +15,7 @@ const messages: DevPanelValidationMessages = {
   manifestUrlFormat: 'Manifest URL must be an absolute http/https URL.',
   manifestUrlRequired: 'Manifest URL is required.',
   mode: 'Unknown mode.',
+  pageCodeFormat: 'Page code has an invalid format.',
   pageCodeRequired: 'Page code is required.',
   targetRequired: 'Select at least one target.',
   targetUnknown: target => `Unknown target "${target}".`,
@@ -114,6 +116,33 @@ test('requires page code only for page mode', () => {
   expect(widgetResult.success).toBe(true)
 })
 
+test('validates page code format only in page mode', () => {
+  const invalidPageResult = validateLaunchConfigInput({
+    ...validLaunchInput,
+    mode: 'page',
+    pageCode: 'orders_dashboard2',
+  }, messages)
+  const validPageResult = validateLaunchConfigInput({
+    ...validLaunchInput,
+    mode: 'page',
+    pageCode: 'orders-dashboard',
+  }, messages)
+  const ignoredWidgetResult = validateLaunchConfigInput({
+    ...validLaunchInput,
+    mode: 'widget',
+    pageCode: 'orders_dashboard2',
+  }, messages)
+
+  expect(invalidPageResult).toEqual({
+    errors: {
+      pageCode: 'Page code has an invalid format.',
+    },
+    success: false,
+  })
+  expect(validPageResult.success).toBe(true)
+  expect(ignoredWidgetResult.success).toBe(true)
+})
+
 test('requires at least one valid widget target in widget mode', () => {
   const emptyTargets = validateLaunchConfigInput({
     ...validLaunchInput,
@@ -155,7 +184,7 @@ test('rejects unknown fixture', () => {
 test('validates context json overrides', () => {
   const contextNames = ['order/card', 'order/card:settings', 'settings', 'user/current']
 
-  expect(validateContextJsonInput('{', contextNames, messages)).toEqual({
+  expect(validateContextJsonInput('invalid', contextNames, messages)).toEqual({
     errors: {
       contextJson: 'Context JSON must be valid JSON.',
     },
@@ -193,5 +222,16 @@ test('validates context json overrides', () => {
       },
     },
     success: true,
+  })
+})
+
+test('includes JSON parser location when it is available', () => {
+  const contextNames = ['order/card', 'order/card:settings', 'settings', 'user/current']
+
+  expect(validateContextJsonInput('{\n  "order/card": {},\n}', contextNames, messages)).toEqual({
+    errors: {
+      contextJson: 'Invalid JSON at 3:1.',
+    },
+    success: false,
   })
 })

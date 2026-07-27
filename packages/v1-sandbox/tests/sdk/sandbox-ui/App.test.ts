@@ -99,6 +99,12 @@ vi.mock('@retailcrm/embed-ui-v1-components/host', async () => {
     }),
     UiModalSidebar: defineComponent({
       name: 'UiModalSidebar',
+      props: {
+        opened: {
+          required: true,
+          type: Boolean,
+        },
+      },
       setup: (_props, { slots }) => () => h('div', [
         slots.title?.(),
         slots.default?.(),
@@ -124,6 +130,42 @@ vi.mock('@/components/DevPanel.vue', async () => {
           type: Function,
         },
         applyContextJson: {
+          required: true,
+          type: Function,
+        },
+        applyingLaunchConfig: {
+          required: true,
+          type: Boolean,
+        },
+        contextJson: {
+          required: true,
+          type: String,
+        },
+        contextJsonChanged: {
+          required: true,
+          type: Boolean,
+        },
+        downloadContextJson: {
+          required: true,
+          type: Function,
+        },
+        fixture: {
+          required: true,
+          type: String,
+        },
+        formatContextJson: {
+          required: true,
+          type: Function,
+        },
+        mode: {
+          required: true,
+          type: String,
+        },
+        pageCode: {
+          required: true,
+          type: String,
+        },
+        resetContextJson: {
           required: true,
           type: Function,
         },
@@ -238,6 +280,32 @@ vi.mock('@/components/WidgetTargetList.vue', async () => {
   }
 })
 
+vi.mock('@/components/WidgetRunSummary.vue', async () => {
+  const { defineComponent, h } = await import('vue')
+
+  return {
+    default: defineComponent({
+      name: 'WidgetRunSummaryStub',
+      props: {
+        fixture: {
+          required: true,
+          type: String,
+        },
+        targets: {
+          required: true,
+          type: Array,
+        },
+      },
+      setup: props => () => h('section', {
+        'aria-label': 'widget-run-summary',
+      }, [
+        props.fixture,
+        ...(props.targets as string[]),
+      ]),
+    }),
+  }
+})
+
 vi.mock('@/runtime/remoteBootstrap.worker.ts?worker', () => ({
   default: FakeWorker,
 }))
@@ -291,6 +359,22 @@ vi.mock('@/scenario/fixtures', () => ({
     'order-basic': {},
     'order-with-delivery': {},
   },
+  getOrderSandboxFixture: (fixture: string) => ({
+    contexts: fixture === 'order-with-delivery'
+      ? {
+        'order/card': {
+          'delivery.address': 'Москва, ул. Ленина, 10',
+        },
+        'settings': {
+          'system.locale': 'ru-RU',
+        },
+      }
+      : {
+        settings: {
+          'system.locale': 'ru-RU',
+        },
+      },
+  }),
   createOrderSandboxController: (_fixture: string, options: typeof controllerOptions) => {
     controllerOptions = options
     const contexts = {
@@ -414,6 +498,70 @@ afterEach(async () => {
   window.sessionStorage.clear()
 })
 
+test('renders the sidebar toggle with an icon', async () => {
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  const toggle = wrapper.get('button[aria-label="Свернуть боковую панель"]')
+
+  expect(toggle.find('svg').exists()).toBe(true)
+  expect(toggle.classes()).not.toContain('ui-v1-button')
+  expect(toggle.text()).not.toContain('<')
+})
+
+test('shows the applied fixture and targets in widget mode', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
+
+  const { wrapper } = await mountAppWithRuntime(
+    '/?fixture=order-with-delivery'
+    + '&manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo'
+    + '&mode=widget'
+    + '&targets=order%2Fcard%3Acommon.before%2Corder%2Fcard%3Acommon.after'
+  )
+  const summary = wrapper.getComponent({ name: 'WidgetRunSummaryStub' })
+  const panel = wrapper.getComponent({ name: 'DevPanelStub' })
+  const setFixture = panel.props('setFixture') as (fixture: string) => void
+  const setTargetSelected = panel.props('setTargetSelected') as (
+    target: string,
+    selected: boolean
+  ) => void
+
+  expect(summary.props('fixture')).toBe('order-with-delivery')
+  expect(summary.props('targets')).toEqual([
+    'order/card:common.before',
+    'order/card:common.after',
+  ])
+
+  setFixture('order-basic')
+  setTargetSelected('order/card:common.before', false)
+  await wrapper.vm.$nextTick()
+
+  expect(summary.props('fixture')).toBe('order-with-delivery')
+  expect(summary.props('targets')).toEqual([
+    'order/card:common.before',
+    'order/card:common.after',
+  ])
+})
+
+test('does not show the widget run summary on onboarding', async () => {
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+
+  expect(wrapper.findComponent({ name: 'WidgetRunSummaryStub' }).exists()).toBe(false)
+})
+
+test('does not show the widget run summary in page mode', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+    pages: ['settings'],
+    targets: [],
+  }))
+
+  const { wrapper } = await mountAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo'
+    + '&mode=page'
+    + '&pageCode=settings'
+  )
+
+  expect(wrapper.findComponent({ name: 'WidgetRunSummaryStub' }).exists()).toBe(false)
+})
+
 test('blocks page extension with unknown page code', async () => {
   const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
@@ -428,7 +576,7 @@ test('blocks page extension with unknown page code', async () => {
 
   await waitFor(() => {
     expect(alertSpy).toHaveBeenCalledWith(
-      'Страница расширения не найдена\n\nВ расширении нет страницы "returns". Доступные страницы: settings.'
+      'Страница расширения не найдена\n\nВ расширении нет страницы «returns». Доступные страницы: settings.'
     )
   })
   expect(endpoint.call.run).not.toHaveBeenCalled()
@@ -448,7 +596,7 @@ test('warns about page-only descriptor in explicit widget mode and continues mou
 
   await waitFor(() => {
     expect(alertSpy).toHaveBeenCalledWith(
-      'Проверьте режим запуска\n\nРасширение содержит страницы: settings. Сейчас выбран режим виджетов; если ожидается страница, переключите mode на page.'
+      'Проверьте режим запуска\n\nРасширение содержит страницы: settings. Сейчас выбран режим «Виджеты»; если ожидается страница, выберите режим «Страница».'
     )
     expect(endpoint.call.run).toHaveBeenCalled()
   })
@@ -614,7 +762,19 @@ test('updates dev panel fields and reports validation errors', async () => {
   callProp('setManifestUrl', 'http://extension.test/extension/demo')
   callProp('setFixture', 'order-with-delivery')
   callProp('setMode', 'page')
-  callProp('setPageCode', 'settings')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('pageCode')).toBe('')
+
+  callProp('setPageCode', 'settings_2')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('pageCode')).toBe('settings_2')
+  expect(panel.props('validationErrors')).toMatchObject({
+    pageCode: 'Код страницы может содержать только латинские буквы (A–Z, a–z) и дефисы.',
+  })
+
+  callProp('setPageCode', 'orders-settings')
   callProp('setTargetSelected', 'order/card:common.before', false)
   callProp('setTargetSelected', 'order/card:common.after', true)
   await wrapper.vm.$nextTick()
@@ -627,7 +787,7 @@ test('updates dev panel fields and reports validation errors', async () => {
   await wrapper.vm.$nextTick()
 
   expect(panel.props('validationErrors')).toMatchObject({
-    targets: 'Неизвестное место встраивания "unknown/target".',
+    targets: 'Неизвестное место встраивания «unknown/target».',
   })
 
   callProp('setTargetSelected', 'unknown/target', false)
@@ -637,7 +797,7 @@ test('updates dev panel fields and reports validation errors', async () => {
   await wrapper.vm.$nextTick()
 
   expect(panel.props('validationErrors')).toMatchObject({
-    contextJson: 'Введите валидный JSON.',
+    contextJson: 'Введите валидный JSON. Ошибка в строке 1, столбце 2.',
   })
 
   callProp('setContextJson', '{}')
@@ -650,7 +810,7 @@ test('updates dev panel fields and reports validation errors', async () => {
   await wrapper.vm.$nextTick()
 
   expect(panel.props('validationErrors')).toMatchObject({
-    contextJson: 'Контекст "settings" должен быть JSON-объектом.',
+    contextJson: 'Контекст «settings» должен быть JSON-объектом.',
   })
 
   callProp('setContextJson', '{"unknown":{}}')
@@ -658,7 +818,7 @@ test('updates dev panel fields and reports validation errors', async () => {
   await wrapper.vm.$nextTick()
 
   expect(panel.props('validationErrors')).toMatchObject({
-    contextJson: 'Неизвестный контекст "unknown".',
+    contextJson: 'Неизвестный контекст «unknown».',
   })
 
   await wrapper.get('[role="region"]').trigger('click')
@@ -669,6 +829,221 @@ test('updates dev panel fields and reports validation errors', async () => {
   wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
   wrapper.findComponent({ name: 'UiModalSidebar' }).vm.$emit('update:opened', false)
   await wrapper.vm.$nextTick()
+})
+
+test('formats, resets and downloads context json without applying it', async () => {
+  const clickedAnchors: HTMLAnchorElement[] = []
+  const createObjectUrlSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:context-json')
+  const revokeObjectUrlSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+    clickedAnchors.push(this)
+  })
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
+  const callProp = (name: string, ...args: unknown[]) => {
+    const callback = panel.props(name) as (...values: unknown[]) => unknown
+
+    return callback(...args)
+  }
+
+  callProp('setContextJson', '{')
+  callProp('formatContextJson')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('contextJson')).toBe('{')
+  expect(panel.props('validationErrors')).toMatchObject({
+    contextJson: 'Введите валидный JSON. Ошибка в строке 1, столбце 2.',
+  })
+
+  callProp('setContextJson', '{"settings":{"system.locale":"en-GB"}}')
+  callProp('formatContextJson')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('contextJson')).toBe(`{
+  "settings": {
+    "system.locale": "en-GB"
+  }
+}`)
+  expect(patchContextMock).not.toHaveBeenCalled()
+
+  callProp('setFixture', 'order-with-delivery')
+  callProp('setContextJson', '{}')
+  callProp('resetContextJson')
+  await wrapper.vm.$nextTick()
+
+  const resetContext = JSON.parse(panel.props('contextJson') as string) as {
+    'order/card': Record<string, unknown>;
+  }
+
+  expect(resetContext['order/card']['delivery.address'])
+    .toBe('Москва, ул. Ленина, 10')
+  expect(panel.props('contextJsonChanged')).toBe(true)
+  expect(patchContextMock).not.toHaveBeenCalled()
+
+  callProp('downloadContextJson')
+
+  expect(createObjectUrlSpy).toHaveBeenCalledOnce()
+  const downloadedBlob = createObjectUrlSpy.mock.calls[0]?.[0]
+
+  expect(downloadedBlob).toBeInstanceOf(Blob)
+  const downloadedText = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.addEventListener('error', () => reject(reader.error))
+    reader.addEventListener('load', () => resolve(String(reader.result)))
+    reader.readAsText(downloadedBlob as Blob)
+  })
+
+  expect(downloadedText).toBe(panel.props('contextJson'))
+  expect(anchorClickSpy).toHaveBeenCalledOnce()
+  expect(clickedAnchors[0]?.download).toBe('v1-sandbox-order-with-delivery-context.json')
+  expect(clickedAnchors[0]?.href).toBe('blob:context-json')
+  expect(revokeObjectUrlSpy).toHaveBeenCalledWith('blob:context-json')
+})
+
+test('keeps dev panel open and shows available pages when page code is missing', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+    pages: ['settings'],
+    targets: [],
+  }))
+
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
+  const callProp = (name: string, ...args: unknown[]) => {
+    const callback = panel.props(name) as (...values: unknown[]) => unknown
+
+    return callback(...args)
+  }
+
+  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
+  callProp('setManifestUrl', 'http://extension.test/extension/demo')
+  callProp('setMode', 'page')
+  callProp('setPageCode', 'returns')
+  await callProp('applyLaunchConfig')
+  await wrapper.vm.$nextTick()
+
+  expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledOnce()
+  expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
+    manifestUrl: 'http://extension.test/extension/demo',
+    mode: 'page',
+    pageCode: 'returns',
+  }))
+  expect(panel.props('validationErrors')).toMatchObject({
+    pageCode: 'В расширении нет страницы «returns». Доступные страницы: settings.',
+  })
+  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(true)
+  expect(fakeWorkers).toHaveLength(0)
+  expect(window.location.search).toBe('?manifestUrl=&mode=widget')
+
+  callProp('setPageCode', 'settings')
+  await wrapper.vm.$nextTick()
+  expect(panel.props('validationErrors')).toEqual({})
+
+  callProp('setPageCode', 'returns')
+  await callProp('applyLaunchConfig')
+  callProp('setManifestUrl', 'http://extension.test/extension/changed')
+  await wrapper.vm.$nextTick()
+  expect(panel.props('validationErrors')).toEqual({})
+
+  await callProp('applyLaunchConfig')
+  callProp('setMode', 'widget')
+  await wrapper.vm.$nextTick()
+  expect(panel.props('validationErrors')).toEqual({})
+})
+
+test('shows an empty available pages marker when extension has no pages', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+    pages: [],
+    targets: [],
+  }))
+
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
+  const callProp = (name: string, ...args: unknown[]) => {
+    const callback = panel.props(name) as (...values: unknown[]) => unknown
+
+    return callback(...args)
+  }
+
+  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
+  callProp('setManifestUrl', 'http://extension.test/extension/demo')
+  callProp('setMode', 'page')
+  callProp('setPageCode', 'returns')
+  await callProp('applyLaunchConfig')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toMatchObject({
+    pageCode: 'В расширении нет страницы «returns». Доступные страницы: —.',
+  })
+  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(true)
+})
+
+test('closes dev panel after successful page preflight without starting worker', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {})
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+    pages: ['returns', 'settings'],
+    targets: [],
+  }))
+
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
+  const callProp = (name: string, ...args: unknown[]) => {
+    const callback = panel.props(name) as (...values: unknown[]) => unknown
+
+    return callback(...args)
+  }
+
+  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
+  callProp('setManifestUrl', 'http://extension.test/extension/demo')
+  callProp('setMode', 'page')
+  callProp('setPageCode', 'returns')
+  await callProp('applyLaunchConfig')
+  await wrapper.vm.$nextTick()
+
+  expect(panel.props('validationErrors')).toEqual({})
+  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(false)
+  expect(fakeWorkers).toHaveLength(0)
+})
+
+test('keeps dev panel open on page preflight failure and ignores repeated apply', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+  let rejectSource: (error: Error) => void = () => {}
+  const pendingSource = new Promise<SandboxExtensionSource>((_resolve, reject) => {
+    rejectSource = reject
+  })
+
+  resolveSandboxExtensionSourceMock.mockReturnValue(pendingSource)
+
+  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
+  const callProp = (name: string, ...args: unknown[]) => {
+    const callback = panel.props(name) as (...values: unknown[]) => unknown
+
+    return callback(...args)
+  }
+
+  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
+  callProp('setManifestUrl', 'http://extension.test/extension/demo')
+  callProp('setMode', 'page')
+  callProp('setPageCode', 'returns')
+
+  const firstApply = callProp('applyLaunchConfig') as Promise<void>
+  const secondApply = callProp('applyLaunchConfig') as Promise<void>
+
+  await wrapper.vm.$nextTick()
+  expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledOnce()
+  expect(panel.props('applyingLaunchConfig')).toBe(true)
+
+  rejectSource(new Error('manifest unavailable'))
+  await Promise.all([firstApply, secondApply])
+  await wrapper.vm.$nextTick()
+
+  expect(alertSpy).toHaveBeenCalledWith(
+    'Не удалось запустить расширение\n\nmanifest unavailable'
+  )
+  expect(panel.props('applyingLaunchConfig')).toBe(false)
+  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(true)
+  expect(fakeWorkers).toHaveLength(0)
 })
 
 test('reports worker error event and non-error manifest rejection', async () => {
@@ -748,6 +1123,6 @@ test('shows stored inferred page mode notice', async () => {
   await mountAppWithRuntime('/?manifestUrl=&mode=page&pageCode=settings')
 
   expect(alertSpy).toHaveBeenCalledWith(
-    'Режим страницы выбран автоматически\n\nВ ссылке не был указан mode. Sandbox нашёл страницу "settings" в расширении и переключил запуск в режим страницы.'
+    'Режим страницы выбран автоматически\n\nВ ссылке не был указан режим. Песочница нашла страницу «settings» в расширении и переключила запуск в режим «Страница».'
   )
 })

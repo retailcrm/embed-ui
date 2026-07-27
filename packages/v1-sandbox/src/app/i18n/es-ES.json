@@ -2,11 +2,11 @@
   "app": {
     "alerts": {
       "inferredPageMode": {
-        "message": "La URL no incluía mode. Sandbox encontró la página \"{pageCode}\" en la extensión y cambió el inicio al modo página.",
+        "message": "La URL no incluía el modo. La zona de pruebas encontró la página «{pageCode}» en la extensión y cambió el inicio al modo «Página».",
         "title": "El modo página se seleccionó automáticamente"
       },
       "missingPageCode": {
-        "message": "La extensión no expone la página \"{pageCode}\". Páginas disponibles: {pages}.",
+        "message": "La extensión no expone la página «{pageCode}». Páginas disponibles: {pages}.",
         "title": "No se encontró la página de la extensión"
       },
       "runtimeError": {
@@ -14,44 +14,68 @@
         "title": "No se pudo iniciar la extensión"
       },
       "workerPageInWidgetMode": {
-        "message": "La extensión expone páginas: {pages}. Ahora está seleccionado el modo widgets; cambia mode a page si esperabas una página.",
+        "message": "La extensión expone páginas: {pages}. Ahora está seleccionado el modo «Widgets»; seleccione el modo «Página» si esperaba una página.",
         "title": "Revisa el modo de inicio"
       }
     },
     "contextEditor": {
       "errors": {
-        "contextObject": "El contexto \"{context}\" debe ser un objeto JSON.",
+        "contextObject": "El contexto «{context}» debe ser un objeto JSON.",
         "rootObject": "Las sobrescrituras de contexto deben ser un objeto JSON.",
-        "unknownContext": "Contexto desconocido \"{context}\"."
+        "unknownContext": "Contexto desconocido «{context}»."
       }
     },
     "contentAriaLabel": "Contenido de sandbox",
     "devPanelAriaLabel": "Controles de sandbox",
     "devPanelClose": "Cerrar controles de sandbox",
     "extensionCanvasAriaLabel": "Canvas de extensión",
+    "fixtures": {
+      "orderBasic": {
+        "description": "Un pedido normal sin entrega, adecuado para comprobar bloques generales.",
+        "name": "Pedido básico"
+      },
+      "orderReadonlyError": {
+        "description": "Un pedido cancelado con configuración de solo lectura para comprobar estados deshabilitados.",
+        "name": "Pedido cancelado de solo lectura"
+      },
+      "orderWithDelivery": {
+        "description": "Un pedido con dirección e importe para comprobar widgets de entrega y pago.",
+        "name": "Pedido con entrega"
+      }
+    },
     "runMode": {
       "page": "Página: {pageCode}",
       "widgets": "Widgets: {count}"
     },
     "sidebarCollapse": "Contraer barra lateral",
     "sidebarExpand": "Expandir barra lateral",
+    "widgetRunSummary": {
+      "component": "Componente",
+      "targets": "Puntos de montaje",
+      "testData": "Datos de prueba",
+      "title": "Ejecución actual",
+      "widget": "Widget",
+      "widgets": "Widgets ({count})"
+    },
     "validation": {
       "contextJson": {
-        "contextObject": "El contexto \"{context}\" debe ser un objeto JSON.",
+        "contextObject": "El contexto «{context}» debe ser un objeto JSON.",
         "invalidJson": "Introduce JSON válido.",
+        "invalidJsonAt": "Introduce JSON válido. Error en la línea {line}, columna {column}.",
         "rootObject": "Las sobrescrituras de contexto deben ser un objeto JSON.",
-        "unknownContext": "Contexto desconocido \"{context}\"."
+        "unknownContext": "Contexto desconocido «{context}»."
       },
-      "fixture": "Elige una fixture existente.",
+      "fixture": "Seleccione unos datos de prueba existentes.",
       "manifestUrl": {
         "endpoint": "La URL debe tener el formato %extension-url%/extension/%extension-id%.",
-        "format": "Introduce una URL http/https absoluta.",
+        "format": "Introduce una URL http/https absoluta. Ejemplo: http://127.0.0.1:4175/extension/{open}uuid{close}",
         "required": "Introduce la URL de la extensión."
       },
       "mode": "Elige un modo de inicio.",
-      "pageCodeRequired": "Introduce un código de página para el modo page.",
-      "targetRequired": "Elige al menos un target de montaje para el modo widget.",
-      "targetUnknown": "Target de montaje desconocido \"{target}\"."
+      "pageCodeFormat": "El código de página solo puede contener letras latinas (A–Z, a–z) y guiones.",
+      "pageCodeRequired": "Introduzca un código de página para el modo «Página».",
+      "targetRequired": "Seleccione al menos un punto de montaje para el modo «Widgets».",
+      "targetUnknown": "Punto de montaje desconocido «{target}»."
     }
   }
 }

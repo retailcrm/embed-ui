@@ -36,7 +36,7 @@ const { t } = useI18n()
 
 <i18n locale="es-ES">
 {
-  "ariaLabel": "Targets de widgets"
+  "ariaLabel": "Puntos de montaje de widgets"
 }
 </i18n>
 

@@ -4,12 +4,6 @@
             :id="uid + '-dev-panel-controls'"
             :class="$style['dev-panel__card']"
         >
-            <div :class="$style['dev-panel__delivery-note']">
-                <strong>{{ t('devPanel.delivery.title') }}</strong>
-
-                <span>{{ t('devPanel.delivery.workflow') }}</span>
-            </div>
-
             <div :class="$style['dev-panel__field']">
                 <div :class="$style['dev-panel__field-heading']">
                     <label
@@ -34,11 +28,16 @@
                     </UiPopperConnector>
                 </div>
 
+                <span :class="$style['dev-panel__field-hint']">
+                    {{ t('devPanel.extensionHint') }}
+                </span>
+
                 <UiTextbox
                     :id="uid + '-dev-panel-manifest-url'"
                     :aria-describedby="getErrorDescribedBy('manifestUrl')"
                     :class="$style['dev-panel__control']"
                     :invalid="Boolean(props.validationErrors.manifestUrl)"
+                    :placeholder="extensionUrlExample"
                     :value="props.manifestUrl"
                     type="text"
                     @update:value="updateManifestUrl"
@@ -98,51 +97,10 @@
                 </span>
             </div>
 
-            <div :class="$style['dev-panel__field']">
-                <div :class="$style['dev-panel__field-heading']">
-                    <label
-                        :id="uid + '-dev-panel-fixture-label'"
-                        :class="$style['dev-panel__field-label']"
-                        :for="uid + '-dev-panel-fixture'"
-                    >
-                        {{ t('devPanel.fixture') }}
-                    </label>
-
-                    <UiPopperConnector>
-                        <UiButton
-                            :aria-label="t('devPanel.tooltips.fixture')"
-                            appearance="tertiary"
-                            size="xs"
-                        >
-                            <HelpOutlined aria-hidden="true" />
-                        </UiButton>
-
-                        <UiTooltip :offset-main-axis="4">
-                            <span>{{ t('devPanel.tooltips.fixture') }}</span>
-                        </UiTooltip>
-                    </UiPopperConnector>
-                </div>
-
-                <VSelect
-                    :id="uid + '-dev-panel-fixture'"
-                    :aria-describedby="getErrorDescribedBy('fixture')"
-                    :labelled-by="uid + '-dev-panel-fixture-label'"
-                    :options="fixtureOptions"
-                    :value="props.fixture"
-                    @update:value="props.setFixture"
-                />
-
-                <span
-                    v-if="props.validationErrors.fixture"
-                    :id="getErrorId('fixture')"
-                    :class="$style['dev-panel__error']"
-                    role="alert"
-                >
-                    {{ props.validationErrors.fixture }}
-                </span>
-            </div>
-
-            <div :class="$style['dev-panel__field']">
+            <div
+                v-if="props.mode === 'page'"
+                :class="$style['dev-panel__field']"
+            >
                 <div :class="$style['dev-panel__field-heading']">
                     <label
                         :class="$style['dev-panel__field-label']"
@@ -170,8 +128,8 @@
                     :id="uid + '-dev-panel-page-code'"
                     :aria-describedby="getErrorDescribedBy('pageCode')"
                     :class="$style['dev-panel__control']"
-                    :disabled="props.mode !== 'page'"
                     :invalid="Boolean(props.validationErrors.pageCode)"
+                    :placeholder="t('devPanel.pageCodePlaceholder')"
                     :value="props.pageCode"
                     type="text"
                     @update:value="updatePageCode"
@@ -187,7 +145,10 @@
                 </span>
             </div>
 
-            <div :class="$style['dev-panel__field']">
+            <div
+                v-else
+                :class="$style['dev-panel__field']"
+            >
                 <div :class="$style['dev-panel__field-heading']">
                     <div
                         :id="uid + '-dev-panel-targets-label'"
@@ -215,26 +176,16 @@
                     {{ t('devPanel.targetsHint') }}
                 </span>
 
-                <div
-                    :class="$style['dev-panel__target-checklist']"
+                <VSelect
+                    :id="uid + '-dev-panel-targets'"
                     :aria-describedby="getErrorDescribedBy('targets')"
-                    :aria-labelledby="uid + '-dev-panel-targets-label'"
-                    role="group"
-                >
-                    <div
-                        v-for="(slot, index) in ORDER_SANDBOX_SLOTS"
-                        :key="slot.target"
-                        :class="$style['dev-panel__target-checklist-item']"
-                    >
-                        <UiCheckbox
-                            :id="`sandbox-target-${index}`"
-                            :disabled="props.mode !== 'widget'"
-                            :model="props.selectedTargets.includes(slot.target)"
-                            @update:model="updateTargetModel(slot.target, $event)"
-                        />
-                        <label :for="`sandbox-target-${index}`">{{ slot.target }}</label>
-                    </div>
-                </div>
+                    :labelled-by="uid + '-dev-panel-targets-label'"
+                    :options="targetOptions"
+                    :placeholder="t('devPanel.targetsPlaceholder')"
+                    :value="props.selectedTargets"
+                    multiple
+                    @update:value="updateTargets"
+                />
 
                 <span
                     v-if="props.validationErrors.targets"
@@ -243,6 +194,50 @@
                     role="alert"
                 >
                     {{ props.validationErrors.targets }}
+                </span>
+            </div>
+
+            <div :class="$style['dev-panel__field']">
+                <div :class="$style['dev-panel__field-heading']">
+                    <label
+                        :id="uid + '-dev-panel-fixture-label'"
+                        :class="$style['dev-panel__field-label']"
+                        :for="uid + '-dev-panel-fixture'"
+                    >
+                        {{ t('devPanel.fixture') }}
+                    </label>
+
+                    <UiPopperConnector>
+                        <UiButton
+                            :aria-label="fixtureTooltip"
+                            appearance="tertiary"
+                            size="xs"
+                        >
+                            <HelpOutlined aria-hidden="true" />
+                        </UiButton>
+
+                        <UiTooltip :offset-main-axis="4">
+                            <span>{{ fixtureTooltip }}</span>
+                        </UiTooltip>
+                    </UiPopperConnector>
+                </div>
+
+                <VSelect
+                    :id="uid + '-dev-panel-fixture'"
+                    :aria-describedby="getErrorDescribedBy('fixture')"
+                    :labelled-by="uid + '-dev-panel-fixture-label'"
+                    :options="fixtureOptions"
+                    :value="props.fixture"
+                    @update:value="props.setFixture"
+                />
+
+                <span
+                    v-if="props.validationErrors.fixture"
+                    :id="getErrorId('fixture')"
+                    :class="$style['dev-panel__error']"
+                    role="alert"
+                >
+                    {{ props.validationErrors.fixture }}
                 </span>
             </div>
 
@@ -277,7 +272,14 @@
                 <UiTextbox
                     :id="uid + '-dev-panel-context-json'"
                     :aria-describedby="getErrorDescribedBy('contextJson')"
-                    :class="$style['dev-panel__control']"
+                    :class="[
+                        $style['dev-panel__control'],
+                        $style['dev-panel__context-editor'],
+                    ]"
+                    :input-attributes="{
+                        spellcheck: false,
+                        wrap: 'off',
+                    }"
                     :invalid="Boolean(props.validationErrors.contextJson)"
                     :value="props.contextJson"
                     multiline
@@ -293,12 +295,35 @@
                 >
                     {{ props.validationErrors.contextJson }}
                 </span>
+
+                <div :class="$style['dev-panel__context-actions']">
+                    <UiButton
+                        appearance="secondary"
+                        @click="props.formatContextJson"
+                    >
+                        {{ t('devPanel.actions.formatContextJson') }}
+                    </UiButton>
+
+                    <UiButton
+                        appearance="secondary"
+                        @click="props.resetContextJson"
+                    >
+                        {{ t('devPanel.actions.resetContextJson') }}
+                    </UiButton>
+
+                    <UiButton
+                        appearance="secondary"
+                        @click="props.downloadContextJson"
+                    >
+                        {{ t('devPanel.actions.downloadContextJson') }}
+                    </UiButton>
+                </div>
             </div>
 
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
                 <UiButton
                     appearance="primary"
-                    :disabled="isApplyDisabled"
+                    :disabled="isApplyDisabled || props.applyingLaunchConfig"
                     @click="props.applyLaunchConfig"
                 >
                     {{ t('devPanel.actions.apply') }}
@@ -326,7 +351,6 @@ import { useId } from 'vue'
 
 import {
   UiButton,
-  UiCheckbox,
   UiPopperConnector,
   UiTextbox,
   UiTooltip,
@@ -336,21 +360,26 @@ import VSelect from '@/components/VSelect.vue'
 
 import HelpOutlined from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/help-outlined.svg'
 
+import { getOrderSandboxFixturePresentations } from '@/app/fixturePresentation'
+import { isValidSandboxPageCode } from '@/scenario/validation'
 import { ORDER_SANDBOX_SLOTS } from '@/scenario/targets'
-import { orderSandboxFixtures } from '@/scenario/fixtures'
 
 const props = defineProps<{
-  applyLaunchConfig(): void;
+  applyLaunchConfig(): Promise<void>;
   applyContextJson(): Promise<void>;
+  applyingLaunchConfig: boolean;
   contextJson: string;
   contextJsonChanged: boolean;
+  downloadContextJson(): void;
   fixture: string;
+  formatContextJson(): void;
   manifestUrl: string;
   mode: SandboxLaunchMode;
   pageCode: string;
+  resetContextJson(): void;
   selectedTargets: SandboxOrderTarget[];
   setContextJson(value: string | number): void;
-  setFixture(value: string): void;
+  setFixture(value: string | string[]): void;
   setManifestUrl(value: string): void;
   setMode(value: SandboxLaunchMode): void;
   setPageCode(value: string): void;
@@ -359,12 +388,9 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { t: tGlobal } = useI18n({ useScope: 'global' })
 const uid = useId()
-const fixtureLabelKeys: Record<string, string> = {
-  'order-basic': 'devPanel.fixtures.orderBasic',
-  'order-readonly-error': 'devPanel.fixtures.orderReadonlyError',
-  'order-with-delivery': 'devPanel.fixtures.orderWithDelivery',
-}
+const extensionUrlExample = 'http://127.0.0.1:4175/extension/<uuid>'
 const modeOptions = computed<Array<{
   label: string;
   value: SandboxLaunchMode;
@@ -378,14 +404,23 @@ const modeOptions = computed<Array<{
     value: 'page',
   },
 ])
-const fixtureOptions = computed(() => Object.entries(orderSandboxFixtures).map(([code, fixture]) => ({
-  label: fixtureLabelKeys[code] ? t(fixtureLabelKeys[code]) : fixture.name,
-  value: code,
+const fixturePresentations = computed(() => getOrderSandboxFixturePresentations(tGlobal))
+const fixtureOptions = computed(() => fixturePresentations.value.map(fixture => ({
+  label: fixture.name,
+  value: fixture.code,
 })))
+const fixtureTooltip = computed(() => fixturePresentations.value
+  .map(fixture => `${fixture.name}: ${fixture.description}`)
+  .join(' ')
+)
+const targetOptions = ORDER_SANDBOX_SLOTS.map(slot => ({
+  label: slot.target,
+  value: slot.target,
+}))
 const isApplyDisabled = computed(() => {
   if (!props.manifestUrl.trim() || !props.fixture || !props.mode) return true
 
-  if (props.mode === 'page') return !props.pageCode.trim()
+  if (props.mode === 'page') return !isValidSandboxPageCode(props.pageCode)
 
   return props.selectedTargets.length === 0
 })
@@ -398,12 +433,16 @@ const updatePageCode = (value: string | number) => {
   props.setPageCode(String(value))
 }
 
-const updateTarget = (target: SandboxOrderTarget, checked: boolean) => {
-  props.setTargetSelected(target, checked)
-}
+const updateTargets = (value: string | string[]) => {
+  const targets = Array.isArray(value) ? value : []
 
-const updateTargetModel = (target: SandboxOrderTarget, value: unknown) => {
-  updateTarget(target, Boolean(value))
+  ORDER_SANDBOX_SLOTS.forEach(({ target }) => {
+    const selected = targets.includes(target)
+
+    if (props.selectedTargets.includes(target) !== selected) {
+      props.setTargetSelected(target, selected)
+    }
+  })
 }
 
 const getErrorId = (field: DevPanelField): string => `${uid}-dev-panel-${field}-error`
@@ -417,36 +456,31 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
     "devPanel": {
         "actions": {
             "apply": "Apply",
-            "applyContextJson": "Apply context"
+            "applyContextJson": "Apply context",
+            "downloadContextJson": "Download JSON",
+            "formatContextJson": "Format",
+            "resetContextJson": "Reset"
         },
         "contextJson": "Context JSON",
         "contextJsonHint": "Edit fixture-backed contexts for the current run. Applying this JSON reloads the extension.",
-        "delivery": {
-            "empty": "Manifest / extension URL is empty. The onboarding page will be shown without a network source.",
-            "title": "JS module delivery",
-            "workflow": "%extension-url%/extension/%extension-id% → descriptor/entrypoint/script → worker"
-        },
+        "extensionHint": "Enter the full extension URL using the example shown in the field. Replace the UUID with the value from extensionrc.json and make sure the resulting page opens in the browser.",
         "extensionUrl": "Manifest / extension URL",
         "fixture": "Fixture",
-        "fixtures": {
-            "orderBasic": "Basic order",
-            "orderReadonlyError": "Readonly / error-like",
-            "orderWithDelivery": "Order with delivery"
-        },
         "mode": "Mode",
         "modeOptions": {
             "page": "Page",
             "widgets": "Widgets"
         },
         "pageCode": "Page code",
+        "pageCodePlaceholder": "Enter page code",
         "targets": "Widget mount targets",
         "targetsHint": "Targets are CRM slots where widget runners are mounted. They are used only in widget mode.",
+        "targetsPlaceholder": "Select mount targets",
         "tooltips": {
             "contextJson": "Current fixture context. Edit it to simulate another CRM state, then apply context.",
-            "extensionUrl": "Required full extension endpoint: %extension-url%/extension/%extension-id%. The extension server must be available from the browser.",
-            "fixture": "Fixture defines mock CRM data: order context, user, settings, custom fields and initial host state.",
+            "extensionUrl": "The extension URL can point to any external application that serves the extension, for example http://web-extensions-server.simla.local/extension/.",
             "mode": "Widgets mount into selected CRM targets. Page mounts a page runner by page code.",
-            "pageCode": "Required only in Page mode. Use the page code from the extension pages registration, not the extension id.",
+            "pageCode": "Use the code from the extension pages registration, not the extension id. Only Latin letters (A–Z, a–z) and hyphens are allowed.",
             "targets": "Targets are widget mount slots. Select the same targets that the extension registers."
         }
     }
@@ -458,37 +492,32 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
     "devPanel": {
         "actions": {
             "apply": "Aplicar",
-            "applyContextJson": "Aplicar contexto"
+            "applyContextJson": "Aplicar contexto",
+            "downloadContextJson": "Descargar JSON",
+            "formatContextJson": "Formatear",
+            "resetContextJson": "Restablecer"
         },
         "contextJson": "Contexto JSON",
-        "contextJsonHint": "Edita los contextos basados en fixture para la ejecución actual. Al aplicar este JSON se recarga la extensión.",
-        "delivery": {
-            "empty": "Manifest / extension URL está vacío. Sin fuente de red se mostrará onboarding.",
-            "title": "Entrega de módulo JS",
-            "workflow": "%extension-url%/extension/%extension-id% → descriptor/entrypoint/script → worker"
-        },
-        "extensionUrl": "Manifest / extension URL",
-        "fixture": "Fixture",
-        "fixtures": {
-            "orderBasic": "Pedido básico",
-            "orderReadonlyError": "Readonly / error-like",
-            "orderWithDelivery": "Pedido con entrega"
-        },
+        "contextJsonHint": "Edite los contextos basados en los datos de prueba de la ejecución actual. Al aplicar este JSON se recarga la extensión.",
+        "extensionHint": "Introduzca la URL completa utilizando el ejemplo del campo. Sustituya el UUID por el valor de extensionrc.json y compruebe que la página resultante se abre en el navegador.",
+        "extensionUrl": "Manifiesto / URL de la extensión",
+        "fixture": "Datos de prueba",
         "mode": "Modo",
         "modeOptions": {
             "page": "Página",
             "widgets": "Widgets"
         },
         "pageCode": "Código de página",
+        "pageCodePlaceholder": "Introduzca el código de la página",
         "targets": "Puntos de montaje de widgets",
-        "targetsHint": "Los targets son slots de CRM donde se montan los widget runners. Se usan solo en modo widget.",
+        "targetsHint": "Los puntos de montaje son áreas de la interfaz de CRM donde se ejecutan los widgets. Solo se utilizan en el modo «Widgets».",
+        "targetsPlaceholder": "Seleccione los puntos de montaje",
         "tooltips": {
-            "contextJson": "Contexto actual de la fixture. Edítalo para simular otro estado de CRM y aplica el contexto.",
-            "extensionUrl": "Endpoint completo obligatorio de la extensión: %extension-url%/extension/%extension-id%. El servidor debe estar disponible desde el navegador.",
-            "fixture": "La fixture define datos mock de CRM: contexto del pedido, usuario, ajustes, campos personalizados y estado inicial del host.",
-            "mode": "Widgets monta en los targets CRM seleccionados. Página monta un page runner por código de página.",
-            "pageCode": "Obligatorio solo en modo Página. Usa el código de página del registro pages, no el id de la extensión.",
-            "targets": "Los targets son slots de montaje de widgets. Selecciona los mismos targets que registra la extensión."
+            "contextJson": "Contexto actual de los datos de prueba. Edítelo para simular otro estado de CRM y aplique el contexto.",
+            "extensionUrl": "La URL de la extensión puede apuntar a cualquier aplicación externa que sirva la extensión, por ejemplo http://web-extensions-server.simla.local/extension/.",
+            "mode": "En el modo «Widgets», los widgets se añaden a los puntos de montaje seleccionados. En el modo «Página», se ejecuta una página mediante su código.",
+            "pageCode": "Utilice el valor code del registro pages, no el UUID de la extensión. Solo se permiten letras latinas (A–Z, a–z) y guiones.",
+            "targets": "Los puntos de montaje son áreas de la interfaz de CRM para widgets. Seleccione los mismos puntos que registra la extensión."
         }
     }
 }
@@ -499,37 +528,32 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
     "devPanel": {
         "actions": {
             "apply": "Применить",
-            "applyContextJson": "Применить контекст"
+            "applyContextJson": "Применить контекст",
+            "downloadContextJson": "Скачать JSON",
+            "formatContextJson": "Форматировать",
+            "resetContextJson": "Сбросить"
         },
-        "contextJson": "Context JSON",
-        "contextJsonHint": "Меняет fixture-backed contexts для текущего запуска. После применения расширение перезапускается.",
-        "delivery": {
-            "empty": "Сейчас Manifest / URL расширения пустой. Без сетевого источника будет показана стартовая страница.",
-            "title": "Доставка JS-модуля",
-            "workflow": "%extension-url%/extension/%extension-id% → descriptor/entrypoint/script → worker"
-        },
-        "extensionUrl": "Manifest / URL расширения",
+        "contextJson": "JSON контекста",
+        "contextJsonHint": "Изменяет контексты, созданные на основе выбранной фикстуры. После применения расширение перезапускается.",
+        "extensionHint": "Укажите полный URL расширения по примеру в поле. Замените UUID на значение из extensionrc.json и убедитесь, что получившаяся страница открывается в браузере.",
+        "extensionUrl": "Манифест / URL расширения",
         "fixture": "Фикстура",
-        "fixtures": {
-            "orderBasic": "Базовый заказ",
-            "orderReadonlyError": "Readonly / error-like",
-            "orderWithDelivery": "Заказ с доставкой"
-        },
         "mode": "Режим",
         "modeOptions": {
             "page": "Страница",
             "widgets": "Виджеты"
         },
         "pageCode": "Код страницы",
+        "pageCodePlaceholder": "Введите код страницы",
         "targets": "Места встраивания виджетов",
-        "targetsHint": "Targets — это CRM-слоты, куда монтируются widget runners. Они используются только в режиме виджетов.",
+        "targetsHint": "Места встраивания — это области интерфейса CRM, в которых запускаются виджеты. Они используются только в режиме «Виджеты».",
+        "targetsPlaceholder": "Выберите места встраивания",
         "tooltips": {
-            "contextJson": "Текущий контекст из фикстуры. Можно изменить его, чтобы симулировать другое состояние CRM, затем применить контекст.",
-            "extensionUrl": "Обязательный полный endpoint расширения: %extension-url%/extension/%extension-id%. Сервер расширения должен быть доступен из браузера.",
-            "fixture": "Фикстура задаёт моковые данные CRM: контекст заказа, пользователя, настройки, пользовательские поля и начальное состояние host.",
-            "mode": "Виджеты монтируются в выбранные CRM targets. Страница монтирует page runner по коду страницы.",
-            "pageCode": "Обязателен только в режиме страницы. Укажите код из pages регистрации расширения, а не id расширения.",
-            "targets": "Targets — это слоты для встраивания виджетов. Выберите те же targets, которые регистрирует расширение."
+            "contextJson": "Текущий контекст из фикстуры. Измените его, чтобы воспроизвести другое состояние CRM, затем примените контекст.",
+            "extensionUrl": "URL расширения может указывать на любое стороннее приложение, которое отдаёт расширение, например http://web-extensions-server.simla.local/extension/.",
+            "mode": "В режиме «Виджеты» виджеты добавляются в выбранные места встраивания. В режиме «Страница» запускается страница по её коду.",
+            "pageCode": "Укажите значение code из массива pages в дескрипторе, а не UUID расширения. Допустимы только латинские буквы (A–Z, a–z) и дефисы.",
+            "targets": "Места встраивания — это области интерфейса CRM для виджетов. Выберите те же места, которые зарегистрированы расширением."
         }
     }
 }
@@ -588,6 +612,23 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         width: 100%;
     }
 
+    &__context-editor {
+        :global(textarea) {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            max-height: 480px;
+            min-height: 240px;
+            overflow: auto;
+            resize: vertical;
+            white-space: pre;
+        }
+    }
+
+    &__context-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: @spacing-xs;
+    }
+
     &__field-label {
         color: @grey-900;
         font-size: 12px;
@@ -602,40 +643,12 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         line-height: 1.35;
     }
 
-    &__delivery-note {
-        background: @grey-200;
-        border: 1px solid @grey-500;
-        border-radius: @border-radius-md;
-        color: @black-500;
-        display: grid;
-        font-size: 13px;
-        gap: @spacing-xs;
-        line-height: 1.4;
-        min-width: 0;
-        overflow-wrap: anywhere;
-        padding: 12px;
-    }
-
     &__error {
         color: @red-500;
         font-size: 12px;
         font-weight: 700;
         line-height: 1.35;
         margin: -4px 0 0;
-    }
-
-    &__target-checklist {
-        display: grid;
-        gap: @spacing-xs;
-        margin-top: @spacing-xs;
-    }
-
-    &__target-checklist-item {
-        align-items: center;
-        color: @black-500;
-        display: flex;
-        font-size: 14px;
-        gap: @spacing-xs;
     }
 
     &__actions {

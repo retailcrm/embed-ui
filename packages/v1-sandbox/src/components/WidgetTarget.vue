@@ -49,13 +49,13 @@ const setTree: VNodeRef = (tree) => {
 
 <i18n locale="es-ES">
 {
-  "ariaLabel": "Target de widget: {target}"
+  "ariaLabel": "Punto de montaje del widget: {target}"
 }
 </i18n>
 
 <i18n locale="ru-RU">
 {
-  "ariaLabel": "Цель виджета: {target}"
+  "ariaLabel": "Место встраивания виджета: {target}"
 }
 </i18n>
 

@@ -48,13 +48,38 @@ Use the same idea for your code: `LoyaltySettingsPage.vue`, `OrderNotesWidget.vu
 
 ```bash
 __PACKAGE_MANAGER__ install
+__PACKAGE_MANAGER_RUN__ dev
 __PACKAGE_MANAGER_RUN__ eslint
 __PACKAGE_MANAGER_RUN__ build
 __PACKAGE_MANAGER_RUN__ test:unit
 __PACKAGE_MANAGER_RUN__ test:browser
 __PACKAGE_MANAGER_RUN__ test:e2e
-__PACKAGE_MANAGER_RUN__ serve:extension
+__PACKAGE_MANAGER_RUN__ extension:serve
 __PACKAGE_MANAGER_RUN__ publish-extension -- --archive-only
+```
+
+## Local development
+
+Use one command for the first launch:
+
+```bash
+__PACKAGE_MANAGER_RUN__ dev
+```
+
+It checks ports `4173` and `4175`, builds the extension, and starts the extension server
+together with the sandbox. Process messages are prefixed with `[extension]` and `[sandbox]`.
+After startup, the command prints ready-to-use sandbox and extension URLs. Pressing `Ctrl+C`
+stops both processes.
+
+To manage the processes separately, use two terminals:
+
+```bash
+__PACKAGE_MANAGER_RUN__ build
+__PACKAGE_MANAGER_RUN__ extension:serve
+```
+
+```bash
+__PACKAGE_MANAGER_RUN__ sandbox:serve
 ```
 
 ## Testing
@@ -62,7 +87,7 @@ __PACKAGE_MANAGER_RUN__ publish-extension -- --archive-only
 - `__PACKAGE_MANAGER_RUN__ test:unit` runs fast unit tests without a browser.
 - `__PACKAGE_MANAGER_RUN__ test:browser` runs the starter page and widget in Chromium through Vitest Browser.
 - `__PACKAGE_MANAGER_RUN__ test:e2e` builds the extension, starts the sandbox app and local extension server, then checks the extension through Playwright.
-- `__PACKAGE_MANAGER_RUN__ serve:extension` starts `http://127.0.0.1:4175` after a build. Tests build the concrete manifest URL as `http://127.0.0.1:4175/extension/<uuid>`.
+- `__PACKAGE_MANAGER_RUN__ extension:serve` starts `http://127.0.0.1:4175` after a build. Tests build the concrete manifest URL as `http://127.0.0.1:4175/extension/<uuid>`.
 
 Before the first browser/e2e run, install Chromium if needed:
 
@@ -82,7 +107,7 @@ MODULE_URL=https://example.com
 
 Run `__PACKAGE_MANAGER_RUN__ build` before publishing. The archive-only mode creates `dist/extension.zip` without sending API requests.
 
-For local CRM checks, `MODULE_URL` must point to a dev/static server. `__PACKAGE_MANAGER_RUN__ serve:extension`
+For local CRM checks, `MODULE_URL` must point to a dev/static server. `__PACKAGE_MANAGER_RUN__ extension:serve`
 starts that local server for the current `dist` build and resolves `/extension/<uuid>`,
 `/extension/<uuid>/script`, and `/extension/<uuid>/stylesheet` from `extensionrc.json`.
 `publish-extension` registers these URLs in CRM, but it does not start that server.

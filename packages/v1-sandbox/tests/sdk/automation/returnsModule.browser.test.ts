@@ -48,7 +48,7 @@ const returns: ReturnRecord[] = [
     ],
     order: {
       amount: 2270,
-      customer: 'Анна Смирнова',
+      customer: 'Иван Иванов',
       id: 1,
       items: [
         {
@@ -79,7 +79,7 @@ const returns: ReturnRecord[] = [
     ],
     order: {
       amount: 10540,
-      customer: 'Виктория Соколова',
+      customer: 'Пётр Петров',
       id: 5,
       items: [
         {
@@ -115,7 +115,7 @@ const returns: ReturnRecord[] = [
     ],
     order: {
       amount: 10540,
-      customer: 'Виктория Соколова',
+      customer: 'Пётр Петров',
       id: 5,
       items: [
         {

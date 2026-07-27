@@ -60,7 +60,7 @@ test('widget target list renders every provided mount', () => {
   })
 
   expect(wrapper.get('[role="region"]').attributes('aria-label')).toBe('Места встраивания виджетов')
-  expect(wrapper.findAll('[role="region"][aria-label^="Цель виджета:"]')).toHaveLength(2)
+  expect(wrapper.findAll('[role="region"][aria-label^="Место встраивания виджета:"]')).toHaveLength(2)
 })
 
 test('widget target list supports an empty mount collection', () => {
@@ -71,5 +71,5 @@ test('widget target list supports an empty mount collection', () => {
     },
   })
 
-  expect(wrapper.findAll('[role="region"][aria-label^="Цель виджета:"]')).toHaveLength(0)
+  expect(wrapper.findAll('[role="region"][aria-label^="Место встраивания виджета:"]')).toHaveLength(0)
 })

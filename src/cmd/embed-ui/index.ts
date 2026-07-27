@@ -17,6 +17,7 @@ import { applyInitSkills } from './skills'
 import { assertPackageManagerAvailable } from './package-manager'
 import { collectPackageJsonPaths } from './filesystem'
 import {
+  createDevScript,
   createEndpointWorker,
   createEnvDts,
   createEslintConfig,
@@ -51,6 +52,7 @@ import { PACKAGE_MANAGERS, parseArgs, parseInitArgs } from './args'
 import { printChanges, printInitReport } from './report'
 import { promptForInstallSelection } from './packages'
 import { readOrCreatePackageJson, readPackageJson } from './package-json'
+import { renameGeneratedScript } from './package-json'
 import { resolveDefaultInitVersion } from './packages'
 import { resolveInstallPackages } from './packages'
 import { resolveInteractiveInitOptions } from './interactive'
@@ -329,6 +331,7 @@ const applyInitPackageJson = (
   }
 
   setMissingScript(packageJson, 'build', 'vite build', changes)
+  setMissingScript(packageJson, 'dev', 'node scripts/dev.mjs', changes)
   setMissingScript(packageJson, 'eslint', 'eslint .', changes)
   setMissingScript(packageJson, 'eslint:fix', 'eslint --fix .', changes)
   setMissingScript(packageJson, 'publish-extension', 'node scripts/publish-extension.mjs', changes)
@@ -337,7 +340,15 @@ const applyInitPackageJson = (
   setMissingScript(packageJson, 'test:browser', 'vitest --run --config vitest.config.browser.ts', changes)
   setMissingScript(packageJson, 'test:e2e', 'playwright test -c vitest.config.playwright.ts', changes)
   setMissingScript(packageJson, 'test:browsers:install', 'playwright install chromium', changes)
-  setMissingScript(packageJson, 'serve:extension', 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175', changes)
+  renameGeneratedScript(
+    packageJson,
+    'serve:extension',
+    'extension:serve',
+    'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175',
+    'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175',
+    changes
+  )
+  setMissingScript(packageJson, 'extension:serve', 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175', changes)
   setMissingScript(packageJson, 'sandbox:serve', 'embed-ui-v1-sandbox serve --host 127.0.0.1 --port 4173', changes)
 
   for (const selectedPackage of selectedPackages) {
@@ -467,6 +478,7 @@ const applyInitTemplate = (
   writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/e2e/starter.e2e.ts'), createSandboxE2eTest(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'extensionrc.json'), createExtensionConfig(options), options, changes)
   writeFileIfAllowed(path.join(cwd, 'scripts/publish-extension.mjs'), createPublishScript(), options, changes)
+  writeFileIfAllowed(path.join(cwd, 'scripts/dev.mjs'), createDevScript(packageManager), options, changes)
   writeFileIfAllowed(path.join(cwd, 'scripts/serve-extension.mjs'), createServeScript(), options, changes)
   writeFileIfAllowed(path.join(cwd, 'README.md'), createReadme(cwd, sourceRoot, options, packageManager), options, changes)
 }

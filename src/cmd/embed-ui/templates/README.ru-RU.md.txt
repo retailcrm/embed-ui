@@ -48,13 +48,38 @@
 
 ```bash
 __PACKAGE_MANAGER__ install
+__PACKAGE_MANAGER_RUN__ dev
 __PACKAGE_MANAGER_RUN__ eslint
 __PACKAGE_MANAGER_RUN__ build
 __PACKAGE_MANAGER_RUN__ test:unit
 __PACKAGE_MANAGER_RUN__ test:browser
 __PACKAGE_MANAGER_RUN__ test:e2e
-__PACKAGE_MANAGER_RUN__ serve:extension
+__PACKAGE_MANAGER_RUN__ extension:serve
 __PACKAGE_MANAGER_RUN__ publish-extension -- --archive-only
+```
+
+## Локальная разработка
+
+Для первого запуска используйте одну команду:
+
+```bash
+__PACKAGE_MANAGER_RUN__ dev
+```
+
+Она проверяет порты `4173` и `4175`, собирает расширение и запускает сервер расширения вместе
+с песочницей. Сообщения процессов выводятся с префиксами `[extension]` и `[sandbox]`.
+После запуска команда печатает готовые URL песочницы и расширения. Нажатие `Ctrl+C`
+останавливает оба процесса.
+
+Если нужно управлять процессами отдельно, используйте два терминала:
+
+```bash
+__PACKAGE_MANAGER_RUN__ build
+__PACKAGE_MANAGER_RUN__ extension:serve
+```
+
+```bash
+__PACKAGE_MANAGER_RUN__ sandbox:serve
 ```
 
 ## Тестирование
@@ -62,7 +87,7 @@ __PACKAGE_MANAGER_RUN__ publish-extension -- --archive-only
 - `__PACKAGE_MANAGER_RUN__ test:unit` проверяет быстрые unit-тесты без браузера.
 - `__PACKAGE_MANAGER_RUN__ test:browser` запускает стартовую страницу и виджет в Chromium через Vitest Browser.
 - `__PACKAGE_MANAGER_RUN__ test:e2e` собирает расширение, поднимает sandbox-приложение и локальный extension server, затем проверяет расширение через Playwright.
-- `__PACKAGE_MANAGER_RUN__ serve:extension` после сборки запускает `http://127.0.0.1:4175`. Тесты собирают конкретный manifest URL как `http://127.0.0.1:4175/extension/<uuid>`.
+- `__PACKAGE_MANAGER_RUN__ extension:serve` после сборки запускает `http://127.0.0.1:4175`. Тесты собирают конкретный manifest URL как `http://127.0.0.1:4175/extension/<uuid>`.
 
 Перед первым browser/e2e запуском может потребоваться установить Chromium:
 
@@ -82,7 +107,7 @@ MODULE_URL=https://example.com
 
 Перед публикацией выполните `__PACKAGE_MANAGER_RUN__ build`. Режим archive-only создает `dist/extension.zip` без API-запросов.
 
-Для локальной проверки в CRM `MODULE_URL` должен указывать на dev/static server. `__PACKAGE_MANAGER_RUN__ serve:extension`
+Для локальной проверки в CRM `MODULE_URL` должен указывать на dev/static server. `__PACKAGE_MANAGER_RUN__ extension:serve`
 запускает такой локальный сервер для текущей сборки `dist` и резолвит `/extension/<uuid>`,
 `/extension/<uuid>/script` и `/extension/<uuid>/stylesheet` из `extensionrc.json`.
 `publish-extension` регистрирует эти URL в CRM, но сам dev-server не запускает.

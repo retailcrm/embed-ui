@@ -104,13 +104,13 @@ const orderCardBaseContext = {
   'company.name': 'Сэндбокс клиент',
   'country': 'RU',
   'currency': 'RUB',
-  'customer.email': 'igor.kretov@example.com',
+  'customer.email': 'ivan.ivanov@example.test',
   'customer.externalId': 'customer-91742',
-  'customer.firstName': 'Игорь',
+  'customer.firstName': 'Иван',
   'customer.id': 91742,
-  'customer.lastName': 'Кретов',
-  'customer.patronymic': 'Андреевич',
-  'customer.phone': '+7 999 111-22-33',
+  'customer.lastName': 'Иванов',
+  'customer.patronymic': 'Иванович',
+  'customer.phone': '+7 000 000-00-00',
   'customer.type': 'customer',
   'delivery.address': null,
   'discount.amount': 0,
@@ -151,14 +151,14 @@ const settingsContext = {
 } satisfies SettingsContext
 
 const userCurrentContext = {
-  'email': 'dev@example.com',
-  'firstName': 'Dev',
+  'email': 'petr.petrov@example.test',
+  'firstName': 'Пётр',
   'groups': ['managers'],
   'id': 17,
   'isAdmin': true,
   'isManager': true,
-  'lastName': 'Sandbox',
-  'patronymic': null,
+  'lastName': 'Петров',
+  'patronymic': 'Петрович',
   'permissions': ['orders_view', 'orders_edit', 'delivery_edit', 'products_view'],
   'photo': null,
 } satisfies UserCurrentContext
@@ -296,7 +296,7 @@ export const orderSandboxFixtures = {
   },
   'order-with-delivery': {
     name: 'Заказ с доставкой',
-    description: 'Заказ с адресом и суммой, полезен для delivery/payment widgets.',
+    description: 'Заказ с адресом и суммой для проверки виджетов доставки и оплаты.',
     contexts: {
       [orderCardContextId]: createOrderCardContext({
         'delivery.address': 'Москва, ул. Ленина, 10',
@@ -320,8 +320,8 @@ export const orderSandboxFixtures = {
     },
   },
   'order-readonly-error': {
-    name: 'Readonly / error-like',
-    description: 'Отменённый заказ с readonly-настройками для проверки disabled states.',
+    name: 'Отменённый заказ только для чтения',
+    description: 'Отменённый заказ с настройками только для чтения для проверки неактивных состояний.',
     contexts: {
       [orderCardContextId]: createOrderCardContext({
         'externalId': 'sandbox-order-213',
@@ -337,12 +337,13 @@ export const orderSandboxFixtures = {
         'showPriceTypes': false,
       }),
       [currentUserContextId]: createUserCurrentContext({
-        'email': 'readonly@example.com',
-        'firstName': 'Readonly',
+        'email': 'sidor.sidorov@example.test',
+        'firstName': 'Сидор',
         'groups': ['support'],
         'id': 23,
         'isAdmin': false,
-        'lastName': 'Sandbox',
+        'lastName': 'Сидоров',
+        'patronymic': 'Сидорович',
         'permissions': ['orders_view'],
       }),
       [settingsContextId]: settingsContext,

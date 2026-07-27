@@ -1,0 +1,338 @@
+import { spawn } from 'node:child_process'
+import net from 'node:net'
+import path from 'node:path'
+import process from 'node:process'
+
+const projectRoot = path.resolve(import.meta.dirname, '..')
+const packageManager = '__PACKAGE_MANAGER__'
+const sandboxHost = '127.0.0.1'
+const defaultSandboxPort = 4173
+const extensionHost = '127.0.0.1'
+const defaultExtensionPort = 4175
+const serverStartupTimeout = 30_000
+const managedChildren = new Set()
+let shuttingDown = false
+
+const parsePort = (option, value) => {
+  if (!value || !/^\d+$/u.test(value)) {
+    throw new Error(option + ' must be an integer between 1 and 65535.')
+  }
+
+  const port = Number(value)
+
+  if (!Number.isSafeInteger(port) || port < 1 || port > 65535) {
+    throw new Error(option + ' must be an integer between 1 and 65535.')
+  }
+
+  return port
+}
+
+const parseDevArgs = args => {
+  const ports = {
+    '--extension-port': defaultExtensionPort,
+    '--sandbox-port': defaultSandboxPort,
+  }
+
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index]
+    const separatorIndex = argument.indexOf('=')
+    const option = separatorIndex === -1
+      ? argument
+      : argument.slice(0, separatorIndex)
+
+    if (!Object.hasOwn(ports, option)) {
+      throw new Error('Unknown argument: ' + argument + '.')
+    }
+
+    const value = separatorIndex === -1
+      ? args[index + 1]
+      : argument.slice(separatorIndex + 1)
+
+    ports[option] = parsePort(option, value)
+
+    if (separatorIndex === -1) {
+      index += 1
+    }
+  }
+
+  if (ports['--sandbox-port'] === ports['--extension-port']) {
+    throw new Error('Sandbox and extension ports must be different.')
+  }
+
+  return {
+    extensionPort: ports['--extension-port'],
+    sandboxPort: ports['--sandbox-port'],
+  }
+}
+
+const resolvePackageManagerExecutable = () => {
+  if (process.platform !== 'win32') return packageManager
+
+  return packageManager === 'bun' ? 'bun.exe' : packageManager + '.cmd'
+}
+
+const createPackageManagerArgs = (scriptName, scriptArgs = []) => {
+  if (packageManager === 'npm') {
+    return [
+      'run',
+      scriptName,
+      ...(scriptArgs.length > 0 ? ['--', ...scriptArgs] : []),
+    ]
+  }
+
+  if (packageManager === 'bun') {
+    return ['run', scriptName, ...scriptArgs]
+  }
+
+  return [scriptName, ...scriptArgs]
+}
+
+const writePrefixedLines = (stream, output, label, onLine = () => {}) => {
+  let buffer = ''
+
+  stream.setEncoding('utf8')
+  stream.on('data', chunk => {
+    buffer += chunk
+    const lines = buffer.split(/\r?\n/u)
+
+    buffer = lines.pop() ?? ''
+    for (const line of lines) {
+      output.write('[' + label + '] ' + line + '\n')
+      onLine(line)
+    }
+  })
+  stream.on('end', () => {
+    if (!buffer) return
+
+    output.write('[' + label + '] ' + buffer + '\n')
+    onLine(buffer)
+  })
+}
+
+const spawnScript = (scriptName, label, onStdoutLine = () => {}, scriptArgs = []) => {
+  const child = spawn(
+    resolvePackageManagerExecutable(),
+    createPackageManagerArgs(scriptName, scriptArgs),
+    {
+      cwd: projectRoot,
+      detached: process.platform !== 'win32',
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }
+  )
+
+  managedChildren.add(child)
+  writePrefixedLines(child.stdout, process.stdout, label, onStdoutLine)
+  writePrefixedLines(child.stderr, process.stderr, label)
+
+  child.once('close', () => {
+    managedChildren.delete(child)
+  })
+
+  return child
+}
+
+const waitForExit = child => new Promise(resolve => {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    resolve()
+    return
+  }
+
+  child.once('close', resolve)
+})
+
+const stopChild = async child => {
+  if (child.exitCode !== null || child.signalCode !== null) return
+
+  const exited = waitForExit(child)
+
+  if (process.platform === 'win32') {
+    spawn('taskkill', ['/pid', String(child.pid), '/t', '/f'], {
+      stdio: 'ignore',
+    })
+  } else {
+    try {
+      process.kill(-child.pid, 'SIGTERM')
+    } catch {
+      child.kill('SIGTERM')
+    }
+  }
+
+  const forceTimer = setTimeout(() => {
+    if (child.exitCode !== null || child.signalCode !== null) return
+
+    try {
+      if (process.platform === 'win32') {
+        child.kill('SIGKILL')
+      } else {
+        process.kill(-child.pid, 'SIGKILL')
+      }
+    } catch {
+      child.kill('SIGKILL')
+    }
+  }, 3_000)
+
+  await exited
+  clearTimeout(forceTimer)
+}
+
+const shutdown = async exitCode => {
+  if (shuttingDown) return
+
+  shuttingDown = true
+  await Promise.all(Array.from(managedChildren, stopChild))
+  process.exitCode = exitCode
+}
+
+const fail = async message => {
+  if (shuttingDown) return
+
+  process.stderr.write('[dev] ' + message + '\n')
+  await shutdown(1)
+}
+
+const checkPortAvailable = (host, port, label) => new Promise((resolve, reject) => {
+  const server = net.createServer()
+
+  server.unref()
+  server.once('error', error => {
+    if (error.code === 'EADDRINUSE') {
+      reject(new Error(label + ' port ' + port + ' is already in use at ' + host + '.'))
+      return
+    }
+
+    reject(error)
+  })
+  server.listen(port, host, () => {
+    server.close(error => {
+      if (error) {
+        reject(error)
+        return
+      }
+
+      resolve()
+    })
+  })
+})
+
+const runBuild = () => new Promise((resolve, reject) => {
+  process.stdout.write('[dev] Building extension...\n')
+  const child = spawnScript('build', 'build')
+
+  child.once('error', reject)
+  child.once('close', (code, signal) => {
+    if (code === 0) {
+      resolve()
+      return
+    }
+
+    reject(new Error(
+      'Build failed' + (signal ? ' with signal ' + signal : ' with exit code ' + String(code)) + '.'
+    ))
+  })
+})
+
+const startServer = ({
+  label,
+  readyMessage,
+  scriptArgs,
+  scriptName,
+}) => {
+  let ready = false
+  let resolveReady
+  let rejectReady
+  const readyPromise = new Promise((resolve, reject) => {
+    resolveReady = resolve
+    rejectReady = reject
+  })
+  const startupTimer = setTimeout(() => {
+    rejectReady(new Error(
+      label + ' server did not become ready within '
+      + String(serverStartupTimeout / 1_000)
+      + ' seconds.'
+    ))
+  }, serverStartupTimeout)
+  const child = spawnScript(scriptName, label, line => {
+    if (ready || !line.includes(readyMessage)) return
+
+    ready = true
+    clearTimeout(startupTimer)
+    resolveReady()
+  }, scriptArgs)
+
+  child.once('error', error => {
+    clearTimeout(startupTimer)
+    rejectReady(error)
+  })
+  child.once('close', (code, signal) => {
+    if (!ready) {
+      clearTimeout(startupTimer)
+      rejectReady(new Error(
+        label + ' server stopped before it was ready'
+        + (signal ? ' with signal ' + signal : ' with exit code ' + String(code))
+        + '.'
+      ))
+      return
+    }
+
+    if (!shuttingDown) {
+      void fail(
+        label + ' server stopped unexpectedly'
+        + (signal ? ' with signal ' + signal : ' with exit code ' + String(code))
+        + '.'
+      )
+    }
+  })
+
+  return {
+    child,
+    ready: readyPromise,
+  }
+}
+
+const main = async () => {
+  const {
+    extensionPort,
+    sandboxPort,
+  } = parseDevArgs(process.argv.slice(2))
+
+  await Promise.all([
+    checkPortAvailable(sandboxHost, sandboxPort, 'Sandbox'),
+    checkPortAvailable(extensionHost, extensionPort, 'Extension'),
+  ])
+  await runBuild()
+
+  process.stdout.write('[dev] Starting extension server and sandbox...\n')
+
+  const extension = startServer({
+    label: 'extension',
+    readyMessage: 'Extension server:',
+    scriptArgs: ['--port', String(extensionPort)],
+    scriptName: 'extension:serve',
+  })
+  const sandbox = startServer({
+    label: 'sandbox',
+    readyMessage: 'v1-sandbox is available at',
+    scriptArgs: ['--port', String(sandboxPort)],
+    scriptName: 'sandbox:serve',
+  })
+
+  await Promise.all([extension.ready, sandbox.ready])
+
+  process.stdout.write('\n')
+  process.stdout.write('Development environment is ready.\n')
+  process.stdout.write('Sandbox: http://' + sandboxHost + ':' + sandboxPort + '\n')
+  process.stdout.write('Extension server: http://' + extensionHost + ':' + extensionPort + '\n')
+  process.stdout.write('Press Ctrl+C to stop both servers.\n')
+}
+
+process.once('SIGINT', () => {
+  void shutdown(0)
+})
+process.once('SIGTERM', () => {
+  void shutdown(0)
+})
+
+void main().catch(error => {
+  void fail(error instanceof Error ? error.message : String(error))
+})

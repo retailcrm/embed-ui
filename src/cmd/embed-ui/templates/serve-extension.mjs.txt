@@ -192,7 +192,7 @@ const createRootRegistryEntry = () => {
   }
 
   if (!fs.existsSync(distDir)) {
-    throw new Error('Build directory not found: ' + distDir + '. Run build before serve:extension.')
+    throw new Error('Build directory not found: ' + distDir + '. Run build before extension:serve.')
   }
 
   const config = readJsonFile(configPath)
@@ -200,7 +200,7 @@ const createRootRegistryEntry = () => {
   const { scriptFile, styleFile } = pickBuildArtifacts(distDir)
 
   if (!scriptFile) {
-    throw new Error('Missing JS build artifact. Run build before serve:extension.')
+    throw new Error('Missing JS build artifact. Run build before extension:serve.')
   }
 
   const distRoot = path.resolve(distDir)

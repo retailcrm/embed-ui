@@ -15,7 +15,7 @@ import {
   vi,
 } from 'vitest'
 
-import { createPublishScript } from '../src/cmd/embed-ui/templates'
+import { createDevScript, createPublishScript } from '../src/cmd/embed-ui/templates'
 import { HELP_TEXT } from '../src/cmd/embed-ui/args'
 import { isSameExecutablePath, parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
 import { resolveCurrentPackageVersion } from '../src/cmd/embed-ui/packages'
@@ -31,6 +31,17 @@ const writeFile = (filePath: string, content: string) => {
 
 const readJsonFile = <T>(filePath: string): T =>
   JSON.parse(fs.readFileSync(filePath, 'utf8')) as T
+
+const runGeneratedDevScript = (args: string[]) => {
+  const tempDir = createTempDir()
+  const scriptPath = path.join(tempDir, 'scripts/dev.mjs')
+
+  writeFile(scriptPath, createDevScript('npm'))
+
+  return spawnSync(process.execPath, [scriptPath, ...args], {
+    encoding: 'utf8',
+  })
+}
 
 describe('embed-ui CLI', () => {
   afterEach(() => {
@@ -120,6 +131,53 @@ describe('embed-ui CLI', () => {
     )
 
     expect(resolveCurrentPackageVersion(binPath)).toBe('1.2.3')
+  })
+
+  test.each(['npm', 'yarn', 'pnpm', 'bun'] as const)(
+    'development script uses the selected %s package manager',
+    packageManager => {
+      const script = createDevScript(packageManager)
+
+      expect(script).toContain(`const packageManager = '${packageManager}'`)
+      expect(script).toContain('const defaultSandboxPort = 4173')
+      expect(script).toContain('const defaultExtensionPort = 4175')
+      expect(script).toContain('Development environment is ready.')
+      expect(script).toContain('Extension server: http://')
+      expect(script).toContain('Press Ctrl+C to stop both servers.')
+      expect(script).toContain('scriptArgs: [\'--port\', String(extensionPort)]')
+      expect(script).toContain('scriptArgs: [\'--port\', String(sandboxPort)]')
+      expect(script).not.toContain('extensionrc.json')
+      expect(script).not.toContain('/extension/')
+    }
+  )
+
+  test.each([
+    {
+      args: ['--unknown'],
+      error: 'Unknown argument: --unknown.',
+    },
+    {
+      args: ['--sandbox-port'],
+      error: '--sandbox-port must be an integer between 1 and 65535.',
+    },
+    {
+      args: ['--sandbox-port', '0'],
+      error: '--sandbox-port must be an integer between 1 and 65535.',
+    },
+    {
+      args: ['--extension-port=65536'],
+      error: '--extension-port must be an integer between 1 and 65535.',
+    },
+    {
+      args: ['--sandbox-port=4273', '--extension-port', '4273'],
+      error: 'Sandbox and extension ports must be different.',
+    },
+  ])('development script rejects invalid arguments: $args', ({ args, error }) => {
+    const result = runGeneratedDevScript(args)
+
+    expect(result.status).toBe(1)
+    expect(result.stderr).toContain(`[dev] ${error}`)
+    expect(result.stdout).not.toContain('[dev] Building extension...')
   })
 
   test('add mode updates only the target package.json and preserves CRLF', async () => {
@@ -344,11 +402,12 @@ describe('embed-ui CLI', () => {
     expect(packageJson.type).toBe('module')
     expect(packageJson.scripts).toMatchObject({
       build: 'vite build',
+      dev: 'node scripts/dev.mjs',
       eslint: 'eslint .',
       'eslint:fix': 'eslint --fix .',
+      'extension:serve': 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175',
       'publish-extension': 'node scripts/publish-extension.mjs',
       'sandbox:serve': 'embed-ui-v1-sandbox serve --host 127.0.0.1 --port 4173',
-      'serve:extension': 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175',
       test: 'npm run test:unit && npm run test:browser && npm run test:e2e',
       'test:browser': 'vitest --run --config vitest.config.browser.ts',
       'test:browsers:install': 'playwright install chromium',
@@ -456,7 +515,7 @@ describe('embed-ui CLI', () => {
       'command: \'npm run sandbox:serve\''
     )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
-      'command: \'npm run build && npm run serve:extension\''
+      'command: \'npm run build && npm run extension:serve\''
     )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
       'http://127.0.0.1:4175/extension/'
@@ -602,6 +661,12 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'scripts/serve-extension.mjs'), 'utf8')).toContain(
       'Extension server: http://\' + host + \':\' + port'
     )
+    expect(fs.readFileSync(path.join(tempDir, 'scripts/dev.mjs'), 'utf8')).toContain(
+      'const packageManager = \'npm\''
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'scripts/dev.mjs'), 'utf8')).toContain(
+      'Development environment is ready.'
+    )
     expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
       'settings-page-addon__icon'
     )
@@ -628,6 +693,12 @@ describe('embed-ui CLI', () => {
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       'npm run eslint'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      'npm run dev'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
+      'npm run extension:serve'
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       'npm run test:e2e'
@@ -791,6 +862,49 @@ describe('embed-ui CLI', () => {
     expect(gitignore).toContain('# RetailCRM embed-ui init')
     expect(gitignore).toContain('node_modules/')
     expect(gitignore).toContain('coverage/')
+  })
+
+  test('init renames the generated extension server command', async () => {
+    const tempDir = createTempDir()
+    const packageJsonPath = path.join(tempDir, 'package.json')
+
+    writeFile(packageJsonPath, JSON.stringify({
+      name: 'existing-extension',
+      private: true,
+      type: 'module',
+      scripts: {
+        'serve:extension': 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175',
+      },
+    }, null, 2))
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--packages',
+        'embed-ui',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-skills',
+        '--no-configs',
+        '--no-template',
+      ]),
+      version: '1.2.3',
+    })
+
+    const packageJson = readJsonFile<{
+      scripts: Record<string, string>;
+    }>(packageJsonPath)
+
+    expect(packageJson.scripts['serve:extension']).toBeUndefined()
+    expect(packageJson.scripts['extension:serve'])
+      .toBe('node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175')
+    expect(packageJson.scripts.dev).toBe('node scripts/dev.mjs')
   })
 
   test('init preflight warns about incompatible dependencies without rewriting them', async () => {

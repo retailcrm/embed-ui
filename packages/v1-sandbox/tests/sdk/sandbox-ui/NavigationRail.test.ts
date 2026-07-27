@@ -39,7 +39,7 @@ const mountWithApp = <T extends Component>(
     },
   })
 
-test('navigation rail emits dev panel open action', async () => {
+test('navigation rail keeps only sandbox controls interactive', async () => {
   const wrapper = mountWithApp(NavigationRail, {
     props: {
       devPanelControlsId: 'sandbox-controls',
@@ -47,10 +47,11 @@ test('navigation rail emits dev panel open action', async () => {
     },
   })
 
-  await wrapper.get('a[aria-label="Раздел заказов"]').trigger('click')
-  await wrapper.get('a[aria-label="Уведомления"]').trigger('click')
+  expect(wrapper.findAll('a')).toHaveLength(0)
+  expect(wrapper.findAll('button')).toHaveLength(1)
+  expect(wrapper.findAll('[aria-hidden="true"][tabindex]')).toHaveLength(0)
+
   await wrapper.get('button[aria-label="Открыть управление песочницей"]').trigger('click')
 
-  expect(wrapper.get('a[aria-label="Раздел заказов"]').attributes('aria-current')).toBe('page')
   expect(wrapper.emitted('openDevPanel')).toHaveLength(1)
 })

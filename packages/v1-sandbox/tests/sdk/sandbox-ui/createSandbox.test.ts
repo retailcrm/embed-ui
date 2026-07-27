@@ -94,7 +94,7 @@ test('opens dev panel and validates launch config input', async () => {
 
   expect(applyButton.disabled).toBe(true)
 
-  const manifestInput = within(dialog).getByLabelText('Manifest / URL расширения') as HTMLInputElement
+  const manifestInput = within(dialog).getByLabelText('Манифест / URL расширения') as HTMLInputElement
 
   fireEvent.input(manifestInput, {
     target: {
@@ -153,7 +153,7 @@ test('applies context json through dev panel', async () => {
   const dialog = await screen.findByRole('dialog', {
     name: 'Управление песочницей',
   })
-  const contextEditor = within(dialog).getByLabelText('Context JSON') as HTMLTextAreaElement
+  const contextEditor = within(dialog).getByLabelText('JSON контекста') as HTMLTextAreaElement
   const context = JSON.parse(contextEditor.value) as {
     'order/card': {
       number: string;
@@ -194,7 +194,7 @@ test('shows stored inferred page mode launch notice once', async () => {
   await nextTick()
 
   expect(alertSpy).toHaveBeenCalledWith(
-    'Режим страницы выбран автоматически\n\nВ ссылке не был указан mode. Sandbox нашёл страницу "returns" в расширении и переключил запуск в режим страницы.'
+    'Режим страницы выбран автоматически\n\nВ ссылке не был указан режим. Песочница нашла страницу «returns» в расширении и переключила запуск в режим «Страница».'
   )
   expect(window.sessionStorage.getItem('v1-sandbox:launch-notice')).toBeNull()
 })

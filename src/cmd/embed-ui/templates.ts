@@ -5,6 +5,7 @@ import path from 'node:path'
 
 import { randomUUID } from 'node:crypto'
 
+import devScriptTemplate from './templates/dev.mjs.txt?raw'
 import endpointWorkerTemplate from './templates/endpoint.worker.ts.txt?raw'
 import envDtsTemplate from './templates/env.d.ts.txt?raw'
 import eslintConfigTemplate from './templates/eslint.config.js.txt?raw'
@@ -221,6 +222,13 @@ export const createExtensionConfig = (options: InitOptions): string => `${JSON.s
 }, null, 2)}${DEFAULT_NEWLINE}`
 
 export const createExtensionIcon = (): string => extensionIconTemplate
+
+export const createDevScript = (packageManager: PackageManager): string => replaceTemplateVars(
+  devScriptTemplate,
+  {
+    PACKAGE_MANAGER: packageManager,
+  }
+)
 
 export const createPublishScript = (): string => publishScriptTemplate
 
