@@ -1,11 +1,11 @@
 import type { SandboxLaunchBridgeHost } from '@/automation/bridge'
 
 import { afterEach, expect } from 'vitest'
-import { fireEvent } from '@testing-library/dom'
+import { fireEvent } from '@testing-library/vue'
 import { nextTick } from 'vue'
-import { screen } from '@testing-library/dom'
+import { screen } from '@testing-library/vue'
 import { test, vi } from 'vitest'
-import { waitFor, within } from '@testing-library/dom'
+import { waitFor, within } from '@testing-library/vue'
 
 import { getSandboxLaunchBridge } from '@/automation/bridge'
 import { mountSandbox } from '@/app/createSandbox'
@@ -36,10 +36,12 @@ afterEach(async () => {
 })
 
 test('mounts sandbox with default onboarding screen', () => {
-  const sandboxRoot = mountSandboxApp()
+  mountSandboxApp()
 
-  expect(sandboxRoot.textContent).toContain('Подключите внешнее расширение')
-  expect(sandboxRoot.querySelector('[role="status"]')?.textContent).toBe('Виджеты: 2')
+  expect(screen.getByRole('heading', {
+    name: 'Подключите внешнее расширение',
+  })).toBeInstanceOf(HTMLHeadingElement)
+  expect(screen.getByRole('status').textContent).toBe('Виджеты: 2')
 })
 
 test('mounts sandbox into default app target', () => {
@@ -48,7 +50,9 @@ test('mounts sandbox into default app target', () => {
   document.body.append(root)
   app = mountSandbox()
 
-  expect(root.textContent).toContain('Подключите внешнее расширение')
+  expect(screen.getByRole('heading', {
+    name: 'Подключите внешнее расширение',
+  })).toBeInstanceOf(HTMLHeadingElement)
 })
 
 test('toggles sandbox sidebar state', async () => {
@@ -60,7 +64,7 @@ test('toggles sandbox sidebar state', async () => {
 
   expect(collapseButton.getAttribute('aria-expanded')).toBe('true')
 
-  fireEvent.click(collapseButton)
+  await fireEvent.click(collapseButton)
   await nextTick()
 
   const expandButton = screen.getByRole('button', {
@@ -69,7 +73,7 @@ test('toggles sandbox sidebar state', async () => {
 
   expect(expandButton.getAttribute('aria-expanded')).toBe('false')
 
-  fireEvent.click(expandButton)
+  await fireEvent.click(expandButton)
   await nextTick()
 
   expect(screen.getByRole('button', {
@@ -81,7 +85,7 @@ test('opens dev panel and validates launch config input', async () => {
   vi.spyOn(window, 'alert').mockImplementation(() => {})
   mountSandboxApp()
 
-  fireEvent.click(screen.getByRole('button', {
+  await fireEvent.click(screen.getByRole('button', {
     name: 'Открыть управление песочницей',
   }))
 
@@ -96,16 +100,12 @@ test('opens dev panel and validates launch config input', async () => {
 
   const manifestInput = within(dialog).getByLabelText('Манифест / URL расширения') as HTMLInputElement
 
-  fireEvent.input(manifestInput, {
-    target: {
-      value: 'http://extension.test/not-extension/id',
-    },
-  })
+  await fireEvent.update(manifestInput, 'http://extension.test/not-extension/id')
   await nextTick()
 
   expect(applyButton.disabled).toBe(false)
 
-  fireEvent.click(applyButton)
+  await fireEvent.click(applyButton)
 
   expect((await within(dialog).findByRole('alert')).textContent?.trim())
     .toBe('URL должен быть вида %extension-url%/extension/%extension-id%.')
@@ -146,7 +146,7 @@ test('applies context json through dev panel', async () => {
   vi.spyOn(window, 'alert').mockImplementation(() => {})
   mountSandboxApp()
 
-  fireEvent.click(screen.getByRole('button', {
+  await fireEvent.click(screen.getByRole('button', {
     name: 'Открыть управление песочницей',
   }))
 
@@ -162,11 +162,7 @@ test('applies context json through dev panel', async () => {
 
   context['order/card'].number = '999C'
 
-  fireEvent.input(contextEditor, {
-    target: {
-      value: JSON.stringify(context),
-    },
-  })
+  await fireEvent.update(contextEditor, JSON.stringify(context))
   await nextTick()
 
   const applyContextButton = within(dialog).getByRole('button', {
@@ -175,7 +171,7 @@ test('applies context json through dev panel', async () => {
 
   expect(applyContextButton.disabled).toBe(false)
 
-  fireEvent.click(applyContextButton)
+  await fireEvent.click(applyContextButton)
 
   await waitFor(() => {
     expect(contextEditor.value).toContain('"number": "999C"')

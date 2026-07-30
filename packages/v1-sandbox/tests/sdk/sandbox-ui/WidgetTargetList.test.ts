@@ -1,10 +1,13 @@
-import type { Component } from 'vue'
-import type { ComponentMountingOptions } from '@vue/test-utils'
+import type { HostedTreeRef } from '@/runtime'
+import type { SandboxMount } from '@/runtime'
 
+import { afterEach } from 'vitest'
+import { cleanup } from '@testing-library/vue'
 import { createI18n } from 'vue-i18n'
 import { expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { render, screen } from '@testing-library/vue'
 import { test, vi } from 'vitest'
+import { within } from '@testing-library/vue'
 
 import WidgetTargetList from '@/components/WidgetTargetList.vue'
 
@@ -12,8 +15,6 @@ import { createMounts } from '@/runtime'
 import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
 import messagesRuRu from '@/app/i18n/ru-RU.json'
-
-type MountOptions<T extends Component> = ComponentMountingOptions<T>
 
 const createTestI18n = () => createI18n({
   fallbackLocale: 'en-GB',
@@ -26,50 +27,55 @@ const createTestI18n = () => createI18n({
   },
 })
 
-const mountWithApp = <T extends Component>(
-  component: T,
-  options: MountOptions<T> = {}
-) => mount(component, {
-    ...options,
-    global: {
-      ...(options.global ?? {}),
-      plugins: [
-        createTestI18n(),
-        ...(options.global?.plugins ?? []),
-      ],
-    },
-  })
+const renderWidgetTargetList = (props: {
+  mounts: SandboxMount[];
+  setTree: (mount: SandboxMount, tree: HostedTreeRef | null) => void;
+}) => render(WidgetTargetList, {
+  props,
+  global: {
+    plugins: [createTestI18n()],
+  },
+})
+
+afterEach(() => {
+  cleanup()
+})
 
 test('widget target list renders every provided mount', () => {
-  const wrapper = mountWithApp(WidgetTargetList, {
-    props: {
-      mounts: createMounts({
-        extensionUrl: '',
-        fixture: 'order-basic',
-        manifestUrl: '',
-        mode: 'widget',
-        pageCode: 'returns',
-        targets: [
-          'order/card:common.before',
-          'order/card:common.after',
-        ],
-        widgetId: 'sandbox-widget',
-      }),
-      setTree: vi.fn(),
-    },
+  renderWidgetTargetList({
+    mounts: createMounts({
+      extensionUrl: '',
+      fixture: 'order-basic',
+      manifestUrl: '',
+      mode: 'widget',
+      pageCode: 'returns',
+      targets: [
+        'order/card:common.before',
+        'order/card:common.after',
+      ],
+      widgetId: 'sandbox-widget',
+    }),
+    setTree: vi.fn(),
+  })
+  const targetList = screen.getByRole('region', {
+    name: 'Места встраивания виджетов',
   })
 
-  expect(wrapper.get('[role="region"]').attributes('aria-label')).toBe('Места встраивания виджетов')
-  expect(wrapper.findAll('[role="region"][aria-label^="Место встраивания виджета:"]')).toHaveLength(2)
+  expect(within(targetList).getAllByRole('region', {
+    name: /^Место встраивания виджета:/u,
+  })).toHaveLength(2)
 })
 
 test('widget target list supports an empty mount collection', () => {
-  const wrapper = mountWithApp(WidgetTargetList, {
-    props: {
-      mounts: [],
-      setTree: vi.fn(),
-    },
+  renderWidgetTargetList({
+    mounts: [],
+    setTree: vi.fn(),
+  })
+  const targetList = screen.getByRole('region', {
+    name: 'Места встраивания виджетов',
   })
 
-  expect(wrapper.findAll('[role="region"][aria-label^="Место встраивания виджета:"]')).toHaveLength(0)
+  expect(within(targetList).queryAllByRole('region', {
+    name: /^Место встраивания виджета:/u,
+  })).toHaveLength(0)
 })

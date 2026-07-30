@@ -1,13 +1,15 @@
-import type { App as VueApp } from 'vue'
-
+import type SandboxApp from '@/app/App.vue'
 import type { SandboxExtensionSource } from '@/scenario/manifest'
 
-import { afterEach } from 'vitest'
+import type * as HostComponents from '@retailcrm/embed-ui-v1-components/host'
+
+import { afterEach, beforeAll } from 'vitest'
+import { cleanup } from '@testing-library/vue'
 import { createI18n } from 'vue-i18n'
 import { expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { fireEvent, render, screen } from '@testing-library/vue'
 import { test, vi } from 'vitest'
-import { waitFor } from '@testing-library/dom'
+import { waitFor, within } from '@testing-library/vue'
 
 import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
@@ -80,8 +82,8 @@ let controllerOptions: {
   getDescriptorUuid: () => string | undefined;
   getHttpCallBaseUrl: () => string | null;
 } | null = null
-let app: VueApp<Element> | null = null
-let root: HTMLElement | null = null
+let App: typeof SandboxApp
+let renderedApp: ReturnType<typeof render> | null = null
 let currentEndpoint: FakeEndpoint
 let workerReadyMode: WorkerReadyMode = 'ready'
 
@@ -89,219 +91,57 @@ vi.mock('@/scenario/manifest', () => ({
   resolveSandboxExtensionSource: resolveSandboxExtensionSourceMock,
 }))
 
-vi.mock('@retailcrm/embed-ui-v1-components/host', async () => {
-  const { defineComponent, h } = await import('vue')
-
-  return {
-    UiButton: defineComponent({
-      name: 'UiButton',
-      setup: (_props, { slots }) => () => h('button', slots.default?.()),
-    }),
-    UiModalSidebar: defineComponent({
-      name: 'UiModalSidebar',
-      props: {
-        opened: {
-          required: true,
-          type: Boolean,
-        },
-      },
-      setup: (_props, { slots }) => () => h('div', [
-        slots.title?.(),
-        slots.default?.(),
-      ]),
-    }),
-  }
-})
-
 vi.mock('@remote-ui/rpc', () => ({
   createEndpoint: createEndpointMock,
   fromWebWorker: fromWebWorkerMock,
 }))
 
-vi.mock('@/components/DevPanel.vue', async () => {
+vi.mock('@retailcrm/embed-ui-v1-components/host', async (importOriginal) => {
+  const actual = await importOriginal<typeof HostComponents>()
   const { defineComponent, h } = await import('vue')
 
   return {
-    default: defineComponent({
-      name: 'DevPanelStub',
+    ...actual,
+    UiModalSidebar: defineComponent({
+      inheritAttrs: false,
+      name: 'UiModalSidebar',
       props: {
-        applyLaunchConfig: {
-          required: true,
-          type: Function,
+        id: {
+          default: undefined,
+          type: String,
         },
-        applyContextJson: {
-          required: true,
-          type: Function,
-        },
-        applyingLaunchConfig: {
+        opened: {
           required: true,
           type: Boolean,
         },
-        contextJson: {
-          required: true,
-          type: String,
-        },
-        contextJsonChanged: {
-          required: true,
-          type: Boolean,
-        },
-        downloadContextJson: {
-          required: true,
-          type: Function,
-        },
-        fixture: {
-          required: true,
-          type: String,
-        },
-        formatContextJson: {
-          required: true,
-          type: Function,
-        },
-        mode: {
-          required: true,
-          type: String,
-        },
-        pageCode: {
-          required: true,
-          type: String,
-        },
-        resetContextJson: {
-          required: true,
-          type: Function,
-        },
-        setContextJson: {
-          required: true,
-          type: Function,
-        },
-        setFixture: {
-          required: true,
-          type: Function,
-        },
-        setManifestUrl: {
-          required: true,
-          type: Function,
-        },
-        setMode: {
-          required: true,
-          type: Function,
-        },
-        setPageCode: {
-          required: true,
-          type: Function,
-        },
-        setTargetSelected: {
-          required: true,
-          type: Function,
-        },
-        validationErrors: {
-          required: true,
-          type: Object,
-        },
       },
-      setup: props => () => h('button', {
-        'data-testid': 'apply-context-json',
-        onClick: () => props.applyContextJson(),
-      }),
+      setup: (props, { attrs, slots }) => () => props.opened
+        ? h('div', {
+          ...attrs,
+          id: props.id,
+          role: 'dialog',
+        }, [
+          slots.title?.(),
+          slots.default?.(),
+        ])
+        : null,
     }),
   }
 })
 
-vi.mock('@/components/ExtensionOnboarding.vue', async () => {
+vi.mock('@omnicajs/vue-remote/host', async () => {
   const { defineComponent, h } = await import('vue')
 
   return {
-    default: defineComponent({
-      name: 'ExtensionOnboardingStub',
-      setup: () => () => h('div'),
-    }),
-  }
-})
-
-vi.mock('@/components/NavigationRail.vue', async () => {
-  const { defineComponent, h } = await import('vue')
-
-  return {
-    default: defineComponent({
-      name: 'NavigationRailStub',
-      emits: ['openDevPanel'],
-      setup: () => () => h('div'),
-    }),
-  }
-})
-
-vi.mock('@/components/NavigationSidebar.vue', async () => {
-  const { defineComponent, h } = await import('vue')
-
-  return {
-    default: defineComponent({
-      name: 'NavigationSidebarStub',
-      setup: () => () => h('div'),
-    }),
-  }
-})
-
-vi.mock('@/components/PageMount.vue', async () => {
-  const { defineComponent, h, onMounted } = await import('vue')
-
-  return {
-    default: defineComponent({
-      name: 'PageMountStub',
-      props: {
-        mount: {
-          required: true,
-          type: Object,
-        },
-        setTree: {
-          required: true,
-          type: Function,
-        },
-      },
-      setup: props => {
-        onMounted(() => {
-          props.setTree(props.mount, {
-            forceUpdate: forceUpdateMock,
-          })
+    HostedTree: defineComponent({
+      name: 'HostedTree',
+      setup: (_props, { expose }) => {
+        expose({
+          forceUpdate: forceUpdateMock,
         })
 
         return () => h('div')
       },
-    }),
-  }
-})
-
-vi.mock('@/components/WidgetTargetList.vue', async () => {
-  const { defineComponent, h } = await import('vue')
-
-  return {
-    default: defineComponent({
-      name: 'WidgetTargetListStub',
-      setup: () => () => h('div'),
-    }),
-  }
-})
-
-vi.mock('@/components/WidgetRunSummary.vue', async () => {
-  const { defineComponent, h } = await import('vue')
-
-  return {
-    default: defineComponent({
-      name: 'WidgetRunSummaryStub',
-      props: {
-        fixture: {
-          required: true,
-          type: String,
-        },
-        targets: {
-          required: true,
-          type: Array,
-        },
-      },
-      setup: props => () => h('section', {
-        'aria-label': 'widget-run-summary',
-      }, [
-        props.fixture,
-        ...(props.targets as string[]),
-      ]),
     }),
   }
 })
@@ -357,8 +197,14 @@ vi.mock('@/runtime/mount', () => ({
 vi.mock('@/scenario/fixtures', () => ({
   orderSandboxFixtures: {
     'order-basic': {},
+    'order-readonly-error': {},
     'order-with-delivery': {},
   },
+  isOrderSandboxFixtureCode: (fixture: string) => [
+    'order-basic',
+    'order-readonly-error',
+    'order-with-delivery',
+  ].includes(fixture),
   getOrderSandboxFixture: (fixture: string) => ({
     contexts: fixture === 'order-with-delivery'
       ? {
@@ -456,36 +302,31 @@ const createTestI18n = () => createI18n({
   },
 })
 
-const mountAppWithRuntime = async (query: string, endpoint = createEndpoint()) => {
+beforeAll(async () => {
+  App = (await import('@/app/App.vue')).default
+})
+
+const renderAppWithRuntime = (query: string, endpoint = createEndpoint()) => {
   currentEndpoint = endpoint
   createEndpointMock.mockReturnValue(currentEndpoint)
   window.history.replaceState(null, '', query)
-  vi.resetModules()
 
-  const App = (await import('@/app/App.vue')).default
-
-  root = document.createElement('div')
-  document.body.append(root)
-  const wrapper = mount(App, {
-    attachTo: root,
+  renderedApp = render(App, {
     global: {
       plugins: [createTestI18n()],
     },
   })
-  app = wrapper.vm.$.appContext.app
 
   return {
     endpoint: currentEndpoint,
-    root,
-    wrapper,
+    ...renderedApp,
   }
 }
 
 afterEach(async () => {
-  app?.unmount()
-  app = null
-  root?.remove()
-  root = null
+  renderedApp?.unmount()
+  renderedApp = null
+  cleanup()
   document.head.querySelectorAll('[data-sandbox-extension-stylesheet]').forEach(node => node.remove())
   document.body.innerHTML = ''
   fakeWorkers.splice(0)
@@ -498,53 +339,99 @@ afterEach(async () => {
   window.sessionStorage.clear()
 })
 
-test('renders the sidebar toggle with an icon', async () => {
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
-  const toggle = wrapper.get('button[aria-label="Свернуть боковую панель"]')
+const openDevPanel = async (): Promise<HTMLElement> => {
+  const openButton = screen.getByRole('button', {
+    name: 'Открыть управление песочницей',
+  })
 
-  expect(toggle.find('svg').exists()).toBe(true)
-  expect(toggle.classes()).not.toContain('ui-v1-button')
-  expect(toggle.text()).not.toContain('<')
+  await fireEvent.click(openButton)
+  await waitFor(() => {
+    expect(openButton.getAttribute('aria-expanded')).toBe('true')
+  })
+
+  return screen.findByRole('dialog', {
+    name: 'Управление песочницей',
+  })
+}
+
+const selectOption = async (
+  container: HTMLElement,
+  label: string,
+  option: string
+) => {
+  const combobox = label === 'Места встраивания виджетов'
+    ? within(container).getByPlaceholderText('Выберите места встраивания')
+    : within(container).getByRole('combobox', { name: label })
+
+  await fireEvent.click(combobox)
+  await fireEvent.click(screen.getByRole('option', { name: option }))
+}
+
+const configurePageLaunch = async (
+  dialog: HTMLElement,
+  manifestUrl: string,
+  pageCode: string
+) => {
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Манифест / URL расширения',
+  }), manifestUrl)
+  await selectOption(dialog, 'Режим', 'Страница')
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Код страницы',
+  }), pageCode)
+}
+
+test('toggles the navigation sidebar', async () => {
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  const collapseButton = screen.getByRole('button', {
+    name: 'Свернуть боковую панель',
+  })
+
+  expect(collapseButton.getAttribute('aria-expanded')).toBe('true')
+
+  await fireEvent.click(collapseButton)
+
+  expect(screen.getByRole('button', {
+    name: 'Развернуть боковую панель',
+  }).getAttribute('aria-expanded')).toBe('false')
 })
 
 test('shows the applied fixture and targets in widget mode', async () => {
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
 
-  const { wrapper } = await mountAppWithRuntime(
+  await renderAppWithRuntime(
     '/?fixture=order-with-delivery'
     + '&manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo'
     + '&mode=widget'
     + '&targets=order%2Fcard%3Acommon.before%2Corder%2Fcard%3Acommon.after'
   )
-  const summary = wrapper.getComponent({ name: 'WidgetRunSummaryStub' })
-  const panel = wrapper.getComponent({ name: 'DevPanelStub' })
-  const setFixture = panel.props('setFixture') as (fixture: string) => void
-  const setTargetSelected = panel.props('setTargetSelected') as (
-    target: string,
-    selected: boolean
-  ) => void
+  const summary = await screen.findByRole('region', {
+    name: 'Текущий запуск',
+  })
+  const targets = within(summary).getByRole('list', {
+    name: 'Места встраивания',
+  })
 
-  expect(summary.props('fixture')).toBe('order-with-delivery')
-  expect(summary.props('targets')).toEqual([
-    'order/card:common.before',
-    'order/card:common.after',
-  ])
+  expect(within(summary).getByText('Заказ с доставкой')).toBeInstanceOf(HTMLElement)
+  expect(within(targets).getByText('order/card:common.before')).toBeInstanceOf(HTMLElement)
+  expect(within(targets).getByText('order/card:common.after')).toBeInstanceOf(HTMLElement)
 
-  setFixture('order-basic')
-  setTargetSelected('order/card:common.before', false)
-  await wrapper.vm.$nextTick()
+  const dialog = await openDevPanel()
 
-  expect(summary.props('fixture')).toBe('order-with-delivery')
-  expect(summary.props('targets')).toEqual([
-    'order/card:common.before',
-    'order/card:common.after',
-  ])
+  await selectOption(dialog, 'Фикстура', 'Базовый заказ')
+  await selectOption(dialog, 'Места встраивания виджетов', 'order/card:common.before')
+
+  expect(within(summary).getByText('Заказ с доставкой')).toBeInstanceOf(HTMLElement)
+  expect(within(targets).getByText('order/card:common.before')).toBeInstanceOf(HTMLElement)
+  expect(within(targets).getByText('order/card:common.after')).toBeInstanceOf(HTMLElement)
 })
 
 test('does not show the widget run summary on onboarding', async () => {
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
-  expect(wrapper.findComponent({ name: 'WidgetRunSummaryStub' }).exists()).toBe(false)
+  expect(screen.queryByRole('region', {
+    name: 'Текущий запуск',
+  })).toBeNull()
 })
 
 test('does not show the widget run summary in page mode', async () => {
@@ -553,13 +440,18 @@ test('does not show the widget run summary in page mode', async () => {
     targets: [],
   }))
 
-  const { wrapper } = await mountAppWithRuntime(
+  await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo'
     + '&mode=page'
     + '&pageCode=settings'
   )
 
-  expect(wrapper.findComponent({ name: 'WidgetRunSummaryStub' }).exists()).toBe(false)
+  expect(screen.queryByRole('region', {
+    name: 'Текущий запуск',
+  })).toBeNull()
+  expect(await screen.findByRole('region', {
+    name: 'Страница расширения: settings',
+  })).toBeInstanceOf(HTMLElement)
 })
 
 test('blocks page extension with unknown page code', async () => {
@@ -570,7 +462,7 @@ test('blocks page extension with unknown page code', async () => {
     targets: [],
   }))
 
-  const { endpoint } = await mountAppWithRuntime(
+  const { endpoint } = await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=returns'
   )
 
@@ -590,7 +482,7 @@ test('warns about page-only descriptor in explicit widget mode and continues mou
     targets: [],
   }))
 
-  const { endpoint } = await mountAppWithRuntime(
+  const { endpoint } = await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget&pageCode=orders-dashboard'
   )
 
@@ -608,7 +500,7 @@ test('shows runtime error when worker bootstrap reports failure', async () => {
   workerReadyMode = 'ready-error'
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
 
-  const { endpoint } = await mountAppWithRuntime(
+  const { endpoint } = await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
   )
 
@@ -627,7 +519,7 @@ test('shows runtime error and disposes worker when endpoint run fails', async ()
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
   currentEndpoint = createEndpoint()
   currentEndpoint.call.run.mockRejectedValueOnce(new Error('run failed'))
-  await mountAppWithRuntime(
+  await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget',
     currentEndpoint
   )
@@ -648,7 +540,7 @@ test('disposes context subscriptions before patching context and restarting work
     targets: [],
   }))
 
-  const { endpoint, wrapper } = await mountAppWithRuntime(
+  const { endpoint } = await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
   )
 
@@ -656,14 +548,27 @@ test('disposes context subscriptions before patching context and restarting work
     expect(endpoint.call.run).toHaveBeenCalledOnce()
   })
 
-  await wrapper.find('[data-testid="apply-context-json"]').trigger('click')
+  const dialog = await openDevPanel()
+  const contextEditor = within(dialog).getByRole('textbox', {
+    name: 'JSON контекста',
+  })
+
+  await fireEvent.update(contextEditor, JSON.stringify({
+    settings: {
+      'system.locale': 'en-GB',
+    },
+  }))
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }))
+
   await waitFor(() => {
     expect(endpoint.call.run).toHaveBeenCalledTimes(2)
   })
 
   expect(disposeContextSubscriptionsMock).toHaveBeenCalledOnce()
   expect(patchContextMock).toHaveBeenCalledWith('settings', {
-    'system.locale': 'ru-RU',
+    'system.locale': 'en-GB',
   })
   expect(disposeContextSubscriptionsMock.mock.invocationCallOrder[0])
     .toBeLessThan(endpoint.terminate.mock.invocationCallOrder[0] as number)
@@ -681,13 +586,12 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
     targets: [],
   }))
 
-  const { endpoint, wrapper } = await mountAppWithRuntime(
+  const { endpoint, unmount } = await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
   )
 
   await waitFor(() => {
     expect(endpoint.call.run).toHaveBeenCalledOnce()
-    expect(forceUpdateMock).toHaveBeenCalled()
   })
 
   const stylesheet = document.head.querySelector<HTMLLinkElement>(
@@ -724,15 +628,12 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
     pageCode: 'returns',
   })).toContain('pageCode=returns')
 
-  const updatesBeforeClick = forceUpdateMock.mock.calls.length
+  await fireEvent.click(screen.getByRole('region', {
+    name: 'Область расширения',
+  }))
 
-  await wrapper.get('[role="region"]').trigger('click')
-  await waitFor(() => {
-    expect(forceUpdateMock.mock.calls.length).toBeGreaterThan(updatesBeforeClick)
-  })
-
-  wrapper.unmount()
-  app = null
+  unmount()
+  renderedApp = null
 
   await waitFor(() => {
     expect(endpoint.call.release).toHaveBeenCalledOnce()
@@ -743,92 +644,71 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
 })
 
 test('updates dev panel fields and reports validation errors', async () => {
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
-  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
-  const callProp = (name: string, ...args: unknown[]) => {
-    const callback = panel.props(name) as (...values: unknown[]) => unknown
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
-    return callback(...args)
-  }
-
-  callProp('setManifestUrl', '')
-  callProp('applyLaunchConfig')
-  await wrapper.vm.$nextTick()
-
-  expect(panel.props('validationErrors')).toMatchObject({
-    manifestUrl: 'Укажите URL расширения.',
+  const dialog = await openDevPanel()
+  const applyButton = within(dialog).getByRole('button', {
+    name: 'Применить',
+  }) as HTMLButtonElement
+  const manifestInput = within(dialog).getByRole('textbox', {
+    name: 'Манифест / URL расширения',
   })
 
-  callProp('setManifestUrl', 'http://extension.test/extension/demo')
-  callProp('setFixture', 'order-with-delivery')
-  callProp('setMode', 'page')
-  await wrapper.vm.$nextTick()
+  expect(applyButton.disabled).toBe(true)
 
-  expect(panel.props('pageCode')).toBe('')
+  await fireEvent.update(manifestInput, 'http://extension.test/extension/demo')
+  await selectOption(dialog, 'Режим', 'Страница')
 
-  callProp('setPageCode', 'settings_2')
-  await wrapper.vm.$nextTick()
+  const pageCodeInput = within(dialog).getByRole('textbox', {
+    name: 'Код страницы',
+  }) as HTMLInputElement
 
-  expect(panel.props('pageCode')).toBe('settings_2')
-  expect(panel.props('validationErrors')).toMatchObject({
-    pageCode: 'Код страницы может содержать только латинские буквы (A–Z, a–z) и дефисы.',
+  expect(pageCodeInput.value).toBe('')
+
+  await fireEvent.update(pageCodeInput, 'settings_2')
+
+  expect(pageCodeInput.value).toBe('settings_2')
+  expect(within(dialog).getByRole('alert').textContent).toBe(
+    'Код страницы может содержать только латинские буквы (A–Z, a–z) и дефисы.'
+  )
+  expect(applyButton.disabled).toBe(true)
+
+  await fireEvent.update(pageCodeInput, 'orders-settings')
+
+  expect(within(dialog).queryByRole('alert')).toBeNull()
+  expect(applyButton.disabled).toBe(false)
+
+  const contextEditor = within(dialog).getByRole('textbox', {
+    name: 'JSON контекста',
+  })
+  const applyContextButton = within(dialog).getByRole('button', {
+    name: 'Применить контекст',
   })
 
-  callProp('setPageCode', 'orders-settings')
-  callProp('setTargetSelected', 'order/card:common.before', false)
-  callProp('setTargetSelected', 'order/card:common.after', true)
-  await wrapper.vm.$nextTick()
+  await fireEvent.update(contextEditor, '{')
+  await fireEvent.click(applyContextButton)
 
-  expect(panel.props('validationErrors')).toEqual({})
+  expect(within(dialog).getByRole('alert').textContent).toBe(
+    'Введите валидный JSON. Ошибка в строке 1, столбце 2.'
+  )
 
-  callProp('setMode', 'widget')
-  callProp('setTargetSelected', 'unknown/target', true)
-  callProp('applyLaunchConfig')
-  await wrapper.vm.$nextTick()
+  await fireEvent.update(contextEditor, '{}')
 
-  expect(panel.props('validationErrors')).toMatchObject({
-    targets: 'Неизвестное место встраивания «unknown/target».',
-  })
+  expect(within(dialog).queryByRole('alert')).toBeNull()
 
-  callProp('setTargetSelected', 'unknown/target', false)
+  await fireEvent.update(contextEditor, '{"settings":[]}')
+  await fireEvent.click(applyContextButton)
 
-  callProp('setContextJson', '{')
-  await callProp('applyContextJson')
-  await wrapper.vm.$nextTick()
+  expect(within(dialog).getByRole('alert').textContent).toBe(
+    'Контекст «settings» должен быть JSON-объектом.'
+  )
 
-  expect(panel.props('validationErrors')).toMatchObject({
-    contextJson: 'Введите валидный JSON. Ошибка в строке 1, столбце 2.',
-  })
+  await fireEvent.update(contextEditor, '{"unknown":{}}')
+  await fireEvent.click(applyContextButton)
 
-  callProp('setContextJson', '{}')
-  await wrapper.vm.$nextTick()
-
-  expect(panel.props('validationErrors')).toEqual({})
-
-  callProp('setContextJson', '{"settings":[]}')
-  await callProp('applyContextJson')
-  await wrapper.vm.$nextTick()
-
-  expect(panel.props('validationErrors')).toMatchObject({
-    contextJson: 'Контекст «settings» должен быть JSON-объектом.',
-  })
-
-  callProp('setContextJson', '{"unknown":{}}')
-  await callProp('applyContextJson')
-  await wrapper.vm.$nextTick()
-
-  expect(panel.props('validationErrors')).toMatchObject({
-    contextJson: 'Неизвестный контекст «unknown».',
-  })
-
-  await wrapper.get('[role="region"]').trigger('click')
-  await wrapper.get('button[aria-label="Свернуть боковую панель"]').trigger('click')
-
-  expect(wrapper.get('button[aria-label="Развернуть боковую панель"]')).toBeDefined()
-
-  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
-  wrapper.findComponent({ name: 'UiModalSidebar' }).vm.$emit('update:opened', false)
-  await wrapper.vm.$nextTick()
+  expect(within(dialog).getByRole('alert').textContent).toBe(
+    'Неизвестный контекст «unknown».'
+  )
 })
 
 test('formats, resets and downloads context json without applying it', async () => {
@@ -838,49 +718,55 @@ test('formats, resets and downloads context json without applying it', async () 
   const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
     clickedAnchors.push(this)
   })
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
-  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
-  const callProp = (name: string, ...args: unknown[]) => {
-    const callback = panel.props(name) as (...values: unknown[]) => unknown
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
-    return callback(...args)
-  }
+  const dialog = await openDevPanel()
+  const contextEditor = within(dialog).getByRole('textbox', {
+    name: 'JSON контекста',
+  }) as HTMLTextAreaElement
 
-  callProp('setContextJson', '{')
-  callProp('formatContextJson')
-  await wrapper.vm.$nextTick()
+  await fireEvent.update(contextEditor, '{')
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Форматировать',
+  }))
 
-  expect(panel.props('contextJson')).toBe('{')
-  expect(panel.props('validationErrors')).toMatchObject({
-    contextJson: 'Введите валидный JSON. Ошибка в строке 1, столбце 2.',
-  })
+  expect(contextEditor.value).toBe('{')
+  expect(within(dialog).getByRole('alert').textContent).toBe(
+    'Введите валидный JSON. Ошибка в строке 1, столбце 2.'
+  )
 
-  callProp('setContextJson', '{"settings":{"system.locale":"en-GB"}}')
-  callProp('formatContextJson')
-  await wrapper.vm.$nextTick()
+  await fireEvent.update(contextEditor, '{"settings":{"system.locale":"en-GB"}}')
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Форматировать',
+  }))
 
-  expect(panel.props('contextJson')).toBe(`{
+  expect(contextEditor.value).toBe(`{
   "settings": {
     "system.locale": "en-GB"
   }
 }`)
   expect(patchContextMock).not.toHaveBeenCalled()
 
-  callProp('setFixture', 'order-with-delivery')
-  callProp('setContextJson', '{}')
-  callProp('resetContextJson')
-  await wrapper.vm.$nextTick()
+  await selectOption(dialog, 'Фикстура', 'Заказ с доставкой')
+  await fireEvent.update(contextEditor, '{}')
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Сбросить',
+  }))
 
-  const resetContext = JSON.parse(panel.props('contextJson') as string) as {
+  const resetContext = JSON.parse(contextEditor.value) as {
     'order/card': Record<string, unknown>;
   }
 
   expect(resetContext['order/card']['delivery.address'])
     .toBe('Москва, ул. Ленина, 10')
-  expect(panel.props('contextJsonChanged')).toBe(true)
+  expect((within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }) as HTMLButtonElement).disabled).toBe(false)
   expect(patchContextMock).not.toHaveBeenCalled()
 
-  callProp('downloadContextJson')
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Скачать JSON',
+  }))
 
   expect(createObjectUrlSpy).toHaveBeenCalledOnce()
   const downloadedBlob = createObjectUrlSpy.mock.calls[0]?.[0]
@@ -894,7 +780,7 @@ test('formats, resets and downloads context json without applying it', async () 
     reader.readAsText(downloadedBlob as Blob)
   })
 
-  expect(downloadedText).toBe(panel.props('contextJson'))
+  expect(downloadedText).toBe(contextEditor.value)
   expect(anchorClickSpy).toHaveBeenCalledOnce()
   expect(clickedAnchors[0]?.download).toBe('v1-sandbox-order-with-delivery-context.json')
   expect(clickedAnchors[0]?.href).toBe('blob:context-json')
@@ -907,20 +793,18 @@ test('keeps dev panel open and shows available pages when page code is missing',
     targets: [],
   }))
 
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
-  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
-  const callProp = (name: string, ...args: unknown[]) => {
-    const callback = panel.props(name) as (...values: unknown[]) => unknown
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
-    return callback(...args)
-  }
+  const dialog = await openDevPanel()
 
-  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
-  callProp('setManifestUrl', 'http://extension.test/extension/demo')
-  callProp('setMode', 'page')
-  callProp('setPageCode', 'returns')
-  await callProp('applyLaunchConfig')
-  await wrapper.vm.$nextTick()
+  await configurePageLaunch(
+    dialog,
+    'http://extension.test/extension/demo',
+    'returns'
+  )
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Применить',
+  }))
 
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledOnce()
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
@@ -928,27 +812,38 @@ test('keeps dev panel open and shows available pages when page code is missing',
     mode: 'page',
     pageCode: 'returns',
   }))
-  expect(panel.props('validationErrors')).toMatchObject({
-    pageCode: 'В расширении нет страницы «returns». Доступные страницы: settings.',
-  })
-  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(true)
+  expect(await within(dialog).findByRole('alert')).toHaveProperty(
+    'textContent',
+    'В расширении нет страницы «returns». Доступные страницы: settings.'
+  )
+  expect(screen.getByRole('dialog', {
+    name: 'Управление песочницей',
+  })).toBeInstanceOf(HTMLElement)
   expect(fakeWorkers).toHaveLength(0)
   expect(window.location.search).toBe('?manifestUrl=&mode=widget')
 
-  callProp('setPageCode', 'settings')
-  await wrapper.vm.$nextTick()
-  expect(panel.props('validationErrors')).toEqual({})
+  const pageCodeInput = within(dialog).getByRole('textbox', {
+    name: 'Код страницы',
+  })
 
-  callProp('setPageCode', 'returns')
-  await callProp('applyLaunchConfig')
-  callProp('setManifestUrl', 'http://extension.test/extension/changed')
-  await wrapper.vm.$nextTick()
-  expect(panel.props('validationErrors')).toEqual({})
+  await fireEvent.update(pageCodeInput, 'settings')
+  expect(within(dialog).queryByRole('alert')).toBeNull()
 
-  await callProp('applyLaunchConfig')
-  callProp('setMode', 'widget')
-  await wrapper.vm.$nextTick()
-  expect(panel.props('validationErrors')).toEqual({})
+  await fireEvent.update(pageCodeInput, 'returns')
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Применить',
+  }))
+  await within(dialog).findByRole('alert')
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Манифест / URL расширения',
+  }), 'http://extension.test/extension/changed')
+
+  expect(within(dialog).queryByRole('alert')).toBeNull()
+
+  await fireEvent.click(within(dialog).getByRole('combobox', { name: 'Режим' }))
+  await fireEvent.click(screen.getByRole('option', { name: 'Виджеты' }))
+
+  expect(within(dialog).queryByRole('alert')).toBeNull()
 })
 
 test('shows an empty available pages marker when extension has no pages', async () => {
@@ -957,25 +852,26 @@ test('shows an empty available pages marker when extension has no pages', async 
     targets: [],
   }))
 
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
-  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
-  const callProp = (name: string, ...args: unknown[]) => {
-    const callback = panel.props(name) as (...values: unknown[]) => unknown
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
-    return callback(...args)
-  }
+  const dialog = await openDevPanel()
 
-  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
-  callProp('setManifestUrl', 'http://extension.test/extension/demo')
-  callProp('setMode', 'page')
-  callProp('setPageCode', 'returns')
-  await callProp('applyLaunchConfig')
-  await wrapper.vm.$nextTick()
+  await configurePageLaunch(
+    dialog,
+    'http://extension.test/extension/demo',
+    'returns'
+  )
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Применить',
+  }))
 
-  expect(panel.props('validationErrors')).toMatchObject({
-    pageCode: 'В расширении нет страницы «returns». Доступные страницы: —.',
-  })
-  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(true)
+  expect(await within(dialog).findByRole('alert')).toHaveProperty(
+    'textContent',
+    'В расширении нет страницы «returns». Доступные страницы: —.'
+  )
+  expect(screen.getByRole('dialog', {
+    name: 'Управление песочницей',
+  })).toBeInstanceOf(HTMLElement)
 })
 
 test('closes dev panel after successful page preflight without starting worker', async () => {
@@ -985,23 +881,24 @@ test('closes dev panel after successful page preflight without starting worker',
     targets: [],
   }))
 
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
-  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
-  const callProp = (name: string, ...args: unknown[]) => {
-    const callback = panel.props(name) as (...values: unknown[]) => unknown
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
-    return callback(...args)
-  }
+  const dialog = await openDevPanel()
 
-  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
-  callProp('setManifestUrl', 'http://extension.test/extension/demo')
-  callProp('setMode', 'page')
-  callProp('setPageCode', 'returns')
-  await callProp('applyLaunchConfig')
-  await wrapper.vm.$nextTick()
+  await configurePageLaunch(
+    dialog,
+    'http://extension.test/extension/demo',
+    'returns'
+  )
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Применить',
+  }))
 
-  expect(panel.props('validationErrors')).toEqual({})
-  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(false)
+  await waitFor(() => {
+    expect(screen.queryByRole('dialog', {
+      name: 'Управление песочницей',
+    })).toBeNull()
+  })
   expect(fakeWorkers).toHaveLength(0)
 })
 
@@ -1014,35 +911,36 @@ test('keeps dev panel open on page preflight failure and ignores repeated apply'
 
   resolveSandboxExtensionSourceMock.mockReturnValue(pendingSource)
 
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
-  const panel = wrapper.findComponent({ name: 'DevPanelStub' })
-  const callProp = (name: string, ...args: unknown[]) => {
-    const callback = panel.props(name) as (...values: unknown[]) => unknown
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
-    return callback(...args)
-  }
+  const dialog = await openDevPanel()
 
-  wrapper.findComponent({ name: 'NavigationRailStub' }).vm.$emit('openDevPanel')
-  callProp('setManifestUrl', 'http://extension.test/extension/demo')
-  callProp('setMode', 'page')
-  callProp('setPageCode', 'returns')
+  await configurePageLaunch(
+    dialog,
+    'http://extension.test/extension/demo',
+    'returns'
+  )
+  const applyButton = within(dialog).getByRole('button', {
+    name: 'Применить',
+  }) as HTMLButtonElement
 
-  const firstApply = callProp('applyLaunchConfig') as Promise<void>
-  const secondApply = callProp('applyLaunchConfig') as Promise<void>
+  await fireEvent.click(applyButton)
+  await fireEvent.click(applyButton)
 
-  await wrapper.vm.$nextTick()
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledOnce()
-  expect(panel.props('applyingLaunchConfig')).toBe(true)
+  expect(applyButton.disabled).toBe(true)
 
   rejectSource(new Error('manifest unavailable'))
-  await Promise.all([firstApply, secondApply])
-  await wrapper.vm.$nextTick()
 
-  expect(alertSpy).toHaveBeenCalledWith(
-    'Не удалось запустить расширение\n\nmanifest unavailable'
-  )
-  expect(panel.props('applyingLaunchConfig')).toBe(false)
-  expect(wrapper.findComponent({ name: 'UiModalSidebar' }).props('opened')).toBe(true)
+  await waitFor(() => {
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Не удалось запустить расширение\n\nmanifest unavailable'
+    )
+    expect(applyButton.disabled).toBe(false)
+  })
+  expect(screen.getByRole('dialog', {
+    name: 'Управление песочницей',
+  })).toBeInstanceOf(HTMLElement)
   expect(fakeWorkers).toHaveLength(0)
 })
 
@@ -1051,7 +949,7 @@ test('reports worker error event and non-error manifest rejection', async () => 
 
   workerReadyMode = 'worker-error'
   resolveSandboxExtensionSourceMock.mockResolvedValueOnce(createExtensionSource())
-  await mountAppWithRuntime(
+  const firstRender = await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
   )
 
@@ -1061,10 +959,11 @@ test('reports worker error event and non-error manifest rejection', async () => 
     )
   })
 
-  app?.unmount()
-  app = null
+  firstRender.unmount()
+  renderedApp = null
+  cleanup()
   resolveSandboxExtensionSourceMock.mockRejectedValueOnce('manifest unavailable')
-  await mountAppWithRuntime(
+  await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
   )
 
@@ -1082,7 +981,7 @@ test('continues runtime disposal when release fails', async () => {
   endpoint.call.release.mockRejectedValueOnce(new Error('release failed'))
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
 
-  const { wrapper } = await mountAppWithRuntime(
+  const { unmount } = await renderAppWithRuntime(
     '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget',
     endpoint
   )
@@ -1091,8 +990,8 @@ test('continues runtime disposal when release fails', async () => {
     expect(endpoint.call.run).toHaveBeenCalledTimes(2)
   })
 
-  wrapper.unmount()
-  app = null
+  unmount()
+  renderedApp = null
 
   await waitFor(() => {
     expect(warnSpy).toHaveBeenCalledWith(
@@ -1106,10 +1005,10 @@ test('continues runtime disposal when release fails', async () => {
 test('ignores malformed stored launch notice', async () => {
   window.sessionStorage.setItem('v1-sandbox:launch-notice', '{')
 
-  const { wrapper } = await mountAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
   expect(window.sessionStorage.getItem('v1-sandbox:launch-notice')).toBeNull()
-  expect(wrapper.text()).not.toContain('Режим страницы выбран автоматически')
+  expect(screen.queryByText('Режим страницы выбран автоматически')).toBeNull()
 })
 
 test('shows stored inferred page mode notice', async () => {
@@ -1120,7 +1019,7 @@ test('shows stored inferred page mode notice', async () => {
     type: 'inferred-page-mode',
   }))
 
-  await mountAppWithRuntime('/?manifestUrl=&mode=page&pageCode=settings')
+  await renderAppWithRuntime('/?manifestUrl=&mode=page&pageCode=settings')
 
   expect(alertSpy).toHaveBeenCalledWith(
     'Режим страницы выбран автоматически\n\nВ ссылке не был указан режим. Песочница нашла страницу «settings» в расширении и переключила запуск в режим «Страница».'
