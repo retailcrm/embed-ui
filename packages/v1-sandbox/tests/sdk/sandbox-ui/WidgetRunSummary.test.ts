@@ -1,19 +1,18 @@
-import type { Component } from 'vue'
-import type { ComponentMountingOptions } from '@vue/test-utils'
+import type { SandboxOrderTarget } from '@/scenario'
 
+import { afterEach } from 'vitest'
+import { cleanup } from '@testing-library/vue'
 import { createI18n } from 'vue-i18n'
 import { expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { render, screen } from '@testing-library/vue'
 import { test } from 'vitest'
-import { within } from '@testing-library/dom'
+import { within } from '@testing-library/vue'
 
 import WidgetRunSummary from '@/components/WidgetRunSummary.vue'
 
 import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
 import messagesRuRu from '@/app/i18n/ru-RU.json'
-
-type MountOptions<T extends Component> = ComponentMountingOptions<T>
 
 const createTestI18n = (locale = 'ru-RU') => createI18n({
   fallbackLocale: 'en-GB',
@@ -26,37 +25,28 @@ const createTestI18n = (locale = 'ru-RU') => createI18n({
   },
 })
 
-const mountWithApp = <T extends Component>(
-  component: T,
-  options: MountOptions<T> = {}
-) => mount(component, {
-    ...options,
-    global: {
-      ...(options.global ?? {}),
-      plugins: [
-        createTestI18n(),
-        ...(options.global?.plugins ?? []),
-      ],
-    },
-  })
+afterEach(() => {
+  cleanup()
+})
 
-const getSummary = (element: HTMLElement, name: string): HTMLElement => {
-  const heading = within(element).getByRole('heading', { name })
-  const summary = heading.closest<HTMLElement>('[role="region"]')
+const getSummary = (name: string): HTMLElement => screen.getByRole('region', { name })
 
-  expect(summary).not.toBeNull()
-
-  return summary as HTMLElement
-}
+const renderWidgetRunSummary = (
+  props: { fixture: string; targets: SandboxOrderTarget[] },
+  locale = 'ru-RU'
+) => render(WidgetRunSummary, {
+  props,
+  global: {
+    plugins: [createTestI18n(locale)],
+  },
+})
 
 test('shows one widget target and the active fixture', () => {
-  const wrapper = mountWithApp(WidgetRunSummary, {
-    props: {
-      fixture: 'order-basic',
-      targets: ['order/card:common.after'],
-    },
+  renderWidgetRunSummary({
+    fixture: 'order-basic',
+    targets: ['order/card:common.after'],
   })
-  const summary = getSummary(wrapper.element, 'Текущий запуск')
+  const summary = getSummary('Текущий запуск')
   const targetList = within(summary).getByRole('list', {
     name: 'Места встраивания',
   })
@@ -71,16 +61,14 @@ test('shows one widget target and the active fixture', () => {
 })
 
 test('shows all selected targets and their count', () => {
-  const wrapper = mountWithApp(WidgetRunSummary, {
-    props: {
-      fixture: 'order-with-delivery',
-      targets: [
-        'order/card:common.before',
-        'order/card:common.after',
-      ],
-    },
+  renderWidgetRunSummary({
+    fixture: 'order-with-delivery',
+    targets: [
+      'order/card:common.before',
+      'order/card:common.after',
+    ],
   })
-  const summary = getSummary(wrapper.element, 'Текущий запуск')
+  const summary = getSummary('Текущий запуск')
   const targetList = within(summary).getByRole('list', {
     name: 'Места встраивания',
   })
@@ -96,13 +84,11 @@ test('shows all selected targets and their count', () => {
 })
 
 test('shows the readonly fixture presentation', () => {
-  const wrapper = mountWithApp(WidgetRunSummary, {
-    props: {
-      fixture: 'order-readonly-error',
-      targets: ['order/card:common.after'],
-    },
+  renderWidgetRunSummary({
+    fixture: 'order-readonly-error',
+    targets: ['order/card:common.after'],
   })
-  const summary = getSummary(wrapper.element, 'Текущий запуск')
+  const summary = getSummary('Текущий запуск')
 
   expect(within(summary).getByText(
     'Отменённый заказ только для чтения'
@@ -113,33 +99,29 @@ test('shows the readonly fixture presentation', () => {
 })
 
 test('localizes fixture presentation in English and Spanish', () => {
-  const englishWrapper = mount(WidgetRunSummary, {
-    props: {
-      fixture: 'order-with-delivery',
-      targets: ['order/card:common.after'],
-    },
-    global: {
-      plugins: [createTestI18n('en-GB')],
-    },
-  })
-  const spanishWrapper = mount(WidgetRunSummary, {
-    props: {
-      fixture: 'order-readonly-error',
-      targets: ['order/card:common.after'],
-    },
-    global: {
-      plugins: [createTestI18n('es-ES')],
-    },
-  })
+  const { unmount } = renderWidgetRunSummary({
+    fixture: 'order-with-delivery',
+    targets: ['order/card:common.after'],
+  }, 'en-GB')
+  const englishSummary = getSummary('Current run')
 
-  expect(getSummary(englishWrapper.element, 'Current run').textContent)
-    .toContain('Order with delivery')
-  expect(within(englishWrapper.element).getByText(
+  expect(within(englishSummary).getByText('Order with delivery')).toBeInstanceOf(HTMLElement)
+  expect(within(englishSummary).getByText(
     'An order with an address and amount for testing delivery and payment widgets.'
   )).toBeInstanceOf(HTMLElement)
-  expect(getSummary(spanishWrapper.element, 'Ejecución actual').textContent)
-    .toContain('Pedido cancelado de solo lectura')
-  expect(within(spanishWrapper.element).getByText(
+
+  unmount()
+
+  renderWidgetRunSummary({
+    fixture: 'order-readonly-error',
+    targets: ['order/card:common.after'],
+  }, 'es-ES')
+  const spanishSummary = getSummary('Ejecución actual')
+
+  expect(within(spanishSummary).getByText(
+    'Pedido cancelado de solo lectura'
+  )).toBeInstanceOf(HTMLElement)
+  expect(within(spanishSummary).getByText(
     'Un pedido cancelado con configuración de solo lectura para comprobar estados deshabilitados.'
   )).toBeInstanceOf(HTMLElement)
 })

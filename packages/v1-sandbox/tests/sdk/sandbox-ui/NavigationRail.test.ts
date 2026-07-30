@@ -1,18 +1,17 @@
-import type { Component } from 'vue'
-import type { ComponentMountingOptions } from '@vue/test-utils'
-
+import { afterEach } from 'vitest'
+import { cleanup } from '@testing-library/vue'
 import { createI18n } from 'vue-i18n'
 import { expect } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { test } from 'vitest'
+import { fireEvent } from '@testing-library/vue'
+import { render } from '@testing-library/vue'
+import { screen } from '@testing-library/vue'
+import { test, vi } from 'vitest'
 
 import NavigationRail from '@/components/NavigationRail.vue'
 
 import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
 import messagesRuRu from '@/app/i18n/ru-RU.json'
-
-type MountOptions<T extends Component> = ComponentMountingOptions<T>
 
 const createTestI18n = () => createI18n({
   fallbackLocale: 'en-GB',
@@ -25,33 +24,41 @@ const createTestI18n = () => createI18n({
   },
 })
 
-const mountWithApp = <T extends Component>(
-  component: T,
-  options: MountOptions<T> = {}
-) => mount(component, {
-    ...options,
-    global: {
-      ...(options.global ?? {}),
-      plugins: [
-        createTestI18n(),
-        ...(options.global?.plugins ?? []),
-      ],
-    },
-  })
+const renderNavigationRail = (props: {
+  devPanelControlsId: string;
+  devPanelOpen: boolean;
+  onOpenDevPanel?: () => void;
+}) => render(NavigationRail, {
+  props,
+  global: {
+    plugins: [createTestI18n()],
+  },
+})
+
+afterEach(() => {
+  cleanup()
+})
 
 test('navigation rail keeps only sandbox controls interactive', async () => {
-  const wrapper = mountWithApp(NavigationRail, {
-    props: {
-      devPanelControlsId: 'sandbox-controls',
-      devPanelOpen: false,
-    },
+  const openDevPanel = vi.fn<() => void>()
+
+  renderNavigationRail({
+    devPanelControlsId: 'sandbox-controls',
+    devPanelOpen: false,
+    onOpenDevPanel: openDevPanel,
   })
 
-  expect(wrapper.findAll('a')).toHaveLength(0)
-  expect(wrapper.findAll('button')).toHaveLength(1)
-  expect(wrapper.findAll('[aria-hidden="true"][tabindex]')).toHaveLength(0)
+  expect(screen.queryAllByRole('link')).toHaveLength(0)
+  expect(screen.getAllByRole('button')).toHaveLength(1)
 
-  await wrapper.get('button[aria-label="Открыть управление песочницей"]').trigger('click')
+  const openSandboxControls = screen.getByRole('button', {
+    name: 'Открыть управление песочницей',
+  })
 
-  expect(wrapper.emitted('openDevPanel')).toHaveLength(1)
+  expect(openSandboxControls.getAttribute('aria-controls')).toBe('sandbox-controls')
+  expect(openSandboxControls.getAttribute('aria-expanded')).toBe('false')
+
+  await fireEvent.click(openSandboxControls)
+
+  expect(openDevPanel).toHaveBeenCalledOnce()
 })

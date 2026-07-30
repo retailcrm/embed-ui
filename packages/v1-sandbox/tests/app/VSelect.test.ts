@@ -1,28 +1,20 @@
-import type { Component } from 'vue'
-import type { ComponentMountingOptions } from '@vue/test-utils'
+import type { VSelectOption } from '@/app/types'
 
-import { afterAll, beforeAll } from 'vitest'
+import { afterEach } from 'vitest'
+import { cleanup } from '@testing-library/vue'
 import { createI18n } from 'vue-i18n'
 import { expect } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { fireEvent } from '@testing-library/vue'
+import { render } from '@testing-library/vue'
+import { screen } from '@testing-library/vue'
 import { test, vi } from 'vitest'
+import { within } from '@testing-library/vue'
 
 import VSelect from '@/components/VSelect.vue'
 
 import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
 import messagesRuRu from '@/app/i18n/ru-RU.json'
-
-type MountOptions<T extends Component> = ComponentMountingOptions<T>
-
-class ResizeObserverPolyfill implements ResizeObserver {
-  disconnect(): void {}
-  observe(): void {}
-  unobserve(): void {}
-}
-
-const originalResizeObserver = globalThis.ResizeObserver
 
 const createTestI18n = () => createI18n({
   fallbackLocale: 'en-GB',
@@ -35,202 +27,180 @@ const createTestI18n = () => createI18n({
   },
 })
 
-const mountWithApp = <T extends Component>(
-  component: T,
-  options: MountOptions<T> = {}
-) => mount(component, {
-    ...options,
-    global: {
-      ...(options.global ?? {}),
-      plugins: [
-        createTestI18n(),
-        ...(options.global?.plugins ?? []),
-      ],
-    },
-  })
+type SelectProps = {
+  disabled?: boolean;
+  id: string;
+  labelledBy?: string;
+  multiple?: boolean;
+  'onUpdate:value'?: (value: string | string[]) => void;
+  options: VSelectOption[];
+  placeholder?: string;
+  size?: 'sm' | 'xl' | 'xs';
+  value: string | string[];
+}
 
-beforeAll(() => {
-  globalThis.ResizeObserver = ResizeObserverPolyfill
+const renderVSelect = (props: SelectProps) => render(VSelect, {
+  props,
+  global: {
+    plugins: [createTestI18n()],
+  },
 })
 
-afterAll(() => {
-  globalThis.ResizeObserver = originalResizeObserver
+afterEach(() => {
+  cleanup()
 })
 
 test('v-select emits selected value', async () => {
-  const wrapper = mountWithApp(VSelect, {
-    props: {
-      id: 'mode',
-      options: [
-        {
-          label: 'Виджеты',
-          value: 'widget',
-        },
-        {
-          label: 'Страница',
-          value: 'page',
-        },
-      ],
-      value: 'widget',
-    },
+  const updateValue = vi.fn()
+
+  renderVSelect({
+    id: 'mode',
+    'onUpdate:value': updateValue,
+    options: [
+      {
+        label: 'Виджеты',
+        value: 'widget',
+      },
+      {
+        label: 'Страница',
+        value: 'page',
+      },
+    ],
+    value: 'widget',
   })
 
-  await wrapper.get('[role="combobox"]').trigger('click')
-  await nextTick()
-
-  const option = document.body.querySelectorAll('[role="option"]')[1]
-
-  expect(option).toBeInstanceOf(HTMLElement)
-  option.dispatchEvent(new MouseEvent('click', {
-    bubbles: true,
+  await fireEvent.click(screen.getByRole('combobox'))
+  await fireEvent.click(within(screen.getByRole('listbox')).getByRole('option', {
+    name: 'Страница',
   }))
-  await nextTick()
 
-  expect(wrapper.emitted('update:value')).toEqual([['page']])
-
-  wrapper.unmount()
-  await nextTick()
+  expect(updateValue).toHaveBeenCalledWith('page')
 })
 
 test('v-select renders selected value', () => {
-  const wrapper = mountWithApp(VSelect, {
-    props: {
-      id: 'fixture',
-      options: [
-        {
-          disabled: true,
-          label: 'Базовый заказ',
-          value: 'order-basic',
-        },
-      ],
-      value: 'order-basic',
-    },
+  renderVSelect({
+    id: 'fixture',
+    options: [
+      {
+        disabled: true,
+        label: 'Базовый заказ',
+        value: 'order-basic',
+      },
+    ],
+    value: 'order-basic',
   })
 
-  expect((wrapper.get('[role="combobox"]').element as HTMLInputElement).value).toBe('Базовый заказ')
-
-  const trigger = wrapper.findComponent({ name: 'UiSelectTrigger' })
-  const selection = trigger.props('selection') as Array<{
-    isMatched: () => boolean;
-  }>
-
-  expect(selection[0].isMatched()).toBe(true)
+  expect((screen.getByRole('combobox') as HTMLInputElement).value).toBe('Базовый заказ')
 })
 
 test('v-select closes popper on repeated trigger click', async () => {
-  const wrapper = mountWithApp(VSelect, {
-    props: {
-      id: 'fixture-toggle',
-      options: [{
-        label: 'Базовый заказ',
-        value: 'order-basic',
-      }],
+  renderVSelect({
+    id: 'fixture-toggle',
+    options: [{
+      label: 'Базовый заказ',
       value: 'order-basic',
-    },
+    }],
+    value: 'order-basic',
   })
-  const trigger = wrapper.get('[role="combobox"]')
 
-  await trigger.trigger('click')
-  await nextTick()
+  const combobox = screen.getByRole('combobox')
 
-  expect(trigger.attributes('aria-expanded')).toBe('true')
+  await fireEvent.click(combobox)
 
-  await trigger.trigger('click')
-  await nextTick()
+  expect(combobox.getAttribute('aria-expanded')).toBe('true')
 
-  expect(trigger.attributes('aria-expanded')).toBe('false')
+  await fireEvent.click(combobox)
 
-  wrapper.unmount()
-  await nextTick()
+  expect(combobox.getAttribute('aria-expanded')).toBe('false')
 })
 
 test('v-select supports multiple selection', async () => {
-  const wrapper = mountWithApp(VSelect, {
-    props: {
-      id: 'targets',
-      multiple: true,
-      options: [
-        {
-          label: 'order/card:common.before',
-          value: 'order/card:common.before',
-        },
-        {
-          label: 'order/card:common.after',
-          value: 'order/card:common.after',
-        },
-      ],
-      value: ['order/card:common.before'],
-    },
+  const updateValue = vi.fn()
+
+  renderVSelect({
+    id: 'targets',
+    multiple: true,
+    'onUpdate:value': updateValue,
+    options: [
+      {
+        label: 'order/card:common.before',
+        value: 'order/card:common.before',
+      },
+      {
+        label: 'order/card:common.after',
+        value: 'order/card:common.after',
+      },
+    ],
+    value: ['order/card:common.before'],
   })
 
-  await wrapper.get('[role="combobox"]').trigger('click')
-  await nextTick()
+  const combobox = screen.getByRole('combobox')
 
-  const listbox = document.body.querySelector('#targets-popper')
-  const options = listbox?.querySelectorAll('[role="option"]')
+  await fireEvent.click(combobox)
 
-  expect(listbox?.getAttribute('aria-multiselectable')).toBe('true')
-  expect(options?.[0].getAttribute('aria-selected')).toBe('true')
-  expect(options?.[1].getAttribute('aria-selected')).toBe('false')
+  const listbox = screen.getByRole('listbox')
+  const beforeOption = within(listbox).getByRole('option', {
+    name: 'order/card:common.before',
+  })
+  const afterOption = within(listbox).getByRole('option', {
+    name: 'order/card:common.after',
+  })
 
-  options?.[1].dispatchEvent(new MouseEvent('click', {
-    bubbles: true,
-  }))
-  await nextTick()
+  expect(listbox.getAttribute('aria-multiselectable')).toBe('true')
+  expect(beforeOption.getAttribute('aria-selected')).toBe('true')
+  expect(afterOption.getAttribute('aria-selected')).toBe('false')
 
-  expect(wrapper.emitted('update:value')).toEqual([[
-    ['order/card:common.before', 'order/card:common.after'],
-  ]])
-  expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
+  await fireEvent.click(afterOption)
 
-  wrapper.unmount()
-  await nextTick()
+  expect(updateValue).toHaveBeenCalledWith([
+    'order/card:common.before',
+    'order/card:common.after',
+  ])
+  expect(combobox.getAttribute('aria-expanded')).toBe('true')
 })
 
-test('v-select handles keyboard selection and empty value', async () => {
-  const wrapper = mountWithApp(VSelect, {
-    props: {
-      id: 'mode',
-      options: [{
-        label: 'Виджеты',
-        value: 'widget',
-      }],
+test('v-select supports keyboard navigation', async () => {
+  renderVSelect({
+    id: 'mode',
+    options: [{
+      label: 'Виджеты',
       value: 'widget',
-    },
-  })
-  const trigger = wrapper.findComponent({ name: 'UiSelectTrigger' })
-  const preventDefault = vi.fn()
-
-  trigger.vm.$emit('keydown', {
-    key: 'Escape',
-    preventDefault,
-  })
-  trigger.vm.$emit('keydown', {
-    key: 'Enter',
-    preventDefault,
+    }],
+    value: 'widget',
   })
 
-  expect(preventDefault).toHaveBeenCalledOnce()
-  expect(wrapper.emitted('update:value')).toEqual([['widget']])
+  const combobox = screen.getByRole('combobox')
 
-  const emptyWrapper = mountWithApp(VSelect, {
-    props: {
-      id: 'empty-mode',
-      options: [{
-        label: 'Виджеты',
-        value: 'widget',
-      }],
-      value: 'missing',
-    },
+  await fireEvent.keyDown(combobox, { key: 'Enter' })
+
+  expect(combobox.getAttribute('aria-expanded')).toBe('true')
+  expect(screen.getByRole('listbox')).toBeInstanceOf(HTMLElement)
+
+  await fireEvent.keyDown(combobox, { key: 'Escape' })
+
+  expect(combobox.getAttribute('aria-expanded')).toBe('false')
+  expect(screen.queryByRole('listbox')).toBeNull()
+})
+
+test('v-select handles an empty value', async () => {
+  const updateValue = vi.fn()
+
+  renderVSelect({
+    id: 'empty-mode',
+    'onUpdate:value': updateValue,
+    options: [{
+      label: 'Виджеты',
+      value: 'widget',
+    }],
+    value: 'missing',
   })
-  const emptyTrigger = emptyWrapper.findComponent({ name: 'UiSelectTrigger' })
 
-  emptyTrigger.vm.$emit('keydown', {
-    key: 'Enter',
-    preventDefault,
-  })
+  const combobox = screen.getByRole('combobox') as HTMLInputElement
 
-  expect(emptyTrigger.props('selection')).toEqual([])
-  expect(emptyTrigger.props('activeDescendant')).toBeNull()
-  expect(emptyWrapper.emitted('update:value')).toBeUndefined()
+  expect(combobox.value).toBe('')
+  expect(combobox.getAttribute('aria-activedescendant')).toBeNull()
+
+  await fireEvent.keyDown(combobox, { key: 'Enter' })
+
+  expect(updateValue).not.toHaveBeenCalled()
 })

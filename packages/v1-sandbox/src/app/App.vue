@@ -159,11 +159,9 @@ import RemoteBootstrapWorker from '@/runtime/remoteBootstrap.worker.ts?worker'
 
 import { createDefaultSandboxManifestUrl } from '@/scenario/launch'
 import { createMounts } from '@/runtime/mount'
-import {
-  createOrderSandboxController,
-  getOrderSandboxFixture,
-} from '@/scenario/fixtures'
+import { createOrderSandboxController } from '@/scenario/fixtures'
 import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
+import { getOrderSandboxFixture } from '@/scenario/fixtures'
 import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxLaunchConfig } from '@/scenario/launch'
 import { resolveSandboxExtensionSource } from '@/scenario/manifest'

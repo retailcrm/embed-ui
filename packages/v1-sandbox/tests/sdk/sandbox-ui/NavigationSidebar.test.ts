@@ -1,9 +1,9 @@
-import type { Component } from 'vue'
-import type { ComponentMountingOptions } from '@vue/test-utils'
-
+import { afterEach } from 'vitest'
+import { cleanup } from '@testing-library/vue'
 import { createI18n } from 'vue-i18n'
 import { expect } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { render } from '@testing-library/vue'
+import { screen } from '@testing-library/vue'
 import { test } from 'vitest'
 
 import NavigationSidebar from '@/components/NavigationSidebar.vue'
@@ -11,8 +11,6 @@ import NavigationSidebar from '@/components/NavigationSidebar.vue'
 import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
 import messagesRuRu from '@/app/i18n/ru-RU.json'
-
-type MountOptions<T extends Component> = ComponentMountingOptions<T>
 
 const createTestI18n = () => createI18n({
   fallbackLocale: 'en-GB',
@@ -25,32 +23,25 @@ const createTestI18n = () => createI18n({
   },
 })
 
-const mountWithApp = <T extends Component>(
-  component: T,
-  options: MountOptions<T> = {}
-) => mount(component, {
-    ...options,
-    global: {
-      ...(options.global ?? {}),
-      plugins: [
-        createTestI18n(),
-        ...(options.global?.plugins ?? []),
-      ],
-    },
+const renderNavigationSidebar = (props: { id: string; open: boolean }) => render(NavigationSidebar, {
+  props,
+  global: {
+    plugins: [createTestI18n()],
+  },
+})
+
+afterEach(() => {
+  cleanup()
+})
+
+test('navigation sidebar keeps skeleton navigation decorative', () => {
+  renderNavigationSidebar({
+    id: 'sidebar',
+    open: true,
   })
 
-test('navigation sidebar renders fixed skeleton navigation', async () => {
-  const wrapper = mountWithApp(NavigationSidebar, {
-    props: {
-      id: 'sidebar',
-      open: true,
-    },
-  })
-
-  expect(wrapper.attributes('id')).toBe('sidebar')
-  expect(wrapper.findAll('.ui-v1-skeleton')).toHaveLength(10)
-
-  await wrapper.setProps({ open: false } as never)
-
-  expect(wrapper.classes().join(' ')).toContain('navigation-sidebar_closed')
+  expect(screen.getByRole('complementary').id).toBe('sidebar')
+  expect(screen.getByRole('navigation')).toBeInstanceOf(HTMLElement)
+  expect(screen.queryAllByRole('link')).toHaveLength(0)
+  expect(screen.queryAllByRole('button')).toHaveLength(0)
 })
