@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.30-alpha.4
+
+### Bug Fixes
+
+* **v1-components:** UiSelect fixed visible the caret on 'input' ([91c431f](https://github.com/retailcrm/embed-ui/commit/91c431f6c9a7d7380cfb4d6675d4d42f5ff06bee))
+* **v1-sandbox:** Updated interface ([8dcf8e6](https://github.com/retailcrm/embed-ui/commit/8dcf8e687bed589e00cc229618da7a848949b3a5))
+
 ## 0.9.30-alpha.3
 
 ### Features
