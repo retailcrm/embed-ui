@@ -1,7 +1,7 @@
-import { spawn } from 'node:child_process'
 import net from 'node:net'
 import path from 'node:path'
 import process from 'node:process'
+import { spawn } from 'node:child_process'
 
 const projectRoot = path.resolve(import.meta.dirname, '..')
 const packageManager = '__PACKAGE_MANAGER__'
@@ -118,7 +118,7 @@ const spawnScript = (scriptName, label, onStdoutLine = () => {}, scriptArgs = []
       detached: process.platform !== 'win32',
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe'],
-    }
+    },
   )
 
   managedChildren.add(child)
@@ -227,7 +227,7 @@ const runBuild = () => new Promise((resolve, reject) => {
     }
 
     reject(new Error(
-      'Build failed' + (signal ? ' with signal ' + signal : ' with exit code ' + String(code)) + '.'
+      'Build failed' + (signal ? ' with signal ' + signal : ' with exit code ' + String(code)) + '.',
     ))
   })
 })
@@ -249,7 +249,7 @@ const startServer = ({
     rejectReady(new Error(
       label + ' server did not become ready within '
       + String(serverStartupTimeout / 1_000)
-      + ' seconds.'
+      + ' seconds.',
     ))
   }, serverStartupTimeout)
   const child = spawnScript(scriptName, label, line => {
@@ -270,7 +270,7 @@ const startServer = ({
       rejectReady(new Error(
         label + ' server stopped before it was ready'
         + (signal ? ' with signal ' + signal : ' with exit code ' + String(code))
-        + '.'
+        + '.',
       ))
       return
     }
@@ -279,7 +279,7 @@ const startServer = ({
       void fail(
         label + ' server stopped unexpectedly'
         + (signal ? ' with signal ' + signal : ' with exit code ' + String(code))
-        + '.'
+        + '.',
       )
     }
   })

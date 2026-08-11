@@ -40,6 +40,11 @@
         <p :class="$style['widget-run-summary__description']">
             {{ fixturePresentation?.description }}
         </p>
+
+        <div :class="$style['widget-run-summary__row']">
+            <span>{{ t('app.widgetRunSummary.context') }}:</span>
+            <strong>{{ contextLabel }}</strong>
+        </div>
     </section>
 </template>
 
@@ -53,6 +58,7 @@ import { useId } from 'vue'
 import { getOrderSandboxFixturePresentation } from '@/app/fixturePresentation'
 
 const props = defineProps<{
+  contextChanged: boolean;
   fixture: string;
   targets: SandboxOrderTarget[];
 }>()
@@ -65,6 +71,10 @@ const fixturePresentation = computed(() =>
 const componentLabel = computed(() => props.targets.length === 1
   ? t('app.widgetRunSummary.widget')
   : t('app.widgetRunSummary.widgets', { count: props.targets.length })
+)
+const contextLabel = computed(() => props.contextChanged
+  ? t('app.widgetRunSummary.contextChanged')
+  : t('app.widgetRunSummary.contextFixture')
 )
 </script>
 

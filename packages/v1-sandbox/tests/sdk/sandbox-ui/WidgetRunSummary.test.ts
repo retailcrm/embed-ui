@@ -32,10 +32,13 @@ afterEach(() => {
 const getSummary = (name: string): HTMLElement => screen.getByRole('region', { name })
 
 const renderWidgetRunSummary = (
-  props: { fixture: string; targets: SandboxOrderTarget[] },
+  props: { contextChanged?: boolean; fixture: string; targets: SandboxOrderTarget[] },
   locale = 'ru-RU'
 ) => render(WidgetRunSummary, {
-  props,
+  props: {
+    contextChanged: false,
+    ...props,
+  },
   global: {
     plugins: [createTestI18n(locale)],
   },
@@ -58,10 +61,12 @@ test('shows one widget target and the active fixture', () => {
   expect(within(summary).getByText(
     'Обычный заказ без доставки, подходит для проверки общих блоков.'
   )).toBeInstanceOf(HTMLElement)
+  expect(within(summary).getByText('Исходный из фикстуры')).toBeInstanceOf(HTMLElement)
 })
 
 test('shows all selected targets and their count', () => {
   renderWidgetRunSummary({
+    contextChanged: true,
     fixture: 'order-with-delivery',
     targets: [
       'order/card:common.before',
@@ -81,6 +86,7 @@ test('shows all selected targets and their count', () => {
   expect(within(summary).getByText(
     'Заказ с адресом и суммой для проверки виджетов доставки и оплаты.'
   )).toBeInstanceOf(HTMLElement)
+  expect(within(summary).getByText('Изменён вручную')).toBeInstanceOf(HTMLElement)
 })
 
 test('shows the readonly fixture presentation', () => {

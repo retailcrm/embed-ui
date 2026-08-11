@@ -7,7 +7,7 @@ describe('extension manifest', () => {
     expect(extensionrc.pages).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ code: '__PAGE_CODE__' }),
-      ])
+      ]),
     )
 
     expect(extensionrc.targets).toContain('__WIDGET_TARGET__')

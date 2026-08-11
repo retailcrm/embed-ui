@@ -136,33 +136,41 @@ In the control panel, normally paste the full extension endpoint URL:
   `%extension-url%/extension/%extension-id%`.
 - `Mode`: selects the runner type. `Widgets` mounts widgets into CRM slots;
   `Page` mounts a page runner by `Page code`.
-- `Fixture`: CRM mock state: order context, custom fields, dictionaries,
-  location, and initial HostAPI state.
+- `Selected fixture`: CRM mock state for the next launch: order context, custom
+  fields, dictionaries, location, and initial HostAPI state. The panel also
+  shows the fixture used by the current connected run.
 - `Page code`: `code` from the extension `pages` registration. For example,
   `board`, `summary`, or `returns`. It is not the extension UUID.
 - `Widget targets`: targets/CRM slots for widget runners, for example
   `order/card:common.after`. They are used only in `Widgets` mode.
-- `Context JSON`: the current fixture-backed context. You can temporarily edit
-  it without changing extension code.
+- `Current run Context JSON`: the context exposed to the currently connected
+  extension. Selecting another fixture does not replace this JSON until the
+  main `Apply` action starts a new run.
 
 ## Control Panel Validation
 
-The control panel validates values only when you click `Apply` or
-`Apply context`. It does not check network availability.
+The control panel validates launch values when you click `Apply` and validates
+the context editor when you click `Apply context`. It does not check network
+availability.
 
 - `Manifest / extension URL` is required before applying the launch settings.
   It must be an absolute `http` or `https` URL and, for the standard extension
   server, include `/extension/%extension-id%`.
 - `Mode` must be `Widgets` or `Page`.
-- `Fixture` must be one of the sandbox fixtures.
+- `Selected fixture` must be one of the sandbox fixtures.
 - `Page code` is required only in `Page` mode.
 - `Widget targets` require at least one valid target only in `Widgets` mode.
-- `Context JSON` must be a JSON object. Top-level keys must be known context
-  keys, and each context value must be an object.
+- `Current run Context JSON` must be a JSON object. Top-level keys must be
+  known context keys, and each context value must be an object.
 
 The `Apply` button is disabled until the required launch fields are filled:
 extension URL, mode, fixture, at least one widget target in `Widgets` mode, and
 page code in `Page` mode.
+
+`Apply context` is available only while an extension is connected, the JSON
+differs semantically from the active context, and the launch fields have no
+pending changes. Whitespace, formatting, and object key order do not count as
+context changes.
 
 ## Running a Widget
 
@@ -172,7 +180,7 @@ Control panel flow:
 
 1. Paste `Manifest / extension URL`.
 2. Select `Mode: Widgets`.
-3. Select a `Fixture`.
+3. Choose the required value in `Selected fixture`.
 4. Check the required `Widget targets`.
 5. Click `Apply`.
 
@@ -194,7 +202,7 @@ Control panel flow:
 1. Paste `Manifest / extension URL`.
 2. Select `Mode: Page`.
 3. Enter the page runner code into `Page code`.
-4. Select a `Fixture`.
+4. Choose the required value in `Selected fixture`.
 5. Click `Apply`.
 
 Important: `Page code` is not the extension UUID and not a module code. It is
@@ -240,7 +248,10 @@ API. Current order fixtures:
 - `order-with-delivery`: an order with delivery data;
 - `order-readonly-error`: a readonly/error-like order.
 
-`Context JSON` lets you temporarily override context for the current run.
+`Current run Context JSON` lets you temporarily replace values in the context
+of the connected run. Contexts included in the JSON are replaced as complete
+objects, so removing a field from one of them also removes that field from the
+context. Contexts omitted from the JSON remain unchanged.
 
 Example override:
 
@@ -252,11 +263,19 @@ Example override:
 }
 ```
 
-Usually it is easier to edit the already displayed JSON and change only the
-needed field.
+Usually it is easier to edit the already displayed full JSON and change only
+the needed value. `Undo changes` restores the editor from the active context;
+it does not load a newly selected, not-yet-applied fixture.
 
-After editing, click `Apply context`. The sandbox patches the current context
-and restarts the extension so it reads the updated data.
+After editing, click `Apply context`. The sandbox restarts the same extension
+with the updated context, keeps the control panel open, and confirms that the
+context was applied. The widget run summary marks this state as manually
+changed.
+
+The main `Apply` action has a different purpose: it starts the selected launch
+configuration and loads the original context of the selected fixture. Any
+manual context changes from the current run are intentionally discarded.
+Manual Context JSON is temporary and is not persisted in browser storage.
 
 ## HostAPI Simulation
 

@@ -73,7 +73,7 @@ const resolveSandboxExtensionSourceMock = vi.fn<() => Promise<SandboxExtensionSo
 const createEndpointMock = vi.fn<() => FakeEndpoint>()
 const fromWebWorkerMock = vi.fn((worker: Worker) => worker)
 const disposeContextSubscriptionsMock = vi.fn()
-const patchContextMock = vi.fn()
+const setContextMock = vi.fn()
 const endpointGetMock = vi.fn()
 const endpointHttpCallMock = vi.fn()
 const forceUpdateMock = vi.fn()
@@ -221,13 +221,26 @@ vi.mock('@/scenario/fixtures', () => ({
         },
       },
   }),
-  createOrderSandboxController: (_fixture: string, options: typeof controllerOptions) => {
+  createOrderSandboxController: (fixture: string, options: typeof controllerOptions) => {
     controllerOptions = options
-    const contexts = {
-      settings: {
-        'system.locale': 'ru-RU',
-      },
-    }
+    const contexts: Record<string, Record<string, unknown>> = fixture === 'order-with-delivery'
+      ? {
+        'order/card': {
+          'delivery.address': 'Москва, ул. Ленина, 10',
+        },
+        settings: {
+          'system.locale': 'ru-RU',
+        },
+      }
+      : {
+        settings: {
+          'system.locale': 'ru-RU',
+        },
+      }
+
+    setContextMock.mockImplementation((context: string, value: Record<string, unknown>) => {
+      contexts[context] = value
+    })
 
     return {
       dispose: vi.fn(),
@@ -248,7 +261,8 @@ vi.mock('@/scenario/fixtures', () => ({
         set: vi.fn(),
         setCustomField: vi.fn(),
       },
-      patchContext: patchContextMock,
+      patchContext: vi.fn(),
+      setContext: setContextMock,
       snapshot: () => ({
         contexts,
         host: {
@@ -418,12 +432,22 @@ test('shows the applied fixture and targets in widget mode', async () => {
 
   const dialog = await openDevPanel()
 
-  await selectOption(dialog, 'Фикстура', 'Базовый заказ')
+  await selectOption(dialog, 'Выбранная фикстура', 'Базовый заказ')
   await selectOption(dialog, 'Места встраивания виджетов', 'order/card:common.before')
 
   expect(within(summary).getByText('Заказ с доставкой')).toBeInstanceOf(HTMLElement)
   expect(within(targets).getByText('order/card:common.before')).toBeInstanceOf(HTMLElement)
   expect(within(targets).getByText('order/card:common.after')).toBeInstanceOf(HTMLElement)
+  expect(within(dialog).getByText('Заказ с доставкой')).toBeInstanceOf(HTMLElement)
+  expect(within(dialog).getByText(
+    'Фикстура «Базовый заказ» ещё не применена. Запустите её кнопкой «Применить».'
+  )).toBeInstanceOf(HTMLElement)
+  expect((within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }) as HTMLButtonElement).disabled).toBe(true)
+  expect((within(dialog).getByRole('textbox', {
+    name: 'JSON контекста текущего запуска',
+  }) as HTMLTextAreaElement).value).toContain('Москва, ул. Ленина, 10')
 })
 
 test('does not show the widget run summary on onboarding', async () => {
@@ -534,7 +558,7 @@ test('shows runtime error and disposes worker when endpoint run fails', async ()
   expect(disposeContextSubscriptionsMock).toHaveBeenCalledOnce()
 })
 
-test('disposes context subscriptions before patching context and restarting worker', async () => {
+test('shows validation error for invalid context json with connected worker', async () => {
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
     pages: ['settings'],
     targets: [],
@@ -550,10 +574,205 @@ test('disposes context subscriptions before patching context and restarting work
 
   const dialog = await openDevPanel()
   const contextEditor = within(dialog).getByRole('textbox', {
-    name: 'JSON контекста',
+    name: 'JSON контекста текущего запуска',
+  })
+  const applyContextButton = within(dialog).getByRole('button', {
+    name: 'Применить контекст',
   })
 
+  await fireEvent.update(contextEditor, '{')
+  await fireEvent.click(applyContextButton)
+
+  expect(within(dialog).getByRole('alert').textContent).toBe(
+    'Введите валидный JSON. Ошибка в строке 1, столбце 2.'
+  )
+  expect(endpoint.call.run).toHaveBeenCalledOnce()
+})
+
+test('applies context json through dev panel with connected worker', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+    pages: ['settings'],
+    targets: [],
+  }))
+
+  const { endpoint } = await renderAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+  })
+
+  const dialog = await openDevPanel()
+  const contextEditor = within(dialog).getByRole('textbox', {
+    name: 'JSON контекста текущего запуска',
+  })
+  const applyContextButton = within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }) as HTMLButtonElement
+
+  expect(applyContextButton.disabled).toBe(true)
+
   await fireEvent.update(contextEditor, JSON.stringify({
+    settings: {
+      'system.locale': 'en-GB',
+    },
+  }))
+
+  expect(applyContextButton.disabled).toBe(false)
+
+  await fireEvent.click(applyContextButton)
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledTimes(2)
+  })
+
+  expect(disposeContextSubscriptionsMock).toHaveBeenCalledOnce()
+  expect(setContextMock).toHaveBeenCalledWith('settings', {
+    'system.locale': 'en-GB',
+  })
+  expect(disposeContextSubscriptionsMock.mock.invocationCallOrder[0])
+    .toBeLessThan(endpoint.terminate.mock.invocationCallOrder[0] as number)
+  expect(endpoint.terminate.mock.invocationCallOrder[0])
+    .toBeLessThan(setContextMock.mock.invocationCallOrder[0] as number)
+  expect(setContextMock.mock.invocationCallOrder[0])
+    .toBeLessThan(endpoint.call.run.mock.invocationCallOrder[1] as number)
+  expect(screen.getByRole('dialog', {
+    name: 'Управление песочницей',
+  })).toBeInstanceOf(HTMLElement)
+  expect(within(dialog).getByText(
+    'Контекст применён. Расширение перезапущено.'
+  )).toBeInstanceOf(HTMLElement)
+  expect(within(dialog).getByText('Контекст изменён вручную'))
+    .toBeInstanceOf(HTMLElement)
+})
+
+test('ignores repeated context apply while the worker is restarting', async () => {
+  let resolveRestart: (source: SandboxExtensionSource) => void = () => {}
+  const pendingRestart = new Promise<SandboxExtensionSource>((resolve) => {
+    resolveRestart = resolve
+  })
+  const extensionSource = createExtensionSource({
+    pages: ['settings'],
+    targets: [],
+  })
+
+  resolveSandboxExtensionSourceMock.mockResolvedValue(extensionSource)
+
+  const { endpoint } = await renderAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+  })
+  resolveSandboxExtensionSourceMock.mockReturnValueOnce(pendingRestart)
+
+  const dialog = await openDevPanel()
+  const contextEditor = within(dialog).getByRole('textbox', {
+    name: 'JSON контекста текущего запуска',
+  })
+  const applyContextButton = within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }) as HTMLButtonElement
+
+  await fireEvent.update(contextEditor, JSON.stringify({
+    settings: {
+      'system.locale': 'en-GB',
+    },
+  }))
+  await fireEvent.click(applyContextButton)
+
+  await waitFor(() => {
+    expect(applyContextButton.disabled).toBe(true)
+    expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledTimes(2)
+  })
+  await fireEvent.click(applyContextButton)
+
+  expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledTimes(2)
+
+  resolveRestart(extensionSource)
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledTimes(2)
+  })
+})
+
+test('keeps edited context and dev panel open when the worker restart fails', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+  const extensionSource = createExtensionSource({
+    pages: ['settings'],
+    targets: [],
+  })
+
+  resolveSandboxExtensionSourceMock.mockResolvedValue(extensionSource)
+
+  const { endpoint } = await renderAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+  })
+  workerReadyMode = 'ready-error'
+
+  const dialog = await openDevPanel()
+  const contextEditor = within(dialog).getByRole('textbox', {
+    name: 'JSON контекста текущего запуска',
+  }) as HTMLTextAreaElement
+  const editedContext = JSON.stringify({
+    settings: {
+      'system.locale': 'en-GB',
+    },
+  })
+
+  await fireEvent.update(contextEditor, editedContext)
+  await fireEvent.click(within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }))
+
+  await waitFor(() => {
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Не удалось запустить расширение\n\nworker bootstrap failed'
+    )
+  })
+  expect(screen.getByRole('dialog', {
+    name: 'Управление песочницей',
+  })).toBeInstanceOf(HTMLElement)
+  expect(contextEditor.value).toBe(editedContext)
+  expect(within(dialog).getByText('Расширение не подключено'))
+    .toBeInstanceOf(HTMLElement)
+  expect((within(dialog).getByRole('button', {
+    name: 'Применить контекст',
+  }) as HTMLButtonElement).disabled).toBe(true)
+})
+
+test('does not create another worker after unmount during context restart', async () => {
+  let resolveRestart: (source: SandboxExtensionSource) => void = () => {}
+  const pendingRestart = new Promise<SandboxExtensionSource>((resolve) => {
+    resolveRestart = resolve
+  })
+  const extensionSource = createExtensionSource({
+    pages: ['settings'],
+    targets: [],
+  })
+
+  resolveSandboxExtensionSourceMock.mockResolvedValue(extensionSource)
+
+  const { endpoint, unmount } = await renderAppWithRuntime(
+    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+  })
+  resolveSandboxExtensionSourceMock.mockReturnValueOnce(pendingRestart)
+
+  const dialog = await openDevPanel()
+
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'JSON контекста текущего запуска',
+  }), JSON.stringify({
     settings: {
       'system.locale': 'en-GB',
     },
@@ -563,19 +782,17 @@ test('disposes context subscriptions before patching context and restarting work
   }))
 
   await waitFor(() => {
-    expect(endpoint.call.run).toHaveBeenCalledTimes(2)
+    expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledTimes(2)
   })
 
-  expect(disposeContextSubscriptionsMock).toHaveBeenCalledOnce()
-  expect(patchContextMock).toHaveBeenCalledWith('settings', {
-    'system.locale': 'en-GB',
-  })
-  expect(disposeContextSubscriptionsMock.mock.invocationCallOrder[0])
-    .toBeLessThan(endpoint.terminate.mock.invocationCallOrder[0] as number)
-  expect(endpoint.terminate.mock.invocationCallOrder[0])
-    .toBeLessThan(patchContextMock.mock.invocationCallOrder[0] as number)
-  expect(patchContextMock.mock.invocationCallOrder[0])
-    .toBeLessThan(endpoint.call.run.mock.invocationCallOrder[1] as number)
+  unmount()
+  renderedApp = null
+  resolveRestart(extensionSource)
+  await new Promise(resolve => window.setTimeout(resolve, 0))
+
+  expect(fakeWorkers).toHaveLength(1)
+  expect(fakeWorkers[0]?.terminate).toHaveBeenCalledOnce()
+  expect(endpoint.call.run).toHaveBeenCalledOnce()
 })
 
 test('mounts page runtime with stylesheet, host api and launch bridge', async () => {
@@ -643,7 +860,7 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
   })
 })
 
-test('updates dev panel fields and reports validation errors', async () => {
+test('updates dev panel launch fields and reports validation errors', async () => {
   await renderAppWithRuntime('/?manifestUrl=&mode=widget')
 
   const dialog = await openDevPanel()
@@ -678,37 +895,15 @@ test('updates dev panel fields and reports validation errors', async () => {
   expect(within(dialog).queryByRole('alert')).toBeNull()
   expect(applyButton.disabled).toBe(false)
 
-  const contextEditor = within(dialog).getByRole('textbox', {
-    name: 'JSON контекста',
-  })
   const applyContextButton = within(dialog).getByRole('button', {
     name: 'Применить контекст',
-  })
+  }) as HTMLButtonElement
 
-  await fireEvent.update(contextEditor, '{')
-  await fireEvent.click(applyContextButton)
-
-  expect(within(dialog).getByRole('alert').textContent).toBe(
-    'Введите валидный JSON. Ошибка в строке 1, столбце 2.'
-  )
-
-  await fireEvent.update(contextEditor, '{}')
-
-  expect(within(dialog).queryByRole('alert')).toBeNull()
-
-  await fireEvent.update(contextEditor, '{"settings":[]}')
-  await fireEvent.click(applyContextButton)
-
-  expect(within(dialog).getByRole('alert').textContent).toBe(
-    'Контекст «settings» должен быть JSON-объектом.'
-  )
-
-  await fireEvent.update(contextEditor, '{"unknown":{}}')
-  await fireEvent.click(applyContextButton)
-
-  expect(within(dialog).getByRole('alert').textContent).toBe(
-    'Неизвестный контекст «unknown».'
-  )
+  expect(applyContextButton.disabled).toBe(true)
+  expect(within(dialog).getByText('Расширение не подключено'))
+    .toBeInstanceOf(HTMLElement)
+  expect(setContextMock).not.toHaveBeenCalled()
+  expect(resolveSandboxExtensionSourceMock).not.toHaveBeenCalled()
 })
 
 test('formats, resets and downloads context json without applying it', async () => {
@@ -722,7 +917,7 @@ test('formats, resets and downloads context json without applying it', async () 
 
   const dialog = await openDevPanel()
   const contextEditor = within(dialog).getByRole('textbox', {
-    name: 'JSON контекста',
+    name: 'JSON контекста текущего запуска',
   }) as HTMLTextAreaElement
 
   await fireEvent.update(contextEditor, '{')
@@ -745,24 +940,26 @@ test('formats, resets and downloads context json without applying it', async () 
     "system.locale": "en-GB"
   }
 }`)
-  expect(patchContextMock).not.toHaveBeenCalled()
+  expect(setContextMock).not.toHaveBeenCalled()
 
-  await selectOption(dialog, 'Фикстура', 'Заказ с доставкой')
+  await selectOption(dialog, 'Выбранная фикстура', 'Заказ с доставкой')
   await fireEvent.update(contextEditor, '{}')
   await fireEvent.click(within(dialog).getByRole('button', {
-    name: 'Сбросить',
+    name: 'Отменить изменения',
   }))
 
   const resetContext = JSON.parse(contextEditor.value) as {
-    'order/card': Record<string, unknown>;
+    settings: Record<string, unknown>;
   }
 
-  expect(resetContext['order/card']['delivery.address'])
-    .toBe('Москва, ул. Ленина, 10')
+  expect(resetContext.settings['system.locale']).toBe('ru-RU')
+  expect(within(dialog).getByText(
+    'Фикстура «Заказ с доставкой» ещё не применена. Запустите её кнопкой «Применить».'
+  )).toBeInstanceOf(HTMLElement)
   expect((within(dialog).getByRole('button', {
     name: 'Применить контекст',
-  }) as HTMLButtonElement).disabled).toBe(false)
-  expect(patchContextMock).not.toHaveBeenCalled()
+  }) as HTMLButtonElement).disabled).toBe(true)
+  expect(setContextMock).not.toHaveBeenCalled()
 
   await fireEvent.click(within(dialog).getByRole('button', {
     name: 'Скачать JSON',
@@ -782,7 +979,7 @@ test('formats, resets and downloads context json without applying it', async () 
 
   expect(downloadedText).toBe(contextEditor.value)
   expect(anchorClickSpy).toHaveBeenCalledOnce()
-  expect(clickedAnchors[0]?.download).toBe('v1-sandbox-order-with-delivery-context.json')
+  expect(clickedAnchors[0]?.download).toBe('v1-sandbox-order-basic-context.json')
   expect(clickedAnchors[0]?.href).toBe('blob:context-json')
   expect(revokeObjectUrlSpy).toHaveBeenCalledWith('blob:context-json')
 })

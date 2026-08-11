@@ -51,6 +51,9 @@
     "sidebarExpand": "Expand sidebar",
     "widgetRunSummary": {
       "component": "Component",
+      "context": "Context",
+      "contextChanged": "Changed manually",
+      "contextFixture": "Original fixture context",
       "targets": "Mount targets",
       "testData": "Test data",
       "title": "Current run",

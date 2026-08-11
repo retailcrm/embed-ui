@@ -53,6 +53,7 @@
 
                 <template v-else-if="launchConfig.mode === 'widget'">
                     <WidgetRunSummary
+                        :context-changed="contextHasManualChanges"
                         :fixture="launchConfig.fixture"
                         :targets="launchConfig.targets"
                     />
@@ -83,14 +84,20 @@
             </template>
 
             <DevPanel
+                :active-fixture="launchConfig.fixture"
                 :apply-launch-config="applyLaunchConfig"
                 :apply-context-json="applyContextJson"
+                :applying-context="isApplyingContext"
                 :applying-launch-config="isApplyingLaunchConfig"
+                :context-apply-succeeded="contextApplySucceeded"
+                :context-has-manual-changes="contextHasManualChanges"
                 :context-json="contextJson"
                 :context-json-changed="contextJsonChanged"
                 :download-context-json="downloadContextJson"
+                :extension-connected="isExtensionConnected"
                 :fixture="fixture"
                 :format-context-json="formatContextJsonEditor"
+                :launch-config-changed="launchConfigChanged"
                 :manifest-url="manifestUrl"
                 :mode="mode"
                 :page-code="pageCode"
@@ -157,11 +164,13 @@ import WidgetTargetList from '@/components/WidgetTargetList.vue'
 
 import RemoteBootstrapWorker from '@/runtime/remoteBootstrap.worker.ts?worker'
 
+import { areJsonValuesEqual } from '@/app/contextJson'
 import { createDefaultSandboxManifestUrl } from '@/scenario/launch'
 import { createMounts } from '@/runtime/mount'
 import { createOrderSandboxController } from '@/scenario/fixtures'
 import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
 import { getOrderSandboxFixture } from '@/scenario/fixtures'
+import { isContextJsonEqual } from '@/app/contextJson'
 import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxLaunchConfig } from '@/scenario/launch'
 import { resolveSandboxExtensionSource } from '@/scenario/manifest'
@@ -194,19 +203,45 @@ const sandbox = createOrderSandboxController(launchConfig.fixture, {
 })
 const mounts = createMounts(launchConfig)
 const runtime = ref<SandboxRuntime | null>(null)
+const isApplyingContext = ref(false)
 const isApplyingLaunchConfig = ref(false)
 const isDevPanelOpen = ref(false)
 const isSidebarOpen = ref(true)
 const { locale, t } = useI18n()
 const uid = useId()
 const contextJson = ref(formatContextJson())
+const contextApplySucceeded = ref(false)
+const contextHasManualChanges = ref(false)
 const devPanelValidationErrors = ref<DevPanelValidationErrors>({})
+let isAppMounted = false
 
 const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExplicitExtensionUrl)
 const runModeLabel = computed(() => launchConfig.mode === 'page'
   ? t('app.runMode.page', { pageCode: launchConfig.pageCode })
   : t('app.runMode.widgets', { count: launchConfig.targets.length }))
-const contextJsonChanged = computed(() => contextJson.value !== formatContextJson())
+const contextJsonChanged = computed(() => !isContextJsonEqual(
+  contextJson.value,
+  sandbox.snapshot().contexts
+))
+const isExtensionConnected = computed(() => runtime.value !== null)
+const launchConfigChanged = computed(() => {
+  if (
+    fixture.value !== launchConfig.fixture
+    || manifestUrl.value.trim() !== launchConfig.manifestUrl
+    || mode.value !== launchConfig.mode
+  ) {
+    return true
+  }
+
+  if (mode.value === 'page') {
+    return pageCode.value !== launchConfig.pageCode
+  }
+
+  return !areJsonValuesEqual(
+    [...selectedTargets.value].sort(),
+    [...launchConfig.targets].sort()
+  )
+})
 
 watch(() => sandbox.state.contexts.settings['system.locale'], (systemLocale) => {
   if (systemLocale) {
@@ -221,13 +256,14 @@ const flushReceiver = async () => {
   }))
 }
 
-const mountExtension = async () => {
+const mountExtension = async (): Promise<boolean> => {
   let stylesheet: HTMLLinkElement | null = null
 
   try {
     const extensionSource = await resolveSandboxExtensionSource(launchConfig)
 
-    if (redirectToInferredPageMode(extensionSource.descriptor)) return
+    if (!isAppMounted) return false
+    if (redirectToInferredPageMode(extensionSource.descriptor)) return false
 
     extensionHttpBaseUrl.value = extensionSource.httpBaseUrl
     extensionDescriptorUuid.value = extensionSource.descriptor.uuid
@@ -237,7 +273,7 @@ const mountExtension = async () => {
     if (diagnostic) {
       showSandboxAlert(diagnostic.title, diagnostic.message)
 
-      if (diagnostic.blocking) return
+      if (diagnostic.blocking) return false
     }
 
     stylesheet = mountExtensionStylesheet(extensionSource.descriptor.stylesheet)
@@ -245,6 +281,13 @@ const mountExtension = async () => {
       extensionSource.descriptor.uuid,
       extensionSource.entrypoint
     )
+
+    if (!isAppMounted) {
+      connections.forEach(disposeRuntimeConnection)
+      stylesheet?.remove()
+
+      return false
+    }
 
     await flushReceiver()
 
@@ -256,12 +299,19 @@ const mountExtension = async () => {
       mounts,
       stylesheet,
     }
+
+    return true
   } catch (error) {
     stylesheet?.remove()
+
+    if (!isAppMounted) return false
+
     showSandboxAlert(
       t('app.alerts.runtimeError.title'),
       t('app.alerts.runtimeError.message', { message: getErrorMessage(error) })
     )
+
+    return false
   }
 }
 
@@ -342,6 +392,13 @@ const mountWorkerExtension = async (
     readyChannel.port1.close()
   }
 
+  if (!isAppMounted) {
+    endpoint.terminate()
+    worker.terminate()
+
+    return []
+  }
+
   const endpointApi = sandbox.endpointApi
 
   endpoint.expose({
@@ -392,6 +449,7 @@ const disposeRuntime = async () => {
     return
   }
 
+  runtime.value = null
   window.clearInterval(current.flushTimer)
 
   try {
@@ -408,7 +466,6 @@ const disposeRuntime = async () => {
   } finally {
     current.connections.forEach(disposeRuntimeConnection)
     current.stylesheet?.remove()
-    runtime.value = null
   }
 }
 
@@ -423,7 +480,7 @@ const flushRemoteUpdates = () => {
 }
 
 const applyLaunchConfig = async () => {
-  if (isApplyingLaunchConfig.value) return
+  if (isApplyingContext.value || isApplyingLaunchConfig.value) return
 
   const validationResult = validateLaunchConfigInput({
     fixture: fixture.value,
@@ -489,6 +546,19 @@ const applyLaunchConfig = async () => {
 }
 
 const applyContextJson = async () => {
+  const currentRuntime = runtime.value
+
+  if (
+    !isAppMounted
+    || isApplyingContext.value
+    || isApplyingLaunchConfig.value
+    || launchConfigChanged.value
+    || !contextJsonChanged.value
+    || !currentRuntime
+  ) {
+    return
+  }
+
   const validationResult = validateContextJsonInput(
     contextJson.value,
     Object.keys(sandbox.state.contexts),
@@ -504,15 +574,46 @@ const applyContextJson = async () => {
     return
   }
 
-  await disposeRuntime()
-  applyContextJsonValue(validationResult.data)
-  contextJson.value = formatContextJson()
-  clearDevPanelValidationError('contextJson')
-  await mountExtension()
+  if (!isAppMounted || runtime.value !== currentRuntime) return
+
+  const editorValue = contextJson.value
+
+  isApplyingContext.value = true
+  contextApplySucceeded.value = false
+
+  try {
+    await disposeRuntime()
+
+    if (!isAppMounted) return
+
+    applyContextJsonValue(validationResult.data)
+
+    const appliedContextJson = formatContextJson()
+    const hasManualChanges = !areJsonValuesEqual(
+      sandbox.snapshot().contexts,
+      getOrderSandboxFixture(launchConfig.fixture).contexts
+    )
+    const mounted = await mountExtension()
+
+    isDevPanelOpen.value = true
+
+    if (!mounted) {
+      contextJson.value = editorValue
+      return
+    }
+
+    contextJson.value = appliedContextJson
+    contextHasManualChanges.value = hasManualChanges
+    contextApplySucceeded.value = true
+    clearDevPanelValidationError('contextJson')
+  } finally {
+    isApplyingContext.value = false
+  }
 }
 
 const setContextJson = (value: string | number) => {
   contextJson.value = String(value)
+  contextApplySucceeded.value = false
   clearDevPanelValidationError('contextJson')
 }
 
@@ -537,7 +638,8 @@ const formatContextJsonEditor = () => {
 }
 
 const resetContextJson = () => {
-  contextJson.value = JSON.stringify(getOrderSandboxFixture(fixture.value).contexts, null, 2)
+  contextJson.value = formatContextJson()
+  contextApplySucceeded.value = false
   clearDevPanelValidationError('contextJson')
 }
 
@@ -548,7 +650,7 @@ const downloadContextJson = () => {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
 
-  link.download = `v1-sandbox-${fixture.value}-context.json`
+  link.download = `v1-sandbox-${launchConfig.fixture}-context.json`
   link.href = url
   link.click()
   URL.revokeObjectURL(url)
@@ -556,6 +658,7 @@ const downloadContextJson = () => {
 
 const setFixture = (value: string) => {
   fixture.value = value
+  contextApplySucceeded.value = false
   clearDevPanelValidationError('fixture')
 }
 
@@ -575,6 +678,7 @@ const getPageCodeValidationError = (value: string): string | undefined => {
 
 const setManifestUrl = (value: string) => {
   manifestUrl.value = value
+  contextApplySucceeded.value = false
   clearDevPanelValidationError('manifestUrl')
   clearDevPanelValidationError('pageCode')
 
@@ -594,6 +698,7 @@ const setMode = (value: SandboxLaunchMode) => {
   }
 
   mode.value = value
+  contextApplySucceeded.value = false
   clearDevPanelValidationError('mode')
   clearDevPanelValidationError('pageCode')
   clearDevPanelValidationError('targets')
@@ -601,6 +706,7 @@ const setMode = (value: SandboxLaunchMode) => {
 
 const setPageCode = (value: string) => {
   pageCode.value = value
+  contextApplySucceeded.value = false
 
   const pageCodeError = getPageCodeValidationError(value)
 
@@ -620,6 +726,7 @@ const setTargetSelected = (target: SandboxOrderTarget, checked: boolean) => {
   selectedTargets.value = checked
     ? Array.from(new Set([...selectedTargets.value, target]))
     : selectedTargets.value.filter(item => item !== target)
+  contextApplySucceeded.value = false
   clearDevPanelValidationError('targets')
 }
 
@@ -628,13 +735,8 @@ const setMountTree = (mount: SandboxMount, tree: HostedTreeRef | null) => {
 }
 
 const getCurrentLaunchConfig = (): SandboxLaunchConfig => ({
-  extensionUrl: launchConfig.extensionUrl,
-  fixture: fixture.value,
-  manifestUrl: manifestUrl.value,
-  mode: mode.value,
-  pageCode: pageCode.value,
-  targets: [...selectedTargets.value],
-  widgetId: launchConfig.widgetId,
+  ...launchConfig,
+  targets: [...launchConfig.targets],
 })
 
 const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchConfig => ({
@@ -642,7 +744,7 @@ const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchCo
   ...input,
   targets: input.targets
     ? [...input.targets]
-    : [...selectedTargets.value],
+    : [...launchConfig.targets],
 })
 
 const createLaunchBridge = (): SandboxLaunchBridge => ({
@@ -781,7 +883,7 @@ const applyContextJsonValue = (contexts: Record<string, Record<string, unknown>>
   Object.entries(contexts).forEach(([context, contextValue]) => {
     if (!isOrderContextName(context)) return
 
-    sandbox.patchContext(context, contextValue)
+    sandbox.setContext(context, contextValue as never)
   })
 }
 
@@ -861,6 +963,7 @@ const showStoredLaunchNotice = () => {
 }
 
 onMounted(() => {
+  isAppMounted = true
   showStoredLaunchNotice()
 
   if (!shouldShowOnboarding.value) {
@@ -869,6 +972,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  isAppMounted = false
   uninstallSandboxLaunchBridge()
   void disposeRuntime()
   sandbox.dispose()

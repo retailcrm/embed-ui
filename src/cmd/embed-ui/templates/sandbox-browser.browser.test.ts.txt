@@ -1,10 +1,17 @@
-import type { SandboxWorkerRuntime } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
+import type {
+  SandboxWorkerRuntime,
+} from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
 
-import { afterEach, expect, test } from 'vitest'
+import { afterEach, expect } from 'vitest'
 import { fireEvent, screen } from '@testing-library/dom'
+import { test } from 'vitest'
 
-import { createExtensionSourceWorker } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
-import { createSandboxWorkerRuntime } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
+import {
+  createExtensionSourceWorker,
+} from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
+import {
+  createSandboxWorkerRuntime,
+} from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
 
 let runtime: SandboxWorkerRuntime | null = null
 
@@ -17,7 +24,7 @@ afterEach(async () => {
 
 test('opens generated settings page', async () => {
   const sourceWorker = createExtensionSourceWorker(
-    new URL('/__SOURCE_ROOT__/endpoint/endpoint.worker.ts', window.location.href)
+    new URL('/__SOURCE_ROOT__/endpoint/endpoint.worker.ts', window.location.href),
   )
 
   runtime = await createSandboxWorkerRuntime({
@@ -33,7 +40,7 @@ test('opens generated settings page', async () => {
 
 test('opens generated order widget sidebar', async () => {
   const sourceWorker = createExtensionSourceWorker(
-    new URL('/__SOURCE_ROOT__/endpoint/endpoint.worker.ts', window.location.href)
+    new URL('/__SOURCE_ROOT__/endpoint/endpoint.worker.ts', window.location.href),
   )
 
   runtime = await createSandboxWorkerRuntime({

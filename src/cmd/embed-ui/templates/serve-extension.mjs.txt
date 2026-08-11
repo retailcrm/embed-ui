@@ -336,7 +336,7 @@ const start = () => {
     if (!extensionRequest.resource) {
       send(request, response, 200, createHtmlManifest(
         extensionPrefix + '/script',
-        entry.stylePath && entry.config.stylesheet !== false ? extensionPrefix + '/stylesheet' : null
+        entry.stylePath && entry.config.stylesheet !== false ? extensionPrefix + '/stylesheet' : null,
       ), {
         'content-type': 'text/html; charset=utf-8',
       })
