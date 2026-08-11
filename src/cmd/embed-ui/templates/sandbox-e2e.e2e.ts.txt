@@ -16,7 +16,7 @@ type ExtensionConfig = {
 
 const extensionBaseURL = process.env.SANDBOX_EXTENSION_URL?.trim()
 const extensionrc = JSON.parse(
-  fs.readFileSync(path.resolve(process.cwd(), 'extensionrc.json'), 'utf8')
+  fs.readFileSync(path.resolve(process.cwd(), 'extensionrc.json'), 'utf8'),
 ) as ExtensionConfig
 const extensionUrl = extensionBaseURL
   ? new URL(extensionrc.uuid, extensionBaseURL).href
@@ -31,7 +31,7 @@ if (!extensionBaseURL) {
 
 test.skip(
   !extensionBaseURL,
-  missingExtensionUrlMessage
+  missingExtensionUrlMessage,
 )
 
 test('loads generated settings page extension and saves settings', async ({ page }) => {

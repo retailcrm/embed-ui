@@ -51,6 +51,9 @@
     "sidebarExpand": "Expandir barra lateral",
     "widgetRunSummary": {
       "component": "Componente",
+      "context": "Contexto",
+      "contextChanged": "Modificado manualmente",
+      "contextFixture": "Contexto original de los datos de prueba",
       "targets": "Puntos de montaje",
       "testData": "Datos de prueba",
       "title": "Ejecución actual",

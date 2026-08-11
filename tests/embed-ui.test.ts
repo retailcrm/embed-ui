@@ -7,13 +7,9 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
-import {
-  afterEach,
-  describe,
-  expect,
-  test,
-  vi,
-} from 'vitest'
+import { afterEach, describe } from 'vitest'
+import { ESLint } from 'eslint'
+import { expect, test, vi } from 'vitest'
 
 import { createDevScript, createPublishScript } from '../src/cmd/embed-ui/templates'
 import { HELP_TEXT } from '../src/cmd/embed-ui/args'
@@ -707,6 +703,66 @@ describe('embed-ui CLI', () => {
       '`vitest.config.ts`, `vitest.config.browser.ts` и `vitest.config.playwright.ts`'
     )
   })
+
+  test('init mode creates starter files that pass generated eslint formatting rules', async () => {
+    const tempDir = createTempDir()
+
+    try {
+      vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+      await runInit({
+        ...parseInitArgs([
+          './web',
+          '--cwd',
+          tempDir,
+          '--package-manager',
+          'npm',
+          '--packages',
+          'embed-ui',
+          '--no-install',
+          '--no-agents',
+          '--no-mcp',
+          '--no-skills',
+        ]),
+        version: '1.2.3',
+      })
+
+      const { default: repositoryEslintConfig } = await import('../eslint.config.js')
+      const eslint = new ESLint({
+        cwd: tempDir,
+        overrideConfigFile: true,
+        overrideConfig: [
+          ...repositoryEslintConfig,
+          {
+            files: ['**/*.{js,mjs,cjs,ts}'],
+            rules: {
+              'comma-dangle': ['error', 'always-multiline'],
+            },
+          },
+        ],
+      })
+      const results = await eslint.lintFiles([
+        'scripts/dev.mjs',
+        'scripts/serve-extension.mjs',
+        'vitest.config.playwright.ts',
+        'web/sandbox/tests/browser/starter.browser.test.ts',
+        'web/sandbox/tests/e2e/starter.e2e.ts',
+        'web/sandbox/tests/unit/extensionrc.test.ts',
+      ])
+      const messages = results.flatMap(result => result.messages.map(message => ({
+        column: message.column,
+        filePath: path.relative(tempDir, result.filePath),
+        line: message.line,
+        message: message.message,
+        ruleId: message.ruleId,
+        severity: message.severity,
+      })))
+
+      expect(messages).toEqual([])
+    } finally {
+      fs.rmSync(tempDir, { force: true, recursive: true })
+    }
+  }, 15_000)
 
   test('init uses a custom source root in the generated browser test worker URL', async () => {
     const tempDir = createTempDir()

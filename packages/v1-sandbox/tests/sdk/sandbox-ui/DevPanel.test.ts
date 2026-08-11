@@ -34,14 +34,20 @@ afterEach(() => {
 
 test('dev panel updates launch fields and context', async () => {
   const props = {
+    activeFixture: 'order-basic',
     applyContextJson: vi.fn(async () => undefined),
     applyLaunchConfig: vi.fn(async () => undefined),
+    applyingContext: false,
     applyingLaunchConfig: false,
+    contextApplySucceeded: false,
+    contextHasManualChanges: false,
     contextJson: '{"order/card":{"number":"215C"}}',
     contextJsonChanged: false,
     downloadContextJson: vi.fn(),
+    extensionConnected: true,
     fixture: 'order-basic',
     formatContextJson: vi.fn(),
+    launchConfigChanged: false,
     manifestUrl: 'http://extension.test/extension/id',
     mode: 'widget' as SandboxLaunchMode,
     pageCode: 'returns',
@@ -88,10 +94,10 @@ test('dev panel updates launch fields and context', async () => {
     name: 'Места встраивания — это области интерфейса CRM для виджетов. Выберите те же места, которые зарегистрированы расширением.',
   })).toBeInstanceOf(HTMLButtonElement)
   expect(screen.getByRole('button', {
-    name: 'Текущий контекст из фикстуры. Измените его, чтобы воспроизвести другое состояние CRM, затем примените контекст.',
+    name: 'Контекст текущего подключённого расширения. Он не зависит от фикстуры, выбранной для следующего запуска.',
   })).toBeInstanceOf(HTMLButtonElement)
 
-  const contextJsonEditor = screen.getByLabelText('JSON контекста') as HTMLTextAreaElement
+  const contextJsonEditor = screen.getByLabelText('JSON контекста текущего запуска') as HTMLTextAreaElement
 
   expect(contextJsonEditor.getAttribute('spellcheck')).toBe('false')
   expect(contextJsonEditor.getAttribute('wrap')).toBe('off')
@@ -116,13 +122,13 @@ test('dev panel updates launch fields and context', async () => {
   await fireEvent.click(targetsSelect)
 
   const fixtureSelect = screen.getByRole('combobox', {
-    name: 'Фикстура',
+    name: 'Выбранная фикстура',
   })
 
   await fireEvent.click(fixtureSelect)
 
   const fixtureListbox = screen.getByRole('listbox', {
-    name: 'Фикстура',
+    name: 'Выбранная фикстура',
   })
 
   expect(within(fixtureListbox).getAllByRole('option').map(option => option.textContent?.trim())).toEqual([
@@ -153,7 +159,7 @@ test('dev panel updates launch fields and context', async () => {
   await fireEvent.update(manifestUrlInput, 'http://extension.test/extension/changed')
   await fireEvent.update(contextJsonEditor, '{"order/card":{"number":"999C"}}')
   await fireEvent.click(screen.getByRole('button', { name: 'Форматировать' }))
-  await fireEvent.click(screen.getByRole('button', { name: 'Сбросить' }))
+  await fireEvent.click(screen.getByRole('button', { name: 'Отменить изменения' }))
   await fireEvent.click(screen.getByRole('button', { name: 'Скачать JSON' }))
   await fireEvent.click(screen.getByRole('button', { name: 'Применить' }))
 
@@ -203,14 +209,20 @@ test('dev panel updates launch fields and context', async () => {
 
 test('dev panel shows only widget settings and their errors in widget mode', () => {
   const props = {
+    activeFixture: 'order-basic',
     applyContextJson: vi.fn(async () => undefined),
     applyLaunchConfig: vi.fn(async () => undefined),
+    applyingContext: false,
     applyingLaunchConfig: false,
+    contextApplySucceeded: false,
+    contextHasManualChanges: false,
     contextJson: '{',
     contextJsonChanged: false,
     downloadContextJson: vi.fn(),
+    extensionConnected: false,
     fixture: 'order-basic',
     formatContextJson: vi.fn(),
+    launchConfigChanged: false,
     manifestUrl: '',
     mode: 'widget' as SandboxLaunchMode,
     pageCode: 'returns',

@@ -26,6 +26,7 @@ test('describes the applied widget run with semantic selectors', () => {
   wrapper = mount(WidgetRunSummary, {
     attachTo: root,
     props: {
+      contextChanged: false,
       fixture: 'order-with-delivery',
       targets: [
         'order/card:common.before',
@@ -53,4 +54,5 @@ test('describes the applied widget run with semantic selectors', () => {
   expect(within(summary).getByText('Виджеты (2)')).toBeInstanceOf(HTMLElement)
   expect(within(targetList).getAllByRole('listitem')).toHaveLength(2)
   expect(within(summary).getByText('Заказ с доставкой')).toBeInstanceOf(HTMLElement)
+  expect(within(summary).getByText('Исходный из фикстуры')).toBeInstanceOf(HTMLElement)
 })

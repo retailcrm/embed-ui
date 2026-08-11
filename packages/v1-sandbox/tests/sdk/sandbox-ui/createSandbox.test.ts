@@ -5,7 +5,7 @@ import { fireEvent } from '@testing-library/vue'
 import { nextTick } from 'vue'
 import { screen } from '@testing-library/vue'
 import { test, vi } from 'vitest'
-import { waitFor, within } from '@testing-library/vue'
+import { within } from '@testing-library/vue'
 
 import { getSandboxLaunchBridge } from '@/automation/bridge'
 import { mountSandbox } from '@/app/createSandbox'
@@ -142,8 +142,7 @@ test('installs launch bridge and creates launch urls from current config', () =>
   expect(readLaunchBridge()).toBeUndefined()
 })
 
-test('applies context json through dev panel', async () => {
-  vi.spyOn(window, 'alert').mockImplementation(() => {})
+test('keeps context apply disabled without connected extension', async () => {
   mountSandboxApp()
 
   await fireEvent.click(screen.getByRole('button', {
@@ -153,7 +152,9 @@ test('applies context json through dev panel', async () => {
   const dialog = await screen.findByRole('dialog', {
     name: 'Управление песочницей',
   })
-  const contextEditor = within(dialog).getByLabelText('JSON контекста') as HTMLTextAreaElement
+
+  const contextEditor = within(dialog).getByLabelText('JSON контекста текущего запуска') as HTMLTextAreaElement
+
   const context = JSON.parse(contextEditor.value) as {
     'order/card': {
       number: string;
@@ -169,13 +170,9 @@ test('applies context json through dev panel', async () => {
     name: 'Применить контекст',
   }) as HTMLButtonElement
 
-  expect(applyContextButton.disabled).toBe(false)
-
-  await fireEvent.click(applyContextButton)
-
-  await waitFor(() => {
-    expect(contextEditor.value).toContain('"number": "999C"')
-  })
+  expect(applyContextButton.disabled).toBe(true)
+  expect(within(dialog).getByText('Расширение не подключено'))
+    .toBeInstanceOf(HTMLElement)
 })
 
 test('shows stored inferred page mode launch notice once', async () => {

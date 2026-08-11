@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.sandbox') })
 const sandboxBaseURL = process.env.SANDBOX_BASE_URL || 'http://127.0.0.1:4173'
 const extensionBaseURL = process.env.SANDBOX_EXTENSION_URL || 'http://127.0.0.1:4175/extension/'
 const extensionrc = JSON.parse(
-  fs.readFileSync(path.resolve(process.cwd(), 'extensionrc.json'), 'utf8')
+  fs.readFileSync(path.resolve(process.cwd(), 'extensionrc.json'), 'utf8'),
 ) as { uuid: string }
 const extensionURL = new URL(extensionrc.uuid, extensionBaseURL).href
 

@@ -51,6 +51,9 @@
     "sidebarExpand": "Развернуть боковую панель",
     "widgetRunSummary": {
       "component": "Компонент",
+      "context": "Контекст",
+      "contextChanged": "Изменён вручную",
+      "contextFixture": "Исходный из фикстуры",
       "targets": "Места встраивания",
       "testData": "Тестовые данные",
       "title": "Текущий запуск",

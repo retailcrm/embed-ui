@@ -239,6 +239,22 @@
                 >
                     {{ props.validationErrors.fixture }}
                 </span>
+
+                <div
+                    :class="$style['dev-panel__state']"
+                    role="status"
+                >
+                    <span>
+                        {{ t('devPanel.currentRunFixture') }}:
+                        <strong>{{ activeFixturePresentation?.name }}</strong>
+                    </span>
+
+                    <span v-if="selectedFixtureChanged">
+                        {{ t('devPanel.fixturePending', {
+                            fixture: selectedFixturePresentation?.name,
+                        }) }}
+                    </span>
+                </div>
             </div>
 
             <div :class="$style['dev-panel__field']">
@@ -268,6 +284,23 @@
                 <span :class="$style['dev-panel__field-hint']">
                     {{ t('devPanel.contextJsonHint') }}
                 </span>
+
+                <div
+                    :class="$style['dev-panel__state']"
+                    role="status"
+                >
+                    <span v-if="!props.extensionConnected">
+                        {{ t('devPanel.contextState.disconnected') }}
+                    </span>
+
+                    <span v-else-if="props.contextHasManualChanges">
+                        {{ t('devPanel.contextState.changed') }}
+                    </span>
+
+                    <span v-else>
+                        {{ t('devPanel.contextState.fixture') }}
+                    </span>
+                </div>
 
                 <UiTextbox
                     :id="uid + '-dev-panel-context-json'"
@@ -318,12 +351,19 @@
                         {{ t('devPanel.actions.downloadContextJson') }}
                     </UiButton>
                 </div>
+
+                <span
+                    v-if="props.launchConfigChanged"
+                    :class="$style['dev-panel__field-hint']"
+                >
+                    {{ t('devPanel.contextLaunchPending') }}
+                </span>
             </div>
 
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
                 <UiButton
                     appearance="primary"
-                    :disabled="isApplyDisabled || props.applyingLaunchConfig"
+                    :disabled="isApplyDisabled || props.applyingContext || props.applyingLaunchConfig"
                     @click="props.applyLaunchConfig"
                 >
                     {{ t('devPanel.actions.apply') }}
@@ -331,12 +371,24 @@
 
                 <UiButton
                     appearance="secondary"
-                    :disabled="!props.contextJsonChanged"
+                    :disabled="isApplyContextDisabled"
                     @click="props.applyContextJson"
                 >
                     {{ t('devPanel.actions.applyContextJson') }}
                 </UiButton>
             </div>
+
+            <span :class="$style['dev-panel__field-hint']">
+                {{ t('devPanel.applyLaunchHint') }}
+            </span>
+
+            <UiAlert
+                v-if="props.contextApplySucceeded"
+                :text="t('devPanel.contextApplied')"
+                variant="success"
+                closable
+                small
+            />
         </section>
     </aside>
 </template>
@@ -350,6 +402,7 @@ import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
 import {
+  UiAlert,
   UiButton,
   UiPopperConnector,
   UiTextbox,
@@ -365,14 +418,20 @@ import { isValidSandboxPageCode } from '@/scenario/validation'
 import { ORDER_SANDBOX_SLOTS } from '@/scenario/targets'
 
 const props = defineProps<{
+  activeFixture: string;
   applyLaunchConfig(): Promise<void>;
   applyContextJson(): Promise<void>;
+  applyingContext: boolean;
   applyingLaunchConfig: boolean;
+  contextApplySucceeded: boolean;
+  contextHasManualChanges: boolean;
   contextJson: string;
   contextJsonChanged: boolean;
   downloadContextJson(): void;
+  extensionConnected: boolean;
   fixture: string;
   formatContextJson(): void;
+  launchConfigChanged: boolean;
   manifestUrl: string;
   mode: SandboxLaunchMode;
   pageCode: string;
@@ -405,10 +464,17 @@ const modeOptions = computed<Array<{
   },
 ])
 const fixturePresentations = computed(() => getOrderSandboxFixturePresentations(tGlobal))
+const activeFixturePresentation = computed(() => fixturePresentations.value.find(
+  fixture => fixture.code === props.activeFixture
+))
 const fixtureOptions = computed(() => fixturePresentations.value.map(fixture => ({
   label: fixture.name,
   value: fixture.code,
 })))
+const selectedFixturePresentation = computed(() => fixturePresentations.value.find(
+  fixture => fixture.code === props.fixture
+))
+const selectedFixtureChanged = computed(() => props.fixture !== props.activeFixture)
 const fixtureTooltip = computed(() => fixturePresentations.value
   .map(fixture => `${fixture.name}: ${fixture.description}`)
   .join(' ')
@@ -424,6 +490,13 @@ const isApplyDisabled = computed(() => {
 
   return props.selectedTargets.length === 0
 })
+const isApplyContextDisabled = computed(() =>
+  !props.contextJsonChanged
+  || !props.extensionConnected
+  || props.launchConfigChanged
+  || props.applyingContext
+  || props.applyingLaunchConfig
+)
 
 const updateManifestUrl = (value: string | number) => {
   props.setManifestUrl(String(value))
@@ -459,13 +532,23 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
             "applyContextJson": "Apply context",
             "downloadContextJson": "Download JSON",
             "formatContextJson": "Format",
-            "resetContextJson": "Reset"
+            "resetContextJson": "Undo changes"
         },
-        "contextJson": "Context JSON",
-        "contextJsonHint": "Edit fixture-backed contexts for the current run. Applying this JSON reloads the extension.",
+        "applyLaunchHint": "Applying launch settings restarts the extension with the selected fixture and replaces the current context, including manual changes.",
+        "contextApplied": "Context applied. The extension has been restarted.",
+        "contextJson": "Current run Context JSON",
+        "contextJsonHint": "Edit the context used by the current run. Applying this JSON restarts the connected extension without changing its launch settings.",
+        "contextLaunchPending": "Apply the changed launch settings before applying context.",
+        "contextState": {
+            "changed": "Context changed manually",
+            "disconnected": "Extension is not connected",
+            "fixture": "Original fixture context"
+        },
+        "currentRunFixture": "Current run",
         "extensionHint": "Enter the full extension URL using the example shown in the field. Replace the UUID with the value from extensionrc.json and make sure the resulting page opens in the browser.",
         "extensionUrl": "Manifest / extension URL",
-        "fixture": "Fixture",
+        "fixture": "Selected fixture",
+        "fixturePending": "The “{fixture}” fixture has not been applied yet. Use Apply to start it.",
         "mode": "Mode",
         "modeOptions": {
             "page": "Page",
@@ -477,7 +560,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsHint": "Targets are CRM slots where widget runners are mounted. They are used only in widget mode.",
         "targetsPlaceholder": "Select mount targets",
         "tooltips": {
-            "contextJson": "Current fixture context. Edit it to simulate another CRM state, then apply context.",
+            "contextJson": "Context used by the current connected extension. It is independent from the fixture selected for the next launch.",
             "extensionUrl": "The extension URL can point to any external application that serves the extension, for example http://web-extensions-server.simla.local/extension/.",
             "mode": "Widgets mount into selected CRM targets. Page mounts a page runner by page code.",
             "pageCode": "Use the code from the extension pages registration, not the extension id. Only Latin letters (A–Z, a–z) and hyphens are allowed.",
@@ -495,13 +578,23 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
             "applyContextJson": "Aplicar contexto",
             "downloadContextJson": "Descargar JSON",
             "formatContextJson": "Formatear",
-            "resetContextJson": "Restablecer"
+            "resetContextJson": "Deshacer cambios"
         },
-        "contextJson": "Contexto JSON",
-        "contextJsonHint": "Edite los contextos basados en los datos de prueba de la ejecución actual. Al aplicar este JSON se recarga la extensión.",
+        "applyLaunchHint": "Al aplicar los parámetros de inicio, la extensión se reinicia con los datos de prueba seleccionados y se sustituye el contexto actual, incluidos los cambios manuales.",
+        "contextApplied": "Contexto aplicado. La extensión se ha reiniciado.",
+        "contextJson": "JSON del contexto de la ejecución actual",
+        "contextJsonHint": "Edite el contexto de la ejecución actual. Al aplicar este JSON, la extensión conectada se reinicia sin cambiar sus parámetros de inicio.",
+        "contextLaunchPending": "Aplique los parámetros de inicio modificados antes de aplicar el contexto.",
+        "contextState": {
+            "changed": "Contexto modificado manualmente",
+            "disconnected": "La extensión no está conectada",
+            "fixture": "Contexto original de los datos de prueba"
+        },
+        "currentRunFixture": "Ejecución actual",
         "extensionHint": "Introduzca la URL completa utilizando el ejemplo del campo. Sustituya el UUID por el valor de extensionrc.json y compruebe que la página resultante se abre en el navegador.",
         "extensionUrl": "Manifiesto / URL de la extensión",
-        "fixture": "Datos de prueba",
+        "fixture": "Datos de prueba seleccionados",
+        "fixturePending": "Los datos de prueba «{fixture}» aún no se han aplicado. Utilice «Aplicar» para iniciarlos.",
         "mode": "Modo",
         "modeOptions": {
             "page": "Página",
@@ -513,7 +606,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsHint": "Los puntos de montaje son áreas de la interfaz de CRM donde se ejecutan los widgets. Solo se utilizan en el modo «Widgets».",
         "targetsPlaceholder": "Seleccione los puntos de montaje",
         "tooltips": {
-            "contextJson": "Contexto actual de los datos de prueba. Edítelo para simular otro estado de CRM y aplique el contexto.",
+            "contextJson": "Contexto utilizado por la extensión conectada actualmente. Es independiente de los datos de prueba seleccionados para el siguiente inicio.",
             "extensionUrl": "La URL de la extensión puede apuntar a cualquier aplicación externa que sirva la extensión, por ejemplo http://web-extensions-server.simla.local/extension/.",
             "mode": "En el modo «Widgets», los widgets se añaden a los puntos de montaje seleccionados. En el modo «Página», se ejecuta una página mediante su código.",
             "pageCode": "Utilice el valor code del registro pages, no el UUID de la extensión. Solo se permiten letras latinas (A–Z, a–z) y guiones.",
@@ -531,13 +624,23 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
             "applyContextJson": "Применить контекст",
             "downloadContextJson": "Скачать JSON",
             "formatContextJson": "Форматировать",
-            "resetContextJson": "Сбросить"
+            "resetContextJson": "Отменить изменения"
         },
-        "contextJson": "JSON контекста",
-        "contextJsonHint": "Изменяет контексты, созданные на основе выбранной фикстуры. После применения расширение перезапускается.",
+        "applyLaunchHint": "Применение параметров запуска перезапускает расширение с выбранной фикстурой и заменяет текущий контекст, включая ручные изменения.",
+        "contextApplied": "Контекст применён. Расширение перезапущено.",
+        "contextJson": "JSON контекста текущего запуска",
+        "contextJsonHint": "Изменяет контекст текущего запуска. После применения подключённое расширение перезапускается без изменения параметров запуска.",
+        "contextLaunchPending": "Сначала примените изменённые параметры запуска, затем изменяйте контекст.",
+        "contextState": {
+            "changed": "Контекст изменён вручную",
+            "disconnected": "Расширение не подключено",
+            "fixture": "Исходный контекст фикстуры"
+        },
+        "currentRunFixture": "Текущий запуск",
         "extensionHint": "Укажите полный URL расширения по примеру в поле. Замените UUID на значение из extensionrc.json и убедитесь, что получившаяся страница открывается в браузере.",
         "extensionUrl": "Манифест / URL расширения",
-        "fixture": "Фикстура",
+        "fixture": "Выбранная фикстура",
+        "fixturePending": "Фикстура «{fixture}» ещё не применена. Запустите её кнопкой «Применить».",
         "mode": "Режим",
         "modeOptions": {
             "page": "Страница",
@@ -549,7 +652,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsHint": "Места встраивания — это области интерфейса CRM, в которых запускаются виджеты. Они используются только в режиме «Виджеты».",
         "targetsPlaceholder": "Выберите места встраивания",
         "tooltips": {
-            "contextJson": "Текущий контекст из фикстуры. Измените его, чтобы воспроизвести другое состояние CRM, затем примените контекст.",
+            "contextJson": "Контекст текущего подключённого расширения. Он не зависит от фикстуры, выбранной для следующего запуска.",
             "extensionUrl": "URL расширения может указывать на любое стороннее приложение, которое отдаёт расширение, например http://web-extensions-server.simla.local/extension/.",
             "mode": "В режиме «Виджеты» виджеты добавляются в выбранные места встраивания. В режиме «Страница» запускается страница по её коду.",
             "pageCode": "Укажите значение code из массива pages в дескрипторе, а не UUID расширения. Допустимы только латинские буквы (A–Z, a–z) и дефисы.",
@@ -627,6 +730,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         display: flex;
         flex-wrap: wrap;
         gap: @spacing-xs;
+        padding-top: @spacing-xs;
     }
 
     &__field-label {
@@ -641,6 +745,17 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         color: @grey-900;
         font-size: 12px;
         line-height: 1.35;
+    }
+
+    &__state {
+        background: @grey-200;
+        border-radius: @border-radius-sm;
+        color: @grey-900;
+        display: grid;
+        font-size: 12px;
+        gap: 4px;
+        line-height: 1.35;
+        padding: @spacing-xs;
     }
 
     &__error {
