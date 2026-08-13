@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config'
 import { playwright } from '@vitest/browser-playwright'
 
 export default defineConfig({
+  root: __dirname,
   define: {
     __VUE_OPTIONS_API__: true,
     __VUE_PROD_DEVTOOLS__: false,
@@ -14,15 +15,22 @@ export default defineConfig({
       'fast-deep-equal',
       '@retailcrm/image-preview',
       'date-fns',
+      'date-fns/locale',
     ],
   },
+  server: {
+    watch: null,
+  },
   test: {
-    include: ['tests/**/*.e2e.ts'],
+    fileParallelism: false,
+    name: '@retailcrm/embed-ui-v1-endpoint:browser',
+    include: ['tests/**/*.test.browser.ts'],
     browser: {
       enabled: true,
       provider: playwright({
         launchOptions: {
           channel: 'chromium',
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
         },
       }),
       headless: true,
