@@ -94,8 +94,7 @@
     "build:docs": "npx tsx scripts/build.docs.ts",
     "build:mcp": "vite build -c ./vite.config.mcp.ts",
     "build:meta": "npx tsx scripts/build.meta.ts",
-    "test:e2e": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
-    "test:playwright": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
+    "test:browser": "vitest --run --config ./vitest.config.browser.ts",
     "test": "vitest --run"
   },
   "peerDependencies": {
