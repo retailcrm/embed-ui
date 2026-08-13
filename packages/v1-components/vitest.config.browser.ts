@@ -6,6 +6,7 @@ import basic from './vite.config.basic'
 export default mergeConfig(
   basic,
   defineConfig({
+    root: __dirname,
     define: {
       __VUE_OPTIONS_API__: true,
       __VUE_PROD_DEVTOOLS__: false,
@@ -23,13 +24,19 @@ export default mergeConfig(
         'vue3-perfect-scrollbar',
       ],
     },
+    server: {
+      watch: null,
+    },
     test: {
-      include: ['tests/**/*.e2e.ts'],
+      fileParallelism: false,
+      name: '@retailcrm/embed-ui-v1-components:browser',
+      include: ['tests/**/*.test.browser.ts'],
       browser: {
         enabled: true,
         provider: playwright({
           launchOptions: {
             channel: 'chromium',
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
           },
         }),
         headless: true,
