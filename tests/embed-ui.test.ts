@@ -496,7 +496,7 @@ describe('embed-ui CLI', () => {
       'include: [\'web/sandbox/tests/unit/**/*.test.ts\']'
     )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.browser.ts'), 'utf8')).toContain(
-      'include: [\'web/sandbox/tests/browser/**/*.browser.test.ts\']'
+      'include: [\'web/sandbox/tests/browser/**/*.test.browser.ts\']'
     )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.browser.ts'), 'utf8')).toContain(
       '@retailcrm/embed-ui-v1-components/remote'
@@ -610,10 +610,10 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/unit/extensionrc.test.ts'), 'utf8')).toContain(
       'expect(extensionrc.targets).toContain(\'order/card:common.after\')'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.browser.test.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.test.browser.ts'), 'utf8')).toContain(
       'createSandboxWorkerRuntime'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.browser.test.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.test.browser.ts'), 'utf8')).toContain(
       'new URL(\'/web/endpoint/endpoint.worker.ts\', window.location.href)'
     )
     expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
@@ -745,7 +745,7 @@ describe('embed-ui CLI', () => {
         'scripts/dev.mjs',
         'scripts/serve-extension.mjs',
         'vitest.config.playwright.ts',
-        'web/sandbox/tests/browser/starter.browser.test.ts',
+        'web/sandbox/tests/browser/starter.test.browser.ts',
         'web/sandbox/tests/e2e/starter.e2e.ts',
         'web/sandbox/tests/unit/extensionrc.test.ts',
       ])
@@ -788,7 +788,7 @@ describe('embed-ui CLI', () => {
     })
 
     const browserTest = fs.readFileSync(
-      path.join(tempDir, 'frontend/sandbox/tests/browser/starter.browser.test.ts'),
+      path.join(tempDir, 'frontend/sandbox/tests/browser/starter.test.browser.ts'),
       'utf8'
     )
 

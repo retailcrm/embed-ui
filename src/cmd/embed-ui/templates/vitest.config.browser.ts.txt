@@ -20,14 +20,16 @@ export default mergeConfig(viteConfig, defineConfig({
   },
   server: {
     allowedHosts: true,
+    watch: null,
   },
   test: {
-    include: ['__SOURCE_ROOT__/sandbox/tests/browser/**/*.browser.test.ts'],
+    include: ['__SOURCE_ROOT__/sandbox/tests/browser/**/*.test.browser.ts'],
     browser: {
       enabled: true,
       provider: playwright({
         launchOptions: {
           channel: 'chromium',
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
         },
       }),
       headless: true,
