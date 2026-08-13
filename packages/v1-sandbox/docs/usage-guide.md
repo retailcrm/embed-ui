@@ -545,7 +545,7 @@ yarn workspace @retailcrm/embed-ui-v1-sandbox test:browser
 Current browser examples live in:
 
 ```text
-tests/sdk/automation/*.browser.test.ts
+tests/sdk/automation/*.test.browser.ts
 ```
 
 ### Playwright Extension Tests E2E
@@ -612,7 +612,10 @@ Variables:
   `http://v1.embed-ui-sandbox.test` on Linux/Traefik.
 - `SANDBOX_EXTENSION_URL`: extension server prefix in the form
   `%extension-url%/extension/`. Tests append the extension UUID from the fixture
-  descriptor to get the backend endpoint.
+  descriptor to get the backend endpoint. For this repository's own E2E suite,
+  an empty value makes Playwright build and start the local fixture extension
+  server at `http://127.0.0.1:4175/extension/`; set the variable to override it
+  with an external server.
 
 Typical local page test values:
 

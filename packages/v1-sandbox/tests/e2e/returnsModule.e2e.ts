@@ -2,15 +2,13 @@ import { expect, test } from '@playwright/test'
 
 import { createSandboxPagePath } from '../__utils__/sandbox'
 import { getExtensionPageCodes } from '../__utils__/extensions'
-import { hasSandboxExtensionBaseUrl } from '../__utils__/sandbox'
 import { readExtensionFixture } from '../__utils__/extensions'
 import { readSandboxSnapshot } from '../__utils__/sandbox'
 
 const extension = readExtensionFixture('returnsModule')
 const [pageCode] = getExtensionPageCodes(extension)
 
-test.skip(!hasSandboxExtensionBaseUrl(), 'SANDBOX_EXTENSION_URL is required.')
-test.skip(!pageCode, 'returnsModule fixture has no page descriptor.')
+if (!pageCode) throw new Error('returnsModule fixture has no page descriptor.')
 
 test('loads returns page extension, filters, opens and saves return', async ({ page }) => {
   await page.goto(createSandboxPagePath(extension, pageCode))
@@ -20,6 +18,11 @@ test('loads returns page extension, filters, opens and saves return', async ({ p
   await expect(page.getByRole('button', { name: 'Возвраты' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Создать возврат' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Список возвратов' })).toBeVisible()
+  await expect.poll(async () => {
+    const snapshot = await readSandboxSnapshot(page)
+
+    return snapshot.host.http.find(record => record.action === '/returns')?.response
+  }).toMatchObject({ status: 200 })
   await expect(page.locator('body')).toContainText(/Найдено:\s*\d+/u)
 
   await page.getByPlaceholder('Например 100245').fill('100245')

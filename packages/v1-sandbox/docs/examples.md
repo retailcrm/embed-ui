@@ -103,8 +103,8 @@ runtime that injects a sandbox HostAPI middleware. The `v1-sandbox` repository
 contains examples of that pattern:
 
 ```text
-tests/sdk/automation/returnsModule.browser.test.ts
-tests/sdk/automation/promoModule.browser.test.ts
+tests/sdk/automation/returnsModule.test.browser.ts
+tests/sdk/automation/promoModule.test.browser.ts
 ```
 
 Those examples run real worker extension entrypoints in Chromium, mock HostAPI

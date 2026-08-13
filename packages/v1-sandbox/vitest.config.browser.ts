@@ -13,15 +13,19 @@ export default mergeConfig(basic, defineConfig({
   },
   server: {
     allowedHosts: true,
+    watch: null,
   },
   test: {
-    include: ['tests/**/*.browser.test.ts'],
+    fileParallelism: false,
+    name: '@retailcrm/embed-ui-v1-sandbox:browser',
+    include: ['tests/**/*.test.browser.ts'],
     reporters: ['dot'],
     browser: {
       enabled: true,
       provider: playwright({
         launchOptions: {
           channel: 'chromium',
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
         },
       }),
       headless: true,
