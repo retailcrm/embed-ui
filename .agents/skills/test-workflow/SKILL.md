@@ -50,7 +50,7 @@ Default to `*.test.ts` for:
 - Vue props, slots, events, form behavior, and observable DOM state;
 - controllers and Host API state that do not require real browser behavior.
 
-Do not fake layout geometry, computed styles, focus quirks, or browser rendering in jsdom.
+Coverage is enabled by default. Do not fake layout geometry, computed styles, focus quirks, or browser rendering in jsdom.
 
 ### Typecheck
 
@@ -64,18 +64,12 @@ Do not replace runtime behavior tests with type assertions.
 
 ### Vitest Browser
 
-Use a real Chromium environment when behavior depends on:
+Use `packages/*/tests/**/*.test.browser.ts` in a real Chromium environment when behavior depends on:
 
 - layout, geometry, computed styles, selection, scrolling, or focus;
 - Floating UI and popper positioning;
 - Web Workers;
 - `@omnicajs/vue-remote` and Host/Remote RPC.
-
-File patterns differ by workspace:
-
-- `packages/v1-components/tests/**/*.e2e.ts`;
-- `packages/v1-endpoint/tests/**/*.e2e.ts`;
-- `packages/v1-sandbox/tests/**/*.browser.test.ts`.
 
 Sandbox browser tests exercise workers, components, fixtures, and mocked Host API without requiring an external extension server.
 
@@ -153,12 +147,10 @@ Do not create cross-workspace aggregator tests or implementation-detail assertio
 Choose the narrowest command that proves the change:
 
 - jsdom: `yarn test <path>` or `make tests cli="<path>"`;
-- typecheck: `make tests-typecheck`;
-- v1-components browser: `make tests-e2e cli="-t <name>"`;
-- v1-endpoint browser: `yarn workspace @retailcrm/embed-ui-v1-endpoint test:e2e`;
-- v1-sandbox browser: `yarn test:browser`;
-- v1-sandbox Playwright: `yarn workspace @retailcrm/embed-ui-v1-sandbox test:e2e`;
-- coverage: `yarn test:coverage` or `make tests-coverage`.
+- typecheck: `yarn test:typecheck` or `make tests-typecheck`;
+- Vitest Browser: `yarn test:browser` or `make tests-browser cli="-t <name>"`;
+- Playwright delivery e2e: `yarn test:e2e` or `make tests-e2e cli="-g <name>"`;
+- Storybook shot: `make storybook.shot`.
 
 ## Refusal Template
 

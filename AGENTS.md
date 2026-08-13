@@ -52,9 +52,21 @@ yarn workspaces foreach -A --topological-dev run build
 ```bash
 yarn eslint
 ```
-- Run tests:
+- Run basic tests with coverage:
 ```bash
 yarn test
+```
+- Run typecheck tests:
+```bash
+yarn test:typecheck
+```
+- Run Vitest Browser tests:
+```bash
+yarn test:browser
+```
+- Run Playwright end-to-end tests for `v1-sandbox`:
+```bash
+yarn test:e2e
 ```
 
 ### Docker Path (Makefile)
@@ -66,9 +78,21 @@ make node_modules
 ```bash
 make build
 ```
-- Run tests:
+- Run basic tests with coverage:
 ```bash
 make tests
+```
+- Run typecheck tests:
+```bash
+make tests-typecheck
+```
+- Run Vitest Browser tests:
+```bash
+make tests-browser
+```
+- Run Playwright end-to-end tests for `v1-sandbox`:
+```bash
+make tests-e2e
 ```
 - Pass custom Vitest CLI arguments via Makefile:
 ```bash

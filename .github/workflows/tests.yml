@@ -76,37 +76,29 @@ jobs:
       - name: Run tests
         run: yarn test
 
-      - name: Run coverage
-        if: ${{ startsWith(matrix.node-version, '24.') }}
-        run: yarn test:coverage
-
       - name: Run typecheck tests
-        run: yarn vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json
+        run: yarn test:typecheck
 
       - name: Install Playwright Chromium
         if: ${{ startsWith(matrix.node-version, '24.') }}
-        run: yarn workspace @retailcrm/embed-ui-v1-endpoint exec playwright install --with-deps chromium
+        run: yarn workspace @retailcrm/embed-ui-v1-sandbox exec playwright install --with-deps chromium
 
-      - name: Run v1-sandbox browser mode tests
+      - name: Run browser mode tests
         if: ${{ startsWith(matrix.node-version, '24.') }}
         run: yarn test:browser
 
-      - name: Upload v1-sandbox browser screenshots
-        if: ${{ failure() && startsWith(matrix.node-version, '24.') }}
-        uses: actions/upload-artifact@v6
-        with:
-          name: v1-sandbox-browser-screenshots-${{ matrix.node-version }}
-          path: packages/v1-sandbox/artifacts/browser/screenshots
-          if-no-files-found: ignore
-
-      - name: Run v1-endpoint e2e tests
+      - name: Run end-to-end tests
         if: ${{ startsWith(matrix.node-version, '24.') }}
-        run: yarn workspace @retailcrm/embed-ui-v1-endpoint run test:e2e
+        run: yarn test:e2e
 
-      - name: Upload v1-endpoint e2e screenshots
+      - name: Upload browser artifacts on failure
         if: ${{ failure() && startsWith(matrix.node-version, '24.') }}
         uses: actions/upload-artifact@v6
         with:
-          name: v1-endpoint-playwright-screenshots-${{ matrix.node-version }}
-          path: packages/v1-endpoint/artifacts/playwright/screenshots
+          name: browser-artifacts-${{ matrix.node-version }}
+          path: |
+            packages/*/artifacts/browser/screenshots
+            packages/*/artifacts/playwright/screenshots
+            packages/v1-sandbox/artifacts/playwright/results
+            packages/v1-sandbox/playwright-report
           if-no-files-found: ignore
