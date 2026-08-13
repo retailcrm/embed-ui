@@ -13,9 +13,10 @@ import { expect, test, vi } from 'vitest'
 
 import { createDevScript, createPublishScript } from '../src/cmd/embed-ui/templates'
 import { HELP_TEXT } from '../src/cmd/embed-ui/args'
-import { isSameExecutablePath, parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
+import { isSameExecutablePath } from '../src/cmd/embed-ui'
+import * as packageHookRunner from '../src/cmd/embed-ui/package-hook-runner'
+import { parseArgs, parseInitArgs } from '../src/cmd/embed-ui'
 import { resolveCurrentPackageVersion } from '../src/cmd/embed-ui/packages'
-import { resolvePackageHookCommand } from '../src/cmd/embed-ui/package-hook-runner'
 import { runAdd, runInit, runUpdate } from '../src/cmd/embed-ui'
 
 const createTempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'embed-ui-'))
@@ -27,6 +28,9 @@ const writeFile = (filePath: string, content: string) => {
 
 const readJsonFile = <T>(filePath: string): T =>
   JSON.parse(fs.readFileSync(filePath, 'utf8')) as T
+
+const stubPackageHooks = () =>
+  vi.spyOn(packageHookRunner, 'runPackageHookCommand').mockResolvedValue(undefined)
 
 const runGeneratedDevScript = (args: string[]) => {
   const tempDir = createTempDir()
@@ -376,6 +380,7 @@ describe('embed-ui CLI', () => {
     const tempDir = createTempDir()
 
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
+    stubPackageHooks()
     vi.stubEnv('LANG', 'ru_RU.UTF-8')
 
     await runInit({
@@ -834,6 +839,7 @@ describe('embed-ui CLI', () => {
     const tempDir = createTempDir()
 
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
+    stubPackageHooks()
 
     await runInit({
       ...parseInitArgs([
@@ -893,6 +899,7 @@ describe('embed-ui CLI', () => {
       '',
     ].join('\n'))
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
+    stubPackageHooks()
 
     await runInit({
       ...parseInitArgs([
@@ -1030,7 +1037,6 @@ describe('embed-ui CLI', () => {
     vi.spyOn(console, 'log').mockImplementation((...args) => {
       logs.push(args.join(' '))
     })
-
     await runInit({
       ...parseInitArgs([
         './web',
@@ -1071,6 +1077,7 @@ describe('embed-ui CLI', () => {
     vi.spyOn(console, 'log').mockImplementation((...args) => {
       logs.push(args.join(' '))
     })
+    stubPackageHooks()
 
     await runInit({
       ...parseInitArgs([
@@ -1216,7 +1223,7 @@ describe('embed-ui CLI', () => {
     )
 
     expect(
-      resolvePackageHookCommand(
+      packageHookRunner.resolvePackageHookCommand(
         tempDir,
         '@retailcrm/embed-ui-v1-endpoint',
         'embed-ui-v1-endpoint',
@@ -1228,7 +1235,7 @@ describe('embed-ui CLI', () => {
     ).toContain('yarn dlx -p @retailcrm/embed-ui-v1-endpoint@1.2.3 embed-ui-v1-endpoint init-config')
 
     expect(
-      resolvePackageHookCommand(
+      packageHookRunner.resolvePackageHookCommand(
         tempDir,
         '@retailcrm/embed-ui-v1-endpoint',
         'embed-ui-v1-endpoint',
@@ -1244,7 +1251,7 @@ describe('embed-ui CLI', () => {
       JSON.stringify({ name: '@retailcrm/embed-ui-v1-endpoint' })
     )
 
-    expect(() => resolvePackageHookCommand(
+    expect(() => packageHookRunner.resolvePackageHookCommand(
       brokenInstallDir,
       '@retailcrm/embed-ui-v1-endpoint',
       'embed-ui-v1-endpoint',
@@ -1255,7 +1262,7 @@ describe('embed-ui CLI', () => {
     writeFile(localBinPath, '')
 
     expect(
-      resolvePackageHookCommand(
+      packageHookRunner.resolvePackageHookCommand(
         tempDir,
         '@retailcrm/embed-ui-v1-endpoint',
         'embed-ui-v1-endpoint',
@@ -1637,6 +1644,7 @@ describe('embed-ui CLI', () => {
     }, null, 2))
 
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
+    stubPackageHooks()
 
     await runInit({
       ...parseInitArgs([
@@ -1678,6 +1686,7 @@ describe('embed-ui CLI', () => {
     vi.spyOn(console, 'log').mockImplementation((...args) => {
       logs.push(args.join(' '))
     })
+    stubPackageHooks()
 
     await runInit({
       ...parseInitArgs([
