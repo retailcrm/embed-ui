@@ -2,14 +2,14 @@ import { expect, test } from '@playwright/test'
 
 import { createSandboxPagePath, createSandboxWidgetPath } from '../__utils__/sandbox'
 import { getExtensionPageCodes, getExtensionTargets } from '../__utils__/extensions'
-import { hasSandboxExtensionBaseUrl } from '../__utils__/sandbox'
 import { readExtensionFixture } from '../__utils__/extensions'
 
 const extension = readExtensionFixture('promoModule')
 const [pageCode] = getExtensionPageCodes(extension)
 const [target] = getExtensionTargets(extension)
 
-test.skip(!hasSandboxExtensionBaseUrl(), 'SANDBOX_EXTENSION_URL is required.')
+if (!pageCode) throw new Error('promoModule fixture has no page descriptor.')
+if (!target) throw new Error('promoModule fixture has no widget target.')
 
 test('keeps context actions disabled without a connected extension', async ({ page }) => {
   const runtimeErrors: string[] = []
@@ -37,8 +37,6 @@ test('keeps context actions disabled without a connected extension', async ({ pa
 })
 
 test('loads promo module page extension', async ({ page }) => {
-  test.skip(!pageCode, 'promoModule fixture has no page descriptor.')
-
   await page.goto(createSandboxPagePath(extension, pageCode))
 
   await expect(page).toHaveURL(/mode=page/u)
@@ -48,8 +46,6 @@ test('loads promo module page extension', async ({ page }) => {
 })
 
 test('loads promo module widget extension from target descriptor', async ({ page }) => {
-  test.skip(!target, 'promoModule fixture has no widget target.')
-
   await page.goto(createSandboxWidgetPath(extension, target))
 
   const widgetMount = page.getByRole('region', {

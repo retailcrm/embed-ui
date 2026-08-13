@@ -105,6 +105,7 @@
     "build": "yarn build:code && yarn build:app",
     "build:app": "vite build -c ./vite.config.app.ts",
     "build:code": "vite build -c ./vite.config.ts && vite build -c ./vite.config.node.ts",
+    "build:e2e-extensions": "vite build -c ./vite.config.e2e-extension.ts",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "coverage:clean": "rm -rf artifacts/coverage && mkdir -p artifacts/coverage/.tmp artifacts/coverage/merged",
     "coverage:merge": "bash scripts/coverage/merge.sh",
@@ -114,7 +115,8 @@
     "test:browser": "vitest --run --config ./vitest.config.browser.ts --coverage",
     "test:all": "yarn coverage:clean && yarn test:jsdom --coverage.reporter=json && yarn test:browser --coverage.reporter=json && yarn coverage:merge && yarn coverage:report",
     "test:e2e": "playwright test -c vitest.config.playwright.ts",
-    "dev:e2e": "yarn vite --host 0.0.0.0 --port 4173"
+    "dev:e2e": "yarn vite --host 0.0.0.0 --port 4173",
+    "serve:e2e-extensions": "vite -c ./vite.config.e2e-extension.ts --host 127.0.0.1"
   },
   "peerDependencies": {
     "@omnicajs/vue-remote": "^0.2.24",

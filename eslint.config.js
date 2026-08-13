@@ -176,5 +176,6 @@ export default defineConfig([
   { ignores: ['src/cmd/embed-ui/templates/**'] },
   { ignores: ['packages/**/generated/**'] },
   { ignores: ['packages/**/tests/__fixtures__/.serve/**'] },
+  { ignores: ['packages/v1-sandbox/artifacts/e2e/**'] },
   { ignores: ['packages/v1-sandbox/playwright-report/**'] },
 ])
