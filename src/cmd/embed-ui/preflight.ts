@@ -88,7 +88,7 @@ const TEMPLATE_FILE_IMPACTS = [
     impact: 'starter unit test will not be generated',
   },
   {
-    relativePath: 'sandbox/tests/browser/starter.browser.test.ts',
+    relativePath: 'sandbox/tests/browser/starter.test.browser.ts',
     impact: 'starter browser test will not be generated',
   },
   {

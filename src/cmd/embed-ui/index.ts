@@ -474,7 +474,7 @@ const applyInitTemplate = (
   writeFileIfAllowed(path.join(sourceRoot, 'pages/SettingsPage.vue'), createSettingsPage(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'widgets/OrderCommonAfterWidget.vue'), createOrderWidget(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/unit/extensionrc.test.ts'), createSandboxUnitTest(options), options, changes)
-  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/browser/starter.browser.test.ts'), createSandboxBrowserTest(cwd, sourceRoot, options), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/browser/starter.test.browser.ts'), createSandboxBrowserTest(cwd, sourceRoot, options), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/e2e/starter.e2e.ts'), createSandboxE2eTest(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'extensionrc.json'), createExtensionConfig(options), options, changes)
   writeFileIfAllowed(path.join(cwd, 'scripts/publish-extension.mjs'), createPublishScript(), options, changes)

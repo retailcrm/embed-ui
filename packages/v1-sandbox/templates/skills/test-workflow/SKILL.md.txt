@@ -37,7 +37,7 @@ Do not assert private component state, `vm`, refs, private helpers, incidental D
 Generated tests live under `<source-root>/sandbox/tests`:
 
 - `unit/*.test.ts`;
-- `browser/*.browser.test.ts`;
+- `browser/*.test.browser.ts`;
 - `e2e/*.e2e.ts`.
 
 The source root is the frontend directory selected during `init`; do not assume it is always `src` or `web`.
