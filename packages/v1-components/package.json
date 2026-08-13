@@ -56,8 +56,7 @@
     "build:host": "vite build -c ./vite.config.host.ts",
     "build:remote": "vite build -c ./vite.config.remote.ts && sh -c 'cp dist/remote/* dist/ && rm -rf dist/remote'",
     "postinstall": "node ./bin/postinstall.mjs",
-    "test:e2e": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
-    "test:playwright": "yarn exec vitest --run --config ./vitest.config.playwright.ts",
+    "test:browser": "vitest --run --config ./vitest.config.browser.ts",
     "storybook:build": "storybook build -c storybook -o ./storybook/dist",
     "storybook:serve": "storybook dev -c storybook -p 6006 --no-open",
     "storybook:shot": "tsx ./storybook/scripts/shot.ts"
