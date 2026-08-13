@@ -1,12 +1,13 @@
 import { join } from 'node:path'
 
-import { defineConfig, mergeConfig } from 'vitest/config'
+import { defaultExclude, defineConfig, mergeConfig } from 'vitest/config'
 
 import vue from '@vitejs/plugin-vue'
 
 import basic from './vite.config.basic'
 
 export default mergeConfig(basic, defineConfig({
+  root: __dirname,
   resolve: {
     alias: {
       '~tests': join(__dirname, './tests/'),
@@ -17,6 +18,7 @@ export default mergeConfig(basic, defineConfig({
   ],
   test: {
     environment: 'jsdom',
+    exclude: [...defaultExclude, '**/*.test.browser.ts'],
     coverage: {
       provider: 'istanbul',
       all: true,
