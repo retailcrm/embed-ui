@@ -17,6 +17,7 @@ const REQUIRED_GITIGNORE_ENTRIES = [
   '!.env.example',
   '*.log',
   'npm-debug.log*',
+  'playwright-report',
   'yarn-debug.log*',
   'yarn-error.log*',
   'pnpm-debug.log*',
