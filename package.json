@@ -48,9 +48,10 @@
     "release:beta": "conventional-release --prerelease beta --tags",
     "release:dry": "conventional-release --dry --verbose --tags",
     "release:rc": "conventional-release --prerelease rc --tags",
-    "test": "vitest --run",
-    "test:browser": "yarn workspace @retailcrm/embed-ui-v1-sandbox run test:browser",
-    "test:coverage": "vitest --run --coverage"
+    "test": "vitest run",
+    "test:browser": "yarn workspace @retailcrm/embed-ui-v1-components test:browser && yarn workspace @retailcrm/embed-ui-v1-endpoint test:browser && yarn workspace @retailcrm/embed-ui-v1-sandbox test:browser",
+    "test:e2e": "yarn workspace @retailcrm/embed-ui-v1-sandbox test:e2e",
+    "test:typecheck": "vitest run -c vitest.config.typecheck.ts"
   },
   "release": {
     "mode": "sync",

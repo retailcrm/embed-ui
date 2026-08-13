@@ -19,6 +19,7 @@ export default defineConfig({
     environment: 'jsdom',
     exclude: [...defaultExclude, './packages/**'],
     coverage: {
+      enabled: true,
       provider: 'istanbul',
       all: true,
       include: [

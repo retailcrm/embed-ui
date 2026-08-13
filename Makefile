@@ -84,43 +84,43 @@ else
 endif
 	$(TARGET_OK)
 
+.PHONY: tests-browser
+tests-browser: .require-compose ## [Tests][docker] Runs browser mode tests for all workspaces
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-components test:browser $(cli) --passWithNoTests
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-endpoint test:browser $(cli) --passWithNoTests
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:browser $(cli) --passWithNoTests
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn test:browser
+endif
+	$(TARGET_OK)
+
 .PHONY: tests-e2e
-tests-e2e: .require-compose ## [Tests][docker] Runs v1-components browser e2e tests
+tests-e2e: .require-compose ## [Tests][docker] Runs v1-sandbox Playwright end-to-end tests
 	$(TARGET_HEADER)
 ifdef cli
 	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
-		yarn workspace @retailcrm/embed-ui-v1-components run test:e2e $(cli)
+		yarn test:e2e $(cli)
 else
 	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
-		yarn workspace @retailcrm/embed-ui-v1-components run test:e2e
+		yarn test:e2e
 endif
 	$(TARGET_OK)
-
-.PHONY: tests-coverage
-tests-coverage: .require-compose ## [Tests][docker][heavy] Runs autotests with coverage report
-	$(TARGET_HEADER)
-ifdef cli
-	$(YARN) vitest --run --coverage $(cli) --passWithNoTests
-else
-	$(YARN) test:coverage
-endif
-	$(TARGET_OK)
-
-.PHONY: tests-typecheck-contexts
-tests-typecheck-contexts: .require-compose ## [Tests][docker] Runs typecheck tests (test-d.ts) for v1-contexts
-	$(TARGET_HEADER)
-ifdef cli
-	$(YARN) vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json $(cli)
-else
-	$(YARN) vitest run -c packages/v1-contexts/vitest.config.ts --typecheck.only --typecheck.checker tsc --typecheck.tsconfig packages/v1-contexts/tsconfig.json
-endif
-	$(TARGET_OK)
-
-.PHONY: tests-typecheck-v1-contexts
-tests-typecheck-v1-contexts: tests-typecheck-contexts ## [Tests][alias] Alias for tests-typecheck-contexts
 
 .PHONY: tests-typecheck
-tests-typecheck: tests-typecheck-contexts ## [Tests][alias] Runs typecheck tests (currently v1-contexts)
+tests-typecheck: .require-compose ## [Tests][docker] Runs typecheck tests (test-d.ts) for all workspaces
+	$(TARGET_HEADER)
+ifdef cli
+	$(YARN) test:typecheck $(cli)
+else
+	$(YARN) test:typecheck
+endif
+	$(TARGET_OK)
 
 .PHONY: ci-actionlint
 ci-actionlint: ## [CI][docker] Lints GitHub Actions workflows locally (actionlint binary or docker image)
@@ -229,7 +229,8 @@ help: ## [General] Shows grouped command help
 	printf "%sQuick Start%s\n" "$$C_HEAD" "$$C_RST"; \
 	printf "  make ci-actionlint\n"; \
 	printf "  make tests\n"; \
-	printf "  make tests-coverage\n"; \
+	printf "  make tests-browser\n"; \
+	printf "  make tests-e2e\n"; \
 	printf "  make ci-act-plan\n"; \
 	echo ""; \
 	printf "%sExamples%s\n" "$$C_HEAD" "$$C_RST"; \
