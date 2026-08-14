@@ -12,6 +12,7 @@ const REQUIRED_GITIGNORE_ENTRIES = [
   'node_modules/',
   'dist/',
   'coverage/',
+  'artifacts',
   '.env',
   '.env.*',
   '!.env.example',
