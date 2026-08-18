@@ -28,7 +28,6 @@ const CONFIG_FILES = [
   'vite.config.ts',
   'vite.config.js',
   'vite.config.mts',
-  'vitest.config.ts',
   'vitest.config.browser.ts',
   'vitest.config.playwright.ts',
   'eslint.config.js',
@@ -48,7 +47,6 @@ const SCRIPT_NAMES = [
   'test:browser',
   'test:browsers:install',
   'test:e2e',
-  'test:unit',
 ] as const
 
 const VITE_CONFIG_FILES = [
@@ -84,15 +82,11 @@ const TEMPLATE_FILE_IMPACTS = [
     impact: 'starter English locale messages will not be generated',
   },
   {
-    relativePath: 'sandbox/tests/unit/extensionrc.test.ts',
-    impact: 'starter unit test will not be generated',
-  },
-  {
-    relativePath: 'sandbox/tests/browser/starter.test.browser.ts',
+    relativePath: 'tests/browser/starter.test.browser.ts',
     impact: 'starter browser test will not be generated',
   },
   {
-    relativePath: 'sandbox/tests/e2e/starter.e2e.ts',
+    relativePath: 'tests/e2e/starter.e2e.ts',
     impact: 'starter e2e test will not be generated',
   },
 ] as const

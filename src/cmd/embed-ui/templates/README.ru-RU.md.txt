@@ -10,8 +10,8 @@
 - `__SOURCE_ROOT__/pages/SettingsPage.vue` как стартовая страница настроек.
 - `__SOURCE_ROOT__/widgets/OrderCommonAfterWidget.vue` как стартовый виджет заказа.
 - `__SOURCE_ROOT__/i18n/` с общими JSON-файлами переводов.
-- `__SOURCE_ROOT__/sandbox/tests/` со стартовыми unit, browser и e2e тестами.
-- `vitest.config.ts`, `vitest.config.browser.ts` и `vitest.config.playwright.ts` для запуска тестов.
+- `__SOURCE_ROOT__/tests/` со стартовыми browser- и e2e-тестами.
+- `vitest.config.browser.ts` и `vitest.config.playwright.ts` для запуска тестов.
 - `scripts/publish-extension.mjs` для создания `dist/extension.zip` и публикации интеграционного модуля через RetailCRM API.
 - `scripts/serve-extension.mjs` для отдачи собранных manifest, script и stylesheet расширения во время e2e-тестов.
 - `AGENTS.md`, если при инициализации были включены инструкции для агентов.
@@ -51,7 +51,6 @@ __PACKAGE_MANAGER__ install
 __PACKAGE_MANAGER_RUN__ dev
 __PACKAGE_MANAGER_RUN__ eslint
 __PACKAGE_MANAGER_RUN__ build
-__PACKAGE_MANAGER_RUN__ test:unit
 __PACKAGE_MANAGER_RUN__ test:browser
 __PACKAGE_MANAGER_RUN__ test:e2e
 __PACKAGE_MANAGER_RUN__ extension:serve
@@ -84,9 +83,8 @@ __PACKAGE_MANAGER_RUN__ sandbox:serve
 
 ## Тестирование
 
-- `__PACKAGE_MANAGER_RUN__ test:unit` проверяет быстрые unit-тесты без браузера.
-- `__PACKAGE_MANAGER_RUN__ test:browser` запускает стартовую страницу и виджет в Chromium через Vitest Browser.
-- `__PACKAGE_MANAGER_RUN__ test:e2e` собирает расширение, поднимает sandbox-приложение и локальный extension server, затем проверяет расширение через Playwright.
+- `__PACKAGE_MANAGER_RUN__ test:browser` запускает реальный Worker в Chromium: изменяет и сохраняет настройки страницы, затем редактирует черновик в шторке виджета.
+- `__PACKAGE_MANAGER_RUN__ test:e2e` собирает расширение, проверяет доставку descriptor, script и stylesheet, затем сохраняет настройки страницы через Playwright.
 - `__PACKAGE_MANAGER_RUN__ extension:serve` после сборки запускает `http://127.0.0.1:4175`. Тесты собирают конкретный manifest URL как `http://127.0.0.1:4175/extension/<uuid>`.
 
 Перед первым browser/e2e запуском может потребоваться установить Chromium:

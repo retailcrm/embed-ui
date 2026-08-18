@@ -37,7 +37,6 @@ export const INIT_DEV_DEPENDENCIES: Array<{ name: string; range: string }> = [
   { name: 'eslint', range: '^9.39' },
   { name: 'eslint-plugin-vue', range: '^10.9' },
   { name: 'globals', range: '^16.5' },
-  { name: 'jsdom', range: '^27.3' },
   { name: 'jsonc-eslint-parser', range: '^3.1' },
   { name: 'less', range: '^4.6' },
   { name: 'playwright', range: '^1.58' },
@@ -164,6 +163,45 @@ export const setMissingScript = (
     type: 'script',
     name,
     nextRange: command,
+  })
+}
+
+export const replaceGeneratedScript = (
+  packageJson: PackageJson,
+  name: string,
+  currentCommand: string,
+  nextCommand: string,
+  changes: InitChanges
+): void => {
+  const scripts = ensureObjectField(packageJson, 'scripts')
+
+  if (scripts[name] !== currentCommand) return
+
+  scripts[name] = nextCommand
+  changes.packageJson.push({
+    type: 'script',
+    name,
+    currentRange: currentCommand,
+    nextRange: nextCommand,
+  })
+}
+
+export const removeGeneratedScript = (
+  packageJson: PackageJson,
+  name: string,
+  command: string,
+  changes: InitChanges
+): void => {
+  const scripts = ensureObjectField(packageJson, 'scripts')
+
+  if (scripts[name] !== command) return
+
+  delete scripts[name]
+  changes.packageJson.push({
+    type: 'script',
+    name,
+    currentRange: command,
+    nextRange: 'removed',
   })
 }
 

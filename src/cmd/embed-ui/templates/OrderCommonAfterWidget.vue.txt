@@ -11,7 +11,10 @@
         {{ t('openWindow') }}
     </UiToolbarLink>
 
-    <UiModalSidebar v-model:opened="sidebarOpened">
+    <UiModalSidebar
+        v-model:opened="sidebarOpened"
+        :aria-label="t('sidebarTitle')"
+    >
         <template #title>
             {{ t('sidebarTitle') }}
         </template>
@@ -77,7 +80,10 @@
         </template>
     </UiModalSidebar>
 
-    <UiModalWindow v-model:opened="windowOpened">
+    <UiModalWindow
+        v-model:opened="windowOpened"
+        :aria-label="t('windowTitle')"
+    >
         <template #title>
             {{ t('windowTitle') }}
         </template>

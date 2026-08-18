@@ -23,7 +23,7 @@ export default mergeConfig(viteConfig, defineConfig({
     watch: null,
   },
   test: {
-    include: ['__SOURCE_ROOT__/sandbox/tests/browser/**/*.test.browser.ts'],
+    include: ['__SOURCE_ROOT__/tests/browser/**/*.test.browser.ts'],
     browser: {
       enabled: true,
       provider: playwright({

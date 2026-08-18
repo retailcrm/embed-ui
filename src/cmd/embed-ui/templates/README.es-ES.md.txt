@@ -10,8 +10,8 @@ Este proyecto fue generado por `embed-ui init`.
 - `__SOURCE_ROOT__/pages/SettingsPage.vue` como pagina inicial de configuracion.
 - `__SOURCE_ROOT__/widgets/OrderCommonAfterWidget.vue` como widget inicial del pedido.
 - `__SOURCE_ROOT__/i18n/` con archivos JSON de mensajes compartidos.
-- `__SOURCE_ROOT__/sandbox/tests/` con pruebas iniciales unit, browser y e2e.
-- `vitest.config.ts`, `vitest.config.browser.ts` y `vitest.config.playwright.ts` para ejecutar pruebas.
+- `__SOURCE_ROOT__/tests/` con pruebas iniciales browser y e2e.
+- `vitest.config.browser.ts` y `vitest.config.playwright.ts` para ejecutar pruebas.
 - `scripts/publish-extension.mjs` para crear `dist/extension.zip` y publicar el modulo de integracion por RetailCRM API.
 - `scripts/serve-extension.mjs` para servir manifest, script y stylesheet compilados durante las pruebas e2e.
 - `AGENTS.md` si las instrucciones para agentes estaban activadas durante init.
@@ -51,7 +51,6 @@ __PACKAGE_MANAGER__ install
 __PACKAGE_MANAGER_RUN__ dev
 __PACKAGE_MANAGER_RUN__ eslint
 __PACKAGE_MANAGER_RUN__ build
-__PACKAGE_MANAGER_RUN__ test:unit
 __PACKAGE_MANAGER_RUN__ test:browser
 __PACKAGE_MANAGER_RUN__ test:e2e
 __PACKAGE_MANAGER_RUN__ extension:serve
@@ -84,9 +83,8 @@ __PACKAGE_MANAGER_RUN__ sandbox:serve
 
 ## Pruebas
 
-- `__PACKAGE_MANAGER_RUN__ test:unit` ejecuta pruebas unitarias rapidas sin navegador.
-- `__PACKAGE_MANAGER_RUN__ test:browser` ejecuta la pagina y el widget iniciales en Chromium mediante Vitest Browser.
-- `__PACKAGE_MANAGER_RUN__ test:e2e` compila la extension, inicia la sandbox app y el servidor local de extension, luego comprueba la extension con Playwright.
+- `__PACKAGE_MANAGER_RUN__ test:browser` ejecuta el Worker real en Chromium, actualiza y guarda la configuracion de la pagina y edita un borrador en la barra lateral del widget.
+- `__PACKAGE_MANAGER_RUN__ test:e2e` compila la extension, verifica la entrega de descriptor, script y stylesheet y guarda la configuracion de la pagina mediante Playwright.
 - `__PACKAGE_MANAGER_RUN__ extension:serve` inicia `http://127.0.0.1:4175` despues de compilar. Las pruebas construyen el manifest URL concreto como `http://127.0.0.1:4175/extension/<uuid>`.
 
 Antes del primer lanzamiento browser/e2e, instale Chromium si hace falta:

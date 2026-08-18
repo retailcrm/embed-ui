@@ -409,12 +409,12 @@ describe('embed-ui CLI', () => {
       'extension:serve': 'node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175',
       'publish-extension': 'node scripts/publish-extension.mjs',
       'sandbox:serve': 'embed-ui-v1-sandbox serve --host 127.0.0.1 --port 4173',
-      test: 'npm run test:unit && npm run test:browser && npm run test:e2e',
+      test: 'npm run test:browser && npm run test:e2e',
       'test:browser': 'vitest --run --config vitest.config.browser.ts',
       'test:browsers:install': 'playwright install chromium',
       'test:e2e': 'playwright test -c vitest.config.playwright.ts',
-      'test:unit': 'vitest --run --config vitest.config.ts',
     })
+    expect(packageJson.scripts).not.toHaveProperty('test:unit')
     expect(packageJson.dependencies).toMatchObject({
       '@retailcrm/embed-ui': '^1.2.3',
       '@retailcrm/embed-ui-v1-components': '^1.2.3',
@@ -445,7 +445,6 @@ describe('embed-ui CLI', () => {
       eslint: '^9.39',
       'eslint-plugin-vue': '^10.9',
       globals: '^16.5',
-      jsdom: '^27.3',
       'jsonc-eslint-parser': '^3.1',
       less: '^4.6',
       playwright: '^1.58',
@@ -457,9 +456,10 @@ describe('embed-ui CLI', () => {
       'vue-eslint-parser': '^10.4',
       'yaml-eslint-parser': '^2.0',
     })
+    expect(packageJson.devDependencies).not.toHaveProperty('jsdom')
 
     expect(fs.existsSync(path.join(tempDir, 'tsconfig.json'))).toBe(true)
-    expect(fs.existsSync(path.join(tempDir, 'vitest.config.ts'))).toBe(true)
+    expect(fs.existsSync(path.join(tempDir, 'vitest.config.ts'))).toBe(false)
     expect(fs.existsSync(path.join(tempDir, 'vitest.config.browser.ts'))).toBe(true)
     expect(fs.existsSync(path.join(tempDir, 'vitest.config.playwright.ts'))).toBe(true)
     expect(fs.readFileSync(path.join(tempDir, '.gitignore'), 'utf8')).toContain('node_modules/')
@@ -497,11 +497,8 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'vite.config.ts'), 'utf8')).toContain(
       '\'@\': path.resolve(root, \'web\')'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'vitest.config.ts'), 'utf8')).toContain(
-      'include: [\'web/sandbox/tests/unit/**/*.test.ts\']'
-    )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.browser.ts'), 'utf8')).toContain(
-      'include: [\'web/sandbox/tests/browser/**/*.test.browser.ts\']'
+      'include: [\'web/tests/browser/**/*.test.browser.ts\']'
     )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.browser.ts'), 'utf8')).toContain(
       '@retailcrm/embed-ui-v1-components/remote'
@@ -510,7 +507,7 @@ describe('embed-ui CLI', () => {
       '\'vue-i18n\''
     )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
-      'testDir: \'./web/sandbox/tests/e2e\''
+      'testDir: \'./web/tests/e2e\''
     )
     expect(fs.readFileSync(path.join(tempDir, 'vitest.config.playwright.ts'), 'utf8')).toContain(
       'command: \'npm run sandbox:serve\''
@@ -612,19 +609,20 @@ describe('embed-ui CLI', () => {
       'UiModalWindow'
     )
     expect(fs.existsSync(path.join(tempDir, 'web/shared/assets/extension.svg'))).toBe(true)
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/unit/extensionrc.test.ts'), 'utf8')).toContain(
-      'expect(extensionrc.targets).toContain(\'order/card:common.after\')'
-    )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.test.browser.ts'), 'utf8')).toContain(
+    expect(fs.existsSync(path.join(tempDir, 'web/tests/unit'))).toBe(false)
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/browser/starter.test.browser.ts'), 'utf8')).toContain(
       'createSandboxWorkerRuntime'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/browser/starter.test.browser.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/browser/starter.test.browser.ts'), 'utf8')).toContain(
       'new URL(\'/web/endpoint/endpoint.worker.ts\', window.location.href)'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/browser/starter.test.browser.ts'), 'utf8')).toContain(
+      'target: { value: \'Позвонить после подтверждения оплаты\' }'
+    )
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
       'await expect(page).toHaveURL(/mode=page/u)'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
       '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
     )
     const extensionConfig = readJsonFile<{
@@ -668,16 +666,16 @@ describe('embed-ui CLI', () => {
     expect(fs.readFileSync(path.join(tempDir, 'scripts/dev.mjs'), 'utf8')).toContain(
       'Development environment is ready.'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
-      'settings-page-addon__icon'
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+      'const stylesheetResponse = page.waitForResponse(`${extensionUrl}/stylesheet`)'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
       '? new URL(extensionrc.uuid, extensionBaseURL).href'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
       'Fill SANDBOX_EXTENSION_URL in .env.sandbox before running starter.e2e.ts.'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/sandbox/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
       'console.warn(`[sandbox:e2e] ${missingExtensionUrlMessage}`)'
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
@@ -705,8 +703,9 @@ describe('embed-ui CLI', () => {
       'npm run test:e2e'
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
-      '`vitest.config.ts`, `vitest.config.browser.ts` и `vitest.config.playwright.ts`'
+      '`vitest.config.browser.ts` и `vitest.config.playwright.ts`'
     )
+    expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).not.toContain('test:unit')
   })
 
   test('init mode creates starter files that pass generated eslint formatting rules', async () => {
@@ -750,9 +749,8 @@ describe('embed-ui CLI', () => {
         'scripts/dev.mjs',
         'scripts/serve-extension.mjs',
         'vitest.config.playwright.ts',
-        'web/sandbox/tests/browser/starter.test.browser.ts',
-        'web/sandbox/tests/e2e/starter.e2e.ts',
-        'web/sandbox/tests/unit/extensionrc.test.ts',
+        'web/tests/browser/starter.test.browser.ts',
+        'web/tests/e2e/starter.e2e.ts',
       ])
       const messages = results.flatMap(result => result.messages.map(message => ({
         column: message.column,
@@ -793,7 +791,7 @@ describe('embed-ui CLI', () => {
     })
 
     const browserTest = fs.readFileSync(
-      path.join(tempDir, 'frontend/sandbox/tests/browser/starter.test.browser.ts'),
+      path.join(tempDir, 'frontend/tests/browser/starter.test.browser.ts'),
       'utf8'
     )
 
@@ -968,6 +966,48 @@ describe('embed-ui CLI', () => {
     expect(packageJson.scripts['extension:serve'])
       .toBe('node scripts/serve-extension.mjs --host 127.0.0.1 --port 4175')
     expect(packageJson.scripts.dev).toBe('node scripts/dev.mjs')
+  })
+
+  test('init removes the generated unit test command', async () => {
+    const tempDir = createTempDir()
+    const packageJsonPath = path.join(tempDir, 'package.json')
+
+    writeFile(packageJsonPath, JSON.stringify({
+      name: 'existing-extension',
+      private: true,
+      type: 'module',
+      scripts: {
+        test: 'npm run test:unit && npm run test:browser && npm run test:e2e',
+        'test:unit': 'vitest --run --config vitest.config.ts',
+      },
+    }, null, 2))
+    vi.spyOn(console, 'log').mockImplementation(() => undefined)
+
+    await runInit({
+      ...parseInitArgs([
+        './web',
+        '--cwd',
+        tempDir,
+        '--package-manager',
+        'npm',
+        '--packages',
+        'embed-ui',
+        '--no-install',
+        '--no-agents',
+        '--no-mcp',
+        '--no-skills',
+        '--no-configs',
+        '--no-template',
+      ]),
+      version: '1.2.3',
+    })
+
+    const packageJson = readJsonFile<{
+      scripts: Record<string, string>;
+    }>(packageJsonPath)
+
+    expect(packageJson.scripts.test).toBe('npm run test:browser && npm run test:e2e')
+    expect(packageJson.scripts['test:unit']).toBeUndefined()
   })
 
   test('init preflight warns about incompatible dependencies without rewriting them', async () => {

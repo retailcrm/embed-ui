@@ -19,13 +19,11 @@ import readmeEsESTemplate from './templates/README.es-ES.md.txt?raw'
 import readmeRuRUTemplate from './templates/README.ru-RU.md.txt?raw'
 import sandboxBrowserTestTemplate from './templates/sandbox-browser.test.browser.ts.txt?raw'
 import sandboxE2eTestTemplate from './templates/sandbox-e2e.e2e.ts.txt?raw'
-import sandboxUnitTestTemplate from './templates/sandbox-unit.test.ts.txt?raw'
 import serveScriptTemplate from './templates/serve-extension.mjs.txt?raw'
 import settingsPageTemplate from './templates/SettingsPage.vue.txt?raw'
 import tsConfigTemplate from './templates/tsconfig.json.txt?raw'
 import viteConfigTemplate from './templates/vite.config.ts.txt?raw'
 import vitestBrowserConfigTemplate from './templates/vitest.config.browser.ts.txt?raw'
-import vitestConfigTemplate from './templates/vitest.config.ts.txt?raw'
 
 import { DEFAULT_NEWLINE } from './package-json'
 
@@ -125,13 +123,6 @@ export const createViteConfig = (cwd: string, sourceRoot: string): string => rep
   }
 )
 
-export const createVitestConfig = (cwd: string, sourceRoot: string): string => replaceTemplateVars(
-  vitestConfigTemplate,
-  {
-    SOURCE_ROOT: toPosixRelative(cwd, sourceRoot),
-  }
-)
-
 export const createVitestBrowserConfig = (cwd: string, sourceRoot: string): string => replaceTemplateVars(
   vitestBrowserConfigTemplate,
   {
@@ -171,14 +162,6 @@ export const createI18nIndex = (): string => i18nIndexTemplate
 export const createSettingsPage = (): string => settingsPageTemplate
 
 export const createOrderWidget = (): string => orderWidgetTemplate
-
-export const createSandboxUnitTest = (options: InitOptions): string => replaceTemplateVars(
-  sandboxUnitTestTemplate,
-  {
-    PAGE_CODE: options.pageCode,
-    WIDGET_TARGET: options.widgetTarget,
-  }
-)
 
 export const createSandboxBrowserTest = (cwd: string, sourceRoot: string, options: InitOptions): string => replaceTemplateVars(
   sandboxBrowserTestTemplate,

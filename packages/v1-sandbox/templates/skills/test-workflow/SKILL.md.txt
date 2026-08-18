@@ -1,6 +1,6 @@
 ---
 name: test-workflow
-description: Use when selecting, writing, reviewing, or debugging tests for a RetailCRM worker extension. Covers unit jsdom, Vitest Browser worker tests, Playwright delivery e2e, Testing Library semantics, test doubles, cleanup, and coverage doctrine.
+description: Use when selecting, writing, reviewing, or debugging tests for a RetailCRM worker extension. Covers Vitest Browser worker tests, Playwright delivery e2e, Testing Library semantics, test doubles, cleanup, and coverage doctrine.
 ---
 
 # Test Workflow For RetailCRM Extensions
@@ -34,23 +34,13 @@ Do not assert private component state, `vm`, refs, private helpers, incidental D
 
 ## Test Layers
 
-Generated tests live under `<source-root>/sandbox/tests`:
+Generated and project tests live under `<source-root>/tests`:
 
-- `unit/*.test.ts`;
 - `browser/*.test.browser.ts`;
 - `e2e/*.e2e.ts`.
 
 The source root is the frontend directory selected during `init`; do not assume it is always `src` or `web`.
-
-### Unit: `test:unit`
-
-Use jsdom for:
-
-- pure functions, schemas, formatters, and state transitions;
-- isolated Vue behavior and observable DOM state;
-- extension descriptor and registry consistency.
-
-Unit tests must not start Chromium, a Worker, the sandbox app, or an extension server.
+The starter template generates browser and e2e scenarios. It does not configure a separate unit-test layer.
 
 ### Browser: `test:browser`
 
@@ -75,7 +65,7 @@ Use Playwright for a small number of critical paths that require:
 
 Do not repeat all browser-test assertions in e2e. Browser tests should cover behavior variants; e2e should cover integration risk.
 
-The project `test` script runs unit, browser, and e2e suites. Use the project's configured package manager to run scripts, for example `test:unit`, `test:browser`, `test:e2e`, or `test`.
+The project `test` script runs browser and e2e suites. Use the project's configured package manager to run `test:browser`, `test:e2e`, or `test`.
 
 ## Testing Library First
 

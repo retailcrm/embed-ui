@@ -15,7 +15,7 @@ const extensionrc = JSON.parse(
 const extensionURL = new URL(extensionrc.uuid, extensionBaseURL).href
 
 export default defineConfig({
-  testDir: './__SOURCE_ROOT__/sandbox/tests/e2e',
+  testDir: './__SOURCE_ROOT__/tests/e2e',
   testMatch: '**/*.e2e.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
