@@ -2,6 +2,34 @@ import { h, onMounted, ref } from 'vue'
 
 import { defineRunner as defineRemoteRunner, runEndpoint } from '../../src/remote'
 
+const DELAY_WIDGET_MOUNT = 'test:delay-widget-mount'
+const CONTINUE_WIDGET_MOUNT = 'test:continue-widget-mount'
+const WIDGET_MOUNT_PENDING = 'test:widget-mount-pending'
+
+let delayWidgetMount = false
+let continueWidgetMount = () => undefined
+
+self.addEventListener('message', event => {
+  if (event.data?.type === DELAY_WIDGET_MOUNT) {
+    delayWidgetMount = true
+  } else if (event.data?.type === CONTINUE_WIDGET_MOUNT) {
+    continueWidgetMount()
+  }
+})
+
+const waitBeforeWidgetMount = async (): Promise<void> => {
+  if (!delayWidgetMount) {
+    return
+  }
+
+  delayWidgetMount = false
+  self.postMessage({ type: WIDGET_MOUNT_PENDING })
+
+  await new Promise<void>(resolve => {
+    continueWidgetMount = resolve
+  })
+}
+
 runEndpoint(defineRemoteRunner({
   pages: [{
     props: {
@@ -65,5 +93,5 @@ runEndpoint(defineRemoteRunner({
         }, 'inc widget'),
       ])
     },
-  }],
+  }, waitBeforeWidgetMount],
 }))

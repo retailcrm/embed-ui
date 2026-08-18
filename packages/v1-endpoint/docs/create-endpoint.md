@@ -20,18 +20,25 @@ createEndpoint(
 При `run(...)`:
 
 1. сбрасывает предыдущее монтирование для того же `id` (widget) или `code` (page),
-2. поднимает endpoint root (`mountEndpointRoot`),
-3. создаёт `pinia` и инжектит endpoint/context accessors,
-4. вызывает нужный runner (`page.run` или `widget.run`),
-5. сохраняет destroy-функцию в реестре.
+2. удерживает переданный channel на время жизни запуска,
+3. поднимает endpoint root (`mountEndpointRoot`),
+4. создаёт `pinia` и инжектит endpoint/context accessors,
+5. вызывает нужный runner (`page.run` или `widget.run`),
+6. сохраняет destroy-функцию в реестре.
+
+Если монтирование завершается с ошибкой, endpoint освобождает удержанный channel.
 
 При `release(...)`:
 
-- вызывает destroy для конкретного `id` или `code`.
+- отменяет ещё не завершившееся монтирование либо вызывает destroy для активного
+  `id` или `code`,
+- освобождает удержанный channel,
+- не допускает позднего mount после отмены.
 
 При `reset()`:
 
-- вызывает destroy для всех активных page/widget инстансов.
+- отменяет все незавершённые монтирования и вызывает destroy для всех активных
+  page/widget инстансов.
 
 ## Пример
 
