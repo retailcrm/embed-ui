@@ -1,5 +1,6 @@
 import type { EndpointApi } from '../src/remote'
 import type { Receiver } from '@omnicajs/vue-remote/host'
+import type * as RemoteRpc from '@remote-ui/rpc'
 
 import { createProvider, createReceiver, HostedTree } from '@omnicajs/vue-remote/host'
 import { MessageChannel } from '@retailcrm/embed-ui-v1-testing/lib/rpc'
@@ -9,6 +10,7 @@ import {
   beforeEach,
   expect,
   test,
+  vi,
 } from 'vitest'
 
 import { createApp } from 'vue'
@@ -21,6 +23,54 @@ import {
   createEndpoint as createRemoteEndpoint,
   defineRunner as defineRemoteRunner,
 } from '../src/remote'
+
+const {
+  exposeEndpointApi,
+  releaseChannel,
+  retainChannel,
+} = vi.hoisted(() => ({
+  exposeEndpointApi: vi.fn(),
+  releaseChannel: vi.fn(),
+  retainChannel: vi.fn(),
+}))
+
+vi.mock('@remote-ui/rpc', async importOriginal => {
+  const original = await importOriginal<typeof RemoteRpc>()
+
+  return {
+    ...original,
+    createEndpoint: (messenger: RemoteRpc.MessageEndpoint) => {
+      const endpoint = original.createEndpoint(messenger)
+
+      return {
+        ...endpoint,
+        expose: (api: Record<string, unknown>) => {
+          exposeEndpointApi(api)
+          endpoint.expose(api)
+        },
+      }
+    },
+    release: (value: unknown) => {
+      releaseChannel(value)
+
+      return original.release(value)
+    },
+    retain: (value: unknown) => {
+      retainChannel(value)
+
+      return original.retain(value)
+    },
+  }
+})
+
+function deferred<T> () {
+  let resolve!: (value: T) => void
+  const promise = new Promise<T>(resolvePromise => {
+    resolve = resolvePromise
+  })
+
+  return { promise, resolve }
+}
 
 function createHostApp (receiver: Receiver) {
   const provider = createProvider()
@@ -41,6 +91,9 @@ function createHostApp (receiver: Receiver) {
 let mountRoot: HTMLElement | null = null
 
 beforeEach(() => {
+  exposeEndpointApi.mockClear()
+  releaseChannel.mockClear()
+  retainChannel.mockClear()
   mountRoot = document.createElement('div')
   document.body.appendChild(mountRoot)
 })
@@ -197,4 +250,74 @@ test('replaces run with same widget id and supports reset via defineRemoteRunner
 
   expect(widgetMount2.querySelector('[data-qa="widget:w-1"]')).toBeNull()
   expect(pageMount.querySelector('[data-qa="page:customers"]')).toBeNull()
+})
+
+test('cancels a widget released while its runner is mounting', async () => {
+  const { port1, port2 } = new MessageChannel()
+  const host = createRpcEndpoint<EndpointApi>(fromMessagePort(port1))
+  const channel = fromMessagePort(port2)
+  const widgetReceiver = createReceiver()
+  const widgetMount = document.createElement('div')
+  const continueMount = deferred<void>()
+  const beforeMount = vi.fn(() => continueMount.promise)
+
+  port1.start()
+  port2.start()
+
+  mountRoot?.appendChild(widgetMount)
+  createHostApp(widgetReceiver).mount(widgetMount)
+  createRemoteEndpoint(defineRemoteRunner({
+    pages: [{ render: () => null }],
+    widgets: [{
+      render: () => h('div', { 'data-qa': 'delayed-widget' }, 'mounted'),
+    }, beforeMount],
+  }), channel)
+
+  let runSettled = false
+  const run = host.call.run(widgetReceiver.receive, {
+    id: 'delayed-widget',
+    target: 'order/card:common.before',
+  }).then(() => {
+    runSettled = true
+  })
+
+  await vi.waitFor(() => expect(beforeMount).toHaveBeenCalledOnce())
+  await host.call.release({ id: 'delayed-widget' })
+  await flushPromises()
+
+  const settledBeforeMountCompletes = runSettled
+
+  continueMount.resolve()
+  await run
+  await widgetReceiver.flush()
+  await flushPromises()
+
+  expect(settledBeforeMountCompletes).toBe(true)
+  expect(widgetMount.querySelector('[data-qa="delayed-widget"]')).toBeNull()
+})
+
+test('releases a retained channel when widget mount fails', async () => {
+  const { port1, port2 } = new MessageChannel()
+  const channel = fromMessagePort(port2)
+  const widgetReceiver = createReceiver()
+
+  port1.start()
+  port2.start()
+
+  createRemoteEndpoint(defineRemoteRunner({
+    pages: [{ render: () => null }],
+    widgets: [{ render: () => null }, () => {
+      throw new Error('Widget mount failed')
+    }],
+  }), channel)
+
+  const remoteApi = exposeEndpointApi.mock.calls[0][0] as EndpointApi
+
+  await expect(remoteApi.run(widgetReceiver.receive, {
+    id: 'failed-widget',
+    target: 'order/card:common.before',
+  })).rejects.toThrow('Widget mount failed')
+
+  expect(retainChannel).toHaveBeenCalledOnce()
+  expect(releaseChannel).toHaveBeenCalledOnce()
 })

@@ -51,6 +51,19 @@ async function waitForText (
   expect(mount.querySelector(selector)?.textContent).toBe(expected)
 }
 
+const waitForWorkerMessage = (worker: Worker, type: string): Promise<void> => {
+  return new Promise(resolve => {
+    const subscription = new AbortController()
+
+    worker.addEventListener('message', event => {
+      if (event.data?.type === type) {
+        subscription.abort('Expected worker message received')
+        resolve()
+      }
+    }, { signal: subscription.signal })
+  })
+}
+
 let mountRoot: HTMLElement | null = null
 
 beforeEach(() => {
@@ -108,6 +121,44 @@ test('runEndpoint bootstraps worker and updates host after remote updates', asyn
     await widgetReceiver.flush()
 
     expect(pageMount.querySelector('[data-qa="worker-page:orders"]')).toBeNull()
+  } finally {
+    worker.terminate()
+  }
+})
+
+test('release cancels a widget while its worker runner is mounting', async () => {
+  const worker = new Worker(new URL('./__fixtures__/worker.ts', import.meta.url), { type: 'module' })
+  const host = createRpcEndpoint<EndpointApi>(worker)
+  const widgetReceiver = createReceiver()
+  const widgetMount = document.createElement('div')
+
+  mountRoot?.appendChild(widgetMount)
+  createHostApp(widgetReceiver).mount(widgetMount)
+
+  try {
+    const mountPending = waitForWorkerMessage(worker, 'test:widget-mount-pending')
+
+    worker.postMessage({ type: 'test:delay-widget-mount' })
+
+    let runSettled = false
+    const run = host.call.run(widgetReceiver.receive, {
+      id: 'delayed-widget',
+      target: 'order/card:common.before',
+    }).then(() => {
+      runSettled = true
+    })
+
+    await mountPending
+    await host.call.release({ id: 'delayed-widget' })
+    await expect.poll(() => runSettled).toBe(true)
+
+    worker.postMessage({ type: 'test:continue-widget-mount' })
+
+    await run
+    await widgetReceiver.flush()
+    await flushPromises()
+
+    expect(widgetMount.querySelector('[data-qa="worker-widget"]')).toBeNull()
   } finally {
     worker.terminate()
   }

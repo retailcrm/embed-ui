@@ -29,6 +29,102 @@ export type Runner = {
   page: PageRunner;
 }
 
+type RunConfig = WidgetRunConfig | PageRunIdentity
+type RunIdentity = WidgetRunIdentity | PageRunIdentity
+
+type RemoteRun = {
+  channel: Channel;
+  cancellation: Promise<void>;
+  cancel: () => void;
+  cancelled: boolean;
+  channelReleased: boolean;
+  destroy?: () => void;
+}
+
+const createRun = (channel: Channel): RemoteRun => {
+  let cancel: () => void = () => undefined
+  const cancellation = new Promise<void>(resolve => {
+    cancel = resolve
+  })
+
+  return {
+    channel,
+    cancellation,
+    cancel,
+    cancelled: false,
+    channelReleased: false,
+  }
+}
+
+const disposeRun = (run: RemoteRun): void => {
+  if (!run.cancelled) {
+    run.cancelled = true
+    run.cancel()
+  }
+
+  const destroy = run.destroy
+  run.destroy = undefined
+
+  try {
+    destroy?.()
+  } finally {
+    if (!run.channelReleased) {
+      run.channelReleased = true
+      release(run.channel)
+    }
+  }
+}
+
+class RunRegistry {
+  private readonly widgets = new Map<string, RemoteRun>()
+  private readonly pages = new Map<string, RemoteRun>()
+
+  replace (config: RunConfig, run: RemoteRun): void {
+    this.release(config)
+    this.entries(config).set(this.key(config), run)
+  }
+
+  delete (config: RunIdentity, run: RemoteRun): void {
+    const entries = this.entries(config)
+
+    if (entries.get(this.key(config)) === run) {
+      entries.delete(this.key(config))
+    }
+  }
+
+  release (config: RunIdentity): void {
+    const entries = this.entries(config)
+    const key = this.key(config)
+    const run = entries.get(key)
+
+    if (!run) {
+      return
+    }
+
+    entries.delete(key)
+    disposeRun(run)
+  }
+
+  reset (): void {
+    const runs = [
+      ...this.widgets.values(),
+      ...this.pages.values(),
+    ]
+
+    this.widgets.clear()
+    this.pages.clear()
+    runs.forEach(disposeRun)
+  }
+
+  private entries (config: RunIdentity): Map<string, RemoteRun> {
+    return 'id' in config ? this.widgets : this.pages
+  }
+
+  private key (config: RunIdentity): string {
+    return 'id' in config ? config.id : config.code
+  }
+}
+
 export type { RemoteApi }
 
 export const defineRunner = (config: {
@@ -44,63 +140,59 @@ export const createEndpoint = (
   messenger: MessageEndpoint
 ): Endpoint<RemoteApi> => {
   const endpoint = _createEndpoint<EndpointApi>(messenger)
-  const destructors = {
-    widgets: new Map<string, () => void>(),
-    pages: new Map<string, () => void>(),
-  }
+  const runs = new RunRegistry()
 
   endpoint.expose({
     async run (
       channel: Channel,
-      config: WidgetRunConfig | PageRunIdentity
+      config: RunConfig
     ) {
-      if ('id' in config) {
-        destructors.widgets.get(config.id)?.()
-        destructors.widgets.delete(config.id)
-      } else {
-        destructors.pages.get(config.code)?.()
-        destructors.pages.delete(config.code)
-      }
-
+      const run = createRun(channel)
+      runs.replace(config, run)
       retain(channel)
 
-      const root = await mountEndpointRoot(channel) as Parameters<typeof createRemoteRenderer>[0]
-      const { createApp } = createRemoteRenderer(root)
+      try {
+        const mounting = mountRun(run, config, runner, endpoint)
 
-      const pinia = createPinia()
+        await Promise.race([mounting, run.cancellation])
+      } catch (error) {
+        runs.delete(config, run)
+        disposeRun(run)
 
-      pinia.use(injectEndpoint(endpoint))
-      pinia.use(injectAccessor(endpoint))
-
-      const destroy = 'id' in config
-        ? await runner.widget.run(createApp, root, pinia, config.target)
-        : await runner.page.run(createApp, root, pinia, config.code)
-
-      if ('id' in config) {
-        destructors.widgets.set(config.id, () => { destroy(); release(channel) })
-      } else {
-        destructors.pages.set(config.code, () => { destroy(); release(channel) })
+        throw error
       }
     },
 
-    release (config: WidgetRunIdentity | PageRunIdentity) {
-      if ('id' in config) {
-        destructors.widgets.get(config.id)?.()
-        destructors.widgets.delete(config.id)
-      } else {
-        destructors.pages.get(config.code)?.()
-        destructors.pages.delete(config.code)
-      }
+    release (config: RunIdentity) {
+      runs.release(config)
     },
 
     reset () {
-      destructors.widgets.forEach(destroy => destroy())
-      destructors.widgets.clear()
-
-      destructors.pages.forEach(destroy => destroy())
-      destructors.pages.clear()
+      runs.reset()
     },
   })
 
   return endpoint as Endpoint<EndpointApi>
+}
+
+const mountRun = async (
+  run: RemoteRun,
+  config: RunConfig,
+  runner: Runner,
+  endpoint: Endpoint<EndpointApi>
+): Promise<void> => {
+  const root = await mountEndpointRoot(run.channel) as Parameters<typeof createRemoteRenderer>[0]
+  const { createApp } = createRemoteRenderer(root)
+  const pinia = createPinia()
+
+  pinia.use(injectEndpoint(endpoint))
+  pinia.use(injectAccessor(endpoint))
+
+  run.destroy = 'id' in config
+    ? await runner.widget.run(createApp, root, pinia, config.target)
+    : await runner.page.run(createApp, root, pinia, config.code)
+
+  if (run.cancelled) {
+    disposeRun(run)
+  }
 }
