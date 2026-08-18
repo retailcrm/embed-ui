@@ -5,7 +5,6 @@ import { expect, test } from '@playwright/test'
 
 import {
   createSandboxPagePath,
-  readSandboxSnapshot,
 } from '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
 
 type ExtensionConfig = {
@@ -35,6 +34,10 @@ test.skip(
 )
 
 test('loads generated settings page extension and saves settings', async ({ page }) => {
+  const descriptorResponse = page.waitForResponse(extensionUrl)
+  const scriptResponse = page.waitForResponse(`${extensionUrl}/script`)
+  const stylesheetResponse = page.waitForResponse(`${extensionUrl}/stylesheet`)
+
   await page.goto(createSandboxPagePath({
     extensionUrl,
     manifestUrl: extensionUrl,
@@ -42,20 +45,28 @@ test('loads generated settings page extension and saves settings', async ({ page
     targets: [target],
   }))
 
+  expect((await descriptorResponse).status()).toBe(200)
+  expect((await scriptResponse).status()).toBe(200)
+  expect((await stylesheetResponse).status()).toBe(200)
+
   await expect(page).toHaveURL(/mode=page/u)
   await expect(page).toHaveURL(new RegExp(`pageCode=${pageDescriptor.code}`, 'u'))
   await expect(page.getByRole('heading', { name: 'Настройки расширения' })).toBeVisible()
-  await expect(page.locator('svg[class*="settings-page-addon__icon"]')).toHaveCSS('width', '24px')
-  await expect(page.locator('svg[class*="settings-page-addon__icon"]')).toHaveCSS('height', '24px')
-  await expect(page.getByRole('button', { name: 'Сохранить' })).toBeVisible()
-  await expect(page.getByLabel('Название помощника')).toHaveValue('Order follow-up')
+  const assistantName = page.getByLabel('Название помощника')
+  const note = page.getByLabel('Заметка по умолчанию')
+  const enabled = page.getByRole('switch', { name: 'Включить подсказки в заказе' })
 
-  await page.getByLabel('Название помощника').fill('E2E assistant')
+  await expect(assistantName).toHaveValue('Order follow-up')
+  await expect(note).toHaveValue('Check payment status and delivery date before calling the customer.')
+  await expect(enabled).toHaveAttribute('aria-checked', 'true')
+
+  await assistantName.fill('E2E assistant')
+  await note.fill('Call the customer after payment confirmation.')
+  await enabled.click()
   await page.getByRole('button', { name: 'Сохранить' }).click()
 
-  await expect(page.locator('body')).toContainText('Настройки сохранены')
-
-  const snapshot = await readSandboxSnapshot(page)
-
-  expect(snapshot.host.http.every(record => record.response.status === 200)).toBe(true)
+  await expect(page.getByText('Настройки сохранены')).toBeVisible()
+  await expect(assistantName).toHaveValue('E2E assistant')
+  await expect(note).toHaveValue('Call the customer after payment confirmation.')
+  await expect(enabled).toHaveAttribute('aria-checked', 'false')
 })

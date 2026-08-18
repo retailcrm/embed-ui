@@ -5,6 +5,7 @@ import type {
 import { afterEach, expect } from 'vitest'
 import { fireEvent, screen } from '@testing-library/dom'
 import { test } from 'vitest'
+import { waitFor, within } from '@testing-library/dom'
 
 import {
   createExtensionSourceWorker,
@@ -22,7 +23,7 @@ afterEach(async () => {
   window.history.replaceState(null, '', '/')
 })
 
-test('opens generated settings page', async () => {
+test('updates and saves generated extension settings', async () => {
   const sourceWorker = createExtensionSourceWorker(
     new URL('/__SOURCE_ROOT__/endpoint/endpoint.worker.ts', window.location.href),
   )
@@ -35,10 +36,20 @@ test('opens generated settings page', async () => {
   await runtime.runPage('__PAGE_CODE__')
 
   expect(await screen.findByRole('heading', { name: 'Настройки расширения' })).toBeInstanceOf(HTMLElement)
-  expect(screen.getByRole('button', { name: 'Сохранить' })).toBeInstanceOf(HTMLButtonElement)
+  const assistantName = screen.getByLabelText('Название помощника') as HTMLInputElement
+
+  expect(assistantName.value).toBe('Order follow-up')
+
+  await fireEvent.input(assistantName, {
+    target: { value: 'Помощник отдела продаж' },
+  })
+  await fireEvent.click(screen.getByRole('button', { name: 'Сохранить' }))
+
+  expect(await screen.findByText('Настройки сохранены')).toBeInstanceOf(HTMLElement)
+  expect(assistantName.value).toBe('Помощник отдела продаж')
 })
 
-test('opens generated order widget sidebar', async () => {
+test('edits and saves a follow-up draft in generated order widget', async () => {
   const sourceWorker = createExtensionSourceWorker(
     new URL('/__SOURCE_ROOT__/endpoint/endpoint.worker.ts', window.location.href),
   )
@@ -52,8 +63,39 @@ test('opens generated order widget sidebar', async () => {
 
   const openSidebar = await screen.findByRole('button', { name: 'Подготовить связь' })
 
-  fireEvent.click(openSidebar)
+  await fireEvent.click(openSidebar)
 
-  expect(await screen.findByRole('dialog')).toBeInstanceOf(HTMLElement)
-  expect(screen.getByText('Связь по заказу')).toBeInstanceOf(HTMLElement)
+  const dialog = await screen.findByRole('dialog', { name: 'Связь по заказу' })
+  const followUpNote = within(dialog).getByLabelText('Заметка для связи') as HTMLTextAreaElement
+  const createTask = within(dialog).getByRole('switch', {
+    name: 'Создать задачу после сохранения',
+  })
+
+  expect(followUpNote.value).toBe('Call after payment confirmation.')
+  expect(createTask.getAttribute('aria-checked')).toBe('true')
+
+  await fireEvent.input(followUpNote, {
+    target: { value: 'Позвонить после подтверждения оплаты' },
+  })
+  await fireEvent.click(createTask)
+
+  await waitFor(() => {
+    expect(createTask.getAttribute('aria-checked')).toBe('false')
+  })
+
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'Сохранить черновик' }))
+
+  await waitFor(() => {
+    expect(screen.queryByRole('dialog', { name: 'Связь по заказу' })).toBeNull()
+  })
+
+  await fireEvent.click(openSidebar)
+
+  const reopenedDialog = await screen.findByRole('dialog', { name: 'Связь по заказу' })
+
+  expect((within(reopenedDialog).getByLabelText('Заметка для связи') as HTMLTextAreaElement).value)
+    .toBe('Позвонить после подтверждения оплаты')
+  expect(within(reopenedDialog).getByRole('switch', {
+    name: 'Создать задачу после сохранения',
+  }).getAttribute('aria-checked')).toBe('false')
 })

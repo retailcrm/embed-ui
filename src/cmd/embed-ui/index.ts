@@ -31,14 +31,10 @@ import { createPlaywrightConfig } from './templates'
 import { createPublishScript } from './templates'
 import { createRange } from './packages'
 import { createReadme } from './templates'
-import {
-  createSandboxBrowserTest,
-  createSandboxE2eTest,
-  createSandboxUnitTest,
-} from './templates'
+import { createSandboxBrowserTest, createSandboxE2eTest } from './templates'
 import { createServeScript } from './templates'
 import { createSettingsPage, createTsConfig, createViteConfig } from './templates'
-import { createVitestBrowserConfig, createVitestConfig } from './templates'
+import { createVitestBrowserConfig } from './templates'
 import { DEFAULT_INIT_PACKAGE_IDS } from './packages'
 import { ensureDirectory } from './filesystem'
 import { hasExistingDependency } from './package-json'
@@ -52,7 +48,11 @@ import { PACKAGE_MANAGERS, parseArgs, parseInitArgs } from './args'
 import { printChanges, printInitReport } from './report'
 import { promptForInstallSelection } from './packages'
 import { readOrCreatePackageJson, readPackageJson } from './package-json'
-import { renameGeneratedScript } from './package-json'
+import {
+  removeGeneratedScript,
+  renameGeneratedScript,
+  replaceGeneratedScript,
+} from './package-json'
 import { resolveDefaultInitVersion } from './packages'
 import { resolveInstallPackages } from './packages'
 import { resolveInteractiveInitOptions } from './interactive'
@@ -335,8 +335,22 @@ const applyInitPackageJson = (
   setMissingScript(packageJson, 'eslint', 'eslint .', changes)
   setMissingScript(packageJson, 'eslint:fix', 'eslint --fix .', changes)
   setMissingScript(packageJson, 'publish-extension', 'node scripts/publish-extension.mjs', changes)
-  setMissingScript(packageJson, 'test', `${createPackageManagerRunCommand(packageManager)} test:unit && ${createPackageManagerRunCommand(packageManager)} test:browser && ${createPackageManagerRunCommand(packageManager)} test:e2e`, changes)
-  setMissingScript(packageJson, 'test:unit', 'vitest --run --config vitest.config.ts', changes)
+  const packageManagerRun = createPackageManagerRunCommand(packageManager)
+
+  replaceGeneratedScript(
+    packageJson,
+    'test',
+    `${packageManagerRun} test:unit && ${packageManagerRun} test:browser && ${packageManagerRun} test:e2e`,
+    `${packageManagerRun} test:browser && ${packageManagerRun} test:e2e`,
+    changes
+  )
+  removeGeneratedScript(
+    packageJson,
+    'test:unit',
+    'vitest --run --config vitest.config.ts',
+    changes
+  )
+  setMissingScript(packageJson, 'test', `${packageManagerRun} test:browser && ${packageManagerRun} test:e2e`, changes)
   setMissingScript(packageJson, 'test:browser', 'vitest --run --config vitest.config.browser.ts', changes)
   setMissingScript(packageJson, 'test:e2e', 'playwright test -c vitest.config.playwright.ts', changes)
   setMissingScript(packageJson, 'test:browsers:install', 'playwright install chromium', changes)
@@ -438,7 +452,6 @@ const applyInitConfigs = (
 
   writeFileIfAllowed(path.join(cwd, 'tsconfig.json'), createTsConfig(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'vite.config.ts'), createViteConfig(cwd, sourceRoot), options, changes)
-  writeFileIfAllowed(path.join(cwd, 'vitest.config.ts'), createVitestConfig(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'vitest.config.browser.ts'), createVitestBrowserConfig(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'vitest.config.playwright.ts'), createPlaywrightConfig(cwd, sourceRoot, packageManager), options, changes)
   writeFileIfAllowed(path.join(cwd, 'env.d.ts'), createEnvDts(), options, changes)
@@ -473,9 +486,8 @@ const applyInitTemplate = (
   writeFileIfAllowed(path.join(sourceRoot, 'i18n/locales/ru-RU.json'), createMessages(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'pages/SettingsPage.vue'), createSettingsPage(), options, changes)
   writeFileIfAllowed(path.join(sourceRoot, 'widgets/OrderCommonAfterWidget.vue'), createOrderWidget(), options, changes)
-  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/unit/extensionrc.test.ts'), createSandboxUnitTest(options), options, changes)
-  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/browser/starter.test.browser.ts'), createSandboxBrowserTest(cwd, sourceRoot, options), options, changes)
-  writeFileIfAllowed(path.join(sourceRoot, 'sandbox/tests/e2e/starter.e2e.ts'), createSandboxE2eTest(cwd, sourceRoot), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'tests/browser/starter.test.browser.ts'), createSandboxBrowserTest(cwd, sourceRoot, options), options, changes)
+  writeFileIfAllowed(path.join(sourceRoot, 'tests/e2e/starter.e2e.ts'), createSandboxE2eTest(cwd, sourceRoot), options, changes)
   writeFileIfAllowed(path.join(cwd, 'extensionrc.json'), createExtensionConfig(options), options, changes)
   writeFileIfAllowed(path.join(cwd, 'scripts/publish-extension.mjs'), createPublishScript(), options, changes)
   writeFileIfAllowed(path.join(cwd, 'scripts/dev.mjs'), createDevScript(packageManager), options, changes)
