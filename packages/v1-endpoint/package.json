@@ -114,14 +114,14 @@
   },
   "devDependencies": {
     "@retailcrm/image-preview": "^1.0.2",
-    "@vitest/browser": "4.1.8",
-    "@vitest/browser-playwright": "4.1.8",
+    "@vitest/browser": "4.1.10",
+    "@vitest/browser-playwright": "4.1.10",
     "date-fns": "^4.1.0",
     "playwright": "1.58.2",
     "tsx": "^4.21.0",
-    "vite": "^7.3.2",
+    "vite": "^7.3.5",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "4.1.8"
+    "vitest": "4.1.10"
   },
   "publishConfig": {
     "access": "public"
