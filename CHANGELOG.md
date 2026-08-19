@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.31
+
+### Bug Fixes
+
+* **v1-endpoint:** Host API calls were scoped by run ([41afca9](https://github.com/retailcrm/embed-ui/commit/41afca91b74a2e473a1cc071aca91e77383dfa16))
+
 ## 0.9.30
 
 ### Bug Fixes
