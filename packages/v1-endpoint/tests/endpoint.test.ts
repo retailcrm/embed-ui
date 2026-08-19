@@ -15,6 +15,7 @@ import {
 
 import { createApp } from 'vue'
 import { createEndpoint as createRpcEndpoint } from '@remote-ui/rpc'
+import { defineStore } from 'pinia'
 import { flushPromises } from '@vue/test-utils'
 import { fromMessagePort } from '@remote-ui/rpc'
 import { h, ref } from 'vue'
@@ -23,6 +24,7 @@ import {
   createEndpoint as createRemoteEndpoint,
   defineRunner as defineRemoteRunner,
 } from '../src/remote'
+import { toScopedHostApiMethod } from '../src/common'
 
 const {
   exposeEndpointApi,
@@ -178,6 +180,56 @@ test('runs widget and page simultaneously and releases independently via defineR
   await widgetReceiver.flush()
 
   expect(pageMount.querySelector('[data-qa="page:orders"]')).toBeNull()
+})
+
+test('routes host API calls to the scope of each simultaneous run', async () => {
+  const { port1, port2 } = new MessageChannel()
+  const host = createRpcEndpoint<EndpointApi>(fromMessagePort(port1))
+  const channel = fromMessagePort(port2)
+  const firstReceiver = createReceiver()
+  const secondReceiver = createReceiver()
+  const locations: string[] = []
+  const useHostApi = defineStore('scoped-host-api', {
+    actions: {
+      async readLocation () {
+        locations.push((await this.endpoint.call.getLocation()).pathname)
+      },
+    },
+  })
+
+  port1.start()
+  port2.start()
+
+  host.expose({
+    [toScopedHostApiMethod('first', 'getLocation')]: () => ({
+      pathname: '/first',
+      search: '',
+      hash: '',
+      query: {},
+    }),
+    [toScopedHostApiMethod('second', 'getLocation')]: () => ({
+      pathname: '/second',
+      search: '',
+      hash: '',
+      query: {},
+    }),
+  })
+
+  createRemoteEndpoint(defineRemoteRunner({
+    pages: [{ render: () => null }],
+    widgets: [{ render: () => null }, (_app, pinia) => useHostApi(pinia).readLocation()],
+  }), channel)
+
+  await host.call.run(firstReceiver.receive, {
+    id: 'first-widget',
+    target: 'order/card:common.before',
+  }, 'first')
+  await host.call.run(secondReceiver.receive, {
+    id: 'second-widget',
+    target: 'order/card:common.after',
+  }, 'second')
+
+  expect(locations).toEqual(['/first', '/second'])
 })
 
 test('replaces run with same widget id and supports reset via defineRemoteRunner', async () => {

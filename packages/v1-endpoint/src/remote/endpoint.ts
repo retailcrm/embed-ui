@@ -23,6 +23,7 @@ import { release, retain } from '@remote-ui/rpc'
 
 import { defineRunner as definePageRunner } from './pages'
 import { defineRunner as defineWidgetRunner } from './widgets'
+import { toScopedHostApiMethod } from '../common/extension'
 
 export type Runner = {
   widget: WidgetRunner;
@@ -145,14 +146,15 @@ export const createEndpoint = (
   endpoint.expose({
     async run (
       channel: Channel,
-      config: RunConfig
+      config: RunConfig,
+      hostApiScope?: string
     ) {
       const run = createRun(channel)
       runs.replace(config, run)
       retain(channel)
 
       try {
-        const mounting = mountRun(run, config, runner, endpoint)
+        const mounting = mountRun(run, config, runner, endpoint, hostApiScope)
 
         await Promise.race([mounting, run.cancellation])
       } catch (error) {
@@ -179,14 +181,16 @@ const mountRun = async (
   run: RemoteRun,
   config: RunConfig,
   runner: Runner,
-  endpoint: Endpoint<EndpointApi>
+  endpoint: Endpoint<EndpointApi>,
+  hostApiScope?: string
 ): Promise<void> => {
   const root = await mountEndpointRoot(run.channel) as Parameters<typeof createRemoteRenderer>[0]
   const { createApp } = createRemoteRenderer(root)
   const pinia = createPinia()
+  const hostEndpoint = createHostEndpoint(endpoint, hostApiScope)
 
-  pinia.use(injectEndpoint(endpoint))
-  pinia.use(injectAccessor(endpoint))
+  pinia.use(injectEndpoint(hostEndpoint))
+  pinia.use(injectAccessor(hostEndpoint))
 
   run.destroy = 'id' in config
     ? await runner.widget.run(createApp, root, pinia, config.target)
@@ -194,5 +198,25 @@ const mountRun = async (
 
   if (run.cancelled) {
     disposeRun(run)
+  }
+}
+
+const createHostEndpoint = (
+  endpoint: Endpoint<EndpointApi>,
+  scope?: string
+): Endpoint<EndpointApi> => {
+  if (!scope) {
+    return endpoint
+  }
+
+  return {
+    ...endpoint,
+    call: new Proxy(endpoint.call, {
+      get (target, method, receiver) {
+        return typeof method === 'string'
+          ? Reflect.get(target, toScopedHostApiMethod(scope, method), receiver)
+          : Reflect.get(target, method, receiver)
+      },
+    }),
   }
 }

@@ -15,7 +15,8 @@ import type { RunIdentity as WidgetRunIdentity } from './widgets'
 export interface RemoteApi {
   run (
     channel: Channel,
-    config: WidgetRunConfig | PageRunIdentity
+    config: WidgetRunConfig | PageRunIdentity,
+    hostApiScope?: string,
   ): Promise<void>;
 
   release (config: WidgetRunIdentity | PageRunIdentity): void;
@@ -28,3 +29,6 @@ export type EndpointApi<M extends ContextSchemaList = ContextSchemaList> =
   & CustomContextAccessor
   & HostApi
   & RemoteApi
+
+export const toScopedHostApiMethod = (scope: string, method: string): string =>
+  `@retailcrm/embed-ui/run/${scope}/${method}`
