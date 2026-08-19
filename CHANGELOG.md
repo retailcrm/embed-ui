@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.30
+
+### Bug Fixes
+
+* **v1-sandbox:** Added alert help for JSON Context, fixed eslint errors in templates ([92df13c](https://github.com/retailcrm/embed-ui/commit/92df13c38c3474da3191add42f501e73d20adbda))
+* Generated browser test names were aligned with conventions ([89a48e3](https://github.com/retailcrm/embed-ui/commit/89a48e3c0b7786e8b723ff7792a972a825618b43))
+* playwright-report was added in gitignore ([37efce0](https://github.com/retailcrm/embed-ui/commit/37efce0dcde7e3931fa0d35e99e14b97d9a1e8b0))
+* artifacts  was added in gitignore ([3e64a38](https://github.com/retailcrm/embed-ui/commit/3e64a383730be4264b47679719dc53417fefd71b))
+* **v1-sandbox:** Updated templates, impoved browser mode test ([4b63f71](https://github.com/retailcrm/embed-ui/commit/4b63f71ed83afa0559fcfdd3503e7f1cdecf85c0))
+* **v1-endpoint:** Pending endpoint runs were made cancellable ([8f23070](https://github.com/retailcrm/embed-ui/commit/8f23070fa4f22cc4d1763c25cdce1d4cc7666f90))
+
 ## 0.9.30-alpha.4
 
 ### Bug Fixes

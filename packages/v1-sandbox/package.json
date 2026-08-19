@@ -1,7 +1,7 @@
 {
   "name": "@retailcrm/embed-ui-v1-sandbox",
   "type": "module",
-  "version": "0.9.30-alpha.4",
+  "version": "0.9.30",
   "description": "Sandbox host emulator for previewing and testing RetailCRM UI extensions",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
@@ -124,12 +124,12 @@
     "vue": "^3.5"
   },
   "dependencies": {
-    "@retailcrm/embed-ui": "^0.9.30-alpha.4",
-    "@retailcrm/embed-ui-v1-components": "^0.9.30-alpha.4",
-    "@retailcrm/embed-ui-v1-contexts": "^0.9.30-alpha.4",
-    "@retailcrm/embed-ui-v1-endpoint": "^0.9.30-alpha.4",
-    "@retailcrm/embed-ui-v1-testing": "^0.9.30-alpha.4",
-    "@retailcrm/embed-ui-v1-types": "^0.9.30-alpha.4"
+    "@retailcrm/embed-ui": "^0.9.30",
+    "@retailcrm/embed-ui-v1-components": "^0.9.30",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.30",
+    "@retailcrm/embed-ui-v1-endpoint": "^0.9.30",
+    "@retailcrm/embed-ui-v1-testing": "^0.9.30",
+    "@retailcrm/embed-ui-v1-types": "^0.9.30"
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^11.2",
