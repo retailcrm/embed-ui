@@ -16,6 +16,8 @@ import {
   test,
 } from 'vitest'
 
+import { toScopedHostApiMethod } from '../src/common'
+
 function createHostApp (receiver: Receiver) {
   const provider = createProvider()
 
@@ -159,6 +161,57 @@ test('release cancels a widget while its worker runner is mounting', async () =>
     await flushPromises()
 
     expect(widgetMount.querySelector('[data-qa="worker-widget"]')).toBeNull()
+  } finally {
+    worker.terminate()
+  }
+})
+
+test('routes simultaneous worker host API calls through their run scopes', async () => {
+  const worker = new Worker(new URL('./__fixtures__/worker.ts', import.meta.url), { type: 'module' })
+  const host = createRpcEndpoint<EndpointApi>(worker)
+  const firstReceiver = createReceiver()
+  const secondReceiver = createReceiver()
+  const firstMount = document.createElement('div')
+  const secondMount = document.createElement('div')
+
+  mountRoot?.appendChild(firstMount)
+  mountRoot?.appendChild(secondMount)
+
+  createHostApp(firstReceiver).mount(firstMount)
+  createHostApp(secondReceiver).mount(secondMount)
+
+  host.expose({
+    [toScopedHostApiMethod('first', 'getLocation')]: () => ({
+      pathname: '/first',
+      search: '',
+      hash: '',
+      query: {},
+    }),
+    [toScopedHostApiMethod('second', 'getLocation')]: () => ({
+      pathname: '/second',
+      search: '',
+      hash: '',
+      query: {},
+    }),
+  })
+
+  try {
+    await host.call.run(firstReceiver.receive, {
+      id: 'first-widget',
+      target: 'order/card:common.before',
+    }, 'first')
+    await host.call.run(secondReceiver.receive, {
+      id: 'second-widget',
+      target: 'order/card:common.after',
+    }, 'second')
+    await firstReceiver.flush()
+    await secondReceiver.flush()
+
+    firstMount.querySelector<HTMLButtonElement>('[data-qa="worker-widget:read-location"]')?.click()
+    secondMount.querySelector<HTMLButtonElement>('[data-qa="worker-widget:read-location"]')?.click()
+
+    await waitForText(firstReceiver, firstMount, '[data-qa="worker-widget:location"]', '/first')
+    await waitForText(secondReceiver, secondMount, '[data-qa="worker-widget:location"]', '/second')
   } finally {
     worker.terminate()
   }

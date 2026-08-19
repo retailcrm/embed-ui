@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia'
 import { h, onMounted, ref } from 'vue'
 
 import { defineRunner as defineRemoteRunner, runEndpoint } from '../../src/remote'
@@ -8,6 +9,14 @@ const WIDGET_MOUNT_PENDING = 'test:widget-mount-pending'
 
 let delayWidgetMount = false
 let continueWidgetMount = () => undefined
+
+const useHostApi = defineStore('worker-host-api', {
+  actions: {
+    async getPathname () {
+      return (await this.endpoint.call.getLocation()).pathname
+    },
+  },
+})
 
 self.addEventListener('message', event => {
   if (event.data?.type === DELAY_WIDGET_MOUNT) {
@@ -73,6 +82,8 @@ runEndpoint(defineRemoteRunner({
 
     setup (props: { target: string }) {
       const count = ref(0)
+      const pathname = ref('unread')
+      const hostApi = useHostApi()
 
       onMounted(() => {
         setTimeout(() => {
@@ -91,6 +102,17 @@ runEndpoint(defineRemoteRunner({
             count.value += 1
           },
         }, 'inc widget'),
+
+        h('button', {
+          'data-qa': 'worker-widget:read-location',
+          onClick: async () => {
+            pathname.value = await hostApi.getPathname()
+          },
+        }, 'read location'),
+
+        h('div', {
+          'data-qa': 'worker-widget:location',
+        }, pathname.value),
       ])
     },
   }, waitBeforeWidgetMount],
