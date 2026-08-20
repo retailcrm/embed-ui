@@ -17,6 +17,11 @@ createEndpoint(
 
 ## Поведение
 
+При создании endpoint отправляет через `messenger` сообщение типа
+`ENDPOINT_CAPABILITIES_MESSAGE` с capability `scopedHostApi: true`. Host может
+использовать его для безопасного объединения нескольких run-ов в одном Worker.
+Отсутствие сообщения означает legacy endpoint без scoped Host API.
+
 При `run(...)`:
 
 1. сбрасывает предыдущее монтирование для того же `id` (widget) или `code` (page),

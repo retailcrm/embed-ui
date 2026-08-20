@@ -24,7 +24,7 @@ import {
   createEndpoint as createRemoteEndpoint,
   defineRunner as defineRemoteRunner,
 } from '../src/remote'
-import { toScopedHostApiMethod } from '../src/common'
+import { ENDPOINT_CAPABILITIES_MESSAGE, toScopedHostApiMethod } from '../src/common'
 
 const {
   exposeEndpointApi,
@@ -230,6 +230,26 @@ test('routes host API calls to the scope of each simultaneous run', async () => 
   }, 'second')
 
   expect(locations).toEqual(['/first', '/second'])
+})
+
+test('reports support for scoped host API', () => {
+  const messenger = {
+    addEventListener: vi.fn(),
+    postMessage: vi.fn(),
+    removeEventListener: vi.fn(),
+  } as unknown as RemoteRpc.MessageEndpoint
+
+  createRemoteEndpoint(defineRemoteRunner({
+    pages: [{ render: () => null }],
+    widgets: [{ render: () => null }],
+  }), messenger)
+
+  expect(messenger.postMessage).toHaveBeenCalledWith({
+    type: ENDPOINT_CAPABILITIES_MESSAGE,
+    capabilities: {
+      scopedHostApi: true,
+    },
+  })
 })
 
 test('replaces run with same widget id and supports reset via defineRemoteRunner', async () => {

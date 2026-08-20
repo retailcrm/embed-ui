@@ -16,7 +16,7 @@ import {
   test,
 } from 'vitest'
 
-import { toScopedHostApiMethod } from '../src/common'
+import { ENDPOINT_CAPABILITIES_MESSAGE, toScopedHostApiMethod } from '../src/common'
 
 function createHostApp (receiver: Receiver) {
   const provider = createProvider()
@@ -53,14 +53,14 @@ async function waitForText (
   expect(mount.querySelector(selector)?.textContent).toBe(expected)
 }
 
-const waitForWorkerMessage = (worker: Worker, type: string): Promise<void> => {
+const waitForWorkerMessage = (worker: Worker, type: string): Promise<unknown> => {
   return new Promise(resolve => {
     const subscription = new AbortController()
 
     worker.addEventListener('message', event => {
       if (event.data?.type === type) {
         subscription.abort('Expected worker message received')
-        resolve()
+        resolve(event.data)
       }
     }, { signal: subscription.signal })
   })
@@ -80,6 +80,7 @@ afterEach(() => {
 
 test('runEndpoint bootstraps worker and updates host after remote updates', async () => {
   const worker = new Worker(new URL('./__fixtures__/worker.ts', import.meta.url), { type: 'module' })
+  const capabilities = waitForWorkerMessage(worker, ENDPOINT_CAPABILITIES_MESSAGE)
   const host = createRpcEndpoint<EndpointApi>(worker)
   const pageReceiver = createReceiver()
   const widgetReceiver = createReceiver()
@@ -93,6 +94,12 @@ test('runEndpoint bootstraps worker and updates host after remote updates', asyn
   createHostApp(widgetReceiver).mount(widgetMount)
 
   try {
+    await expect(capabilities).resolves.toMatchObject({
+      capabilities: {
+        scopedHostApi: true,
+      },
+    })
+
     await host.call.run(pageReceiver.receive, { code: 'orders' })
     await pageReceiver.flush()
     await flushPromises()

@@ -1,7 +1,7 @@
 import type { Channel } from '@omnicajs/vue-remote/remote'
 import type { Endpoint, MessageEndpoint } from '@remote-ui/rpc'
 
-import type { EndpointApi } from '@/common/extension'
+import type { EndpointApi, EndpointCapabilitiesMessage } from '@/common/extension'
 import type { RemoteApi } from '@/common/extension'
 
 import type { RunIdentity as PageRunIdentity, Runner as PageRunner } from './pages'
@@ -23,6 +23,7 @@ import { release, retain } from '@remote-ui/rpc'
 
 import { defineRunner as definePageRunner } from './pages'
 import { defineRunner as defineWidgetRunner } from './widgets'
+import { ENDPOINT_CAPABILITIES_MESSAGE } from '../common/extension'
 import { toScopedHostApiMethod } from '../common/extension'
 
 export type Runner = {
@@ -142,6 +143,13 @@ export const createEndpoint = (
 ): Endpoint<RemoteApi> => {
   const endpoint = _createEndpoint<EndpointApi>(messenger)
   const runs = new RunRegistry()
+
+  messenger.postMessage({
+    type: ENDPOINT_CAPABILITIES_MESSAGE,
+    capabilities: {
+      scopedHostApi: true,
+    },
+  } satisfies EndpointCapabilitiesMessage)
 
   endpoint.expose({
     async run (
