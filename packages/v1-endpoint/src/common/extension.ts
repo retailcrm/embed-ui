@@ -12,6 +12,17 @@ import type { RunIdentity as PageRunIdentity } from './pages'
 import type { RunConfig as WidgetRunConfig } from './widgets'
 import type { RunIdentity as WidgetRunIdentity } from './widgets'
 
+export interface EndpointCapabilities {
+  scopedHostApi: boolean;
+}
+
+export const ENDPOINT_CAPABILITIES_MESSAGE = 'retailcrm:embed-ui:endpoint-capabilities'
+
+export interface EndpointCapabilitiesMessage {
+  type: typeof ENDPOINT_CAPABILITIES_MESSAGE;
+  capabilities: EndpointCapabilities;
+}
+
 export interface RemoteApi {
   run (
     channel: Channel,

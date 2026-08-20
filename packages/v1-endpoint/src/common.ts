@@ -1,2 +1,9 @@
 export * from './common/targets'
-export { toScopedHostApiMethod } from './common/extension'
+export {
+  ENDPOINT_CAPABILITIES_MESSAGE,
+  toScopedHostApiMethod,
+} from './common/extension'
+export type {
+  EndpointCapabilities,
+  EndpointCapabilitiesMessage,
+} from './common/extension'
