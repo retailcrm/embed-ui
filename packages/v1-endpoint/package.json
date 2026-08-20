@@ -5,7 +5,7 @@
     "embed-ui-v1-endpoint-mcp": "bin/embed-ui-v1-endpoint-mcp.mjs"
   },
   "type": "module",
-  "version": "0.9.31",
+  "version": "0.9.32-beta.1",
   "description": "Endpoint API for integrations in RetailCRM",
   "license": "MIT",
   "author": "RetailDriverLLC <integration@retailcrm.ru>",
@@ -100,17 +100,17 @@
   "peerDependencies": {
     "@omnicajs/vue-remote": "^0.2.26",
     "@remote-ui/rpc": "^1.4",
-    "@retailcrm/embed-ui-v1-contexts": "^0.9.31",
-    "@retailcrm/embed-ui-v1-types": "^0.9.31",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.32-beta.1",
+    "@retailcrm/embed-ui-v1-types": "^0.9.32-beta.1",
     "pinia": "^2.2",
     "vue": "^3.5"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@remote-ui/rpc": "^1.4.7",
-    "@retailcrm/embed-ui-v1-components": "^0.9.31",
-    "@retailcrm/embed-ui-v1-contexts": "^0.9.31",
-    "@retailcrm/embed-ui-v1-types": "^0.9.31"
+    "@retailcrm/embed-ui-v1-components": "^0.9.32-beta.1",
+    "@retailcrm/embed-ui-v1-contexts": "^0.9.32-beta.1",
+    "@retailcrm/embed-ui-v1-types": "^0.9.32-beta.1"
   },
   "devDependencies": {
     "@retailcrm/image-preview": "^1.0.2",

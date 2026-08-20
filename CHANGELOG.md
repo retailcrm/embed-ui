@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.32-beta.1
+
+### Features
+
+* **v1-endpoint:** Endpoint capabilities were announced ([418321d](https://github.com/retailcrm/embed-ui/commit/418321d62c7a3821ffd2238bfdb471badf431435))
+
 ## 0.9.31
 
 ### Bug Fixes

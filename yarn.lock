@@ -1951,7 +1951,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@retailcrm/embed-ui-v1-components@npm:^0.9.31, @retailcrm/embed-ui-v1-components@workspace:packages/v1-components":
+"@retailcrm/embed-ui-v1-components@npm:^0.9.32-beta.1, @retailcrm/embed-ui-v1-components@workspace:packages/v1-components":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-components@workspace:packages/v1-components"
   dependencies:
@@ -1997,15 +1997,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-contexts@npm:^0.9.31, @retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts":
+"@retailcrm/embed-ui-v1-contexts@npm:^0.9.32-beta.1, @retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts"
   dependencies:
     "@modelcontextprotocol/sdk": "npm:^1.29.0"
     "@omnicajs/symfony-router": "npm:^1.0.0"
     "@remote-ui/rpc": "npm:^1.4.7"
-    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.31"
+    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.32-beta.1"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
     vite: "npm:^7.3.5"
@@ -2021,15 +2021,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-endpoint@npm:^0.9.31, @retailcrm/embed-ui-v1-endpoint@workspace:packages/v1-endpoint":
+"@retailcrm/embed-ui-v1-endpoint@npm:^0.9.32-beta.1, @retailcrm/embed-ui-v1-endpoint@workspace:packages/v1-endpoint":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-endpoint@workspace:packages/v1-endpoint"
   dependencies:
     "@modelcontextprotocol/sdk": "npm:^1.29.0"
     "@remote-ui/rpc": "npm:^1.4.7"
-    "@retailcrm/embed-ui-v1-components": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.31"
+    "@retailcrm/embed-ui-v1-components": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.32-beta.1"
     "@retailcrm/image-preview": "npm:^1.0.2"
     "@vitest/browser": "npm:4.1.10"
     "@vitest/browser-playwright": "npm:4.1.10"
@@ -2042,8 +2042,8 @@ __metadata:
   peerDependencies:
     "@omnicajs/vue-remote": ^0.2.26
     "@remote-ui/rpc": ^1.4
-    "@retailcrm/embed-ui-v1-contexts": ^0.9.31
-    "@retailcrm/embed-ui-v1-types": ^0.9.31
+    "@retailcrm/embed-ui-v1-contexts": ^0.9.32-beta.1
+    "@retailcrm/embed-ui-v1-types": ^0.9.32-beta.1
     pinia: ^2.2
     vue: ^3.5
   bin:
@@ -2060,12 +2060,12 @@ __metadata:
     "@omnicajs/vue-remote": "npm:^0.2.24"
     "@playwright/test": "npm:1.58.2"
     "@remote-ui/rpc": "npm:^1.4.7"
-    "@retailcrm/embed-ui": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-components": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-endpoint": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.31"
+    "@retailcrm/embed-ui": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-components": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-endpoint": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.32-beta.1"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/vue": "npm:^8.1.0"
     "@types/node": "npm:^25.6.0"
@@ -2096,11 +2096,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-testing@npm:^0.9.31, @retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing":
+"@retailcrm/embed-ui-v1-testing@npm:^0.9.32-beta.1, @retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-testing@workspace:packages/v1-testing"
   dependencies:
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.31"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.32-beta.1"
   peerDependencies:
     "@omnicajs/vue-remote": ^0.2.26
     "@remote-ui/rpc": ^1.4
@@ -2108,13 +2108,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui-v1-types@npm:^0.9.31, @retailcrm/embed-ui-v1-types@workspace:packages/v1-types":
+"@retailcrm/embed-ui-v1-types@npm:^0.9.32-beta.1, @retailcrm/embed-ui-v1-types@workspace:packages/v1-types":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-types@workspace:packages/v1-types"
   languageName: unknown
   linkType: soft
 
-"@retailcrm/embed-ui@npm:^0.9.31, @retailcrm/embed-ui@workspace:.":
+"@retailcrm/embed-ui@npm:^0.9.32-beta.1, @retailcrm/embed-ui@workspace:.":
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui@workspace:."
   dependencies:
@@ -2130,11 +2130,11 @@ __metadata:
     "@omnicajs/symfony-router": "npm:^1.0.0"
     "@omnicajs/vue-remote": "npm:^0.2.26"
     "@remote-ui/rpc": "npm:^1.4.5"
-    "@retailcrm/embed-ui-v1-components": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-endpoint": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.31"
-    "@retailcrm/embed-ui-v1-types": "npm:^0.9.31"
+    "@retailcrm/embed-ui-v1-components": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-endpoint": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-testing": "npm:^0.9.32-beta.1"
+    "@retailcrm/embed-ui-v1-types": "npm:^0.9.32-beta.1"
     "@types/node": "npm:^22.19.2"
     "@types/semver": "npm:^7.7.1"
     "@types/yargs": "npm:^17.0.35"
