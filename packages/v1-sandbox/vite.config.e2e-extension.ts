@@ -83,6 +83,10 @@ const extensionFixtureServer = (): Plugin => ({
       const action = match[2] ?? ''
       const entry = entries.get(fixture)
 
+      if (!entry) {
+        throw new Error(`E2E extension build not found ${fixture}`)
+      }
+
       if ((request.method === 'GET' || request.method === 'HEAD') && action === '') {
         const manifest = [
           '<!doctype html>',
