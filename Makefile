@@ -85,10 +85,10 @@ endif
 	$(TARGET_OK)
 
 .PHONY: tests-sandbox
-tests-sandbox: .require-compose ## [Tests][docker] Runs jsdom and browser tests for v1-sandbox
+tests-sandbox: .require-compose ## [Tests][docker] Runs jsdom, browser and e2e tests for v1-sandbox
 	$(TARGET_HEADER)
 	$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
-		yarn workspace @retailcrm/embed-ui-v1-sandbox test:all
+    	  yarn workspace @retailcrm/embed-ui-v1-sandbox test:all
 	$(TARGET_OK)
 
 .PHONY: tests-sandbox-browser
