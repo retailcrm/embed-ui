@@ -8,6 +8,10 @@ import type {
 import { DEFAULT_SANDBOX_TARGET } from '@/scenario/targets'
 import { DefaultSandbox } from '@/scenario/defaults'
 import { isSandboxOrderTarget } from '@/scenario/predicates'
+import {
+  parseSandboxExtensionDescriptorJson,
+  serializeSandboxExtensionDescriptor,
+} from '@/scenario/descriptor'
 
 export type {
   ParseSandboxLaunchConfigOptions,
@@ -21,12 +25,16 @@ export const parseSandboxLaunchConfig = (
   params: URLSearchParams,
   options: ParseSandboxLaunchConfigOptions = {}
 ): SandboxLaunchConfig => {
-  const target = params.get('target') ?? options.targets?.[0] ?? DEFAULT_SANDBOX_TARGET
-  const targets = parseTargetsParam(params.get('targets')) ?? options.targets ?? [
-    isSandboxOrderTarget(target) ? target : DEFAULT_SANDBOX_TARGET,
-  ]
+  const descriptor = parseDescriptorParam(params.get('descriptor')) ?? options.descriptor
+  const descriptorTargets = descriptor?.targets.filter(isSandboxOrderTarget) ?? []
+  const target = params.get('target') ?? options.targets?.[0]
+  const targets = parseTargetsParam(params.get('targets'))
+    ?? options.targets
+    ?? (target && isSandboxOrderTarget(target) ? [target] : null)
+    ?? (descriptorTargets.length > 0 ? descriptorTargets : [DEFAULT_SANDBOX_TARGET])
 
   return {
+    ...(descriptor ? { descriptor } : {}),
     extensionUrl: readStringParam(
       params,
       'extensionUrl',
@@ -63,9 +71,17 @@ export const updateSandboxLaunchQuery = (
 ): URL => {
   const url = new URL(base)
 
-  url.searchParams.set('extensionUrl', config.extensionUrl)
+  if (config.descriptor) {
+    url.searchParams.set('descriptor', serializeSandboxExtensionDescriptor(config.descriptor))
+    url.searchParams.delete('extensionUrl')
+    url.searchParams.delete('manifestUrl')
+  } else {
+    url.searchParams.delete('descriptor')
+    url.searchParams.set('extensionUrl', config.extensionUrl)
+  }
+
   url.searchParams.set('fixture', config.fixture)
-  url.searchParams.set('manifestUrl', config.manifestUrl)
+  if (!config.descriptor) url.searchParams.set('manifestUrl', config.manifestUrl)
   url.searchParams.set('mode', config.mode)
   url.searchParams.set('pageCode', config.pageCode)
   url.searchParams.set('target', config.targets[0] ?? DEFAULT_SANDBOX_TARGET)
@@ -74,6 +90,12 @@ export const updateSandboxLaunchQuery = (
 
   return url
 }
+
+const parseDescriptorParam = (
+  value: string | null
+): SandboxLaunchConfig['descriptor'] => value
+  ? parseSandboxExtensionDescriptorJson(value)
+  : undefined
 
 const readStringParam = (
   params: URLSearchParams,

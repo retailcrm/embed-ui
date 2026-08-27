@@ -292,12 +292,15 @@ const createExtensionSource = (
   descriptor: Partial<SandboxExtensionSource['descriptor']> = {}
 ): SandboxExtensionSource => ({
   descriptor: {
+    baseUrl: 'http://extension.test/',
+    code: 'demo-extension',
     entrypoint: 'http://extension.test/extension/demo/script',
     pages: [],
-    runner: 'worker',
     stylesheet: null,
-    targets: ['order/card:common.before'],
-    uuid: 'demo-extension',
+    targets: [
+      'order/card:common.before',
+      'order/card:common.after',
+    ],
     ...descriptor,
   },
   entrypoint: new URL('http://extension.test/extension/demo/script'),
@@ -381,14 +384,43 @@ const selectOption = async (
   await fireEvent.click(screen.getByRole('option', { name: option }))
 }
 
+const openDescriptorJsonEditor = async (
+  dialog: HTMLElement
+): Promise<HTMLTextAreaElement> => {
+  const toggle = within(dialog).getByRole('button', { name: 'JSON' })
+
+  if (toggle.getAttribute('aria-pressed') !== 'true') {
+    await fireEvent.click(toggle)
+  }
+
+  return within(dialog).getByRole('textbox', {
+    name: 'JSON дескриптора',
+  }) as HTMLTextAreaElement
+}
+
 const configurePageLaunch = async (
   dialog: HTMLElement,
-  manifestUrl: string,
+  baseUrl: string,
   pageCode: string
 ) => {
+  const descriptor = {
+    baseUrl,
+    code: 'demo-extension',
+    entrypoint: '/extension/demo/script',
+    pages: [pageCode],
+    stylesheet: null,
+    targets: [],
+  }
+
   await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Манифест / URL расширения',
-  }), manifestUrl)
+    name: 'Код модуля',
+  }), descriptor.code)
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Базовый URL',
+  }), descriptor.baseUrl)
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Entrypoint',
+  }), descriptor.entrypoint)
   await selectOption(dialog, 'Режим', 'Страница')
   await fireEvent.update(within(dialog).getByRole('textbox', {
     name: 'Код страницы',
@@ -458,6 +490,110 @@ test('does not show the widget run summary on onboarding', async () => {
   })).toBeNull()
 })
 
+test('reports an invalid descriptor without falling back to legacy urls', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+  const descriptor = encodeURIComponent(JSON.stringify({
+    baseUrl: 'http://extension.test/',
+    code: 'demo-extension',
+    entrypoint: 'http://extension.test/runtime/worker.js',
+    pages: [],
+    runner: 'worker',
+    stylesheet: null,
+    targets: ['order/card:common.before'],
+  }))
+
+  await renderAppWithRuntime(
+    `/?descriptor=${descriptor}`
+    + '&manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Flegacy'
+    + '&mode=widget'
+  )
+
+  expect(alertSpy).toHaveBeenCalledWith(
+    'Не удалось запустить расширение\n\n[sandbox:descriptor] Invalid extension descriptor.'
+  )
+  expect(resolveSandboxExtensionSourceMock).not.toHaveBeenCalled()
+  expect(fakeWorkers).toHaveLength(0)
+})
+
+test('loads and preserves a formatted runtime descriptor', async () => {
+  const descriptor = {
+    baseUrl: 'http://extension.test/',
+    code: 'descriptor-extension',
+    entrypoint: 'http://extension.test/runtime/worker.js',
+    pages: ['settings'],
+    stylesheet: 'http://cdn.extension.test/runtime/extension.css',
+    targets: ['order/card:common.after' as const],
+  }
+  const source = createExtensionSource({
+    ...descriptor,
+  })
+
+  source.entrypoint = new URL(descriptor.entrypoint)
+  source.httpBaseUrl = 'http://extension.test/'
+  source.manifestUrl = null
+  resolveSandboxExtensionSourceMock.mockResolvedValue(source)
+
+  const { endpoint } = await renderAppWithRuntime(
+    `/?descriptor=${encodeURIComponent(JSON.stringify(descriptor))}`
+    + '&manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Flegacy'
+    + '&mode=page&pageCode=settings'
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+  })
+  expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
+    descriptor,
+  }))
+  expect(fakeWorkers[0]?.postMessage).toHaveBeenCalledWith(expect.objectContaining({
+    extensionUrl: descriptor.entrypoint,
+  }), expect.any(Array))
+
+  const dialog = await openDevPanel()
+  const descriptorInput = await openDescriptorJsonEditor(dialog)
+
+  expect(JSON.parse(descriptorInput.value)).toEqual(descriptor)
+  await selectOption(dialog, 'Выбранная фикстура', 'Заказ с доставкой')
+  expect(JSON.parse(descriptorInput.value)).toEqual(descriptor)
+
+  const launchUrl = new URL(
+    window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.createLaunchUrl({
+      fixture: 'order-with-delivery',
+    }) ?? ''
+  )
+
+  expect(JSON.parse(launchUrl.searchParams.get('descriptor') ?? '')).toEqual(descriptor)
+  expect(launchUrl.searchParams.has('manifestUrl')).toBe(false)
+  expect(launchUrl.searchParams.has('extensionUrl')).toBe(false)
+})
+
+test('uses descriptor widget targets when the dev panel targets were not changed', async () => {
+  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+
+  const dialog = await openDevPanel()
+  const descriptor = {
+    baseUrl: 'http://extension.test/',
+    code: 'descriptor-widget',
+    entrypoint: 'http://extension.test/runtime/worker.js',
+    pages: [],
+    stylesheet: null,
+    targets: ['order/card:common.after'],
+  }
+
+  const descriptorInput = await openDescriptorJsonEditor(dialog)
+
+  await fireEvent.update(descriptorInput, JSON.stringify(descriptor))
+  expect(within(dialog).queryByPlaceholderText('Выберите места встраивания')).toBeNull()
+
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
+
+  const targets = within(dialog).getByPlaceholderText(
+    'Выберите места встраивания'
+  ) as HTMLInputElement
+
+  expect(targets.value).toBe('order/card:common.after')
+})
+
 test('does not show the widget run summary in page mode', async () => {
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
     pages: ['settings'],
@@ -498,7 +634,33 @@ test('blocks page extension with unknown page code', async () => {
   expect(endpoint.call.run).not.toHaveBeenCalled()
 })
 
-test('warns about page-only descriptor in explicit widget mode and continues mounting', async () => {
+test('blocks page launch when runtime descriptor exposes no pages', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+  const descriptor = {
+    baseUrl: 'http://extension.test/',
+    code: 'widget-only-extension',
+    entrypoint: 'http://extension.test/runtime/worker.js',
+    pages: [],
+    stylesheet: null,
+    targets: ['order/card:common.after' as const],
+  }
+
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource(descriptor))
+
+  const { endpoint } = await renderAppWithRuntime(
+    `/?descriptor=${encodeURIComponent(JSON.stringify(descriptor))}`
+    + '&mode=page&pageCode=returns'
+  )
+
+  await waitFor(() => {
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Страница расширения не найдена\n\nВ расширении нет страницы «returns». Доступные страницы: —.'
+    )
+  })
+  expect(endpoint.call.run).not.toHaveBeenCalled()
+})
+
+test('blocks page-only descriptor in explicit widget mode', async () => {
   const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
@@ -512,10 +674,10 @@ test('warns about page-only descriptor in explicit widget mode and continues mou
 
   await waitFor(() => {
     expect(alertSpy).toHaveBeenCalledWith(
-      'Проверьте режим запуска\n\nРасширение содержит страницы: settings. Сейчас выбран режим «Виджеты»; если ожидается страница, выберите режим «Страница».'
+      'Место встраивания расширения не найдено\n\nРасширение не поддерживает выбранные места встраивания: order/card:common.before, order/card:common.after.'
     )
-    expect(endpoint.call.run).toHaveBeenCalled()
   })
+  expect(endpoint.call.run).not.toHaveBeenCalled()
 })
 
 test('shows runtime error when worker bootstrap reports failure', async () => {
@@ -867,13 +1029,18 @@ test('updates dev panel launch fields and reports validation errors', async () =
   const applyButton = within(dialog).getByRole('button', {
     name: 'Применить',
   }) as HTMLButtonElement
-  const manifestInput = within(dialog).getByRole('textbox', {
-    name: 'Манифест / URL расширения',
-  })
 
   expect(applyButton.disabled).toBe(true)
 
-  await fireEvent.update(manifestInput, 'http://extension.test/extension/demo')
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Код модуля',
+  }), 'demo-extension')
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Базовый URL',
+  }), 'http://extension.test/extension/demo')
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Entrypoint',
+  }), '/extension/demo/script')
   await selectOption(dialog, 'Режим', 'Страница')
 
   const pageCodeInput = within(dialog).getByRole('textbox', {
@@ -1005,7 +1172,11 @@ test('keeps dev panel open and shows available pages when page code is missing',
 
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledOnce()
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
-    manifestUrl: 'http://extension.test/extension/demo',
+    descriptor: expect.objectContaining({
+      baseUrl: 'http://extension.test/extension/demo',
+      code: 'demo-extension',
+    }),
+    manifestUrl: '',
     mode: 'page',
     pageCode: 'returns',
   }))
@@ -1031,12 +1202,20 @@ test('keeps dev panel open and shows available pages when page code is missing',
     name: 'Применить',
   }))
   await within(dialog).findByRole('alert')
-  await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Манифест / URL расширения',
-  }), 'http://extension.test/extension/changed')
+  const descriptorInput = await openDescriptorJsonEditor(dialog)
+
+  await fireEvent.update(descriptorInput, JSON.stringify({
+    baseUrl: 'http://extension.test/extension/changed',
+    code: 'changed-extension',
+    entrypoint: '/extension/changed/script',
+    pages: ['returns'],
+    stylesheet: null,
+    targets: [],
+  }))
 
   expect(within(dialog).queryByRole('alert')).toBeNull()
 
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
   await fireEvent.click(within(dialog).getByRole('combobox', { name: 'Режим' }))
   await fireEvent.click(screen.getByRole('option', { name: 'Виджеты' }))
 

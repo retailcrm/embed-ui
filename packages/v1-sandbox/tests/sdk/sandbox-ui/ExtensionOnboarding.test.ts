@@ -14,10 +14,10 @@ import messagesEnGb from '@/app/i18n/en-GB.json'
 import messagesEsEs from '@/app/i18n/es-ES.json'
 import messagesRuRu from '@/app/i18n/ru-RU.json'
 
-const createTestI18n = () => createI18n({
+const createTestI18n = (locale = 'ru-RU') => createI18n({
   fallbackLocale: 'en-GB',
   legacy: false,
-  locale: 'ru-RU',
+  locale,
   messages: {
     'en-GB': messagesEnGb,
     'es-ES': messagesEsEs,
@@ -25,10 +25,13 @@ const createTestI18n = () => createI18n({
   },
 })
 
-const renderOnboarding = (props: { openDevPanel: () => void }) => render(ExtensionOnboarding, {
+const renderOnboarding = (
+  props: { openDevPanel: () => void },
+  locale = 'ru-RU'
+) => render(ExtensionOnboarding, {
   props,
   global: {
-    plugins: [createTestI18n()],
+    plugins: [createTestI18n(locale)],
   },
 })
 
@@ -50,36 +53,42 @@ test('extension onboarding opens sandbox controls', async () => {
   expect(within(onboarding).getByRole('heading', {
     name: 'Подключите внешнее расширение',
   })).toBeInstanceOf(HTMLHeadingElement)
-  expect(within(onboarding).getAllByRole('listitem')).toHaveLength(3)
-  expect(within(onboarding).getByText('Запустите сервер расширения.')).toBeInstanceOf(HTMLLIElement)
-  expect(within(onboarding).getByText('Запустите песочницу.')).toBeInstanceOf(HTMLLIElement)
-  expect(within(within(onboarding).getAllByRole('listitem')[2]).getByText(
-    'http://127.0.0.1:4175/extension/<uuid>'
-  )).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"code": "promoModule"/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"baseUrl": "http:\/\/web-extensions-server\.simla\.local"/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"entrypoint": "\/extension\/8ebe1617-d609-43e4-b35a-fbfae011eee3\/script"/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"stylesheet": "\/extension\/8ebe1617-d609-43e4-b35a-fbfae011eee3\/stylesheet"/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"pages": \[/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(
+    'Формат передаваемого дескриптора'
+  )).toBeInstanceOf(HTMLSpanElement)
   expect(within(onboarding).getByText(/Дополнительный сервер запускать не требуется\./u)).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText('Затем выберите режим: Виджеты или Страница.')).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(
+    'При заполнении отдельных полей затем выберите режим: Виджеты или Страница.'
+  )).toBeInstanceOf(HTMLElement)
 
-  const collapseButton = within(onboarding).getByRole('button', {
-    name: 'Шаблон URL запуска',
-  })
-
-  expect(collapseButton.getAttribute('aria-expanded')).toBe('false')
-
-  await fireEvent.click(collapseButton)
-
-  expect(collapseButton.getAttribute('aria-expanded')).toBe('true')
-  expect(within(onboarding).getByText('Это шаблон, а не готовая ссылка.', {
-    exact: false,
-  })).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText('%sandbox-url%')).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText('%extension-url%')).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText('%extension-id%')).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText('UUID расширения.')).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText('Пример полного URL расширения:')).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).queryByText('Легаси-шаблон URL запуска')).toBeNull()
 
   await fireEvent.click(within(onboarding).getByRole('button', {
-    name: 'Открыть песочницу',
+    name: 'Открыть дев-панель',
   }))
 
   expect(openDevPanel).toHaveBeenCalledOnce()
+})
+
+test('extension onboarding localizes descriptor heading in English', () => {
+  renderOnboarding({
+    openDevPanel: vi.fn(),
+  }, 'en-GB')
+
+  expect(screen.getByText('Runtime descriptor format')).toBeInstanceOf(HTMLSpanElement)
+  expect(screen.queryByText('Формат передаваемого дескриптора')).toBeNull()
+})
+
+test('extension onboarding localizes descriptor heading in Spanish', () => {
+  renderOnboarding({
+    openDevPanel: vi.fn(),
+  }, 'es-ES')
+
+  expect(screen.getByText('Formato del descriptor de ejecución')).toBeInstanceOf(HTMLSpanElement)
+  expect(screen.queryByText('Формат передаваемого дескриптора')).toBeNull()
 })

@@ -15,7 +15,11 @@ import {
   readSandboxSnapshot,
 } from '@/automation/playwright'
 
-import { getExtensionPageCodes, getExtensionTargets } from './extensions'
+import {
+  createRuntimeExtensionDescriptor,
+  getExtensionPageCodes,
+  getExtensionTargets,
+} from './extensions'
 
 export {
   getSandboxExtensionBaseUrl,
@@ -68,6 +72,16 @@ export const createSandboxPagePath = (
 ): string =>
   createPublicSandboxPagePath({
     ...createSandboxPageConfig(descriptor, pageCode),
+    sandboxPath: '/tests/__bootstrap__/index.html',
+  })
+
+export const createSandboxDescriptorPagePath = (
+  descriptor: SandboxExtensionFixtureDescriptor,
+  pageCode = getExtensionPageCodes(descriptor)[0]
+): string =>
+  createPublicSandboxPagePath({
+    descriptor: createRuntimeExtensionDescriptor(descriptor),
+    pageCode: pageCode ?? DefaultSandbox.PageCode,
     sandboxPath: '/tests/__bootstrap__/index.html',
   })
 

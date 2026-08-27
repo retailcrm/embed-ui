@@ -22,16 +22,11 @@
                 {{ t('extensionOnboarding.description') }}
             </p>
 
-            <ol :class="$style['extension-onboarding__steps']">
-                <li>{{ t('extensionOnboarding.steps.extensionServer') }}</li>
+            <div :class="$style['extension-onboarding__descriptor']">
+                <span>{{ t('extensionOnboarding.descriptor') }}</span>
 
-                <li>{{ t('extensionOnboarding.steps.sandboxServer') }}</li>
-
-                <li>
-                    {{ t('extensionOnboarding.steps.extensionUrl') }}
-                    <code>{{ extensionUrlExample }}</code>
-                </li>
-            </ol>
+                <pre :class="$style['extension-onboarding__example']"><code>{{ descriptorExample }}</code></pre>
+            </div>
 
             <p :class="$style['extension-onboarding__note']">
                 {{ t('extensionOnboarding.note') }}
@@ -40,46 +35,6 @@
             <p :class="$style['extension-onboarding__mode-note']">
                 {{ t('extensionOnboarding.modeNote') }}
             </p>
-
-            <UiCollapseBox v-model:expanded="isUrlTemplateExpanded">
-                <template #icon>
-                    <IconSettingsOutlined />
-                </template>
-
-                <template #title>
-                    {{ t('extensionOnboarding.example.title') }}
-                </template>
-
-                <template #body-content>
-                    <div :class="$style['extension-onboarding__example']">
-                        <p>{{ t('extensionOnboarding.example.description') }}</p>
-
-                        <code>{{ sandboxUrlTemplate }}</code>
-
-                        <dl :class="$style['extension-onboarding__placeholders']">
-                            <div>
-                                <dt><code>%sandbox-url%</code></dt>
-                                <dd>{{ t('extensionOnboarding.example.sandboxUrl') }}</dd>
-                            </div>
-
-                            <div>
-                                <dt><code>%extension-url%</code></dt>
-                                <dd>{{ t('extensionOnboarding.example.extensionUrl') }}</dd>
-                            </div>
-
-                            <div>
-                                <dt><code>%extension-id%</code></dt>
-                                <dd>{{ t('extensionOnboarding.example.extensionId') }}</dd>
-                            </div>
-                        </dl>
-
-                        <p>
-                            {{ t('extensionOnboarding.example.completeExtensionUrl') }}
-                            <code>{{ extensionUrlExample }}</code>
-                        </p>
-                    </div>
-                </template>
-            </UiCollapseBox>
 
             <UiButton
                 appearance="primary"
@@ -93,13 +48,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
-import { UiButton, UiCollapseBox } from '@retailcrm/embed-ui-v1-components/host'
-
-import IconSettingsOutlined from '@retailcrm/embed-ui-v1-components/assets/sprites/ui/settings-outlined.svg'
+import { UiButton } from '@retailcrm/embed-ui-v1-components/host'
 
 const props = defineProps<{
   openDevPanel(): void;
@@ -108,9 +60,14 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const uid = useId()
-const isUrlTemplateExpanded = ref(false)
-const extensionUrlExample = 'http://127.0.0.1:4175/extension/<uuid>'
-const sandboxUrlTemplate = '%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&targets=order/card:common.after&fixture=order-basic'
+const descriptorExample = JSON.stringify({
+  code: 'promoModule',
+  baseUrl: 'http://web-extensions-server.simla.local',
+  entrypoint: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script',
+  stylesheet: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet',
+  targets: [],
+  pages: ['settings'],
+}, null, 2)
 
 const openDevPanel = () => props.openDevPanel()
 </script>
@@ -119,26 +76,14 @@ const openDevPanel = () => props.openDevPanel()
 {
     "extensionOnboarding": {
         "actions": {
-            "openSandbox": "Open sandbox controls"
+            "openSandbox": "Open developer panel"
         },
-        "description": "Use the sandbox to check JS module pages and widgets locally before installing the module in RetailCRM.",
+        "description": "Use the sandbox to test JS module pages and widgets locally before installing the module in RetailCRM. Before adding the extension to the sandbox, make sure it is running.",
         "eyebrow": "Local development",
-        "example": {
-            "completeExtensionUrl": "Complete extension URL example:",
-            "description": "This is a template, not a ready-to-use link. Replace each placeholder with the value for your local environment.",
-            "extensionId": "The extension UUID.",
-            "extensionUrl": "The base URL of the extension server, for example http://127.0.0.1:4175.",
-            "sandboxUrl": "The sandbox URL, for example http://127.0.0.1:4173.",
-            "title": "Launch URL template"
-        },
-        "modeNote": "Then choose a mode: Widgets or Page.",
+        "modeNote": "When using the individual fields, then choose a mode: Widgets or Page.",
         "note": "Only two running processes are required: the extension server and the sandbox. You do not need to start an additional server.",
-        "steps": {
-            "extensionServer": "Start the extension server.",
-            "extensionUrl": "Open sandbox controls and enter the extension URL:",
-            "sandboxServer": "Start the sandbox."
-        },
-        "title": "Connect an external extension"
+        "title": "Connect an external extension",
+        "descriptor": "Runtime descriptor format"
     }
 }
 </i18n>
@@ -147,26 +92,14 @@ const openDevPanel = () => props.openDevPanel()
 {
     "extensionOnboarding": {
         "actions": {
-            "openSandbox": "Abrir controles de sandbox"
+            "openSandbox": "Abrir el panel de desarrollo"
         },
-        "description": "Utilice la sandbox para comprobar localmente las páginas y los widgets del módulo JS antes de instalarlo en RetailCRM.",
+        "description": "Utilice la sandbox para probar localmente las páginas y los widgets del módulo JS antes de instalarlo en RetailCRM. Antes de añadir la extensión a la sandbox, asegúrese de que esté en ejecución.",
         "eyebrow": "Desarrollo local",
-        "example": {
-            "completeExtensionUrl": "Ejemplo de URL completa de la extensión:",
-            "description": "Esta es una plantilla, no un enlace listo para usar. Sustituya cada placeholder por el valor de su entorno local.",
-            "extensionId": "El UUID de la extensión.",
-            "extensionUrl": "La URL base del servidor de la extensión, por ejemplo http://127.0.0.1:4175.",
-            "sandboxUrl": "La URL de la sandbox, por ejemplo http://127.0.0.1:4173.",
-            "title": "Plantilla de URL de inicio"
-        },
-        "modeNote": "Después elija un modo: Widgets o Página.",
+        "modeNote": "Si utiliza los campos individuales, elija después un modo: Widgets o Página.",
         "note": "Solo se necesitan dos procesos en ejecución: el servidor de la extensión y la sandbox. No hace falta iniciar un servidor adicional.",
-        "steps": {
-            "extensionServer": "Inicie el servidor de la extensión.",
-            "extensionUrl": "Abra los controles de sandbox e indique la URL de la extensión:",
-            "sandboxServer": "Inicie la sandbox."
-        },
-        "title": "Conectar una extensión externa"
+        "title": "Conectar una extensión externa",
+        "descriptor": "Formato del descriptor de ejecución"
     }
 }
 </i18n>
@@ -175,26 +108,14 @@ const openDevPanel = () => props.openDevPanel()
 {
     "extensionOnboarding": {
         "actions": {
-            "openSandbox": "Открыть песочницу"
+            "openSandbox": "Открыть дев-панель"
         },
-        "description": "Используйте песочницу, чтобы локально проверить страницы и виджеты JS-модуля до его установки в RetailCRM.",
+        "description": "Используйте песочницу, чтобы локально проверить страницы и виджеты JS-модуля до его установки в RetailCRM. Перед тем как добавлять расширение в песочницу, убедитесь, что расширение запущено",
         "eyebrow": "Локальная разработка",
-        "example": {
-            "completeExtensionUrl": "Пример полного URL расширения:",
-            "description": "Это шаблон, а не готовая ссылка. Замените каждое обозначение значением из своего локального окружения.",
-            "extensionId": "UUID расширения.",
-            "extensionUrl": "Базовый URL сервера расширения, например http://127.0.0.1:4175.",
-            "sandboxUrl": "URL песочницы, например http://127.0.0.1:4173.",
-            "title": "Шаблон URL запуска"
-        },
-        "modeNote": "Затем выберите режим: Виджеты или Страница.",
+        "modeNote": "При заполнении отдельных полей затем выберите режим: Виджеты или Страница.",
         "note": "Для работы нужны только два запущенных процесса: сервер расширения и песочница. Дополнительный сервер запускать не требуется.",
-        "steps": {
-            "extensionServer": "Запустите сервер расширения.",
-            "extensionUrl": "Откройте управление песочницей и укажите URL расширения:",
-            "sandboxServer": "Запустите песочницу."
-        },
-        "title": "Подключите внешнее расширение"
+        "title": "Подключите внешнее расширение",
+        "descriptor": "Формат передаваемого дескриптора"
     }
 }
 </i18n>
@@ -244,18 +165,19 @@ const openDevPanel = () => props.openDevPanel()
         margin: 0;
     }
 
-    &__steps {
-        color: @black-500;
-        display: grid;
-        font-size: 14px;
-        gap: @spacing-xs;
-        margin: 0;
-        padding-left: 18px;
+    &__descriptor {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        code {
-            color: @blue-500;
-            overflow-wrap: anywhere;
-        }
+    &__example {
+        background: @grey-400;
+        border-radius: @border-radius-md;
+        margin: 0;
+        overflow: auto;
+        padding: @spacing-s;
+        white-space: pre;
     }
 
     &__note,

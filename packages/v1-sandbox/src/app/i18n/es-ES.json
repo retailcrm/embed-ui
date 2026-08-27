@@ -9,6 +9,10 @@
         "message": "La extensión no expone la página «{pageCode}». Páginas disponibles: {pages}.",
         "title": "No se encontró la página de la extensión"
       },
+      "missingWidgetTargets": {
+        "message": "La extensión no expone los puntos de montaje seleccionados: {targets}.",
+        "title": "No se encontró el punto de montaje de la extensión"
+      },
       "runtimeError": {
         "message": "{message}",
         "title": "No se pudo iniciar la extensión"
@@ -70,9 +74,8 @@
       },
       "fixture": "Seleccione unos datos de prueba existentes.",
       "manifestUrl": {
-        "endpoint": "La URL debe tener el formato %extension-url%/extension/%extension-id%.",
-        "format": "Introduce una URL http/https absoluta. Ejemplo: http://127.0.0.1:4175/extension/{open}uuid{close}",
-        "required": "Introduce la URL de la extensión."
+        "descriptor": "Introduzca un descriptor válido con code, baseUrl, entrypoint, stylesheet, pages y targets. Las URL de recursos pueden ser relativas a un baseUrl http/https absoluto.",
+        "required": "Introduzca el descriptor de la extensión."
       },
       "mode": "Elige un modo de inicio.",
       "pageCodeFormat": "El código de página solo puede contener letras latinas (A–Z, a–z) y guiones.",

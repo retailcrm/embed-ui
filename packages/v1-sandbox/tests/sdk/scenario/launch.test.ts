@@ -58,6 +58,63 @@ test('parses multiple widget targets and page mode', () => {
   })
 })
 
+test('round-trips descriptor and uses its widget targets by default', () => {
+  const descriptor = {
+    baseUrl: 'https://extension.test/runtime/',
+    code: 'descriptor-widget',
+    entrypoint: 'worker.js',
+    pages: [],
+    stylesheet: null,
+    targets: ['order/card:common.after' as const],
+  }
+  const url = updateSandboxLaunchQuery({
+    descriptor,
+    extensionUrl: 'http://legacy.test/extension/demo',
+    fixture: 'order-basic',
+    manifestUrl: 'http://legacy.test/extension/demo',
+    mode: 'widget',
+    pageCode: 'orders-dashboard',
+    targets: descriptor.targets,
+    widgetId: 'sandbox-widget',
+  }, 'http://sandbox.test/')
+  const parsed = parseSandboxLaunchConfig(new URLSearchParams({
+    descriptor: url.searchParams.get('descriptor') ?? '',
+  }))
+
+  expect(url.searchParams.has('extensionUrl')).toBe(false)
+  expect(url.searchParams.has('manifestUrl')).toBe(false)
+  expect(parsed.descriptor).toEqual(descriptor)
+  expect(parsed.targets).toEqual(['order/card:common.after'])
+})
+
+test('rejects invalid descriptors without falling back to legacy url', () => {
+  expect(() => parseSandboxLaunchConfig(new URLSearchParams({
+    descriptor: JSON.stringify({
+      entrypoint: '/relative.js',
+      pages: [],
+      stylesheet: null,
+      targets: [],
+      uuid: 'demo',
+    }),
+    manifestUrl: 'http://extension.test/extension/demo',
+  }))).toThrow('Invalid extension descriptor')
+})
+
+test('removes stale descriptor when serializing legacy config', () => {
+  const url = updateSandboxLaunchQuery({
+    extensionUrl: '',
+    fixture: 'order-basic',
+    manifestUrl: 'http://extension.test/extension/demo',
+    mode: 'widget',
+    pageCode: 'orders-dashboard',
+    targets: ['order/card:common.after'],
+    widgetId: 'sandbox-widget',
+  }, `http://sandbox.test/?descriptor=${encodeURIComponent('{}')}`)
+
+  expect(url.searchParams.has('descriptor')).toBe(false)
+  expect(url.searchParams.get('manifestUrl')).toBe('http://extension.test/extension/demo')
+})
+
 test('falls back to safe defaults for empty and unsupported values', () => {
   const config = parseSandboxLaunchConfig(new URLSearchParams({
     extensionUrl: '',

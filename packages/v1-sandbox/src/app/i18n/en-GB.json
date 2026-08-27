@@ -9,6 +9,10 @@
         "message": "The extension does not expose the \"{pageCode}\" page. Available pages: {pages}.",
         "title": "Extension page was not found"
       },
+      "missingWidgetTargets": {
+        "message": "The extension does not expose the selected mount targets: {targets}.",
+        "title": "Extension mount target was not found"
+      },
       "runtimeError": {
         "message": "{message}",
         "title": "Failed to start extension"
@@ -70,9 +74,8 @@
       },
       "fixture": "Choose an existing fixture.",
       "manifestUrl": {
-        "endpoint": "URL must match %extension-url%/extension/%extension-id%.",
-        "format": "Enter an absolute http/https URL. Example: http://127.0.0.1:4175/extension/{open}uuid{close}",
-        "required": "Enter the extension URL."
+        "descriptor": "Enter a valid descriptor with code, baseUrl, entrypoint, stylesheet, pages, and targets. Resource URLs may be relative to an absolute http/https baseUrl.",
+        "required": "Enter the extension descriptor."
       },
       "mode": "Choose a launch mode.",
       "pageCodeFormat": "The page code may contain only Latin letters (A–Z, a–z) and hyphens.",

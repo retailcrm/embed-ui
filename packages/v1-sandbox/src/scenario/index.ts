@@ -1,4 +1,5 @@
 export type * from './types'
+export * from './descriptor'
 export * from './defaults'
 export * from './fixtures'
 export * from './http'

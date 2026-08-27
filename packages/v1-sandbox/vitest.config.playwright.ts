@@ -19,13 +19,19 @@ dotenv.config({
 const sandboxBaseURL = process.env.SANDBOX_BASE_URL
 const baseURL = sandboxBaseURL || 'http://127.0.0.1:4173'
 const configuredExtensionBaseURL = process.env.SANDBOX_EXTENSION_URL
-const extensionBaseURL = configuredExtensionBaseURL || 'http://127.0.0.1:4175/extension/'
+const localRuntimeExtensionBaseURL = 'http://127.0.0.1:4175/'
+const extensionBaseURL = configuredExtensionBaseURL
+  || new URL('extension/', localRuntimeExtensionBaseURL).href
+const runtimeExtensionBaseURL = configuredExtensionBaseURL
+  ? new URL('/', configuredExtensionBaseURL).href
+  : localRuntimeExtensionBaseURL
 const promoModule = JSON.parse(fs.readFileSync(
   path.resolve(__dirname, 'tests/__fixtures__/extensions/promoModule/extensionrc.json'),
   'utf8'
 )) as { uuid: string }
 
 process.env.SANDBOX_EXTENSION_URL = extensionBaseURL
+process.env.SANDBOX_RUNTIME_EXTENSION_URL = runtimeExtensionBaseURL
 
 const webServer = [
   ...(sandboxBaseURL ? [] : [{
@@ -35,7 +41,7 @@ const webServer = [
   }]),
   ...(configuredExtensionBaseURL ? [] : [{
     command: 'yarn build:e2e-extensions && yarn serve:e2e-extensions',
-    url: new URL(promoModule.uuid, extensionBaseURL).href,
+    url: new URL(`extension/${promoModule.uuid}`, runtimeExtensionBaseURL).href,
     reuseExistingServer: !process.env.CI,
   }]),
 ]

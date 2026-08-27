@@ -11,9 +11,8 @@ const messages: DevPanelValidationMessages = {
   contextJsonRootObject: 'Context JSON must be an object.',
   contextJsonUnknownContext: context => `Unknown context "${context}".`,
   fixture: 'Unknown fixture.',
-  manifestUrlEndpoint: 'Manifest URL must include /extension/%extension-id%.',
-  manifestUrlFormat: 'Manifest URL must be an absolute http/https URL.',
-  manifestUrlRequired: 'Manifest URL is required.',
+  manifestUrlDescriptor: 'Extension descriptor is invalid.',
+  manifestUrlRequired: 'Extension descriptor is required.',
   mode: 'Unknown mode.',
   pageCodeFormat: 'Page code has an invalid format.',
   pageCodeRequired: 'Page code is required.',
@@ -21,9 +20,18 @@ const messages: DevPanelValidationMessages = {
   targetUnknown: target => `Unknown target "${target}".`,
 }
 
+const descriptor = {
+  baseUrl: 'https://extension.test/runtime/',
+  code: 'returns-module',
+  entrypoint: 'worker.js',
+  pages: ['returns'],
+  stylesheet: null,
+  targets: ['order/card:common.after'],
+}
+
 const validLaunchInput = {
   fixture: 'order-basic',
-  manifestUrl: 'http://extension.test/extension/module-id',
+  manifestUrl: JSON.stringify(descriptor),
   mode: 'widget',
   pageCode: 'returns',
   targets: ['order/card:common.after'],
@@ -37,37 +45,64 @@ test('rejects empty manifest urls', () => {
 
   expect(result).toEqual({
     errors: {
-      manifestUrl: 'Manifest URL is required.',
+      manifestUrl: 'Extension descriptor is required.',
     },
     success: false,
   })
 })
 
-test('rejects malformed manifest urls', () => {
+test('rejects direct extension urls', () => {
   const invalidUrl = validateLaunchConfigInput({
     ...validLaunchInput,
     manifestUrl: 'extension.test/module-id',
   }, messages)
-  const missingEndpoint = validateLaunchConfigInput({
-    ...validLaunchInput,
-    manifestUrl: 'http://extension.test/module-id',
-  }, messages)
-
   expect(invalidUrl).toEqual({
     errors: {
-      manifestUrl: 'Manifest URL must be an absolute http/https URL.',
-    },
-    success: false,
-  })
-  expect(missingEndpoint).toEqual({
-    errors: {
-      manifestUrl: 'Manifest URL must include /extension/%extension-id%.',
+      manifestUrl: 'Extension descriptor is invalid.',
     },
     success: false,
   })
 })
 
-test('rejects manifest urls with unsupported protocols', () => {
+test('accepts a strict extension descriptor', () => {
+  const result = validateLaunchConfigInput({
+    ...validLaunchInput,
+    manifestUrl: JSON.stringify(descriptor),
+  }, messages)
+
+  expect(result).toEqual({
+    data: {
+      ...validLaunchInput,
+      descriptor,
+      manifestUrl: '',
+    },
+    success: true,
+  })
+})
+
+test('rejects malformed or non-strict extension descriptors', () => {
+  const result = validateLaunchConfigInput({
+    ...validLaunchInput,
+    manifestUrl: JSON.stringify({
+      entrypoint: 'https://extension.test/runtime/worker.js',
+      baseUrl: 'https://extension.test/',
+      code: 'returns-module',
+      pages: [],
+      runner: 'worker',
+      stylesheet: null,
+      targets: [],
+    }),
+  }, messages)
+
+  expect(result).toEqual({
+    errors: {
+      manifestUrl: 'Extension descriptor is invalid.',
+    },
+    success: false,
+  })
+})
+
+test('rejects non-json direct urls with unsupported protocols', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
     manifestUrl: 'ftp://extension.test/extension/module-id',
@@ -75,7 +110,7 @@ test('rejects manifest urls with unsupported protocols', () => {
 
   expect(result).toEqual({
     errors: {
-      manifestUrl: 'Manifest URL must be an absolute http/https URL.',
+      manifestUrl: 'Extension descriptor is invalid.',
     },
     success: false,
   })

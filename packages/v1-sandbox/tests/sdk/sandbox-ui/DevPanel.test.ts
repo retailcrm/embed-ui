@@ -33,6 +33,14 @@ afterEach(() => {
 })
 
 test('dev panel updates launch fields and context', async () => {
+  const descriptor = {
+    baseUrl: 'http://extension.test/',
+    code: 'returnsModule',
+    entrypoint: '/extension/id/script',
+    pages: ['returns'],
+    stylesheet: null,
+    targets: [ORDER_SANDBOX_SLOTS[0].target],
+  }
   const props = {
     activeFixture: 'order-basic',
     applyContextJson: vi.fn(async () => undefined),
@@ -48,7 +56,7 @@ test('dev panel updates launch fields and context', async () => {
     fixture: 'order-basic',
     formatContextJson: vi.fn(),
     launchConfigChanged: false,
-    manifestUrl: 'http://extension.test/extension/id',
+    manifestUrl: JSON.stringify(descriptor),
     mode: 'widget' as SandboxLaunchMode,
     pageCode: 'returns',
     resetContextJson: vi.fn(),
@@ -74,16 +82,92 @@ test('dev panel updates launch fields and context', async () => {
     },
   })
 
+  const descriptorViewToggle = screen.getByRole('button', { name: 'JSON' })
+
+  expect(descriptorViewToggle.getAttribute('aria-pressed')).toBe('false')
+  expect(screen.queryByLabelText('JSON дескриптора')).toBeNull()
+  expect(screen.getByText(
+    'Заполните поля дескриптора или переключитесь на JSON. Оба представления синхронизированы.'
+  )).toBeInstanceOf(HTMLSpanElement)
+  const codeInput = screen.getByLabelText('Код модуля') as HTMLInputElement
+  const baseUrlInput = screen.getByLabelText('Базовый URL') as HTMLInputElement
+  const entrypointInput = screen.getByLabelText('Entrypoint') as HTMLInputElement
+
+  expect(codeInput.value).toBe('returnsModule')
+  expect(codeInput.placeholder).toBe('Введите код модуля')
+  expect(baseUrlInput.value).toBe('http://extension.test/')
+  expect(baseUrlInput.placeholder).toBe('Введите URL расширения')
+  expect(entrypointInput.value).toBe('/extension/id/script')
+  expect(entrypointInput.placeholder).toBe('Введите entrypoint')
+  await fireEvent.update(screen.getByLabelText('Код модуля'), 'returnsModuleV2')
+  expect(props.setManifestUrl).toHaveBeenCalledWith(JSON.stringify({
+    ...descriptor,
+    code: 'returnsModuleV2',
+  }, null, 2))
+  await fireEvent.update(screen.getByLabelText('Базовый URL'), 'https://cdn.extension.test/')
+  expect(props.setManifestUrl).toHaveBeenCalledWith(JSON.stringify({
+    ...descriptor,
+    baseUrl: 'https://cdn.extension.test/',
+  }, null, 2))
+  await fireEvent.update(screen.getByLabelText('Entrypoint'), 'build/worker.js')
+  expect(props.setManifestUrl).toHaveBeenCalledWith(JSON.stringify({
+    ...descriptor,
+    entrypoint: 'build/worker.js',
+  }, null, 2))
+  const stylesheetInput = screen.getByLabelText('Stylesheet') as HTMLInputElement
+
+  expect(stylesheetInput.value).toBe('')
+  expect(stylesheetInput.placeholder).toBe('Введите stylesheet')
   expect(screen.getByRole('button', {
-    name: 'URL расширения может указывать на любое стороннее приложение, которое отдаёт расширение, например http://web-extensions-server.simla.local/extension/.',
+    name: 'Оставьте поле пустым, если у расширения нет CSS. Если стили есть, укажите путь к stylesheet.',
+  })).toBeInstanceOf(HTMLButtonElement)
+  await fireEvent.update(stylesheetInput, '/extension/id/stylesheet')
+  expect(props.setManifestUrl).toHaveBeenCalledWith(JSON.stringify({
+    ...descriptor,
+    stylesheet: '/extension/id/stylesheet',
+  }, null, 2))
+
+  await fireEvent.click(descriptorViewToggle)
+  expect(descriptorViewToggle.getAttribute('aria-pressed')).toBe('true')
+  expect(screen.queryByLabelText('Код модуля')).toBeNull()
+  expect(screen.queryByRole('combobox', { name: 'Режим' })).toBeNull()
+  expect(screen.queryByText('Места встраивания виджетов', { exact: true })).toBeNull()
+  expect(screen.getByRole('button', {
+    name: 'Дескриптор содержит code, baseUrl, entrypoint, stylesheet, pages и targets. Entrypoint и stylesheet могут быть относительными к baseUrl.',
   })).toBeInstanceOf(HTMLButtonElement)
   expect(screen.getByText(
-    'Укажите полный URL расширения по примеру в поле. Замените UUID на значение из extensionrc.json и убедитесь, что получившаяся страница открывается в браузере.'
+    'Вставьте конфигурацию дескриптора целиком в формате JSON.'
   )).toBeInstanceOf(HTMLSpanElement)
 
-  const manifestUrlInput = screen.getByLabelText('Манифест / URL расширения') as HTMLInputElement
+  const descriptorJsonInput = screen.getByLabelText('JSON дескриптора') as HTMLTextAreaElement
 
-  expect(manifestUrlInput.placeholder).toContain('http://127.0.0.1:4175/extension/<uuid>')
+  expect(descriptorJsonInput.value).toBe(JSON.stringify(descriptor))
+  expect(JSON.parse(descriptorJsonInput.placeholder)).toEqual({
+    code: 'promoModule',
+    baseUrl: 'http://web-extensions-server.simla.local',
+    entrypoint: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script',
+    stylesheet: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet',
+    targets: [],
+    pages: ['settings'],
+  })
+
+  await rerender({
+    validationErrors: {
+      manifestUrl: 'Invalid descriptor',
+    },
+  })
+  const descriptorAlert = screen.getByRole('alert')
+
+  expect(descriptorAlert.textContent).toBe('Invalid descriptor')
+  expect(descriptorAlert.getAttribute('aria-live')).toBe('assertive')
+  await rerender({ validationErrors: {} })
+
+  await fireEvent.click(descriptorViewToggle)
+  expect(descriptorViewToggle.getAttribute('aria-pressed')).toBe('false')
+  expect(screen.queryByLabelText('JSON дескриптора')).toBeNull()
+  expect(screen.getByLabelText('Код модуля')).toBeInstanceOf(HTMLInputElement)
+  expect(screen.getByRole('combobox', { name: 'Режим' })).toBeInstanceOf(HTMLInputElement)
+
   expect(screen.getByRole('button', {
     name: 'В режиме «Виджеты» виджеты добавляются в выбранные места встраивания. В режиме «Страница» запускается страница по её коду.',
   })).toBeInstanceOf(HTMLButtonElement)
@@ -156,14 +240,25 @@ test('dev panel updates launch fields and context', async () => {
   expect(props.setFixture).toHaveBeenCalledWith('order-with-delivery')
   expect(props.setTargetSelected).toHaveBeenCalledWith(ORDER_SANDBOX_SLOTS[0].target, false)
 
-  await fireEvent.update(manifestUrlInput, 'http://extension.test/extension/changed')
+  await fireEvent.click(descriptorViewToggle)
+  const manifestUrlInput = screen.getByLabelText('JSON дескриптора') as HTMLTextAreaElement
+  const changedDescriptor = JSON.stringify({
+    ...descriptor,
+    entrypoint: '/extension/changed/script',
+    pages: ['settings'],
+    targets: [],
+  })
+
+  await fireEvent.update(manifestUrlInput, changedDescriptor)
+  expect(props.setMode).toHaveBeenCalledWith('page')
+  expect(props.setPageCode).toHaveBeenCalledWith('settings')
   await fireEvent.update(contextJsonEditor, '{"order/card":{"number":"999C"}}')
   await fireEvent.click(screen.getByRole('button', { name: 'Форматировать' }))
   await fireEvent.click(screen.getByRole('button', { name: 'Отменить изменения' }))
   await fireEvent.click(screen.getByRole('button', { name: 'Скачать JSON' }))
   await fireEvent.click(screen.getByRole('button', { name: 'Применить' }))
 
-  expect(props.setManifestUrl).toHaveBeenCalledWith('http://extension.test/extension/changed')
+  expect(props.setManifestUrl).toHaveBeenCalledWith(changedDescriptor)
   expect(props.setContextJson).toHaveBeenCalledWith('{"order/card":{"number":"999C"}}')
   expect(props.formatContextJson).toHaveBeenCalledOnce()
   expect(props.resetContextJson).toHaveBeenCalledOnce()
@@ -174,6 +269,8 @@ test('dev panel updates launch fields and context', async () => {
     applyingLaunchConfig: true,
   })
   expect((screen.getByRole('button', { name: 'Применить' }) as HTMLButtonElement).disabled).toBe(true)
+
+  await fireEvent.click(descriptorViewToggle)
 
   await rerender({
     applyingLaunchConfig: false,

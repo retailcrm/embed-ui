@@ -123,9 +123,15 @@ HostAPI snapshot from `window.__CRM_EMBED_SANDBOX__`:
 
 ```ts
 await page.goto(createSandboxPagePath({
-  extensionUrl: '%extension-url%/extension/%extension-id%',
+  descriptor: {
+    code: 'returnsModule',
+    baseUrl: 'https://extension.test',
+    entrypoint: '/build/worker.js',
+    pages: ['returns'],
+    stylesheet: '/build/extension.css',
+    targets: [],
+  },
   pageCode: 'returns',
-  targets: ['order/card:common.after'],
 }))
 
 const snapshot = await readSandboxSnapshot(page)
@@ -156,24 +162,40 @@ from package delivery or a test process.
 
 The sandbox app is controlled by query parameters:
 
-- `manifestUrl`: full extension descriptor/entrypoint/script URL.
+- `descriptor`: URL-encoded JSON runtime descriptor. This is the primary mode.
 - `mode`: `widget` or `page`.
 - `fixture`: sandbox fixture code, for example `order-basic`.
 - `pageCode`: page runner code for `mode=page`.
 - `targets`: comma-separated widget targets for `mode=widget`.
 - `widgetId`: base widget instance id.
-- `extensionUrl`: low-level fallback for direct worker entrypoints.
+
+The runtime descriptor has exactly these fields:
+
+```ts
+type SandboxExtensionDescriptor = {
+  code: string
+  baseUrl: string
+  entrypoint: string
+  stylesheet: string | null
+  pages: string[]
+  targets: TargetName[]
+}
+```
+
+`baseUrl` must be an absolute HTTP(S) URL. `entrypoint` and non-null
+`stylesheet` may be relative to it or absolute. Unknown fields, including
+`runner` and `uuid`, are rejected.
 
 Example page URL:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=returns&fixture=order-basic
+%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=page&pageCode=returns&fixture=order-basic
 ```
 
 Example widget URL:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.after&fixture=order-basic
+%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=widget&targets=order/card:common.after&fixture=order-basic
 ```
 
 ## HostAPI HTTP Contract
@@ -184,7 +206,8 @@ Extensions call:
 await host.httpCall('/returns', payload)
 ```
 
-When the sandbox can infer the backend base from `manifestUrl`, it sends:
+In descriptor mode the backend base is `baseUrl`; the call
+above sends:
 
 ```text
 POST %extension-url%/returns

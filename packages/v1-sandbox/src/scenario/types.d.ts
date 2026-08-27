@@ -11,6 +11,7 @@ export type SandboxSlotDefinition = {
 export type SandboxLaunchMode = 'page' | 'widget'
 
 export type SandboxLaunchConfig = {
+  descriptor?: SandboxExtensionDescriptor;
   extensionUrl: string;
   fixture: string;
   manifestUrl: string;
@@ -22,15 +23,13 @@ export type SandboxLaunchConfig = {
 
 export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
 
-export type SandboxExtensionRunner = 'worker'
-
 export type SandboxExtensionDescriptor = {
+  code: string;
+  baseUrl: string;
   entrypoint: string;
-  pages: string[];
-  runner: SandboxExtensionRunner;
   stylesheet: string | null;
+  pages: string[];
   targets: TargetName[];
-  uuid: string;
 }
 
 export type SandboxExtensionSource = {

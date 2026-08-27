@@ -171,10 +171,14 @@ import { createOrderSandboxController } from '@/scenario/fixtures'
 import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
 import { getOrderSandboxFixture } from '@/scenario/fixtures'
 import { isContextJsonEqual } from '@/app/contextJson'
-import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
+import { isContextName } from '@/app/predicates'
+import { isSandboxOrderTarget } from '@/scenario/predicates'
+import { isWorkerReadyMessage } from '@/app/predicates'
+import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
 import { parseSandboxLaunchConfig } from '@/scenario/launch'
 import { resolveSandboxExtensionSource } from '@/scenario/manifest'
 import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
+import { serializeSandboxExtensionDescriptor } from '@/scenario/descriptor'
 import { updateSandboxLaunchQuery } from '@/scenario/launch'
 import {
   validateContextJsonInput,
@@ -184,20 +188,18 @@ import {
 const searchParams = new URLSearchParams(window.location.search)
 const hasExplicitExtensionUrl = Boolean(searchParams.get('extensionUrl')?.trim())
 const hasExplicitLaunchMode = searchParams.has('mode')
-const launchConfig = parseSandboxLaunchConfig(searchParams, {
-  manifestUrl: createDefaultSandboxManifestUrl(),
-  targets: DEFAULT_SANDBOX_TARGETS,
-})
-const LAUNCH_NOTICE_STORAGE_KEY = 'v1-sandbox:launch-notice'
+const initialLaunch = parseInitialLaunchConfig(searchParams)
+const launchConfig = initialLaunch.config
+const launchConfigError = initialLaunch.error
 const fixture = ref(launchConfig.fixture)
-const manifestUrl = ref(launchConfig.manifestUrl)
+const manifestUrl = ref(formatExtensionSource(launchConfig))
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
 const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
 const extensionHttpBaseUrl = ref<string | null>(null)
-const extensionDescriptorUuid = ref<string | undefined>()
+const extensionDescriptorCode = ref<string | undefined>()
 const sandbox = createOrderSandboxController(launchConfig.fixture, {
-  getDescriptorUuid: () => extensionDescriptorUuid.value,
+  getDescriptorUuid: () => extensionDescriptorCode.value,
   getHttpCallBaseUrl: () => extensionHttpBaseUrl.value,
   globalBridge: {},
 })
@@ -214,8 +216,46 @@ const contextApplySucceeded = ref(false)
 const contextHasManualChanges = ref(false)
 const devPanelValidationErrors = ref<DevPanelValidationErrors>({})
 let isAppMounted = false
+let targetsManuallyChanged = false
 
-const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExplicitExtensionUrl)
+function parseInitialLaunchConfig(params: URLSearchParams): {
+  config: SandboxLaunchConfig;
+  error: unknown;
+} {
+  const options = {
+    manifestUrl: createDefaultSandboxManifestUrl(),
+    ...(params.has('descriptor') ? {} : { targets: DEFAULT_SANDBOX_TARGETS }),
+  }
+
+  try {
+    return {
+      config: parseSandboxLaunchConfig(params, options),
+      error: null,
+    }
+  } catch (error) {
+    const fallbackParams = new URLSearchParams(params)
+
+    fallbackParams.delete('descriptor')
+    fallbackParams.delete('extensionUrl')
+    fallbackParams.delete('manifestUrl')
+
+    return {
+      config: parseSandboxLaunchConfig(fallbackParams, options),
+      error,
+    }
+  }
+}
+
+function formatExtensionSource(config: SandboxLaunchConfig): string {
+  return config.descriptor
+    ? serializeSandboxExtensionDescriptor(config.descriptor, 2)
+    : config.manifestUrl
+}
+
+const LAUNCH_NOTICE_STORAGE_KEY = 'v1-sandbox:launch-notice'
+
+const shouldShowOnboarding = computed(() => Boolean(launchConfigError)
+  || (!launchConfig.descriptor && !launchConfig.manifestUrl && !hasExplicitExtensionUrl))
 const runModeLabel = computed(() => launchConfig.mode === 'page'
   ? t('app.runMode.page', { pageCode: launchConfig.pageCode })
   : t('app.runMode.widgets', { count: launchConfig.targets.length }))
@@ -227,7 +267,7 @@ const isExtensionConnected = computed(() => runtime.value !== null)
 const launchConfigChanged = computed(() => {
   if (
     fixture.value !== launchConfig.fixture
-    || manifestUrl.value.trim() !== launchConfig.manifestUrl
+    || manifestUrl.value.trim() !== formatExtensionSource(launchConfig)
     || mode.value !== launchConfig.mode
   ) {
     return true
@@ -266,7 +306,7 @@ const mountExtension = async (): Promise<boolean> => {
     if (redirectToInferredPageMode(extensionSource.descriptor)) return false
 
     extensionHttpBaseUrl.value = extensionSource.httpBaseUrl
-    extensionDescriptorUuid.value = extensionSource.descriptor.uuid
+    extensionDescriptorCode.value = extensionSource.descriptor.code
 
     const diagnostic = createLaunchDiagnostic(extensionSource.descriptor)
 
@@ -278,7 +318,7 @@ const mountExtension = async (): Promise<boolean> => {
 
     stylesheet = mountExtensionStylesheet(extensionSource.descriptor.stylesheet)
     const connections = await mountWorkerExtension(
-      extensionSource.descriptor.uuid,
+      extensionSource.descriptor.code,
       extensionSource.entrypoint
     )
 
@@ -344,16 +384,34 @@ const createLaunchDiagnostic = (
 ): SandboxLaunchDiagnostic | null => {
   if (
     launchConfig.mode === 'page'
-    && descriptor.pages.length > 0
+    && (launchConfig.descriptor || descriptor.pages.length > 0)
     && !descriptor.pages.includes(launchConfig.pageCode)
   ) {
     return {
       blocking: true,
       message: t('app.alerts.missingPageCode.message', {
         pageCode: launchConfig.pageCode,
-        pages: descriptor.pages.join(', '),
+        pages: descriptor.pages.join(', ') || '—',
       }),
       title: t('app.alerts.missingPageCode.title'),
+    }
+  }
+
+  if (
+    launchConfig.mode === 'widget'
+  ) {
+    const missingTargets = launchConfig.targets.filter(
+      target => !descriptor.targets.includes(target)
+    )
+
+    if (missingTargets.length > 0) {
+      return {
+        blocking: true,
+        message: t('app.alerts.missingWidgetTargets.message', {
+          targets: missingTargets.join(', '),
+        }),
+        title: t('app.alerts.missingWidgetTargets.title'),
+      }
     }
   }
 
@@ -499,6 +557,9 @@ const applyLaunchConfig = async () => {
   devPanelValidationErrors.value = {}
 
   const config: SandboxLaunchConfig = {
+    ...(validationResult.data.descriptor
+      ? { descriptor: validationResult.data.descriptor }
+      : {}),
     extensionUrl: '',
     fixture: validationResult.data.fixture,
     manifestUrl: validationResult.data.manifestUrl,
@@ -682,6 +743,25 @@ const setManifestUrl = (value: string) => {
   clearDevPanelValidationError('manifestUrl')
   clearDevPanelValidationError('pageCode')
 
+  if (
+    !targetsManuallyChanged
+    && value.trim() !== formatExtensionSource(launchConfig)
+    && value.trim().startsWith('{')
+  ) {
+    try {
+      const descriptorTargets = parseSandboxExtensionDescriptorJson(value)
+        .targets
+        .filter(isSandboxOrderTarget)
+
+      if (descriptorTargets.length > 0) {
+        selectedTargets.value = descriptorTargets
+        clearDevPanelValidationError('targets')
+      }
+    } catch {
+      // The regular launch validation reports incomplete or invalid descriptor JSON.
+    }
+  }
+
   const pageCodeError = getPageCodeValidationError(pageCode.value)
 
   if (pageCode.value && pageCodeError) {
@@ -723,6 +803,7 @@ const setPageCode = (value: string) => {
 }
 
 const setTargetSelected = (target: SandboxOrderTarget, checked: boolean) => {
+  targetsManuallyChanged = true
   selectedTargets.value = checked
     ? Array.from(new Set([...selectedTargets.value, target]))
     : selectedTargets.value.filter(item => item !== target)
@@ -740,12 +821,25 @@ const getCurrentLaunchConfig = (): SandboxLaunchConfig => ({
 })
 
 const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchConfig => ({
-  ...getCurrentLaunchConfig(),
-  ...input,
-  targets: input.targets
-    ? [...input.targets]
-    : [...launchConfig.targets],
+  ...createLaunchConfigWithSource(input),
+  targets: input.targets ? [...input.targets] : [...launchConfig.targets],
 })
+
+const createLaunchConfigWithSource = (input: SandboxLaunchInput): SandboxLaunchConfig => {
+  const config: SandboxLaunchConfig = {
+    ...getCurrentLaunchConfig(),
+    ...input,
+  }
+
+  if (input.descriptor) {
+    config.extensionUrl = ''
+    config.manifestUrl = ''
+  } else if (input.extensionUrl !== undefined || input.manifestUrl !== undefined) {
+    delete config.descriptor
+  }
+
+  return config
+}
 
 const createLaunchBridge = (): SandboxLaunchBridge => ({
   createLaunchUrl(config) {
@@ -918,11 +1012,7 @@ const createDevPanelValidationMessages = (): DevPanelValidationMessages => ({
   contextJsonRootObject: t('app.validation.contextJson.rootObject'),
   contextJsonUnknownContext: context => t('app.validation.contextJson.unknownContext', { context }),
   fixture: t('app.validation.fixture'),
-  manifestUrlEndpoint: t('app.validation.manifestUrl.endpoint'),
-  manifestUrlFormat: t('app.validation.manifestUrl.format', {
-    close: '>',
-    open: '<',
-  }),
+  manifestUrlDescriptor: t('app.validation.manifestUrl.descriptor'),
   manifestUrlRequired: t('app.validation.manifestUrl.required'),
   mode: t('app.validation.mode'),
   pageCodeFormat: t('app.validation.pageCodeFormat'),
@@ -965,6 +1055,15 @@ const showStoredLaunchNotice = () => {
 onMounted(() => {
   isAppMounted = true
   showStoredLaunchNotice()
+
+  if (launchConfigError) {
+    showSandboxAlert(
+      t('app.alerts.runtimeError.title'),
+      t('app.alerts.runtimeError.message', { message: getErrorMessage(launchConfigError) })
+    )
+
+    return
+  }
 
   if (!shouldShowOnboarding.value) {
     void mountExtension()

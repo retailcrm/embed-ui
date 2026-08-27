@@ -26,6 +26,27 @@ import {
 } from '@/automation/playwright'
 
 describe('playwright automation helpers', () => {
+  test('creates sandbox path from runtime descriptor', () => {
+    const descriptor = {
+      baseUrl: 'https://extension.test/runtime/',
+      code: 'settings-extension',
+      entrypoint: 'worker.js',
+      pages: ['settings'],
+      stylesheet: null,
+      targets: ['order/card:common.after' as const],
+    }
+    const path = createSandboxPagePath({
+      descriptor,
+      pageCode: 'settings',
+      sandboxBaseUrl: 'http://127.0.0.1:4173',
+    })
+    const url = new URL(path, 'http://127.0.0.1:4173')
+
+    expect(JSON.parse(url.searchParams.get('descriptor') ?? '')).toEqual(descriptor)
+    expect(url.searchParams.has('manifestUrl')).toBe(false)
+    expect(url.searchParams.has('extensionUrl')).toBe(false)
+  })
+
   test('creates page sandbox path from direct extension entrypoint', () => {
     const path = createSandboxPagePath({
       extensionUrl: 'http://127.0.0.1:5173/web/endpoint/endpoint.worker.ts',
@@ -226,6 +247,35 @@ describe('playwright automation helpers', () => {
     })
 
     expect(page.waitForURL).not.toHaveBeenCalled()
+  })
+
+  test('waits for a serialized runtime descriptor', async () => {
+    const descriptor = {
+      baseUrl: 'https://extension.test/runtime/',
+      code: 'returns-extension',
+      entrypoint: 'worker.js',
+      pages: ['returns'],
+      stylesheet: null,
+      targets: [],
+    }
+    const page = {
+      evaluate: vi.fn(async () => undefined),
+      waitForFunction: vi.fn(async () => undefined),
+      waitForURL: vi.fn(async (matcher: (url: URL) => boolean) => {
+        const url = new URL('http://sandbox.test/')
+
+        url.searchParams.set('descriptor', JSON.stringify(descriptor))
+        url.searchParams.set('mode', 'page')
+        expect(matcher(url)).toBe(true)
+      }),
+    } as unknown as SandboxPlaywrightPage
+
+    await launchSandboxExtension(page, {
+      descriptor,
+      mode: 'page',
+    })
+
+    expect(page.waitForURL).toHaveBeenCalledOnce()
   })
 
   test('reads sandbox snapshot from page global', async () => {

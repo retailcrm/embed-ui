@@ -39,8 +39,21 @@ npx @retailcrm/embed-ui-v1-sandbox serve
 embed-ui-v1-sandbox serve --host 0.0.0.0 --port 4173
 ```
 
-Откройте URL из вывода команды, укажите URL расширения
-`%extension-url%/extension/%extension-id%`, выберите режим и fixture, затем нажмите `Apply`.
+Откройте URL из вывода команды и вставьте runtime-дескриптор расширения:
+
+```json
+{
+  "code": "returnsModule",
+  "baseUrl": "https://extension.test",
+  "entrypoint": "/build/worker.js",
+  "pages": ["returns"],
+  "stylesheet": "/build/extension.css",
+  "targets": []
+}
+```
+
+`entrypoint` и `stylesheet` разрешаются относительно `baseUrl`. JSON можно
+вставить целиком либо заполнить те же поля отдельно в DevPanel.
 
 ## Применение в тестах
 
@@ -68,8 +81,15 @@ test('loads extension page in sandbox', async ({ page }) => {
   await page.goto('/')
 
   await launchSandboxExtension(page, {
+    descriptor: {
+      code: 'returnsModule',
+      baseUrl: 'https://extension.test',
+      entrypoint: '/build/worker.js',
+      pages: ['returns'],
+      stylesheet: '/build/extension.css',
+      targets: [],
+    },
     fixture: 'order-basic',
-    manifestUrl: '%extension-url%/extension/%extension-id%',
     mode: 'page',
     pageCode: 'returns',
   })
