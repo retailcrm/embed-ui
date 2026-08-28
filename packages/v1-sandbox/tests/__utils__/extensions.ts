@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { getSandboxExtensionDescriptor } from '@/automation/playwright'
 import { isSandboxOrderTarget } from '@/scenario'
 
 export type SandboxExtensionFixturePage = {
@@ -62,6 +63,12 @@ export const createRuntimeExtensionDescriptor = (
   extensionBaseUrl = process.env.SANDBOX_RUNTIME_EXTENSION_URL
     ?? process.env.SANDBOX_EXTENSION_URL
 ): SandboxExtensionDescriptor => {
+  const configuredDescriptor = getSandboxExtensionDescriptor()
+
+  if (configuredDescriptor?.code === descriptor.code) {
+    return configuredDescriptor
+  }
+
   if (!extensionBaseUrl) {
     throw new Error('[sandbox:test] SANDBOX_EXTENSION_URL is required for extension browser tests.')
   }

@@ -621,18 +621,17 @@ Variables:
   can start the sandbox server itself. Set it when the sandbox is already
   running, for example `http://v1.embed-ui-sandbox.local` on OrbStack/macOS or
   `http://v1.embed-ui-sandbox.test` on Linux/Traefik.
-- `SANDBOX_EXTENSION_URL`: extension server base URL. Runtime-descriptor helpers
-  derive a per-fixture `baseUrl` and use relative entrypoint/stylesheet paths.
-  For this repository's own E2E suite,
-  an empty value makes Playwright build and start the local fixture extension
-  server at `http://127.0.0.1:4175/extension/`; set the variable to override it
-  with an external server.
+- `SANDBOX_EXTENSION_DESCRIPTOR`: one-line runtime descriptor JSON. When its
+  `code` matches an E2E fixture, Playwright launches that external extension
+  instead. Before running browser scenarios, Playwright checks that its
+  `entrypoint` and non-null `stylesheet` are available. An empty value keeps
+  the repository fixture extension.
 
 Typical local page test values:
 
 ```dotenv
 SANDBOX_BASE_URL=http://v1.embed-ui-sandbox.local
-SANDBOX_EXTENSION_URL=http://web-extensions-server.simla.local/extension/
+SANDBOX_EXTENSION_DESCRIPTOR={"code":"promoModule","baseUrl":"http://web-extensions-server.simla.local","entrypoint":"/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script","stylesheet":"/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet","targets":[],"pages":["settings"]}
 ```
 
 Playwright covers:
@@ -640,7 +639,7 @@ Playwright covers:
 - shell loading;
 - control panel opening;
 - public URL contract updates from the control panel;
-- external extension startup when `SANDBOX_EXTENSION_URL` is set;
+- external extension startup when `SANDBOX_EXTENSION_DESCRIPTOR` is set;
 - user interaction inside the extension;
 - `host.httpCall` through sandbox proxy middleware;
 - context changes through the JSON editor.

@@ -5,6 +5,7 @@ import type { SandboxSnapshot } from '@/core/state'
 
 import { DEFAULT_SANDBOX_TARGET, DefaultSandbox } from '@/scenario'
 import { isSandboxOrderTarget } from '@/scenario'
+import { parseSandboxExtensionDescriptorJson } from '@/scenario'
 import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
 import { serializeSandboxExtensionDescriptor } from '@/scenario'
 import { updateSandboxLaunchQuery } from '@/scenario'
@@ -177,6 +178,21 @@ export const getSandboxExtensionBaseUrl = (): string | null => {
   if (!value) return null
 
   return value.endsWith('/') ? value : `${value}/`
+}
+
+export const getSandboxExtensionDescriptor = (
+  value = process.env.SANDBOX_EXTENSION_DESCRIPTOR
+): SandboxExtensionDescriptor | null => {
+  if (!value) return null
+
+  try {
+    return parseSandboxExtensionDescriptorJson(value)
+  } catch (cause) {
+    throw new Error(
+      '[sandbox:test] SANDBOX_EXTENSION_DESCRIPTOR must contain a valid runtime descriptor.',
+      { cause }
+    )
+  }
 }
 
 export const hasSandboxExtensionBaseUrl = (): boolean => Boolean(getSandboxExtensionBaseUrl())

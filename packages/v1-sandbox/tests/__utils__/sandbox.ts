@@ -5,8 +5,6 @@ import { DEFAULT_SANDBOX_TARGET } from '@/scenario/targets'
 import { DefaultSandbox } from '@/scenario'
 
 import {
-  createExtensionManifestUrl as createPublicExtensionManifestUrl,
-  createExternalExtensionUrl as createPublicExternalExtensionUrl,
   createSandboxBrowserPath as createPublicSandboxBrowserPath,
   createSandboxPagePath as createPublicSandboxPagePath,
   createSandboxWidgetPath as createPublicSandboxWidgetPath,
@@ -27,14 +25,6 @@ export {
   readSandboxSnapshot,
 }
 
-export const createExtensionManifestUrl = (
-  descriptor: SandboxExtensionFixtureDescriptor
-): string => createPublicExtensionManifestUrl(descriptor)
-
-export const createExternalExtensionUrl = (
-  descriptor: SandboxExtensionFixtureDescriptor
-): string => createPublicExternalExtensionUrl(descriptor)
-
 export const createSandboxBrowserPath = (config: SandboxLaunchConfig): string => createPublicSandboxBrowserPath(
   config,
   { sandboxPath: '/tests/__bootstrap__/index.html' }
@@ -44,9 +34,10 @@ export const createSandboxPageConfig = (
   descriptor: SandboxExtensionFixtureDescriptor,
   pageCode = getExtensionPageCodes(descriptor)[0]
 ): SandboxLaunchConfig => ({
-  extensionUrl: createExternalExtensionUrl(descriptor),
+  descriptor: createRuntimeExtensionDescriptor(descriptor),
+  extensionUrl: '',
   fixture: DefaultSandbox.Fixture,
-  manifestUrl: createExtensionManifestUrl(descriptor),
+  manifestUrl: '',
   mode: 'page',
   pageCode: pageCode ?? DefaultSandbox.PageCode,
   targets: [getExtensionTargets(descriptor)[0] ?? DEFAULT_SANDBOX_TARGET],
@@ -57,9 +48,10 @@ export const createSandboxWidgetConfig = (
   descriptor: SandboxExtensionFixtureDescriptor,
   target = getExtensionTargets(descriptor)[0]
 ): SandboxLaunchConfig => ({
-  extensionUrl: createExternalExtensionUrl(descriptor),
+  descriptor: createRuntimeExtensionDescriptor(descriptor),
+  extensionUrl: '',
   fixture: DefaultSandbox.Fixture,
-  manifestUrl: createExtensionManifestUrl(descriptor),
+  manifestUrl: '',
   mode: 'widget',
   pageCode: DefaultSandbox.PageCode,
   targets: [target ?? DEFAULT_SANDBOX_TARGET],

@@ -1,6 +1,7 @@
 import type { SandboxPlaywrightPage } from '@/automation/playwright'
 
 import {
+  afterEach,
   describe,
   expect,
   test,
@@ -19,11 +20,16 @@ import {
   getExtensionPageCodes,
   getExtensionTargets,
   getSandboxExtensionBaseUrl,
+  getSandboxExtensionDescriptor,
   hasSandboxExtensionBaseUrl,
   launchSandboxExtension,
   readSandboxSnapshot,
   waitForSandboxLaunchBridge,
 } from '@/automation/playwright'
+
+afterEach(() => {
+  vi.unstubAllEnvs()
+})
 
 describe('playwright automation helpers', () => {
   test('creates sandbox path from runtime descriptor', () => {
@@ -175,6 +181,29 @@ describe('playwright automation helpers', () => {
     vi.stubEnv('SANDBOX_EXTENSION_URL', 'http://extension.test/extension/')
 
     expect(getSandboxExtensionBaseUrl()).toBe('http://extension.test/extension/')
+  })
+
+  test('reads runtime descriptor from environment', () => {
+    const descriptor = {
+      baseUrl: 'http://extension.test',
+      code: 'promoModule',
+      entrypoint: '/extension/id/script',
+      pages: ['settings'],
+      stylesheet: null,
+      targets: [],
+    }
+
+    vi.stubEnv('SANDBOX_EXTENSION_DESCRIPTOR', JSON.stringify(descriptor))
+
+    expect(getSandboxExtensionDescriptor()).toEqual(descriptor)
+  })
+
+  test('reports invalid runtime descriptor from environment', () => {
+    vi.stubEnv('SANDBOX_EXTENSION_DESCRIPTOR', '{"code":"promoModule"}')
+
+    expect(() => getSandboxExtensionDescriptor()).toThrow(
+      '[sandbox:test] SANDBOX_EXTENSION_DESCRIPTOR must contain a valid runtime descriptor.'
+    )
   })
 
   test('waits for launch bridge and launches extension', async () => {
