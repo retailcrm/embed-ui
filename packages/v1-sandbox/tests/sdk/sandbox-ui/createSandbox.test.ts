@@ -98,7 +98,8 @@ test('opens dev panel and validates launch config input', async () => {
 
   expect(applyButton.disabled).toBe(true)
 
-  const manifestInput = within(dialog).getByLabelText('Манифест / URL расширения') as HTMLInputElement
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
+  const manifestInput = within(dialog).getByLabelText('JSON дескриптора') as HTMLTextAreaElement
 
   await fireEvent.update(manifestInput, 'http://extension.test/not-extension/id')
   await nextTick()
@@ -108,7 +109,7 @@ test('opens dev panel and validates launch config input', async () => {
   await fireEvent.click(applyButton)
 
   expect((await within(dialog).findByRole('alert')).textContent?.trim())
-    .toBe('URL должен быть вида %extension-url%/extension/%extension-id%.')
+    .toBe('Введите валидный дескриптор с полями code, baseUrl, entrypoint, stylesheet, pages и targets. Адреса ресурсов могут быть относительными к абсолютному http/https baseUrl.')
 })
 
 test('installs launch bridge and creates launch urls from current config', () => {

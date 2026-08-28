@@ -1,11 +1,13 @@
-import type { SandboxLaunchConfig } from '@/scenario'
+import type { SandboxExtensionDescriptor, SandboxLaunchConfig } from '@/scenario'
 import type { SandboxLaunchInput } from '@/automation/bridge'
 import type { SandboxOrderTarget } from '@/scenario'
 import type { SandboxSnapshot } from '@/core/state'
 
 import { DEFAULT_SANDBOX_TARGET, DefaultSandbox } from '@/scenario'
 import { isSandboxOrderTarget } from '@/scenario'
+import { parseSandboxExtensionDescriptorJson } from '@/scenario'
 import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
+import { serializeSandboxExtensionDescriptor } from '@/scenario'
 import { updateSandboxLaunchQuery } from '@/scenario'
 
 const DEFAULT_SANDBOX_BASE_URL = 'http://127.0.0.1:4173'
@@ -46,7 +48,8 @@ export type CreateSandboxBrowserPathOptions = {
 }
 
 export type CreateSandboxExtensionPathOptions = CreateSandboxBrowserPathOptions & {
-  extensionUrl: string;
+  descriptor?: SandboxExtensionDescriptor;
+  extensionUrl?: string;
   fixture?: string;
   manifestUrl?: string;
   pageCode?: string;
@@ -88,6 +91,12 @@ export const launchSandboxExtension = async (
             return true
           }
 
+          if (key === 'descriptor') {
+            return url.searchParams.get(key) === serializeSandboxExtensionDescriptor(
+              value as SandboxExtensionDescriptor
+            )
+          }
+
           return url.searchParams.get(key) === String(value)
         })
       }),
@@ -116,9 +125,10 @@ export const createSandboxBrowserPath = (
 export const createSandboxPagePath = (
   options: CreateSandboxExtensionPathOptions
 ): string => createSandboxBrowserPath({
-  extensionUrl: options.extensionUrl,
+  ...(options.descriptor ? { descriptor: options.descriptor } : {}),
+  extensionUrl: options.extensionUrl ?? '',
   fixture: options.fixture ?? DefaultSandbox.Fixture,
-  manifestUrl: options.manifestUrl ?? options.extensionUrl,
+  manifestUrl: options.descriptor ? '' : (options.manifestUrl ?? options.extensionUrl ?? ''),
   mode: 'page',
   pageCode: options.pageCode ?? DefaultSandbox.PageCode,
   targets: normalizeTargets(options.targets),
@@ -128,9 +138,10 @@ export const createSandboxPagePath = (
 export const createSandboxWidgetPath = (
   options: CreateSandboxExtensionPathOptions
 ): string => createSandboxBrowserPath({
-  extensionUrl: options.extensionUrl,
+  ...(options.descriptor ? { descriptor: options.descriptor } : {}),
+  extensionUrl: options.extensionUrl ?? '',
   fixture: options.fixture ?? DefaultSandbox.Fixture,
-  manifestUrl: options.manifestUrl ?? options.extensionUrl,
+  manifestUrl: options.descriptor ? '' : (options.manifestUrl ?? options.extensionUrl ?? ''),
   mode: 'widget',
   pageCode: options.pageCode ?? DefaultSandbox.PageCode,
   targets: normalizeTargets(options.targets),
@@ -167,6 +178,21 @@ export const getSandboxExtensionBaseUrl = (): string | null => {
   if (!value) return null
 
   return value.endsWith('/') ? value : `${value}/`
+}
+
+export const getSandboxExtensionDescriptor = (
+  value = process.env.SANDBOX_EXTENSION_DESCRIPTOR
+): SandboxExtensionDescriptor | null => {
+  if (!value) return null
+
+  try {
+    return parseSandboxExtensionDescriptorJson(value)
+  } catch (cause) {
+    throw new Error(
+      '[sandbox:test] SANDBOX_EXTENSION_DESCRIPTOR must contain a valid runtime descriptor.',
+      { cause }
+    )
+  }
 }
 
 export const hasSandboxExtensionBaseUrl = (): boolean => Boolean(getSandboxExtensionBaseUrl())

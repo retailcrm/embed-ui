@@ -43,6 +43,7 @@ services:
     environment:
       - COREPACK_ENABLE_DOWNLOAD_PROMPT=0
       - PATH=/project/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - HOME=/tmp
     volumes:
       - ./:/project
     working_dir: /project

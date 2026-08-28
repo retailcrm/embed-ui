@@ -9,6 +9,10 @@
         "message": "В расширении нет страницы «{pageCode}». Доступные страницы: {pages}.",
         "title": "Страница расширения не найдена"
       },
+      "missingWidgetTargets": {
+        "message": "Расширение не поддерживает выбранные места встраивания: {targets}.",
+        "title": "Место встраивания расширения не найдено"
+      },
       "runtimeError": {
         "message": "{message}",
         "title": "Не удалось запустить расширение"
@@ -70,9 +74,8 @@
       },
       "fixture": "Выберите существующую фикстуру.",
       "manifestUrl": {
-        "endpoint": "URL должен быть вида %extension-url%/extension/%extension-id%.",
-        "format": "Введите абсолютный http/https URL. Например: http://127.0.0.1:4175/extension/{open}uuid{close}",
-        "required": "Укажите URL расширения."
+        "descriptor": "Введите валидный дескриптор с полями code, baseUrl, entrypoint, stylesheet, pages и targets. Адреса ресурсов могут быть относительными к абсолютному http/https baseUrl.",
+        "required": "Укажите дескриптор расширения."
       },
       "mode": "Выберите режим запуска.",
       "pageCodeFormat": "Код страницы может содержать только латинские буквы (A–Z, a–z) и дефисы.",

@@ -40,6 +40,35 @@ const response = (
 } as Response)
 
 describe('resolveSandboxExtensionSource', () => {
+  test('uses descriptor resources directly without fetching legacy manifest', async () => {
+    const fetcher = vi.fn()
+    const descriptor = {
+      baseUrl: 'https://extension.test/runtime/',
+      code: 'returns-module',
+      entrypoint: 'worker.js',
+      pages: ['returns'],
+      stylesheet: 'styles.css',
+      targets: ['order/card:common.after' as const],
+    }
+
+    const source = await resolveSandboxExtensionSource(config({
+      descriptor,
+      manifestUrl: 'http://legacy.test/extension/demo',
+    }), { fetch: fetcher as typeof fetch })
+
+    expect(source).toEqual({
+      descriptor: {
+        ...descriptor,
+        entrypoint: 'https://extension.test/runtime/worker.js',
+        stylesheet: 'https://extension.test/runtime/styles.css',
+      },
+      entrypoint: new URL('https://extension.test/runtime/worker.js'),
+      httpBaseUrl: 'https://extension.test/runtime/',
+      manifestUrl: null,
+    })
+    expect(fetcher).not.toHaveBeenCalled()
+  })
+
   test('rejects failed manifest response', async () => {
     const fetcher = vi.fn(async () => response('', {
       contentType: 'text/plain',
@@ -123,8 +152,7 @@ describe('resolveSandboxExtensionSource', () => {
 
     expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/html/assets/entry.js')
     expect(source.httpBaseUrl).toBe('http://sandbox.test/')
-    expect(source.descriptor.runner).toBe('worker')
-    expect(source.descriptor.uuid).toBe('sandbox-widget')
+    expect(source.descriptor.code).toBe('sandbox-widget')
     expect(fetcher).toHaveBeenCalledTimes(2)
   })
 
@@ -160,7 +188,6 @@ describe('resolveSandboxExtensionSource', () => {
     }), { fetch: fetcher as typeof fetch })
 
     expect(source.descriptor.pages).toEqual(['returns'])
-    expect(source.descriptor.runner).toBe('worker')
     expect(source.descriptor.stylesheet).toBe(
       'http://extension-host.test/extension/module-id/stylesheet'
     )
@@ -221,7 +248,7 @@ describe('resolveSandboxExtensionSource', () => {
     })
 
     expect(source.descriptor.entrypoint).toBe('/src/direct-extension.js')
-    expect(source.descriptor.uuid).toBe('sandbox-widget')
+    expect(source.descriptor.code).toBe('sandbox-widget')
     expect(source.entrypoint.href).toBe('http://localhost/src/direct-extension.js')
     expect(source.httpBaseUrl).toBeNull()
   })

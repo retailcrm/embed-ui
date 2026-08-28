@@ -5,8 +5,6 @@ import { DEFAULT_SANDBOX_TARGET } from '@/scenario/targets'
 import { DefaultSandbox } from '@/scenario'
 
 import {
-  createExtensionManifestUrl as createPublicExtensionManifestUrl,
-  createExternalExtensionUrl as createPublicExternalExtensionUrl,
   createSandboxBrowserPath as createPublicSandboxBrowserPath,
   createSandboxPagePath as createPublicSandboxPagePath,
   createSandboxWidgetPath as createPublicSandboxWidgetPath,
@@ -15,21 +13,17 @@ import {
   readSandboxSnapshot,
 } from '@/automation/playwright'
 
-import { getExtensionPageCodes, getExtensionTargets } from './extensions'
+import {
+  createRuntimeExtensionDescriptor,
+  getExtensionPageCodes,
+  getExtensionTargets,
+} from './extensions'
 
 export {
   getSandboxExtensionBaseUrl,
   hasSandboxExtensionBaseUrl,
   readSandboxSnapshot,
 }
-
-export const createExtensionManifestUrl = (
-  descriptor: SandboxExtensionFixtureDescriptor
-): string => createPublicExtensionManifestUrl(descriptor)
-
-export const createExternalExtensionUrl = (
-  descriptor: SandboxExtensionFixtureDescriptor
-): string => createPublicExternalExtensionUrl(descriptor)
 
 export const createSandboxBrowserPath = (config: SandboxLaunchConfig): string => createPublicSandboxBrowserPath(
   config,
@@ -40,9 +34,10 @@ export const createSandboxPageConfig = (
   descriptor: SandboxExtensionFixtureDescriptor,
   pageCode = getExtensionPageCodes(descriptor)[0]
 ): SandboxLaunchConfig => ({
-  extensionUrl: createExternalExtensionUrl(descriptor),
+  descriptor: createRuntimeExtensionDescriptor(descriptor),
+  extensionUrl: '',
   fixture: DefaultSandbox.Fixture,
-  manifestUrl: createExtensionManifestUrl(descriptor),
+  manifestUrl: '',
   mode: 'page',
   pageCode: pageCode ?? DefaultSandbox.PageCode,
   targets: [getExtensionTargets(descriptor)[0] ?? DEFAULT_SANDBOX_TARGET],
@@ -53,9 +48,10 @@ export const createSandboxWidgetConfig = (
   descriptor: SandboxExtensionFixtureDescriptor,
   target = getExtensionTargets(descriptor)[0]
 ): SandboxLaunchConfig => ({
-  extensionUrl: createExternalExtensionUrl(descriptor),
+  descriptor: createRuntimeExtensionDescriptor(descriptor),
+  extensionUrl: '',
   fixture: DefaultSandbox.Fixture,
-  manifestUrl: createExtensionManifestUrl(descriptor),
+  manifestUrl: '',
   mode: 'widget',
   pageCode: DefaultSandbox.PageCode,
   targets: [target ?? DEFAULT_SANDBOX_TARGET],
@@ -68,6 +64,16 @@ export const createSandboxPagePath = (
 ): string =>
   createPublicSandboxPagePath({
     ...createSandboxPageConfig(descriptor, pageCode),
+    sandboxPath: '/tests/__bootstrap__/index.html',
+  })
+
+export const createSandboxDescriptorPagePath = (
+  descriptor: SandboxExtensionFixtureDescriptor,
+  pageCode = getExtensionPageCodes(descriptor)[0]
+): string =>
+  createPublicSandboxPagePath({
+    descriptor: createRuntimeExtensionDescriptor(descriptor),
+    pageCode: pageCode ?? DefaultSandbox.PageCode,
     sandboxPath: '/tests/__bootstrap__/index.html',
   })
 

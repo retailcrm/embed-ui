@@ -1,15 +1,17 @@
 import { expect, test } from '@playwright/test'
 
+import { isSandboxOrderTarget } from '@/scenario'
+
+import { createRuntimeExtensionDescriptor } from '../__utils__/extensions'
 import { createSandboxPagePath, createSandboxWidgetPath } from '../__utils__/sandbox'
-import { getExtensionPageCodes, getExtensionTargets } from '../__utils__/extensions'
 import { readExtensionFixture } from '../__utils__/extensions'
 
 const extension = readExtensionFixture('promoModule')
-const [pageCode] = getExtensionPageCodes(extension)
-const [target] = getExtensionTargets(extension)
+const runtimeExtension = createRuntimeExtensionDescriptor(extension)
+const [pageCode] = runtimeExtension.pages
+const target = runtimeExtension.targets.find(isSandboxOrderTarget)
 
-if (!pageCode) throw new Error('promoModule fixture has no page descriptor.')
-if (!target) throw new Error('promoModule fixture has no widget target.')
+if (!pageCode) throw new Error('promoModule runtime descriptor has no page.')
 
 test('keeps context actions disabled without a connected extension', async ({ page }) => {
   const runtimeErrors: string[] = []
@@ -46,6 +48,8 @@ test('loads promo module page extension', async ({ page }) => {
 })
 
 test('loads promo module widget extension from target descriptor', async ({ page }) => {
+  test.skip(!target, 'promoModule runtime descriptor has no widget target.')
+
   await page.goto(createSandboxWidgetPath(extension, target))
 
   const widgetMount = page.getByRole('region', {
@@ -68,7 +72,7 @@ test('loads promo module widget extension from target descriptor', async ({ page
 })
 
 test('restarts promo widget with manually changed context', async ({ page }) => {
-  test.skip(!target, 'promoModule fixture has no widget target.')
+  test.skip(!target, 'promoModule runtime descriptor has no widget target.')
 
   await page.goto(createSandboxWidgetPath(extension, target))
   await page.getByRole('button', { name: 'Открыть управление песочницей' }).click()

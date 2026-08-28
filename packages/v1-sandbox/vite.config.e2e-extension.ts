@@ -41,19 +41,75 @@ const extensionFixtureServer = (): Plugin => ({
       }
 
       const url = new URL(request.url, 'http://extension.test')
+      const returnsRuntimePath = '/runtime/returnsModule'
+      const returnsAction = url.pathname.startsWith(`${returnsRuntimePath}/`)
+        ? url.pathname.slice(returnsRuntimePath.length)
+        : url.pathname
       const isReturnsAction = [
         '/return',
         '/returns',
         '/returns/save',
-      ].includes(url.pathname)
+      ].includes(returnsAction)
 
       if (request.method === 'POST' && isReturnsAction) {
         setCorsHeaders(request.headers.origin, response)
         readPayload(request).then(payload => {
-          const result = resolveReturnsBackendRequest(url.pathname, payload)
+          const result = resolveReturnsBackendRequest(returnsAction, payload)
 
           send(response, result.status, JSON.stringify(result.body), 'application/json; charset=utf-8')
         }).catch(next)
+        return
+      }
+
+      const runtimeMatch = url.pathname.match(
+        /^\/runtime\/([^/]+)\/(entrypoint\.js|stylesheet\.css|assets\/.*)$/u
+      )
+
+      if (runtimeMatch) {
+        const fixture = runtimeMatch[1]
+        const action = runtimeMatch[2]
+        const entry = entries.get(fixture)
+
+        if (!entry) {
+          send(response, 404, 'Not found', 'text/plain; charset=utf-8')
+          return
+        }
+
+        setCorsHeaders(request.headers.origin, response)
+
+        if (request.method === 'OPTIONS') {
+          response.writeHead(204)
+          response.end()
+          return
+        }
+
+        if (request.method !== 'GET' && request.method !== 'HEAD') {
+          send(response, 405, 'Method not allowed', 'text/plain; charset=utf-8')
+          return
+        }
+
+        if (action === 'entrypoint.js') {
+          sendFile(response, path.resolve(outputRoot, entry.file), request.method === 'HEAD')
+          return
+        }
+
+        if (action === 'stylesheet.css') {
+          const stylesheet = entry.css?.[0]
+
+          if (!stylesheet) {
+            send(response, 404, 'Not found', 'text/plain; charset=utf-8')
+            return
+          }
+
+          sendFile(response, path.resolve(outputRoot, stylesheet), request.method === 'HEAD')
+          return
+        }
+
+        sendFile(
+          response,
+          path.resolve(outputRoot, action),
+          request.method === 'HEAD'
+        )
         return
       }
 
@@ -82,6 +138,10 @@ const extensionFixtureServer = (): Plugin => ({
 
       const action = match[2] ?? ''
       const entry = entries.get(fixture)
+
+      if (!entry) {
+        throw new Error(`E2E extension build not found ${fixture}`)
+      }
 
       if ((request.method === 'GET' || request.method === 'HEAD') && action === '') {
         const manifest = [

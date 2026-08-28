@@ -11,22 +11,29 @@ Start the sandbox app:
 npx @retailcrm/embed-ui-v1-sandbox serve
 ```
 
-Open the printed URL and paste a full extension endpoint:
+Open the printed URL and paste a runtime descriptor:
 
-```text
-%extension-url%/extension/%extension-id%
+```json
+{
+  "code": "promoModule",
+  "baseUrl": "http://web-extensions-server.simla.local",
+  "entrypoint": "/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script",
+  "stylesheet": "/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet",
+  "targets": [],
+  "pages": ["settings"]
+}
 ```
 
 Page runner direct URL:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=page&pageCode=returns&fixture=order-basic
+%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=page&pageCode=returns&fixture=order-basic
 ```
 
 Widget runner direct URL:
 
 ```text
-%sandbox-url%/?manifestUrl=%extension-url%/extension/%extension-id%&mode=widget&targets=order/card:common.after&fixture=order-basic
+%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=widget&targets=order/card:common.after&fixture=order-basic
 ```
 
 Use the DevPanel to switch fixtures, edit Context JSON, or change page/widget
@@ -88,8 +95,15 @@ afterEach(() => {
 
 test('mounts page extension in browser mode', async () => {
   sandbox = await launchSandboxExtension({
+    descriptor: {
+      baseUrl: new URL('/tests/fixtures/extensions/returnsModule/', window.location.href).href,
+      code: 'returnsModule',
+      entrypoint: 'index.ts',
+      pages: ['returns'],
+      stylesheet: null,
+      targets: [],
+    },
     fixture: 'order-basic',
-    manifestUrl: '/tests/fixtures/extensions/returnsModule/index.ts',
     mode: 'page',
     pageCode: 'returns',
   })
@@ -119,8 +133,15 @@ import { expect, test } from '@playwright/test'
 
 test('loads returns page extension', async ({ page }) => {
   await page.goto(
-    '/?manifestUrl='
-    + encodeURIComponent('%extension-url%/extension/%extension-id%')
+    '/?descriptor='
+    + encodeURIComponent(JSON.stringify({
+      code: 'returnsModule',
+      baseUrl: 'https://extension.test',
+      entrypoint: '/build/worker.js',
+      pages: ['returns'],
+      stylesheet: '/build/extension.css',
+      targets: [],
+    }))
     + '&mode=page'
     + '&pageCode=returns'
     + '&fixture=order-basic'
@@ -142,8 +163,15 @@ import {
 await page.goto('/')
 
 await launchSandboxExtension(page, {
+  descriptor: {
+    code: 'promoModule',
+    baseUrl: 'https://extension.test',
+    entrypoint: '/build/worker.js',
+    pages: [],
+    stylesheet: null,
+    targets: ['order/card:common.after'],
+  },
   fixture: 'order-basic',
-  manifestUrl: '%extension-url%/extension/%extension-id%',
   mode: 'widget',
   targets: ['order/card:common.after'],
 })

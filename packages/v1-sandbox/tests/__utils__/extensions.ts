@@ -1,9 +1,10 @@
-import type { SandboxOrderTarget } from '@/scenario'
+import type { SandboxExtensionDescriptor, SandboxOrderTarget } from '@/scenario'
 
 import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { getSandboxExtensionDescriptor } from '@/automation/playwright'
 import { isSandboxOrderTarget } from '@/scenario'
 
 export type SandboxExtensionFixturePage = {
@@ -56,3 +57,37 @@ export const getExtensionTargets = (
   descriptor: SandboxExtensionFixtureDescriptor
 ): SandboxOrderTarget[] =>
   descriptor.targets?.filter(isSandboxOrderTarget) ?? []
+
+export const createRuntimeExtensionDescriptor = (
+  descriptor: SandboxExtensionFixtureDescriptor,
+  extensionBaseUrl = process.env.SANDBOX_RUNTIME_EXTENSION_URL
+    ?? process.env.SANDBOX_EXTENSION_URL
+): SandboxExtensionDescriptor => {
+  const configuredDescriptor = getSandboxExtensionDescriptor()
+
+  if (configuredDescriptor?.code === descriptor.code) {
+    return configuredDescriptor
+  }
+
+  if (!extensionBaseUrl) {
+    throw new Error('[sandbox:test] SANDBOX_EXTENSION_URL is required for extension browser tests.')
+  }
+
+  if (!descriptor.fixtureName) {
+    throw new Error('[sandbox:test] Extension fixture name is required for runtime descriptor.')
+  }
+
+  const baseUrl = new URL(extensionBaseUrl)
+  const runtimeUrl = new URL(`/runtime/${descriptor.fixtureName}/`, baseUrl)
+
+  return {
+    baseUrl: runtimeUrl.href,
+    code: descriptor.code ?? descriptor.fixtureName,
+    entrypoint: 'entrypoint.js',
+    pages: getExtensionPageCodes(descriptor),
+    stylesheet: descriptor.stylesheet
+      ? 'stylesheet.css'
+      : null,
+    targets: getExtensionTargets(descriptor),
+  }
+}

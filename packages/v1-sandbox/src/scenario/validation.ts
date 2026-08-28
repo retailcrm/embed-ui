@@ -1,9 +1,14 @@
-import type { SandboxLaunchMode, SandboxOrderTarget } from '@/scenario/types'
+import type {
+  SandboxExtensionDescriptor,
+  SandboxLaunchMode,
+  SandboxOrderTarget,
+} from '@/scenario/types'
 
 import { z } from 'zod'
 
 import { isSandboxOrderTarget } from '@/scenario/predicates'
 import { orderSandboxFixtures } from '@/scenario/fixtures'
+import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
 
 export type DevPanelField =
   | 'contextJson'
@@ -22,8 +27,7 @@ export type DevPanelValidationMessages = {
   contextJsonRootObject: string;
   contextJsonUnknownContext(context: string): string;
   fixture: string;
-  manifestUrlEndpoint: string;
-  manifestUrlFormat: string;
+  manifestUrlDescriptor: string;
   manifestUrlRequired: string;
   mode: string;
   pageCodeFormat: string;
@@ -46,6 +50,7 @@ export type LaunchConfigValidationInput = {
 }
 
 export type ValidatedLaunchConfigInput = {
+  descriptor?: SandboxExtensionDescriptor;
   fixture: string;
   manifestUrl: string;
   mode: SandboxLaunchMode;
@@ -76,9 +81,14 @@ export const validateLaunchConfigInput = (
     }
   }
 
+  const source = validateExtensionSourceInput(result.data.manifestUrl, messages)
+
+  if (!source.success) return source
+
   return {
     data: {
       ...result.data,
+      ...source.data,
       mode: result.data.mode as SandboxLaunchMode,
       targets: result.data.targets as SandboxOrderTarget[],
     },
@@ -130,45 +140,7 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
   ),
   manifestUrl: z.string()
     .transform(value => value.trim())
-    .superRefine((value, context) => {
-      if (!value) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlRequired,
-        })
-
-        return
-      }
-
-      let url: URL
-
-      try {
-        url = new URL(value)
-      } catch {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlFormat,
-        })
-
-        return
-      }
-
-      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlFormat,
-        })
-
-        return
-      }
-
-      if (!hasExtensionEndpoint(url)) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlEndpoint,
-        })
-      }
-    }),
+    .refine(value => value.length > 0, messages.manifestUrlRequired),
   mode: z.enum(['page', 'widget'], {
     invalid_type_error: messages.mode,
     required_error: messages.mode,
@@ -208,6 +180,26 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
     })
   }
 })
+
+const validateExtensionSourceInput = (
+  value: string,
+  messages: DevPanelValidationMessages
+): ValidationResult<Pick<ValidatedLaunchConfigInput, 'descriptor' | 'manifestUrl'>> => {
+  try {
+    return {
+      data: {
+        descriptor: parseSandboxExtensionDescriptorJson(value),
+        manifestUrl: '',
+      },
+      success: true,
+    }
+  } catch {
+    return {
+      errors: { manifestUrl: messages.manifestUrlDescriptor },
+      success: false,
+    }
+  }
+}
 
 const createContextJsonSchema = (
   contextNames: readonly string[],
@@ -270,13 +262,6 @@ const isDevPanelField = (value: unknown): value is DevPanelField =>
   || value === 'mode'
   || value === 'pageCode'
   || value === 'targets'
-
-const hasExtensionEndpoint = (url: URL): boolean => {
-  const parts = url.pathname.split('/').filter(Boolean)
-  const extensionIndex = parts.indexOf('extension')
-
-  return extensionIndex >= 0 && Boolean(parts[extensionIndex + 1])
-}
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)

@@ -190,6 +190,43 @@ describe('browser sandbox mounting', () => {
     expect(document.querySelector('#app')).toBeNull()
   })
 
+  test('launches extension from a runtime descriptor object', async () => {
+    const descriptor = {
+      baseUrl: 'http://extension.test/runtime/',
+      code: 'returns-extension',
+      entrypoint: 'worker.js',
+      pages: ['returns'],
+      stylesheet: null,
+      targets: [],
+    }
+    const bridge = createLaunchBridge()
+    const createLaunchUrl = vi.fn((config) => {
+      const params = new URLSearchParams({
+        descriptor: JSON.stringify(config.descriptor),
+        mode: config.mode ?? 'widget',
+      })
+
+      return `/?${params.toString()}`
+    })
+
+    bridge.createLaunchUrl = createLaunchUrl
+    installSandboxAppMock(bridge)
+
+    const sandbox = await launchSandboxExtension({
+      descriptor,
+      mode: 'page',
+    })
+
+    expect(createLaunchUrl).toHaveBeenCalledWith({
+      descriptor,
+      mode: 'page',
+    })
+    expect(JSON.parse(new URLSearchParams(window.location.search).get('descriptor') ?? ''))
+      .toEqual(descriptor)
+
+    sandbox.unmount()
+  })
+
   test('waits for bridge and reports timeout', async () => {
     const bridge = createLaunchBridge()
 
