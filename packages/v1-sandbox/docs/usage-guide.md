@@ -603,34 +603,16 @@ Repository e2e examples live in:
 tests/e2e/*.e2e.ts
 ```
 
-## E2E Environment Variables
+## E2E Server
 
-`@retailcrm/embed-ui-v1-sandbox` ships `.env.sandbox.dist` as a template for
-Playwright extension runs. Create an environment file used by your project and
-adjust values:
+Playwright uses `http://127.0.0.1:4173` and starts `yarn dev:e2e` automatically.
+No sandbox environment file is needed. Outside CI, Playwright reuses an existing
+server at this address.
 
-```bash
-yarn embed-ui-v1-sandbox init-env
-```
-
-or:
-
-```bash
-npx @retailcrm/embed-ui-v1-sandbox init-env --output .env.sandbox
-```
-
-Variables:
-
-- `SANDBOX_BASE_URL`: sandbox shell URL. Empty means the local Playwright config
-  starts one Vite server for both the sandbox and all test extensions. Set it when this E2E server is already
-  running, for example `http://v1.embed-ui-sandbox.local` on OrbStack/macOS or
-  `http://v1.embed-ui-sandbox.test` on Linux/Traefik.
-
-For repository E2E runs, `yarn workspace @retailcrm/embed-ui-v1-sandbox dev:e2e`
-builds all fixtures in `tests/__fixtures__/extensions` and serves them together
-with the sandbox on port 4173. Adding another extension does not require another
-server. An existing server selected through `SANDBOX_BASE_URL` must also serve
-these fixture routes and `tests/__bootstrap__/index.html`.
+`yarn workspace @retailcrm/embed-ui-v1-sandbox dev:e2e` builds all fixtures in
+`tests/__fixtures__/extensions` and serves them together with the sandbox on port
+4173. Adding another extension does not require another server. A reused server
+must also serve these fixture routes and `tests/__bootstrap__/index.html`.
 
 Extension selection lives in the E2E test code:
 

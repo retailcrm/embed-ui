@@ -9,6 +9,7 @@ import { DEFAULT_SANDBOX_TARGET } from '@/scenario/targets'
 import { DefaultSandbox } from '@/scenario/defaults'
 import { isSandboxOrderTarget } from '@/scenario/predicates'
 import {
+  parseSandboxExtensionDescriptor,
   parseSandboxExtensionDescriptorJson,
   serializeSandboxExtensionDescriptor,
 } from '@/scenario/descriptor'
@@ -18,8 +19,6 @@ export type {
   SandboxLaunchConfig,
   SandboxLaunchMode,
 } from '@/scenario/types'
-
-export const createDefaultSandboxManifestUrl = (): string => DefaultSandbox.Url
 
 export const parseSandboxLaunchConfig = (
   params: URLSearchParams,
@@ -35,20 +34,10 @@ export const parseSandboxLaunchConfig = (
 
   return {
     ...(descriptor ? { descriptor } : {}),
-    extensionUrl: readStringParam(
-      params,
-      'extensionUrl',
-      options.extensionUrl ?? DefaultSandbox.Url
-    ),
     fixture: readStringParam(
       params,
       'fixture',
       options.fixture ?? DefaultSandbox.Fixture
-    ),
-    manifestUrl: readOptionalStringParam(
-      params,
-      'manifestUrl',
-      options.manifestUrl ?? DefaultSandbox.Url
     ),
     mode: parseMode(params.get('mode')) ?? options.mode ?? DefaultSandbox.Mode,
     pageCode: readStringParam(
@@ -57,11 +46,6 @@ export const parseSandboxLaunchConfig = (
       options.pageCode ?? DefaultSandbox.PageCode
     ),
     targets: targets.length > 0 ? targets : [DEFAULT_SANDBOX_TARGET],
-    widgetId: readStringParam(
-      params,
-      'widgetId',
-      options.widgetId ?? DefaultSandbox.WidgetId
-    ),
   }
 }
 
@@ -70,23 +54,15 @@ export const updateSandboxLaunchQuery = (
   base = window.location.href
 ): URL => {
   const url = new URL(base)
+  const descriptor = parseSandboxExtensionDescriptor(config.descriptor)
 
-  if (config.descriptor) {
-    url.searchParams.set('descriptor', serializeSandboxExtensionDescriptor(config.descriptor))
-    url.searchParams.delete('extensionUrl')
-    url.searchParams.delete('manifestUrl')
-  } else {
-    url.searchParams.delete('descriptor')
-    url.searchParams.set('extensionUrl', config.extensionUrl)
-  }
+  url.searchParams.set('descriptor', serializeSandboxExtensionDescriptor(descriptor))
 
   url.searchParams.set('fixture', config.fixture)
-  if (!config.descriptor) url.searchParams.set('manifestUrl', config.manifestUrl)
   url.searchParams.set('mode', config.mode)
   url.searchParams.set('pageCode', config.pageCode)
   url.searchParams.set('target', config.targets[0] ?? DEFAULT_SANDBOX_TARGET)
   url.searchParams.set('targets', config.targets.join(','))
-  url.searchParams.set('widgetId', config.widgetId)
 
   return url
 }
@@ -105,16 +81,6 @@ const readStringParam = (
   const value = params.get(key)?.trim()
 
   return value || fallback
-}
-
-const readOptionalStringParam = (
-  params: URLSearchParams,
-  key: string,
-  fallback: string
-): string => {
-  if (!params.has(key)) return fallback
-
-  return params.get(key)?.trim() ?? ''
 }
 
 const parseMode = (value: string | null): SandboxLaunchMode | null => {

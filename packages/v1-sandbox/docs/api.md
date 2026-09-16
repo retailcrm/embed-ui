@@ -157,16 +157,34 @@ import { serveSandbox } from '@retailcrm/embed-ui-v1-sandbox/node'
 Use `node` for Node-only helpers such as serving the built static sandbox app
 from package delivery or a test process.
 
-## URL Contract
+## Saved Launch Configuration
 
-The sandbox app is controlled by query parameters:
+DevPanel validates and saves its launch configuration in `localStorage` when
+**Apply** is pressed. Reloading restores it; absent or invalid stored settings
+show onboarding. Storage is scoped to the sandbox origin in the current browser.
+The clean URL does not carry configuration to another browser. Draft fields and
+manual context edits are not persisted.
 
-- `descriptor`: URL-encoded JSON runtime descriptor. This is the primary mode.
+The launch bridge's `launch()` saves the configuration and reloads the clean URL.
+The Playwright `launchSandboxExtension()` helper waits for the new launch bridge,
+not query parameters. Its existing `waitForUrl: false` option skips that wait.
+Extension readiness should still be asserted through its visible UI.
+
+## Entry URL Contract
+
+URL helpers and `createLaunchUrl()` remain available for explicit automation entry
+links. Incoming launch parameters override saved settings, are imported into
+storage, and are removed from the address bar. Unrelated query parameters and the
+hash are preserved.
+
+Extensions are launched only from a runtime descriptor. Entry links accept the
+following launch parameters:
+
+- `descriptor`: URL-encoded JSON runtime descriptor. Required to launch an extension.
 - `mode`: `widget` or `page`.
 - `fixture`: sandbox fixture code, for example `order-basic`.
 - `pageCode`: page runner code for `mode=page`.
 - `targets`: comma-separated widget targets for `mode=widget`.
-- `widgetId`: base widget instance id.
 
 The runtime descriptor has exactly these fields:
 

@@ -11,8 +11,8 @@ const messages: DevPanelValidationMessages = {
   contextJsonRootObject: 'Context JSON must be an object.',
   contextJsonUnknownContext: context => `Unknown context "${context}".`,
   fixture: 'Unknown fixture.',
-  manifestUrlDescriptor: 'Extension descriptor is invalid.',
-  manifestUrlRequired: 'Extension descriptor is required.',
+  descriptorJsonInvalid: 'Extension descriptor is invalid.',
+  descriptorJsonRequired: 'Extension descriptor is required.',
   mode: 'Unknown mode.',
   pageCodeFormat: 'Page code has an invalid format.',
   pageCodeRequired: 'Page code is required.',
@@ -30,7 +30,7 @@ const descriptor = {
 
 const validLaunchInput = {
   fixture: 'order-basic',
-  manifestUrl: JSON.stringify(descriptor),
+  descriptorJson: JSON.stringify(descriptor),
   mode: 'widget',
   pageCode: 'returns',
   targets: ['order/card:common.after'],
@@ -39,12 +39,12 @@ const validLaunchInput = {
 test('rejects empty manifest urls', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: '',
+    descriptorJson: '',
   }, messages)
 
   expect(result).toEqual({
     errors: {
-      manifestUrl: 'Extension descriptor is required.',
+      descriptorJson: 'Extension descriptor is required.',
     },
     success: false,
   })
@@ -53,11 +53,11 @@ test('rejects empty manifest urls', () => {
 test('rejects direct extension urls', () => {
   const invalidUrl = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: 'extension.test/module-id',
+    descriptorJson: 'extension.test/module-id',
   }, messages)
   expect(invalidUrl).toEqual({
     errors: {
-      manifestUrl: 'Extension descriptor is invalid.',
+      descriptorJson: 'Extension descriptor is invalid.',
     },
     success: false,
   })
@@ -66,14 +66,16 @@ test('rejects direct extension urls', () => {
 test('accepts a strict extension descriptor', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: JSON.stringify(descriptor),
+    descriptorJson: JSON.stringify(descriptor),
   }, messages)
 
   expect(result).toEqual({
     data: {
-      ...validLaunchInput,
       descriptor,
-      manifestUrl: '',
+      fixture: validLaunchInput.fixture,
+      mode: validLaunchInput.mode,
+      pageCode: validLaunchInput.pageCode,
+      targets: validLaunchInput.targets,
     },
     success: true,
   })
@@ -82,7 +84,7 @@ test('accepts a strict extension descriptor', () => {
 test('rejects malformed or non-strict extension descriptors', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: JSON.stringify({
+    descriptorJson: JSON.stringify({
       entrypoint: 'https://extension.test/runtime/worker.js',
       baseUrl: 'https://extension.test/',
       code: 'returns-module',
@@ -95,7 +97,7 @@ test('rejects malformed or non-strict extension descriptors', () => {
 
   expect(result).toEqual({
     errors: {
-      manifestUrl: 'Extension descriptor is invalid.',
+      descriptorJson: 'Extension descriptor is invalid.',
     },
     success: false,
   })
@@ -104,12 +106,12 @@ test('rejects malformed or non-strict extension descriptors', () => {
 test('rejects non-json direct urls with unsupported protocols', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: 'ftp://extension.test/extension/module-id',
+    descriptorJson: 'ftp://extension.test/extension/module-id',
   }, messages)
 
   expect(result).toEqual({
     errors: {
-      manifestUrl: 'Extension descriptor is invalid.',
+      descriptorJson: 'Extension descriptor is invalid.',
     },
     success: false,
   })

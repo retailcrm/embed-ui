@@ -73,8 +73,8 @@
         "unknownContext": "Unknown context \"{context}\"."
       },
       "fixture": "Choose an existing fixture.",
-      "manifestUrl": {
-        "descriptor": "Enter a descriptor with runner, entrypoint, stylesheet, pages, and targets. Runner must be worker and resource URLs must be absolute HTTP(S) URLs.",
+      "descriptorJson": {
+        "invalid": "Enter a descriptor with runner, entrypoint, stylesheet, pages, and targets. Runner must be worker and resource URLs must be absolute HTTP(S) URLs.",
         "required": "Enter the extension descriptor."
       },
       "mode": "Choose a launch mode.",

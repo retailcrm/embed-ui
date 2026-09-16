@@ -620,7 +620,7 @@ describe('embed-ui CLI', () => {
       'target: { value: \'Позвонить после подтверждения оплаты\' }'
     )
     expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
-      'await expect(page).toHaveURL(/mode=page/u)'
+      'await expect(page).toHaveURL(url => url.search === \'\')'
     )
     expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
       '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
@@ -1179,7 +1179,6 @@ describe('embed-ui CLI', () => {
     expect(output).toContain('MCP client configs requested: cursor, vscode')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-contexts@1.2.3 -- embed-ui-v1-contexts init-config')
     expect(output).toContain('npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-endpoint@1.2.3 -- embed-ui-v1-endpoint init-config')
-    expect(output).toContain(`npm exec --yes --loglevel=error --package @retailcrm/embed-ui-v1-sandbox@1.2.3 -- embed-ui-v1-sandbox init-env ${tempDir}`)
     expect(output).toContain('--mcp-client-configs cursor,vscode')
   })
 
@@ -1575,41 +1574,6 @@ describe('embed-ui CLI', () => {
     })
 
     expect(output).toContain('init-skills [target] [--force]')
-  })
-
-  test('v1-sandbox init-env creates project env template safely', () => {
-    const tempDir = createTempDir()
-    const sandboxBin = path.resolve('packages/v1-sandbox/bin/embed-ui-v1-sandbox.mjs')
-    const envTemplatePath = path.resolve('packages/v1-sandbox/.env.sandbox.dist')
-    const envPath = path.join(tempDir, '.env.sandbox')
-    const envTemplate = fs.readFileSync(envTemplatePath, 'utf8')
-
-    execFileSync(process.execPath, [
-      sandboxBin,
-      'init-env',
-      tempDir,
-    ])
-
-    expect(fs.readFileSync(envPath, 'utf8')).toBe(envTemplate)
-
-    fs.writeFileSync(envPath, 'SANDBOX_BASE_URL=http://already-configured.test\n', 'utf8')
-
-    execFileSync(process.execPath, [
-      sandboxBin,
-      'init-env',
-      tempDir,
-    ])
-
-    expect(fs.readFileSync(envPath, 'utf8')).toBe('SANDBOX_BASE_URL=http://already-configured.test\n')
-
-    execFileSync(process.execPath, [
-      sandboxBin,
-      'init-env',
-      tempDir,
-      '--force',
-    ])
-
-    expect(fs.readFileSync(envPath, 'utf8')).toBe(envTemplate)
   })
 
   test('package init-skills commands create project-level skills', () => {

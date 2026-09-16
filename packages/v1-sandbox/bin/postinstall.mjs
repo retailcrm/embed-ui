@@ -34,6 +34,3 @@ if (!hasAgentsFile) {
 } else {
   console.log(`[${PACKAGE_NAME}] AGENTS.md already exists in this project, so no scaffold was created automatically`)
 }
-
-console.log(`[${PACKAGE_NAME}] To create a sandbox env template, run:`)
-console.log(`  npx ${PACKAGE_NAME} init-env`)

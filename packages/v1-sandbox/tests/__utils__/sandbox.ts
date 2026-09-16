@@ -1,3 +1,4 @@
+import type { SandboxExtensionDescriptor } from '@/scenario'
 import type { SandboxExtensionFixtureDescriptor } from './extensions'
 import type { SandboxLaunchConfig, SandboxOrderTarget } from '@/scenario'
 
@@ -33,29 +34,23 @@ export const createSandboxBrowserPath = (config: SandboxLaunchConfig): string =>
 export const createSandboxPageConfig = (
   descriptor: SandboxExtensionFixtureDescriptor,
   pageCode = getExtensionPageCodes(descriptor)[0]
-): SandboxLaunchConfig => ({
+): SandboxLaunchConfig & { descriptor: SandboxExtensionDescriptor } => ({
   descriptor: createRuntimeExtensionDescriptor(descriptor),
-  extensionUrl: '',
   fixture: DefaultSandbox.Fixture,
-  manifestUrl: '',
   mode: 'page',
   pageCode: pageCode ?? DefaultSandbox.PageCode,
   targets: [getExtensionTargets(descriptor)[0] ?? DEFAULT_SANDBOX_TARGET],
-  widgetId: DefaultSandbox.WidgetId,
 })
 
 export const createSandboxWidgetConfig = (
   descriptor: SandboxExtensionFixtureDescriptor,
   target = getExtensionTargets(descriptor)[0]
-): SandboxLaunchConfig => ({
+): SandboxLaunchConfig & { descriptor: SandboxExtensionDescriptor } => ({
   descriptor: createRuntimeExtensionDescriptor(descriptor),
-  extensionUrl: '',
   fixture: DefaultSandbox.Fixture,
-  manifestUrl: '',
   mode: 'widget',
   pageCode: DefaultSandbox.PageCode,
   targets: [target ?? DEFAULT_SANDBOX_TARGET],
-  widgetId: DefaultSandbox.WidgetId,
 })
 
 export const createSandboxPagePath = (

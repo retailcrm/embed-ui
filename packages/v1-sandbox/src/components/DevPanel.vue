@@ -23,14 +23,14 @@
                 <div :class="$style['dev-panel__field-heading']">
                     <label
                         :class="$style['dev-panel__field-label']"
-                        :for="uid + '-dev-panel-manifest-url'"
+                        :for="uid + '-dev-panel-descriptor-json'"
                     >
-                        {{ t('devPanel.extensionUrl') }}
+                        {{ t('devPanel.descriptorJson') }}
                     </label>
 
                     <UiPopperConnector>
                         <UiButton
-                            :aria-label="t('devPanel.tooltips.extensionUrl')"
+                            :aria-label="t('devPanel.tooltips.descriptorJson')"
                             appearance="tertiary"
                             size="xs"
                         >
@@ -38,7 +38,7 @@
                         </UiButton>
 
                         <UiTooltip>
-                            <span>{{ t('devPanel.tooltips.extensionUrl') }}</span>
+                            <span>{{ t('devPanel.tooltips.descriptorJson') }}</span>
                         </UiTooltip>
                     </UiPopperConnector>
                 </div>
@@ -48,25 +48,25 @@
                 </span>
 
                 <UiTextbox
-                    :id="uid + '-dev-panel-manifest-url'"
-                    :aria-describedby="getErrorDescribedBy('manifestUrl')"
+                    :id="uid + '-dev-panel-descriptor-json'"
+                    :aria-describedby="getErrorDescribedBy('descriptorJson')"
                     :class="[
                         $style['dev-panel__control'],
                         $style['dev-panel__json-editor'],
                     ]"
-                    :invalid="Boolean(props.validationErrors.manifestUrl)"
+                    :invalid="Boolean(props.validationErrors.descriptorJson)"
                     :placeholder="defaultDescriptor"
-                    :value="props.manifestUrl"
+                    :value="props.descriptorJson"
                     multiline
                     rows="8"
-                    @update:value="updateManifestUrl"
+                    @update:value="updateDescriptorJson"
                 />
             </div>
 
             <div
                 v-else
-                :aria-describedby="getErrorDescribedBy('manifestUrl')"
-                :aria-invalid="Boolean(props.validationErrors.manifestUrl)"
+                :aria-describedby="getErrorDescribedBy('descriptorJson')"
+                :aria-invalid="Boolean(props.validationErrors.descriptorJson)"
                 :aria-labelledby="uid + '-dev-panel-descriptor-label'"
                 :class="$style['dev-panel__descriptor-fields']"
                 role="group"
@@ -137,9 +137,9 @@
             </div>
 
             <UiAlert
-                v-if="props.validationErrors.manifestUrl"
-                :id="getErrorId('manifestUrl')"
-                :text="props.validationErrors.manifestUrl"
+                v-if="props.validationErrors.descriptorJson"
+                :id="getErrorId('descriptorJson')"
+                :text="props.validationErrors.descriptorJson"
                 variant="danger"
                 scroll-to-alert
                 fluid
@@ -533,14 +533,14 @@ const props = defineProps<{
   fixture: string;
   formatContextJson(): void;
   launchConfigChanged: boolean;
-  manifestUrl: string;
+  descriptorJson: string;
   mode: SandboxLaunchMode;
   pageCode: string;
   resetContextJson(): void;
   selectedTargets: SandboxOrderTarget[];
   setContextJson(value: string | number): void;
   setFixture(value: string | string[]): void;
-  setManifestUrl(value: string): void;
+  setDescriptorJson(value: string): void;
   setMode(value: SandboxLaunchMode): void;
   setPageCode(value: string): void;
   setTargetSelected(target: SandboxOrderTarget, checked: boolean): void;
@@ -601,7 +601,7 @@ const emptyDescriptorFields = (): DescriptorFields => ({
 })
 
 const readDescriptorDraft = (): Record<string, unknown> | null => {
-  const value = props.manifestUrl.trim()
+  const value = props.descriptorJson.trim()
 
   if (!value.startsWith('{')) return null
 
@@ -642,7 +642,7 @@ const updateDescriptorField = (
     ? null
     : String(value)
 
-  props.setManifestUrl(JSON.stringify(descriptor, null, 2))
+  props.setDescriptorJson(JSON.stringify(descriptor, null, 2))
 }
 
 const updateDescriptorEntrypoint = (value: string | number) => updateDescriptorField('entrypoint', value)
@@ -657,11 +657,13 @@ const updateDescriptorCapabilities = (
 
   descriptor.pages = pages
   descriptor.targets = targets
-  props.setManifestUrl(JSON.stringify(descriptor, null, 2))
+  props.setDescriptorJson(JSON.stringify(descriptor, null, 2))
 }
 
 const setDescriptorMode = (value: string | string[]) => {
   const mode = value as SandboxLaunchMode
+
+  if (mode === props.mode) return
 
   props.setMode(mode)
   updateDescriptorCapabilities(
@@ -674,13 +676,13 @@ const toggleDescriptorView = () => {
   isDescriptorJsonVisible.value = !isDescriptorJsonVisible.value
 
   if (isDescriptorJsonVisible.value) {
-    syncLaunchSelectionFromDescriptor(props.manifestUrl)
+    syncLaunchSelectionFromDescriptor(props.descriptorJson)
   }
 }
 
 const isApplyDisabled = computed(() => {
   if (props.applyingContext || props.applyingLaunchConfig) return true
-  if (!props.manifestUrl.trim() || !props.fixture || !props.mode) return true
+  if (!props.descriptorJson.trim() || !props.fixture || !props.mode) return true
 
   if (props.mode === 'page') return !isValidSandboxPageCode(props.pageCode)
 
@@ -699,10 +701,10 @@ const isApplyContextDisabled = computed(() =>
   || props.applyingLaunchConfig
 )
 
-const updateManifestUrl = (value: string | number) => {
+const updateDescriptorJson = (value: string | number) => {
   const descriptorJson = String(value)
 
-  props.setManifestUrl(descriptorJson)
+  props.setDescriptorJson(descriptorJson)
   syncLaunchSelectionFromDescriptor(descriptorJson)
 }
 
@@ -799,7 +801,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "descriptorFieldsHint": "Fill in the descriptor fields or switch to JSON. Both representations stay synchronized.",
         "entrypoint": "Entrypoint",
         "extensionHint": "Paste the complete descriptor configuration in JSON format.",
-        "extensionUrl": "Descriptor JSON",
+        "descriptorJson": "Descriptor JSON",
         "fixture": "Selected fixture",
         "fixturePending": "The “{fixture}” fixture has not been applied yet. Use Apply to start it.",
         "mode": "Mode",
@@ -819,7 +821,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsPlaceholder": "Select mount targets",
         "tooltips": {
             "contextJson": "Context used by the current connected extension. It is independent from the fixture selected for the next launch.",
-            "extensionUrl": "A descriptor contains runner, entrypoint, stylesheet, pages and targets. Entrypoint and stylesheet must be absolute HTTP(S) URLs. Runner must be worker.",
+            "descriptorJson": "A descriptor contains runner, entrypoint, stylesheet, pages and targets. Entrypoint and stylesheet must be absolute HTTP(S) URLs. Runner must be worker.",
             "mode": "Widgets mount into selected CRM targets. Page mounts a page runner by page code.",
             "pageCode": "Use the code from the extension pages registration, not the extension id. Only Latin letters (A–Z, a–z) and hyphens are allowed.",
             "stylesheet": "Leave this field empty if the extension has no CSS. Otherwise, enter the path to the stylesheet.",
@@ -854,7 +856,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "descriptorFieldsHint": "Complete los campos del descriptor o cambie a JSON. Ambas representaciones permanecen sincronizadas.",
         "entrypoint": "Entrypoint",
         "extensionHint": "Pegue la configuración completa del descriptor en formato JSON.",
-        "extensionUrl": "JSON del descriptor",
+        "descriptorJson": "JSON del descriptor",
         "fixture": "Datos de prueba seleccionados",
         "fixturePending": "Los datos de prueba «{fixture}» aún no se han aplicado. Utilice «Aplicar» para iniciarlos.",
         "mode": "Modo",
@@ -874,7 +876,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsPlaceholder": "Seleccione los puntos de montaje",
         "tooltips": {
             "contextJson": "Contexto utilizado por la extensión conectada actualmente. Es independiente de los datos de prueba seleccionados para el siguiente inicio.",
-            "extensionUrl": "El descriptor contiene runner, entrypoint, stylesheet, pages y targets. Entrypoint y stylesheet deben ser URL HTTP(S) absolutas. Runner debe ser worker.",
+            "descriptorJson": "El descriptor contiene runner, entrypoint, stylesheet, pages y targets. Entrypoint y stylesheet deben ser URL HTTP(S) absolutas. Runner debe ser worker.",
             "mode": "En el modo «Widgets», los widgets se añaden a los puntos de montaje seleccionados. En el modo «Página», se ejecuta una página mediante su código.",
             "pageCode": "Utilice el valor code del registro pages, no el UUID de la extensión. Solo se permiten letras latinas (A–Z, a–z) y guiones.",
             "stylesheet": "Deje este campo vacío si la extensión no tiene CSS. Si tiene estilos, introduzca la ruta del stylesheet.",
@@ -909,7 +911,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "descriptorFieldsHint": "Заполните поля дескриптора или переключитесь на JSON. Оба представления синхронизированы.",
         "entrypoint": "Entrypoint",
         "extensionHint": "Вставьте конфигурацию дескриптора целиком в формате JSON.",
-        "extensionUrl": "JSON дескриптора",
+        "descriptorJson": "JSON дескриптора",
         "fixture": "Выбранная фикстура",
         "fixturePending": "Фикстура «{fixture}» ещё не применена. Запустите её кнопкой «Применить».",
         "mode": "Режим",
@@ -929,7 +931,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsPlaceholder": "Выберите места встраивания",
         "tooltips": {
             "contextJson": "Контекст текущего подключённого расширения. Он не зависит от фикстуры, выбранной для следующего запуска.",
-            "extensionUrl": "Дескриптор содержит runner, entrypoint, stylesheet, pages и targets. Entrypoint и stylesheet должны быть абсолютными HTTP(S)-адресами. Runner — worker.",
+            "descriptorJson": "Дескриптор содержит runner, entrypoint, stylesheet, pages и targets. Entrypoint и stylesheet должны быть абсолютными HTTP(S)-адресами. Runner — worker.",
             "mode": "В режиме «Виджеты» виджеты добавляются в выбранные места встраивания. В режиме «Страница» запускается страница по её коду.",
             "pageCode": "Укажите значение code из массива pages в дескрипторе, а не UUID расширения. Допустимы только латинские буквы (A–Z, a–z) и дефисы.",
             "stylesheet": "Оставьте поле пустым, если у расширения нет CSS. Если стили есть, укажите путь к stylesheet.",

@@ -20,13 +20,10 @@ describe('sandbox launch bridge', () => {
     const bridge = {
       createLaunchUrl: () => 'http://sandbox.test/',
       getLaunchConfig: () => ({
-        extensionUrl: '',
         fixture: 'order-basic',
-        manifestUrl: '',
         mode: 'widget' as const,
         pageCode: 'returns',
         targets: ['order/card:common.before' as const],
-        widgetId: 'sandbox-widget',
       }),
       launch: () => {},
     }
@@ -52,13 +49,10 @@ describe('sandbox launch bridge', () => {
     const bridge = {
       createLaunchUrl: () => 'http://sandbox.test/',
       getLaunchConfig: () => ({
-        extensionUrl: '',
         fixture: 'order-basic',
-        manifestUrl: '',
         mode: 'widget' as const,
         pageCode: 'returns',
         targets: ['order/card:common.before' as const],
-        widgetId: 'sandbox-widget',
       }),
       launch: () => {},
     }

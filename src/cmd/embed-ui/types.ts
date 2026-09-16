@@ -27,7 +27,7 @@ export interface InstallablePackage {
 export interface InstallablePackageHook {
   type: 'agents' | 'config' | 'skills';
   binName: string;
-  command: 'init-agents' | 'init-config' | 'init-env' | 'init-skills';
+  command: 'init-agents' | 'init-config' | 'init-skills';
   failureMode: 'advisory' | 'required';
   requiresMcp?: boolean;
 }

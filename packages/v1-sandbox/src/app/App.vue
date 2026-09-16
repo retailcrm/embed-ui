@@ -98,14 +98,14 @@
                 :fixture="fixture"
                 :format-context-json="formatContextJsonEditor"
                 :launch-config-changed="launchConfigChanged"
-                :manifest-url="manifestUrl"
+                :descriptor-json="descriptorJson"
                 :mode="mode"
                 :page-code="pageCode"
                 :reset-context-json="resetContextJson"
                 :selected-targets="selectedTargets"
                 :set-context-json="setContextJson"
                 :set-fixture="setFixture"
-                :set-manifest-url="setManifestUrl"
+                :set-descriptor-json="setDescriptorJson"
                 :set-mode="setMode"
                 :set-page-code="setPageCode"
                 :set-target-selected="setTargetSelected"
@@ -165,34 +165,38 @@ import WidgetTargetList from '@/components/WidgetTargetList.vue'
 import RemoteBootstrapWorker from '@/runtime/remoteBootstrap.worker.ts?worker'
 
 import { areJsonValuesEqual } from '@/app/contextJson'
-import { createDefaultSandboxManifestUrl } from '@/scenario/launch'
+import { clearSandboxLaunchQuery } from '@/app/launchStorage'
 import { createMounts } from '@/runtime/mount'
 import { createOrderSandboxController } from '@/scenario/fixtures'
 import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
 import { getOrderSandboxFixture } from '@/scenario/fixtures'
+import { hasSandboxLaunchQuery } from '@/app/launchStorage'
 import { isContextJsonEqual } from '@/app/contextJson'
 import { isContextName } from '@/app/predicates'
 import { isSandboxOrderTarget } from '@/scenario/predicates'
 import { isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
 import { parseSandboxLaunchConfig } from '@/scenario/launch'
-import { resolveSandboxExtensionSource } from '@/scenario/manifest'
+import { resolveSandboxExtensionSource } from '@/scenario/extension'
 import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
 import { serializeSandboxExtensionDescriptor } from '@/scenario/descriptor'
 import { updateSandboxLaunchQuery } from '@/scenario/launch'
+import { useSandboxLaunchStorage } from '@/app/launchStorage'
 import {
   validateContextJsonInput,
   validateLaunchConfigInput,
 } from '@/scenario/validation'
 
 const searchParams = new URLSearchParams(window.location.search)
-const hasExplicitExtensionUrl = Boolean(searchParams.get('extensionUrl')?.trim())
+const launchStorage = useSandboxLaunchStorage()
+const hasLaunchQuery = hasSandboxLaunchQuery(searchParams)
 const hasExplicitLaunchMode = searchParams.has('mode')
+  || (!hasLaunchQuery && launchStorage.config.value !== null)
 const initialLaunch = parseInitialLaunchConfig(searchParams)
 const launchConfig = initialLaunch.config
 const launchConfigError = initialLaunch.error
 const fixture = ref(launchConfig.fixture)
-const manifestUrl = ref(formatExtensionSource(launchConfig))
+const descriptorJson = ref(formatExtensionSource(launchConfig))
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
 const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
@@ -220,8 +224,11 @@ function parseInitialLaunchConfig(params: URLSearchParams): {
   config: SandboxLaunchConfig;
   error: unknown;
 } {
+  if (!hasLaunchQuery && launchStorage.config.value) {
+    return { config: launchStorage.config.value, error: null }
+  }
+
   const options = {
-    manifestUrl: createDefaultSandboxManifestUrl(),
     ...(params.has('descriptor') ? {} : { targets: DEFAULT_SANDBOX_TARGETS }),
   }
 
@@ -234,8 +241,6 @@ function parseInitialLaunchConfig(params: URLSearchParams): {
     const fallbackParams = new URLSearchParams(params)
 
     fallbackParams.delete('descriptor')
-    fallbackParams.delete('extensionUrl')
-    fallbackParams.delete('manifestUrl')
 
     return {
       config: parseSandboxLaunchConfig(fallbackParams, options),
@@ -247,13 +252,13 @@ function parseInitialLaunchConfig(params: URLSearchParams): {
 function formatExtensionSource(config: SandboxLaunchConfig): string {
   return config.descriptor
     ? serializeSandboxExtensionDescriptor(config.descriptor, 2)
-    : config.manifestUrl
+    : ''
 }
 
 const LAUNCH_NOTICE_STORAGE_KEY = 'v1-sandbox:launch-notice'
 
 const shouldShowOnboarding = computed(() => Boolean(launchConfigError)
-  || (!launchConfig.descriptor && !launchConfig.manifestUrl && !hasExplicitExtensionUrl))
+  || !launchConfig.descriptor)
 const runModeLabel = computed(() => launchConfig.mode === 'page'
   ? t('app.runMode.page', { pageCode: launchConfig.pageCode })
   : t('app.runMode.widgets', { count: launchConfig.targets.length }))
@@ -265,7 +270,7 @@ const isExtensionConnected = computed(() => runtime.value !== null)
 const launchConfigChanged = computed(() => {
   if (
     fixture.value !== launchConfig.fixture
-    || manifestUrl.value.trim() !== formatExtensionSource(launchConfig)
+    || descriptorJson.value.trim() !== formatExtensionSource(launchConfig)
     || mode.value !== launchConfig.mode
   ) {
     return true
@@ -364,11 +369,11 @@ const redirectToInferredPageMode = (descriptor: SandboxExtensionDescriptor): boo
     pageCode,
     type: 'inferred-page-mode',
   })
-  window.location.replace(updateSandboxLaunchQuery({
+  saveAndReloadLaunchConfig({
     ...launchConfig,
     mode: 'page',
     pageCode,
-  }).toString())
+  })
 
   return true
 }
@@ -378,7 +383,6 @@ const createLaunchDiagnostic = (
 ): SandboxLaunchDiagnostic | null => {
   if (
     launchConfig.mode === 'page'
-    && (launchConfig.descriptor || descriptor.pages.length > 0)
     && !descriptor.pages.includes(launchConfig.pageCode)
   ) {
     return {
@@ -508,7 +512,7 @@ const disposeRuntime = async () => {
       try {
         await releaseRuntimeConnection(connection)
       } catch (error) {
-        console.warn('[sandbox:manifest] Failed to release extension runtime', error)
+        console.warn('[sandbox:extension] Failed to release extension runtime', error)
       }
     }
 
@@ -535,7 +539,7 @@ const applyLaunchConfig = async () => {
 
   const validationResult = validateLaunchConfigInput({
     fixture: fixture.value,
-    manifestUrl: manifestUrl.value,
+    descriptorJson: descriptorJson.value,
     mode: mode.value,
     pageCode: pageCode.value,
     targets: selectedTargets.value,
@@ -550,31 +554,23 @@ const applyLaunchConfig = async () => {
   devPanelValidationErrors.value = {}
 
   const config: SandboxLaunchConfig = {
-    ...(validationResult.data.descriptor
-      ? { descriptor: validationResult.data.descriptor }
-      : {}),
-    extensionUrl: '',
+    descriptor: validationResult.data.descriptor,
     fixture: validationResult.data.fixture,
-    manifestUrl: validationResult.data.manifestUrl,
     mode: validationResult.data.mode,
     pageCode: validationResult.data.pageCode,
     targets: validationResult.data.targets.length > 0
       ? validationResult.data.targets
       : DEFAULT_SANDBOX_TARGETS,
-    widgetId: launchConfig.widgetId,
-  }
-
-  if (config.mode === 'widget') {
-    window.location.href = updateSandboxLaunchQuery(config).toString()
-    return
   }
 
   isApplyingLaunchConfig.value = true
 
   try {
-    const extensionSource = await resolveSandboxExtensionSource(config)
+    const extensionSource = config.mode === 'page'
+      ? await resolveSandboxExtensionSource(config)
+      : null
 
-    if (!extensionSource.descriptor.pages.includes(config.pageCode)) {
+    if (extensionSource && !extensionSource.descriptor.pages.includes(config.pageCode)) {
       devPanelValidationErrors.value = {
         ...devPanelValidationErrors.value,
         pageCode: t('app.alerts.missingPageCode.message', {
@@ -586,8 +582,8 @@ const applyLaunchConfig = async () => {
       return
     }
 
+    saveAndReloadLaunchConfig(config)
     isDevPanelOpen.value = false
-    window.location.href = updateSandboxLaunchQuery(config).toString()
   } catch (error) {
     isDevPanelOpen.value = true
     showSandboxAlert(
@@ -719,7 +715,7 @@ const setFixture = (value: string) => {
 const getPageCodeValidationError = (value: string): string | undefined => {
   const validationResult = validateLaunchConfigInput({
     fixture: fixture.value,
-    manifestUrl: manifestUrl.value,
+    descriptorJson: descriptorJson.value,
     mode: mode.value,
     pageCode: value,
     targets: selectedTargets.value,
@@ -730,10 +726,10 @@ const getPageCodeValidationError = (value: string): string | undefined => {
     : validationResult.errors.pageCode
 }
 
-const setManifestUrl = (value: string) => {
-  manifestUrl.value = value
+const setDescriptorJson = (value: string) => {
+  descriptorJson.value = value
   contextApplySucceeded.value = false
-  clearDevPanelValidationError('manifestUrl')
+  clearDevPanelValidationError('descriptorJson')
   clearDevPanelValidationError('pageCode')
 
   if (
@@ -814,24 +810,16 @@ const getCurrentLaunchConfig = (): SandboxLaunchConfig => ({
 })
 
 const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchConfig => ({
-  ...createLaunchConfigWithSource(input),
+  ...getCurrentLaunchConfig(),
+  ...input,
   targets: input.targets ? [...input.targets] : [...launchConfig.targets],
 })
 
-const createLaunchConfigWithSource = (input: SandboxLaunchInput): SandboxLaunchConfig => {
-  const config: SandboxLaunchConfig = {
-    ...getCurrentLaunchConfig(),
-    ...input,
-  }
-
-  if (input.descriptor) {
-    config.extensionUrl = ''
-    config.manifestUrl = ''
-  } else if (input.extensionUrl !== undefined || input.manifestUrl !== undefined) {
-    delete config.descriptor
-  }
-
-  return config
+const saveAndReloadLaunchConfig = (config: SandboxLaunchConfig) => {
+  launchStorage.save(config)
+  clearSandboxLaunchQuery()
+  delete window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]
+  window.location.reload()
 }
 
 const createLaunchBridge = (): SandboxLaunchBridge => ({
@@ -844,7 +832,7 @@ const createLaunchBridge = (): SandboxLaunchBridge => ({
   },
 
   launch(config) {
-    window.location.href = this.createLaunchUrl(config)
+    saveAndReloadLaunchConfig(createLaunchConfigFromInput(config))
   },
 })
 
@@ -872,7 +860,7 @@ const createExtensionWorker = (
   })
 
   worker.postMessage({
-    extensionUrl: entrypoint.href,
+    entrypoint: entrypoint.href,
     readyPort,
   }, [readyPort])
 
@@ -908,7 +896,7 @@ const waitForExtensionWorkerReady = async (
   await new Promise<void>((resolve, reject) => {
     const timerId = window.setTimeout(() => {
       cleanup()
-      reject(new Error('[sandbox:manifest] Worker bootstrap timed out'))
+      reject(new Error('[sandbox:extension] Worker bootstrap timed out'))
     }, timeoutMs)
 
     const cleanup = () => {
@@ -929,14 +917,14 @@ const waitForExtensionWorkerReady = async (
       if (event.data.type === ExtensionWorkerMessageType.ReadyError) {
         cleanup()
         reject(new Error(
-          event.data.error ?? '[sandbox:manifest] Worker bootstrap failed'
+          event.data.error ?? '[sandbox:extension] Worker bootstrap failed'
         ))
       }
     }
 
     const onError = (event: ErrorEvent) => {
       cleanup()
-      reject(event.error ?? new Error(event.message || '[sandbox:manifest] Worker error'))
+      reject(event.error ?? new Error(event.message || '[sandbox:extension] Worker error'))
     }
 
     readyPort.addEventListener('message', onMessage)
@@ -1003,8 +991,8 @@ const createDevPanelValidationMessages = (): DevPanelValidationMessages => ({
   contextJsonRootObject: t('app.validation.contextJson.rootObject'),
   contextJsonUnknownContext: context => t('app.validation.contextJson.unknownContext', { context }),
   fixture: t('app.validation.fixture'),
-  manifestUrlDescriptor: t('app.validation.manifestUrl.descriptor'),
-  manifestUrlRequired: t('app.validation.manifestUrl.required'),
+  descriptorJsonInvalid: t('app.validation.descriptorJson.invalid'),
+  descriptorJsonRequired: t('app.validation.descriptorJson.required'),
   mode: t('app.validation.mode'),
   pageCodeFormat: t('app.validation.pageCodeFormat'),
   pageCodeRequired: t('app.validation.pageCodeRequired'),
@@ -1048,11 +1036,26 @@ onMounted(() => {
   showStoredLaunchNotice()
 
   if (launchConfigError) {
+    clearSandboxLaunchQuery()
     showSandboxAlert(
       t('app.alerts.runtimeError.title'),
       t('app.alerts.runtimeError.message', { message: getErrorMessage(launchConfigError) })
     )
 
+    return
+  }
+
+  try {
+    if (hasLaunchQuery && !shouldShowOnboarding.value) {
+      launchStorage.save(launchConfig)
+    }
+
+    clearSandboxLaunchQuery()
+  } catch (error) {
+    showSandboxAlert(
+      t('app.alerts.runtimeError.title'),
+      t('app.alerts.runtimeError.message', { message: getErrorMessage(error) })
+    )
     return
   }
 

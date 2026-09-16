@@ -34,8 +34,9 @@ automation helpers for unit, browser, and e2e testing.
 
 ## Mental Model
 
-- The browser sandbox app is for manual preview and full extension loading by
-  URL.
+- The browser sandbox app loads extensions only from runtime descriptors.
+  DevPanel saves the validated launch configuration in localStorage; refreshing
+  the clean sandbox URL restores it. Widget instance IDs are generated internally.
 - Browser tests run real worker extensions in Chromium and usually mock
   `host.httpCall`.
 - E2E tests run the full sandbox app, extension delivery URL, styles, and real
@@ -121,7 +122,13 @@ test('loads extension page in sandbox', async ({ page }) => {
 
   await launchSandboxExtension(page, {
     fixture: 'order-basic',
-    manifestUrl: '%extension-url%/extension/%extension-id%',
+    descriptor: {
+      runner: 'worker',
+      entrypoint: '%extension-url%/extension/%extension-id%/script',
+      stylesheet: null,
+      pages: ['returns'],
+      targets: [],
+    },
     mode: 'page',
     pageCode: 'returns',
   })

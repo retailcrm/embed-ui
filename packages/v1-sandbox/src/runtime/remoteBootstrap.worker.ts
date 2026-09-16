@@ -2,7 +2,7 @@ const WORKER_READY = 'sandbox:extension-worker-ready'
 const WORKER_READY_ERROR = 'sandbox:extension-worker-error'
 
 type BootstrapMessage = {
-  extensionUrl?: unknown;
+  entrypoint?: unknown;
   readyPort?: unknown;
 }
 
@@ -38,13 +38,13 @@ self.addEventListener('unhandledrejection', (event) => {
   postReadyError(event.reason)
 })
 
-const runExtension = (extensionUrl: unknown) => {
-  if (typeof extensionUrl !== 'string' || !extensionUrl) {
-    postReadyError('[sandbox:manifest] Missing extension worker URL.')
+const runExtension = (entrypoint: unknown) => {
+  if (typeof entrypoint !== 'string' || !entrypoint) {
+    postReadyError('[sandbox:extension] Missing extension worker URL.')
     return
   }
 
-  import(/* @vite-ignore */ extensionUrl)
+  import(/* @vite-ignore */ entrypoint)
     .then(() => {
       postReadyMessage({
         type: WORKER_READY,
@@ -55,16 +55,10 @@ const runExtension = (extensionUrl: unknown) => {
     })
 }
 
-const initialExtensionUrl = new URL(self.location.href).searchParams.get('extension')
+self.addEventListener('message', (event: MessageEvent<BootstrapMessage>) => {
+  if (event.data.readyPort instanceof MessagePort) {
+    bootstrapReadyPort = event.data.readyPort
+  }
 
-if (initialExtensionUrl) {
-  runExtension(initialExtensionUrl)
-} else {
-  self.addEventListener('message', (event: MessageEvent<BootstrapMessage>) => {
-    if (event.data.readyPort instanceof MessagePort) {
-      bootstrapReadyPort = event.data.readyPort
-    }
-
-    runExtension(event.data.extensionUrl)
-  }, { once: true })
-}
+  runExtension(event.data.entrypoint)
+}, { once: true })

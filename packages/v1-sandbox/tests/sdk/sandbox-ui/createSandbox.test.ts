@@ -33,6 +33,7 @@ afterEach(async () => {
   vi.restoreAllMocks()
   window.history.replaceState(null, '', '/')
   window.sessionStorage.clear()
+  window.localStorage.clear()
 })
 
 test('mounts sandbox with default onboarding screen', () => {
@@ -125,13 +126,13 @@ test('installs launch bridge and creates launch urls from current config', () =>
   })
 
   const launchUrl = new URL(bridge?.createLaunchUrl({
-    manifestUrl: 'http://extension.test/extension/returns-module',
+    descriptor: { runner: 'worker', entrypoint: 'http://extension.test/script', stylesheet: null, pages: ['returns'], targets: [] },
     mode: 'page',
     pageCode: 'returns',
     targets: ['order/card:payment.before'],
   }) ?? '')
 
-  expect(launchUrl.searchParams.get('manifestUrl')).toBe('http://extension.test/extension/returns-module')
+  expect(JSON.parse(launchUrl.searchParams.get('descriptor') ?? '').entrypoint).toBe('http://extension.test/script')
   expect(launchUrl.searchParams.get('mode')).toBe('page')
   expect(launchUrl.searchParams.get('pageCode')).toBe('returns')
   expect(launchUrl.searchParams.get('target')).toBe('order/card:payment.before')

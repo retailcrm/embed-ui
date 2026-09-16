@@ -25,9 +25,7 @@ test('loads returns page extension, filters, opens and saves return', async ({ p
     sandboxPath: '/tests/__bootstrap__/index.html',
   }))
 
-  await expect(page).toHaveURL(/mode=page/u)
-  await expect(page).toHaveURL(new RegExp(`pageCode=${pageCode}`, 'u'))
-  await expect(page).toHaveURL(/descriptor=/u)
+  await expect(page).toHaveURL(url => url.search === '')
   expect((await entrypointResponse).status()).toBe(200)
   expect((await stylesheetResponse).status()).toBe(200)
   await expect(page.getByRole('button', { name: 'Возвраты' })).toBeVisible()

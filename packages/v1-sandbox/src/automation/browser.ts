@@ -108,9 +108,13 @@ export const launchSandboxExtension = async (
   options: MountSandboxOptions = {}
 ): Promise<MountedSandbox> => {
   const sandbox = await mountSandbox(options)
-  const launchUrl = sandbox.bridge.createLaunchUrl(config)
+  let launchUrl: string
 
-  sandbox.unmount()
+  try {
+    launchUrl = sandbox.bridge.createLaunchUrl(config)
+  } finally {
+    sandbox.unmount()
+  }
   window.history.replaceState(null, '', launchUrl)
 
   return mountSandbox(options.root ? { root: options.root } : {})

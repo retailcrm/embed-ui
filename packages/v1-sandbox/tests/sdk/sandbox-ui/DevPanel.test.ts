@@ -55,14 +55,14 @@ test('dev panel updates launch fields and context', async () => {
     fixture: 'order-basic',
     formatContextJson: vi.fn(),
     launchConfigChanged: false,
-    manifestUrl: JSON.stringify(descriptor),
+    descriptorJson: JSON.stringify(descriptor),
     mode: 'widget' as SandboxLaunchMode,
     pageCode: 'returns',
     resetContextJson: vi.fn(),
     selectedTargets: [ORDER_SANDBOX_SLOTS[0].target],
     setContextJson: vi.fn(),
     setFixture: vi.fn(),
-    setManifestUrl: vi.fn(),
+    setDescriptorJson: vi.fn(),
     setMode: vi.fn(),
     setPageCode: vi.fn(),
     setTargetSelected: vi.fn(),
@@ -93,7 +93,7 @@ test('dev panel updates launch fields and context', async () => {
   expect(entrypointInput.value).toBe('http://extension.test/extension/id/script')
   expect(entrypointInput.placeholder).toBe('Введите entrypoint')
   await fireEvent.update(screen.getByLabelText('Entrypoint'), 'https://cdn.extension.test/build/worker.js')
-  expect(props.setManifestUrl).toHaveBeenCalledWith(JSON.stringify({
+  expect(props.setDescriptorJson).toHaveBeenCalledWith(JSON.stringify({
     ...descriptor,
     entrypoint: 'https://cdn.extension.test/build/worker.js',
   }, null, 2))
@@ -105,7 +105,7 @@ test('dev panel updates launch fields and context', async () => {
     name: 'Оставьте поле пустым, если у расширения нет CSS. Если стили есть, укажите путь к stylesheet.',
   })).toBeInstanceOf(HTMLButtonElement)
   await fireEvent.update(stylesheetInput, 'http://extension.test/extension/id/stylesheet')
-  expect(props.setManifestUrl).toHaveBeenCalledWith(JSON.stringify({
+  expect(props.setDescriptorJson).toHaveBeenCalledWith(JSON.stringify({
     ...descriptor,
     stylesheet: 'http://extension.test/extension/id/stylesheet',
   }, null, 2))
@@ -135,7 +135,7 @@ test('dev panel updates launch fields and context', async () => {
 
   await rerender({
     validationErrors: {
-      manifestUrl: 'Invalid descriptor',
+      descriptorJson: 'Invalid descriptor',
     },
   })
   const descriptorAlert = screen.getByRole('alert')
@@ -222,7 +222,7 @@ test('dev panel updates launch fields and context', async () => {
   expect(props.setTargetSelected).toHaveBeenCalledWith(ORDER_SANDBOX_SLOTS[0].target, false)
 
   await fireEvent.click(descriptorViewToggle)
-  const manifestUrlInput = screen.getByLabelText('JSON дескриптора') as HTMLTextAreaElement
+  const updatedDescriptorJsonInput = screen.getByLabelText('JSON дескриптора') as HTMLTextAreaElement
   const changedDescriptor = JSON.stringify({
     ...descriptor,
     entrypoint: 'http://extension.test/extension/changed/script',
@@ -230,7 +230,7 @@ test('dev panel updates launch fields and context', async () => {
     targets: [],
   })
 
-  await fireEvent.update(manifestUrlInput, changedDescriptor)
+  await fireEvent.update(updatedDescriptorJsonInput, changedDescriptor)
   expect(props.setMode).toHaveBeenCalledWith('page')
   expect(props.setPageCode).toHaveBeenCalledWith('settings')
   await fireEvent.update(contextJsonEditor, '{"order/card":{"number":"999C"}}')
@@ -239,7 +239,7 @@ test('dev panel updates launch fields and context', async () => {
   await fireEvent.click(screen.getByRole('button', { name: 'Скачать JSON' }))
   await fireEvent.click(screen.getByRole('button', { name: 'Применить' }))
 
-  expect(props.setManifestUrl).toHaveBeenCalledWith(changedDescriptor)
+  expect(props.setDescriptorJson).toHaveBeenCalledWith(changedDescriptor)
   expect(props.setContextJson).toHaveBeenCalledWith('{"order/card":{"number":"999C"}}')
   expect(props.formatContextJson).toHaveBeenCalledOnce()
   expect(props.resetContextJson).toHaveBeenCalledOnce()
@@ -301,14 +301,14 @@ test('dev panel shows only widget settings and their errors in widget mode', () 
     fixture: 'order-basic',
     formatContextJson: vi.fn(),
     launchConfigChanged: false,
-    manifestUrl: '',
+    descriptorJson: '',
     mode: 'widget' as SandboxLaunchMode,
     pageCode: 'returns',
     resetContextJson: vi.fn(),
     selectedTargets: [],
     setContextJson: vi.fn(),
     setFixture: vi.fn(),
-    setManifestUrl: vi.fn(),
+    setDescriptorJson: vi.fn(),
     setMode: vi.fn(),
     setPageCode: vi.fn(),
     setTargetSelected: vi.fn(),

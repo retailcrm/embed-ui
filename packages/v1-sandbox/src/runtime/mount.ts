@@ -29,7 +29,7 @@ export const createMounts = (config: SandboxLaunchConfig): SandboxMount[] => {
 
   return ORDER_SANDBOX_SLOTS
     .filter(slot => config.targets.includes(slot.target))
-    .map(slot => createWidgetTargetMount(config, slot))
+    .map(slot => createWidgetTargetMount(slot))
 }
 
 const createPageMount = (config: SandboxLaunchConfig): SandboxMount => ({
@@ -43,10 +43,9 @@ const createPageMount = (config: SandboxLaunchConfig): SandboxMount => ({
 })
 
 const createWidgetTargetMount = (
-  config: SandboxLaunchConfig,
   slot: SandboxSlotDefinition
 ): SandboxMount => {
-  const id = createWidgetInstanceId(config.widgetId, slot.target)
+  const id = createWidgetInstanceId(slot.target)
 
   return {
     id,
@@ -62,5 +61,5 @@ const createWidgetTargetMount = (
   }
 }
 
-const createWidgetInstanceId = (widgetId: string, target: SandboxOrderTarget): string =>
-  `${widgetId}:${target.replace(/[^a-z0-9]+/gi, '-')}`
+const createWidgetInstanceId = (target: SandboxOrderTarget): string =>
+  `sandbox-widget:${target.replace(/[^a-z0-9]+/gi, '-')}`

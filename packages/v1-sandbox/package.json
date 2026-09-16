@@ -93,7 +93,6 @@
     }
   },
   "files": [
-    ".env.sandbox.dist",
     "AGENTS.md",
     "bin",
     "docs",
@@ -143,6 +142,7 @@
     "@vitest/browser-playwright": "4.1.10",
     "@vitest/coverage-istanbul": "4.1.10",
     "@vue/test-utils": "^2.4.6",
+    "@vueuse/core": "^15.0.0",
     "dotenv": "^17.4.2",
     "less": "^4.4.2",
     "nyc": "^18.0.0",

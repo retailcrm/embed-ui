@@ -73,8 +73,8 @@
         "unknownContext": "Неизвестный контекст «{context}»."
       },
       "fixture": "Выберите существующую фикстуру.",
-      "manifestUrl": {
-        "descriptor": "Введите дескриптор с полями runner, entrypoint, stylesheet, pages и targets. Runner должен быть worker, адреса ресурсов — абсолютными HTTP(S)-адресами.",
+      "descriptorJson": {
+        "invalid": "Введите дескриптор с полями runner, entrypoint, stylesheet, pages и targets. Runner должен быть worker, адреса ресурсов — абсолютными HTTP(S)-адресами.",
         "required": "Укажите дескриптор расширения."
       },
       "mode": "Выберите режим запуска.",

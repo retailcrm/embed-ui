@@ -72,13 +72,10 @@ class WorkerStub extends EventTarget {
 const createLaunchBridge = (): SandboxLaunchBridge => ({
   createLaunchUrl: config => `/?fixture=${config.fixture ?? 'order-basic'}&mode=${config.mode ?? 'widget'}`,
   getLaunchConfig: () => ({
-    extensionUrl: '',
     fixture: 'order-basic',
-    manifestUrl: '',
     mode: 'widget',
     pageCode: 'returns',
     targets: ['order/card:common.before'],
-    widgetId: 'sandbox-widget',
   }),
   launch: vi.fn(),
 })

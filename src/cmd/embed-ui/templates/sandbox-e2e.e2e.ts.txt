@@ -48,8 +48,7 @@ test('loads generated settings page extension and saves settings', async ({ base
   expect((await scriptResponse).status()).toBe(200)
   expect((await stylesheetResponse).status()).toBe(200)
 
-  await expect(page).toHaveURL(/mode=page/u)
-  await expect(page).toHaveURL(new RegExp(`pageCode=${pageCode}`, 'u'))
+  await expect(page).toHaveURL(url => url.search === '')
   await expect(page.getByRole('heading', { name: 'Настройки расширения' })).toBeVisible()
   const assistantName = page.getByLabel('Название помощника')
   const note = page.getByLabel('Заметка по умолчанию')

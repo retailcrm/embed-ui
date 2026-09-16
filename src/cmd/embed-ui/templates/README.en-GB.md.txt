@@ -87,8 +87,9 @@ __PACKAGE_MANAGER_RUN__ sandbox:serve
 - `__PACKAGE_MANAGER_RUN__ test:e2e` builds the extension, launches it using a runtime descriptor, verifies script and stylesheet delivery, then saves page settings through Playwright.
 - `__PACKAGE_MANAGER_RUN__ extension:serve` starts `http://127.0.0.1:4175` after a build. Tests build a runtime descriptor from `extensionrc.json` with absolute `/extension/<uuid>/script` and `/extension/<uuid>/stylesheet` URLs. The UUID remains in the URLs, not in a separate runtime field.
 
-The local test servers work without `.env.sandbox`. Use `SANDBOX_BASE_URL` and
-`SANDBOX_EXTENSION_URL` to select already running servers at different addresses.
+The sandbox runs at `http://127.0.0.1:4173`; outside CI, Playwright reuses an
+existing server. Local tests work without `.env.sandbox`. Use
+`SANDBOX_EXTENSION_URL` to select a different extension server address.
 
 Before the first browser/e2e run, install Chromium if needed:
 

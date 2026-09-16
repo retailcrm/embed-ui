@@ -9,8 +9,6 @@ import {
 } from 'vitest'
 
 import {
-  createExtensionManifestUrl,
-  createExternalExtensionUrl,
   createSandboxBrowserPath,
   createSandboxPagePath,
   createSandboxWidgetPath,
@@ -31,11 +29,20 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-describe('playwright automation helpers', () => {
-  test('uses the default sandbox URL when the environment value is empty', () => {
-    vi.stubEnv('SANDBOX_BASE_URL', '')
+const descriptor = {
+  runner: 'worker' as const,
+  entrypoint: 'http://extension.test/script',
+  pages: ['settings'],
+  stylesheet: null,
+  targets: ['order/card:common.after' as const],
+}
 
-    const path = createSandboxPagePath({ pageCode: 'settings' })
+describe('playwright automation helpers', () => {
+  test('uses the default sandbox URL', () => {
+    const path = createSandboxPagePath({
+      descriptor,
+      pageCode: 'settings',
+    })
     const url = new URL(path, 'http://127.0.0.1:4173')
 
     expect(url.pathname).toBe('/')
@@ -65,8 +72,8 @@ describe('playwright automation helpers', () => {
 
   test('creates page sandbox path from direct extension entrypoint', () => {
     const path = createSandboxPagePath({
-      extensionUrl: 'http://127.0.0.1:5173/web/endpoint/endpoint.worker.ts',
-      manifestUrl: 'http://127.0.0.1:5173/web/endpoint/endpoint.worker.ts',
+      descriptor,
+
       pageCode: 'settings',
       sandboxBaseUrl: 'http://127.0.0.1:4173',
       targets: ['order/card:common.after'],
@@ -78,12 +85,22 @@ describe('playwright automation helpers', () => {
     expect(url.searchParams.get('mode')).toBe('page')
     expect(url.searchParams.get('pageCode')).toBe('settings')
     expect(url.searchParams.get('targets')).toBe('order/card:common.after')
-    expect(url.searchParams.get('manifestUrl')).toBe('http://127.0.0.1:5173/web/endpoint/endpoint.worker.ts')
+    expect(JSON.parse(url.searchParams.get('descriptor') ?? '')).toEqual(descriptor)
   })
+
+  test.each([createSandboxWidgetPath, createSandboxPagePath])(
+    'uses descriptor targets when no override is provided (%#)',
+    createPath => {
+      const url = new URL(createPath({ descriptor }), 'http://127.0.0.1:4173')
+
+      expect(url.searchParams.get('target')).toBe('order/card:common.after')
+      expect(url.searchParams.get('targets')).toBe('order/card:common.after')
+    }
+  )
 
   test('creates widget sandbox path and filters invalid targets', () => {
     const path = createSandboxWidgetPath({
-      extensionUrl: 'http://127.0.0.1:5173/web/endpoint/endpoint.worker.ts',
+      descriptor,
       targets: ['unknown', 'order/card:common.before'],
     })
 
@@ -96,23 +113,21 @@ describe('playwright automation helpers', () => {
 
   test('creates sandbox paths with defaults and custom path', () => {
     const path = createSandboxBrowserPath({
-      extensionUrl: '',
+      descriptor,
       fixture: DefaultSandbox.Fixture,
-      manifestUrl: '',
       mode: 'widget',
       pageCode: DefaultSandbox.PageCode,
       targets: [],
-      widgetId: DefaultSandbox.WidgetId,
     }, {
       sandboxBaseUrl: 'http://sandbox.test/base/',
       sandboxPath: '/preview',
     })
     const pagePath = createSandboxPagePath({
-      extensionUrl: 'http://extension.test/extension/page',
+      descriptor,
       sandboxBaseUrl: 'http://sandbox.test',
     })
     const widgetPath = createSandboxWidgetPath({
-      extensionUrl: 'http://extension.test/extension/widget',
+      descriptor,
       sandboxBaseUrl: 'http://sandbox.test',
       targets: ['unknown'],
     })
@@ -126,13 +141,11 @@ describe('playwright automation helpers', () => {
 
   test('creates browser path with default options', () => {
     const path = createSandboxBrowserPath({
-      extensionUrl: '',
+      descriptor,
       fixture: DefaultSandbox.Fixture,
-      manifestUrl: '',
       mode: 'widget',
       pageCode: DefaultSandbox.PageCode,
       targets: [],
-      widgetId: DefaultSandbox.WidgetId,
     })
 
     expect(new URL(path, 'http://127.0.0.1:4173').pathname).toBe('/')
@@ -147,30 +160,6 @@ describe('playwright automation helpers', () => {
 
     expect(getExtensionPageCodes(descriptor)).toEqual(['settings'])
     expect(getExtensionTargets(descriptor)).toEqual(['order/card:common.after'])
-    expect(createExternalExtensionUrl(descriptor, 'http://extension.test/extension/')).toBe('http://extension.test/extension/extension-id')
-    expect(createExtensionManifestUrl(descriptor, 'http://extension.test/extension/')).toBe('http://extension.test/extension/extension-id')
-  })
-
-  test('creates manifest url from environment by default', () => {
-    vi.stubEnv('SANDBOX_EXTENSION_URL', 'http://extension.test/extension/')
-
-    try {
-      expect(createExtensionManifestUrl({ uuid: 'extension-id' }))
-        .toBe('http://extension.test/extension/extension-id')
-    } finally {
-      vi.unstubAllEnvs()
-    }
-  })
-
-  test('returns empty descriptor values and requires extension base URL', () => {
-    const descriptor = {
-      uuid: 'extension-id',
-    }
-
-    expect(getExtensionPageCodes(descriptor)).toEqual([])
-    expect(getExtensionTargets(descriptor)).toEqual(['order/card:common.before'])
-    expect(() => createExternalExtensionUrl(descriptor, undefined))
-      .toThrow('[sandbox:test] SANDBOX_EXTENSION_URL is required for extension browser tests.')
   })
 
   test('reads extension base URL from environment', () => {
@@ -229,12 +218,7 @@ describe('playwright automation helpers', () => {
         globalThis.window = previousWindow
       }
     })
-    const waitForURL = vi.fn(async (matcher: (url: URL) => boolean) => {
-      expect(matcher(new URL(
-        'http://sandbox.test/?mode=widget&targets=order%2Fcard%3Acommon.before%2Corder%2Fcard%3Acommon.after'
-      ))).toBe(true)
-      expect(matcher(new URL('http://sandbox.test/?mode=page'))).toBe(false)
-    })
+    const waitForURL = vi.fn(async () => undefined)
     const evaluate = vi.fn(async (callback, arg) => {
       const launch = vi.fn()
       const previousWindow = globalThis.window
@@ -266,8 +250,8 @@ describe('playwright automation helpers', () => {
       ],
     })
 
-    expect(waitForFunction).toHaveBeenCalledTimes(2)
-    expect(waitForURL).toHaveBeenCalledOnce()
+    expect(waitForFunction).toHaveBeenCalledTimes(3)
+    expect(waitForURL).not.toHaveBeenCalled()
     expect(evaluate).toHaveBeenCalledOnce()
   })
 
@@ -285,34 +269,6 @@ describe('playwright automation helpers', () => {
     })
 
     expect(page.waitForURL).not.toHaveBeenCalled()
-  })
-
-  test('waits for a serialized runtime descriptor', async () => {
-    const descriptor = {
-      runner: 'worker' as const,
-      entrypoint: 'https://extension.test/runtime/worker.js',
-      pages: ['returns'],
-      stylesheet: null,
-      targets: [],
-    }
-    const page = {
-      evaluate: vi.fn(async () => undefined),
-      waitForFunction: vi.fn(async () => undefined),
-      waitForURL: vi.fn(async (matcher: (url: URL) => boolean) => {
-        const url = new URL('http://sandbox.test/')
-
-        url.searchParams.set('descriptor', JSON.stringify(descriptor))
-        url.searchParams.set('mode', 'page')
-        expect(matcher(url)).toBe(true)
-      }),
-    } as unknown as SandboxPlaywrightPage
-
-    await launchSandboxExtension(page, {
-      descriptor,
-      mode: 'page',
-    })
-
-    expect(page.waitForURL).toHaveBeenCalledOnce()
   })
 
   test('reads sandbox snapshot from page global', async () => {

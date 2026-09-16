@@ -25,13 +25,23 @@ Open the printed URL and paste a runtime descriptor:
 }
 ```
 
-Page runner direct URL:
+Click **Apply** to validate and save the launch configuration in `localStorage`.
+The sandbox reloads with a clean URL and restores that configuration on subsequent
+visits. Storage is scoped to this browser and sandbox origin; sharing the clean
+URL does not share the configuration. Without valid saved settings, the sandbox
+shows onboarding. Unsaved edits and manually changed Context JSON are not persisted.
+
+Explicit launch links take precedence over stored settings. The sandbox imports
+their configuration into storage and removes the launch parameters from the address
+bar. Automation helpers can still generate these entry links.
+
+Page runner entry URL:
 
 ```text
 %sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=page&pageCode=returns&fixture=order-basic
 ```
 
-Widget runner direct URL:
+Widget runner entry URL:
 
 ```text
 %sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=widget&targets=order/card:common.after&fixture=order-basic

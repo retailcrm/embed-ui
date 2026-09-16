@@ -12,13 +12,10 @@ export type SandboxLaunchMode = 'page' | 'widget'
 
 export type SandboxLaunchConfig = {
   descriptor?: SandboxExtensionDescriptor;
-  extensionUrl: string;
   fixture: string;
-  manifestUrl: string;
   mode: SandboxLaunchMode;
   pageCode: string;
   targets: SandboxOrderTarget[];
-  widgetId: string;
 }
 
 export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
@@ -35,11 +32,4 @@ export type SandboxExtensionSource = {
   descriptor: SandboxExtensionDescriptor;
   entrypoint: URL;
   httpBaseUrl: string | null;
-  manifestUrl: string | null;
-}
-
-export type FetchLike = typeof fetch
-
-export type ResolveSandboxExtensionSourceOptions = {
-  fetch?: FetchLike;
 }
