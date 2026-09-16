@@ -7,11 +7,7 @@ import type {
 } from '@/scenario/types'
 
 import { isHtmlMimeType, isJavascriptMimeType } from '@/scenario/predicates'
-import {
-  normalizeSandboxExtensionBaseUrl,
-  parseSandboxExtensionDescriptor,
-  resolveSandboxExtensionResourceUrl,
-} from '@/scenario/descriptor'
+import { parseSandboxExtensionDescriptor } from '@/scenario/descriptor'
 
 export type {
   FetchLike,
@@ -27,22 +23,13 @@ export const resolveSandboxExtensionSource = async (
   const fetcher = options.fetch ?? fetch
 
   if (config.descriptor) {
-    const inputDescriptor = parseSandboxExtensionDescriptor(config.descriptor)
-    const baseUrl = normalizeSandboxExtensionBaseUrl(inputDescriptor.baseUrl)
-    const entrypoint = resolveSandboxExtensionResourceUrl(inputDescriptor.entrypoint, baseUrl)
-    const descriptor = {
-      ...inputDescriptor,
-      baseUrl,
-      entrypoint: entrypoint.href,
-      stylesheet: inputDescriptor.stylesheet
-        ? resolveSandboxExtensionResourceUrl(inputDescriptor.stylesheet, baseUrl).href
-        : null,
-    }
+    const descriptor = parseSandboxExtensionDescriptor(config.descriptor)
+    const entrypoint = new URL(descriptor.entrypoint)
 
     return {
       descriptor,
       entrypoint,
-      httpBaseUrl: baseUrl,
+      httpBaseUrl: `${entrypoint.origin}/`,
       manifestUrl: null,
     }
   }
@@ -83,8 +70,7 @@ export const resolveSandboxExtensionSource = async (
 }
 
 const createFallbackDescriptor = (config: SandboxLaunchConfig): SandboxExtensionDescriptor => ({
-  baseUrl: resolveDescriptorBaseUrl(config.extensionUrl),
-  code: config.widgetId,
+  runner: 'worker',
   entrypoint: config.extensionUrl,
   pages: config.mode === 'page' ? [config.pageCode] : [],
   stylesheet: null,
@@ -97,19 +83,12 @@ const createDescriptorFromEntrypoint = (
   stylesheet: string | null,
   pages = config.mode === 'page' ? [config.pageCode] : []
 ): SandboxExtensionDescriptor => ({
-  baseUrl: resolveDescriptorBaseUrl(responseUrl),
-  code: config.widgetId,
+  runner: 'worker',
   entrypoint: responseUrl,
   pages,
   stylesheet,
   targets: config.targets,
 })
-
-const resolveDescriptorBaseUrl = (entrypoint: string): string => {
-  const backendBaseUrl = resolveExtensionBackendBaseUrl(entrypoint)
-
-  return backendBaseUrl ?? `${resolveUrl(entrypoint, window.location.href).origin}/`
-}
 
 const resolveEntrypointSource = async (
   config: SandboxLaunchConfig,

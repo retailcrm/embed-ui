@@ -115,7 +115,7 @@ export const createSandboxBrowserPath = (
 ): string => {
   const baseUrl = new URL(
     options.sandboxPath ?? '/',
-    options.sandboxBaseUrl ?? process.env.SANDBOX_BASE_URL ?? DEFAULT_SANDBOX_BASE_URL
+    options.sandboxBaseUrl ?? (process.env.SANDBOX_BASE_URL?.trim() || DEFAULT_SANDBOX_BASE_URL)
   )
   const url = updateSandboxLaunchQuery(config, baseUrl.href)
 

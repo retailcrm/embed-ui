@@ -15,12 +15,13 @@ Open the printed URL and paste a runtime descriptor:
 
 ```json
 {
-  "code": "promoModule",
-  "baseUrl": "http://web-extensions-server.simla.local",
-  "entrypoint": "/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script",
-  "stylesheet": "/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet",
+  "entrypoint": "http://web-extensions-server.simla.local/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script",
+  "stylesheet": "http://web-extensions-server.simla.local/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet",
   "targets": [],
-  "pages": ["settings"]
+  "pages": [
+    "settings"
+  ],
+  "runner": "worker"
 }
 ```
 
@@ -96,9 +97,8 @@ afterEach(() => {
 test('mounts page extension in browser mode', async () => {
   sandbox = await launchSandboxExtension({
     descriptor: {
-      baseUrl: new URL('/tests/fixtures/extensions/returnsModule/', window.location.href).href,
-      code: 'returnsModule',
-      entrypoint: 'index.ts',
+      runner: 'worker',
+      entrypoint: new URL('/tests/fixtures/extensions/returnsModule/index.ts', window.location.href).href,
       pages: ['returns'],
       stylesheet: null,
       targets: [],
@@ -135,11 +135,10 @@ test('loads returns page extension', async ({ page }) => {
   await page.goto(
     '/?descriptor='
     + encodeURIComponent(JSON.stringify({
-      code: 'returnsModule',
-      baseUrl: 'https://extension.test',
-      entrypoint: '/build/worker.js',
+      runner: 'worker',
+      entrypoint: 'https://extension.test/build/worker.js',
       pages: ['returns'],
-      stylesheet: '/build/extension.css',
+      stylesheet: 'https://extension.test/build/extension.css',
       targets: [],
     }))
     + '&mode=page'
@@ -164,9 +163,8 @@ await page.goto('/')
 
 await launchSandboxExtension(page, {
   descriptor: {
-    code: 'promoModule',
-    baseUrl: 'https://extension.test',
-    entrypoint: '/build/worker.js',
+    runner: 'worker',
+    entrypoint: 'https://extension.test/build/worker.js',
     pages: [],
     stylesheet: null,
     targets: ['order/card:common.after'],

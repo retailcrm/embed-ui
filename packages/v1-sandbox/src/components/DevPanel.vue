@@ -1,8 +1,9 @@
 <template>
     <aside :class="$style['dev-panel']">
-        <section
+        <form
             :id="uid + '-dev-panel-controls'"
             :class="$style['dev-panel__card']"
+            @submit.prevent="applyLaunchConfig"
         >
             <div :class="$style['dev-panel__descriptor-switcher']">
                 <UiToggleButton
@@ -62,59 +63,42 @@
                 />
             </div>
 
-            <fieldset
+            <div
                 v-else
                 :aria-describedby="getErrorDescribedBy('manifestUrl')"
                 :aria-invalid="Boolean(props.validationErrors.manifestUrl)"
+                :aria-labelledby="uid + '-dev-panel-descriptor-label'"
                 :class="$style['dev-panel__descriptor-fields']"
+                role="group"
             >
-                <legend :class="$style['dev-panel__field-label']">
+                <div
+                    :id="uid + '-dev-panel-descriptor-label'"
+                    :class="$style['dev-panel__field-label']"
+                >
                     {{ t('devPanel.descriptorFields') }}
-                </legend>
+                </div>
 
                 <span :class="$style['dev-panel__field-hint']">
                     {{ t('devPanel.descriptorFieldsHint') }}
                 </span>
 
                 <div :class="$style['dev-panel__descriptor-grid']">
-                    <label :class="$style['dev-panel__field']">
-                        <span :class="$style['dev-panel__field-label']">
-                            {{ t('devPanel.code') }}
-                        </span>
-                        <UiTextbox
-                            :class="$style['dev-panel__control']"
-                            :placeholder="t('devPanel.placeholders.code')"
-                            :value="descriptorFields.code"
-                            type="text"
-                            @update:value="updateDescriptorCode"
-                        />
-                    </label>
-
-                    <label :class="$style['dev-panel__field']">
-                        <span :class="$style['dev-panel__field-label']">
-                            {{ t('devPanel.baseUrl') }}
-                        </span>
-                        <UiTextbox
-                            :class="$style['dev-panel__control']"
-                            :placeholder="t('devPanel.placeholders.baseUrl')"
-                            :value="descriptorFields.baseUrl"
-                            type="text"
-                            @update:value="updateDescriptorBaseUrl"
-                        />
-                    </label>
-
-                    <label :class="$style['dev-panel__field']">
-                        <span :class="$style['dev-panel__field-label']">
+                    <div :class="$style['dev-panel__field']">
+                        <label
+                            :class="$style['dev-panel__field-label']"
+                            :for="uid + '-dev-panel-descriptor-entrypoint'"
+                        >
                             {{ t('devPanel.entrypoint') }}
-                        </span>
+                        </label>
                         <UiTextbox
+                            :id="uid + '-dev-panel-descriptor-entrypoint'"
                             :class="$style['dev-panel__control']"
                             :placeholder="t('devPanel.placeholders.entrypoint')"
                             :value="descriptorFields.entrypoint"
                             type="text"
                             @update:value="updateDescriptorEntrypoint"
                         />
-                    </label>
+                    </div>
 
                     <div :class="$style['dev-panel__field']">
                         <div :class="$style['dev-panel__field-heading']">
@@ -150,7 +134,7 @@
                         />
                     </div>
                 </div>
-            </fieldset>
+            </div>
 
             <UiAlert
                 v-if="props.validationErrors.manifestUrl"
@@ -476,8 +460,8 @@
             <div :class="[$style['dev-panel__actions'], $style['dev-panel__actions_wrap']]">
                 <UiButton
                     appearance="primary"
-                    :disabled="isApplyDisabled || props.applyingContext || props.applyingLaunchConfig"
-                    @click="props.applyLaunchConfig"
+                    :disabled="isApplyDisabled"
+                    type="submit"
                 >
                     {{ t('devPanel.actions.apply') }}
                 </UiButton>
@@ -503,7 +487,7 @@
                 closable
                 small
             />
-        </section>
+        </form>
     </aside>
 </template>
 
@@ -568,10 +552,9 @@ const { t: tGlobal } = useI18n({ useScope: 'global' })
 const uid = useId()
 const isDescriptorJsonVisible = ref(false)
 const defaultDescriptor = JSON.stringify({
-  code: 'promoModule',
-  baseUrl: 'http://web-extensions-server.simla.local',
-  entrypoint: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script',
-  stylesheet: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet',
+  runner: 'worker',
+  entrypoint: 'http://web-extensions-server.simla.local/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script',
+  stylesheet: 'http://web-extensions-server.simla.local/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet',
   targets: [],
   pages: ['settings'],
 }, null, 2)
@@ -608,13 +591,11 @@ const targetOptions = ORDER_SANDBOX_SLOTS.map(slot => ({
   label: slot.target,
   value: slot.target,
 }))
-type EditableDescriptorField = 'baseUrl' | 'code' | 'entrypoint' | 'stylesheet'
+type EditableDescriptorField = 'entrypoint' | 'stylesheet'
 
 type DescriptorFields = Record<EditableDescriptorField, string>
 
 const emptyDescriptorFields = (): DescriptorFields => ({
-  baseUrl: '',
-  code: '',
   entrypoint: '',
   stylesheet: '',
 })
@@ -640,8 +621,6 @@ const descriptorFields = computed<DescriptorFields>(() => {
   if (!descriptor) return emptyDescriptorFields()
 
   return {
-    baseUrl: typeof descriptor.baseUrl === 'string' ? descriptor.baseUrl : '',
-    code: typeof descriptor.code === 'string' ? descriptor.code : '',
     entrypoint: typeof descriptor.entrypoint === 'string' ? descriptor.entrypoint : '',
     stylesheet: typeof descriptor.stylesheet === 'string' ? descriptor.stylesheet : '',
   }
@@ -652,8 +631,7 @@ const updateDescriptorField = (
   value: string | number
 ): void => {
   const descriptor = readDescriptorDraft() ?? {
-    baseUrl: '',
-    code: '',
+    runner: 'worker',
     entrypoint: '',
     pages: props.mode === 'page' && props.pageCode ? [props.pageCode] : [],
     stylesheet: null,
@@ -667,8 +645,6 @@ const updateDescriptorField = (
   props.setManifestUrl(JSON.stringify(descriptor, null, 2))
 }
 
-const updateDescriptorBaseUrl = (value: string | number) => updateDescriptorField('baseUrl', value)
-const updateDescriptorCode = (value: string | number) => updateDescriptorField('code', value)
 const updateDescriptorEntrypoint = (value: string | number) => updateDescriptorField('entrypoint', value)
 const updateDescriptorStylesheet = (value: string | number) => updateDescriptorField('stylesheet', value)
 
@@ -703,12 +679,18 @@ const toggleDescriptorView = () => {
 }
 
 const isApplyDisabled = computed(() => {
+  if (props.applyingContext || props.applyingLaunchConfig) return true
   if (!props.manifestUrl.trim() || !props.fixture || !props.mode) return true
 
   if (props.mode === 'page') return !isValidSandboxPageCode(props.pageCode)
 
   return props.selectedTargets.length === 0
 })
+const applyLaunchConfig = () => {
+  if (isApplyDisabled.value) return
+
+  return props.applyLaunchConfig()
+}
 const isApplyContextDisabled = computed(() =>
   !props.contextJsonChanged
   || !props.extensionConnected
@@ -813,8 +795,6 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
             "fixture": "Original fixture context"
         },
         "currentRunFixture": "Current run",
-        "baseUrl": "Base URL",
-        "code": "Module code",
         "descriptorFields": "Descriptor fields",
         "descriptorFieldsHint": "Fill in the descriptor fields or switch to JSON. Both representations stay synchronized.",
         "entrypoint": "Entrypoint",
@@ -830,8 +810,6 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "pageCode": "Page code",
         "pageCodePlaceholder": "Enter page code",
         "placeholders": {
-            "baseUrl": "Enter extension URL",
-            "code": "Enter module code",
             "entrypoint": "Enter entrypoint",
             "stylesheet": "Enter stylesheet"
         },
@@ -841,7 +819,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsPlaceholder": "Select mount targets",
         "tooltips": {
             "contextJson": "Context used by the current connected extension. It is independent from the fixture selected for the next launch.",
-            "extensionUrl": "A descriptor contains code, baseUrl, entrypoint, stylesheet, pages and targets. Entrypoint and stylesheet may be relative to baseUrl.",
+            "extensionUrl": "A descriptor contains runner, entrypoint, stylesheet, pages and targets. Entrypoint and stylesheet must be absolute HTTP(S) URLs. Runner must be worker.",
             "mode": "Widgets mount into selected CRM targets. Page mounts a page runner by page code.",
             "pageCode": "Use the code from the extension pages registration, not the extension id. Only Latin letters (A–Z, a–z) and hyphens are allowed.",
             "stylesheet": "Leave this field empty if the extension has no CSS. Otherwise, enter the path to the stylesheet.",
@@ -872,8 +850,6 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
             "fixture": "Contexto original de los datos de prueba"
         },
         "currentRunFixture": "Ejecución actual",
-        "baseUrl": "URL base",
-        "code": "Código del módulo",
         "descriptorFields": "Campos del descriptor",
         "descriptorFieldsHint": "Complete los campos del descriptor o cambie a JSON. Ambas representaciones permanecen sincronizadas.",
         "entrypoint": "Entrypoint",
@@ -889,8 +865,6 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "pageCode": "Código de página",
         "pageCodePlaceholder": "Introduzca el código de la página",
         "placeholders": {
-            "baseUrl": "Introduzca la URL de la extensión",
-            "code": "Introduzca el código del módulo",
             "entrypoint": "Introduzca el entrypoint",
             "stylesheet": "Introduzca el stylesheet"
         },
@@ -900,7 +874,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsPlaceholder": "Seleccione los puntos de montaje",
         "tooltips": {
             "contextJson": "Contexto utilizado por la extensión conectada actualmente. Es independiente de los datos de prueba seleccionados para el siguiente inicio.",
-            "extensionUrl": "El descriptor contiene code, baseUrl, entrypoint, stylesheet, pages y targets. Entrypoint y stylesheet pueden ser relativos a baseUrl.",
+            "extensionUrl": "El descriptor contiene runner, entrypoint, stylesheet, pages y targets. Entrypoint y stylesheet deben ser URL HTTP(S) absolutas. Runner debe ser worker.",
             "mode": "En el modo «Widgets», los widgets se añaden a los puntos de montaje seleccionados. En el modo «Página», se ejecuta una página mediante su código.",
             "pageCode": "Utilice el valor code del registro pages, no el UUID de la extensión. Solo se permiten letras latinas (A–Z, a–z) y guiones.",
             "stylesheet": "Deje este campo vacío si la extensión no tiene CSS. Si tiene estilos, introduzca la ruta del stylesheet.",
@@ -931,8 +905,6 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
             "fixture": "Исходный контекст фикстуры"
         },
         "currentRunFixture": "Текущий запуск",
-        "baseUrl": "Базовый URL",
-        "code": "Код модуля",
         "descriptorFields": "Поля дескриптора",
         "descriptorFieldsHint": "Заполните поля дескриптора или переключитесь на JSON. Оба представления синхронизированы.",
         "entrypoint": "Entrypoint",
@@ -948,8 +920,6 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "pageCode": "Код страницы",
         "pageCodePlaceholder": "Введите код страницы",
         "placeholders": {
-            "baseUrl": "Введите URL расширения",
-            "code": "Введите код модуля",
             "entrypoint": "Введите entrypoint",
             "stylesheet": "Введите stylesheet"
         },
@@ -959,7 +929,7 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
         "targetsPlaceholder": "Выберите места встраивания",
         "tooltips": {
             "contextJson": "Контекст текущего подключённого расширения. Он не зависит от фикстуры, выбранной для следующего запуска.",
-            "extensionUrl": "Дескриптор содержит code, baseUrl, entrypoint, stylesheet, pages и targets. Entrypoint и stylesheet могут быть относительными к baseUrl.",
+            "extensionUrl": "Дескриптор содержит runner, entrypoint, stylesheet, pages и targets. Entrypoint и stylesheet должны быть абсолютными HTTP(S)-адресами. Runner — worker.",
             "mode": "В режиме «Виджеты» виджеты добавляются в выбранные места встраивания. В режиме «Страница» запускается страница по её коду.",
             "pageCode": "Укажите значение code из массива pages в дескрипторе, а не UUID расширения. Допустимы только латинские буквы (A–Z, a–z) и дефисы.",
             "stylesheet": "Оставьте поле пустым, если у расширения нет CSS. Если стили есть, укажите путь к stylesheet.",
@@ -992,12 +962,9 @@ const getErrorDescribedBy = (field: DevPanelField): string | undefined =>
     }
 
     &__descriptor-fields {
-        border: 0;
         display: grid;
         gap: @spacing-xs;
-        margin: 0;
         min-width: 0;
-        padding: 0;
     }
 
     &__descriptor-switcher {

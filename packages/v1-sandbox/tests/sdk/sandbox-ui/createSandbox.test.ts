@@ -109,7 +109,7 @@ test('opens dev panel and validates launch config input', async () => {
   await fireEvent.click(applyButton)
 
   expect((await within(dialog).findByRole('alert')).textContent?.trim())
-    .toBe('Введите валидный дескриптор с полями code, baseUrl, entrypoint, stylesheet, pages и targets. Адреса ресурсов могут быть относительными к абсолютному http/https baseUrl.')
+    .toBe('Введите дескриптор с полями runner, entrypoint, stylesheet, pages и targets. Runner должен быть worker, адреса ресурсов — абсолютными HTTP(S)-адресами.')
 })
 
 test('installs launch bridge and creates launch urls from current config', () => {

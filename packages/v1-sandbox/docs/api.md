@@ -124,11 +124,10 @@ HostAPI snapshot from `window.__CRM_EMBED_SANDBOX__`:
 ```ts
 await page.goto(createSandboxPagePath({
   descriptor: {
-    code: 'returnsModule',
-    baseUrl: 'https://extension.test',
-    entrypoint: '/build/worker.js',
+    runner: 'worker',
+    entrypoint: 'https://extension.test/build/worker.js',
     pages: ['returns'],
-    stylesheet: '/build/extension.css',
+    stylesheet: 'https://extension.test/build/extension.css',
     targets: [],
   },
   pageCode: 'returns',
@@ -173,8 +172,7 @@ The runtime descriptor has exactly these fields:
 
 ```ts
 type SandboxExtensionDescriptor = {
-  code: string
-  baseUrl: string
+  runner: 'worker'
   entrypoint: string
   stylesheet: string | null
   pages: string[]
@@ -182,9 +180,10 @@ type SandboxExtensionDescriptor = {
 }
 ```
 
-`baseUrl` must be an absolute HTTP(S) URL. `entrypoint` and non-null
-`stylesheet` may be relative to it or absolute. Unknown fields, including
-`runner` and `uuid`, are rejected.
+`entrypoint` and non-null `stylesheet` must be absolute HTTP(S) URLs.
+`runner` must be `worker`. Unknown fields, including `uuid`, `code`, and
+`baseUrl`, are rejected. The entrypoint URL is used as supplied, including
+any extension identifier in its path.
 
 Example page URL:
 
@@ -206,7 +205,7 @@ Extensions call:
 await host.httpCall('/returns', payload)
 ```
 
-In descriptor mode the backend base is `baseUrl`; the call
+In descriptor mode the backend base is the origin of `entrypoint`; the call
 above sends:
 
 ```text

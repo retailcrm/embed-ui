@@ -43,11 +43,10 @@ describe('resolveSandboxExtensionSource', () => {
   test('uses descriptor resources directly without fetching legacy manifest', async () => {
     const fetcher = vi.fn()
     const descriptor = {
-      baseUrl: 'https://extension.test/runtime/',
-      code: 'returns-module',
-      entrypoint: 'worker.js',
+      runner: 'worker' as const,
+      entrypoint: 'https://extension.test/runtime/worker.js',
       pages: ['returns'],
-      stylesheet: 'styles.css',
+      stylesheet: 'https://extension.test/runtime/styles.css',
       targets: ['order/card:common.after' as const],
     }
 
@@ -63,7 +62,7 @@ describe('resolveSandboxExtensionSource', () => {
         stylesheet: 'https://extension.test/runtime/styles.css',
       },
       entrypoint: new URL('https://extension.test/runtime/worker.js'),
-      httpBaseUrl: 'https://extension.test/runtime/',
+      httpBaseUrl: 'https://extension.test/',
       manifestUrl: null,
     })
     expect(fetcher).not.toHaveBeenCalled()
@@ -152,7 +151,6 @@ describe('resolveSandboxExtensionSource', () => {
 
     expect(source.entrypoint.href).toBe('http://sandbox.test/extensions/html/assets/entry.js')
     expect(source.httpBaseUrl).toBe('http://sandbox.test/')
-    expect(source.descriptor.code).toBe('sandbox-widget')
     expect(fetcher).toHaveBeenCalledTimes(2)
   })
 
@@ -248,7 +246,6 @@ describe('resolveSandboxExtensionSource', () => {
     })
 
     expect(source.descriptor.entrypoint).toBe('/src/direct-extension.js')
-    expect(source.descriptor.code).toBe('sandbox-widget')
     expect(source.entrypoint.href).toBe('http://localhost/src/direct-extension.js')
     expect(source.httpBaseUrl).toBeNull()
   })

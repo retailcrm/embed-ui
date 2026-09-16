@@ -79,7 +79,6 @@ const endpointHttpCallMock = vi.fn()
 const forceUpdateMock = vi.fn()
 const fakeWorkers: FakeWorker[] = []
 let controllerOptions: {
-  getDescriptorUuid: () => string | undefined;
   getHttpCallBaseUrl: () => string | null;
 } | null = null
 let App: typeof SandboxApp
@@ -292,8 +291,7 @@ const createExtensionSource = (
   descriptor: Partial<SandboxExtensionSource['descriptor']> = {}
 ): SandboxExtensionSource => ({
   descriptor: {
-    baseUrl: 'http://extension.test/',
-    code: 'demo-extension',
+    runner: 'worker' as const,
     entrypoint: 'http://extension.test/extension/demo/script',
     pages: [],
     stylesheet: null,
@@ -404,20 +402,13 @@ const configurePageLaunch = async (
   pageCode: string
 ) => {
   const descriptor = {
-    baseUrl,
-    code: 'demo-extension',
-    entrypoint: '/extension/demo/script',
+    runner: 'worker',
+    entrypoint: new URL('/extension/demo/script', baseUrl).href,
     pages: [pageCode],
     stylesheet: null,
     targets: [],
   }
 
-  await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Код модуля',
-  }), descriptor.code)
-  await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Базовый URL',
-  }), descriptor.baseUrl)
   await fireEvent.update(within(dialog).getByRole('textbox', {
     name: 'Entrypoint',
   }), descriptor.entrypoint)
@@ -493,11 +484,9 @@ test('does not show the widget run summary on onboarding', async () => {
 test('reports an invalid descriptor without falling back to legacy urls', async () => {
   const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
   const descriptor = encodeURIComponent(JSON.stringify({
-    baseUrl: 'http://extension.test/',
-    code: 'demo-extension',
     entrypoint: 'http://extension.test/runtime/worker.js',
     pages: [],
-    runner: 'worker',
+    runner: 'iframe',
     stylesheet: null,
     targets: ['order/card:common.before'],
   }))
@@ -515,10 +504,9 @@ test('reports an invalid descriptor without falling back to legacy urls', async 
   expect(fakeWorkers).toHaveLength(0)
 })
 
-test('loads and preserves a formatted runtime descriptor', async () => {
+test('loads and preserves a runtime descriptor without a separate uuid', async () => {
   const descriptor = {
-    baseUrl: 'http://extension.test/',
-    code: 'descriptor-extension',
+    runner: 'worker' as const,
     entrypoint: 'http://extension.test/runtime/worker.js',
     pages: ['settings'],
     stylesheet: 'http://cdn.extension.test/runtime/extension.css',
@@ -545,6 +533,7 @@ test('loads and preserves a formatted runtime descriptor', async () => {
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
     descriptor,
   }))
+  expect(fakeWorkers[0]?.options.name).toBe('sandbox:extension')
   expect(fakeWorkers[0]?.postMessage).toHaveBeenCalledWith(expect.objectContaining({
     extensionUrl: descriptor.entrypoint,
   }), expect.any(Array))
@@ -572,8 +561,7 @@ test('uses descriptor widget targets when the dev panel targets were not changed
 
   const dialog = await openDevPanel()
   const descriptor = {
-    baseUrl: 'http://extension.test/',
-    code: 'descriptor-widget',
+    runner: 'worker' as const,
     entrypoint: 'http://extension.test/runtime/worker.js',
     pages: [],
     stylesheet: null,
@@ -637,8 +625,7 @@ test('blocks page extension with unknown page code', async () => {
 test('blocks page launch when runtime descriptor exposes no pages', async () => {
   const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
   const descriptor = {
-    baseUrl: 'http://extension.test/',
-    code: 'widget-only-extension',
+    runner: 'worker' as const,
     entrypoint: 'http://extension.test/runtime/worker.js',
     pages: [],
     stylesheet: null,
@@ -984,7 +971,6 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
 
   expect(stylesheet?.href).toBe('http://extension.test/extension/demo/stylesheet')
   expect(stylesheet?.rel).toBe('stylesheet')
-  expect(options.getDescriptorUuid()).toBe('demo-extension')
   expect(options.getHttpCallBaseUrl()).toBe('http://extension.test/')
 
   exposedApi.get('settings', 'system.locale')
@@ -1033,14 +1019,8 @@ test('updates dev panel launch fields and reports validation errors', async () =
   expect(applyButton.disabled).toBe(true)
 
   await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Код модуля',
-  }), 'demo-extension')
-  await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Базовый URL',
-  }), 'http://extension.test/extension/demo')
-  await fireEvent.update(within(dialog).getByRole('textbox', {
     name: 'Entrypoint',
-  }), '/extension/demo/script')
+  }), 'http://extension.test/extension/demo/script')
   await selectOption(dialog, 'Режим', 'Страница')
 
   const pageCodeInput = within(dialog).getByRole('textbox', {
@@ -1173,8 +1153,7 @@ test('keeps dev panel open and shows available pages when page code is missing',
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledOnce()
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
     descriptor: expect.objectContaining({
-      baseUrl: 'http://extension.test/extension/demo',
-      code: 'demo-extension',
+      runner: 'worker',
     }),
     manifestUrl: '',
     mode: 'page',
@@ -1205,9 +1184,8 @@ test('keeps dev panel open and shows available pages when page code is missing',
   const descriptorInput = await openDescriptorJsonEditor(dialog)
 
   await fireEvent.update(descriptorInput, JSON.stringify({
-    baseUrl: 'http://extension.test/extension/changed',
-    code: 'changed-extension',
-    entrypoint: '/extension/changed/script',
+    runner: 'worker' as const,
+    entrypoint: 'http://extension.test/extension/changed/script',
     pages: ['returns'],
     stylesheet: null,
     targets: [],

@@ -197,9 +197,7 @@ const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
 const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
 const extensionHttpBaseUrl = ref<string | null>(null)
-const extensionDescriptorCode = ref<string | undefined>()
 const sandbox = createOrderSandboxController(launchConfig.fixture, {
-  getDescriptorUuid: () => extensionDescriptorCode.value,
   getHttpCallBaseUrl: () => extensionHttpBaseUrl.value,
   globalBridge: {},
 })
@@ -306,7 +304,6 @@ const mountExtension = async (): Promise<boolean> => {
     if (redirectToInferredPageMode(extensionSource.descriptor)) return false
 
     extensionHttpBaseUrl.value = extensionSource.httpBaseUrl
-    extensionDescriptorCode.value = extensionSource.descriptor.code
 
     const diagnostic = createLaunchDiagnostic(extensionSource.descriptor)
 
@@ -317,10 +314,7 @@ const mountExtension = async (): Promise<boolean> => {
     }
 
     stylesheet = mountExtensionStylesheet(extensionSource.descriptor.stylesheet)
-    const connections = await mountWorkerExtension(
-      extensionSource.descriptor.code,
-      extensionSource.entrypoint
-    )
+    const connections = await mountWorkerExtension(extensionSource.entrypoint)
 
     if (!isAppMounted) {
       connections.forEach(disposeRuntimeConnection)
@@ -434,15 +428,14 @@ const createLaunchDiagnostic = (
 }
 
 const mountWorkerExtension = async (
-  uuid: string,
   entrypoint: URL
 ): Promise<SandboxRuntime['connections']> => {
   const readyChannel = new MessageChannel()
-  const worker = createExtensionWorker(uuid, entrypoint, readyChannel.port2)
+  const worker = createExtensionWorker(entrypoint, readyChannel.port2)
   const endpoint = createRpcEndpoint<SandboxWorkerApi>(fromWebWorker(worker))
 
   try {
-    await waitForExtensionWorkerReady(readyChannel.port1, worker, uuid)
+    await waitForExtensionWorkerReady(readyChannel.port1, worker)
   } catch (error) {
     endpoint.terminate()
     throw error
@@ -870,12 +863,11 @@ const installSandboxLaunchBridge = (): (() => void) => {
 const uninstallSandboxLaunchBridge = installSandboxLaunchBridge()
 
 const createExtensionWorker = (
-  uuid: string,
   entrypoint: URL,
   readyPort: MessagePort
 ): Worker => {
   const worker = new RemoteBootstrapWorker({
-    name: `sandbox:${uuid}`,
+    name: 'sandbox:extension',
     type: 'module',
   })
 
@@ -911,13 +903,12 @@ enum ExtensionWorkerMessageType {
 const waitForExtensionWorkerReady = async (
   readyPort: MessagePort,
   worker: Worker,
-  uuid: string,
   timeoutMs = 10_000
 ): Promise<void> => {
   await new Promise<void>((resolve, reject) => {
     const timerId = window.setTimeout(() => {
       cleanup()
-      reject(new Error(`[sandbox:manifest] Worker bootstrap timed out for '${uuid}'`))
+      reject(new Error('[sandbox:manifest] Worker bootstrap timed out'))
     }, timeoutMs)
 
     const cleanup = () => {
@@ -938,14 +929,14 @@ const waitForExtensionWorkerReady = async (
       if (event.data.type === ExtensionWorkerMessageType.ReadyError) {
         cleanup()
         reject(new Error(
-          event.data.error ?? `[sandbox:manifest] Worker bootstrap failed for '${uuid}'`
+          event.data.error ?? '[sandbox:manifest] Worker bootstrap failed'
         ))
       }
     }
 
     const onError = (event: ErrorEvent) => {
       cleanup()
-      reject(event.error ?? new Error(event.message || `[sandbox:manifest] Worker error for '${uuid}'`))
+      reject(event.error ?? new Error(event.message || '[sandbox:manifest] Worker error'))
     }
 
     readyPort.addEventListener('message', onMessage)

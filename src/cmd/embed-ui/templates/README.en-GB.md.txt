@@ -84,8 +84,11 @@ __PACKAGE_MANAGER_RUN__ sandbox:serve
 ## Testing
 
 - `__PACKAGE_MANAGER_RUN__ test:browser` runs the real Worker in Chromium, updates and saves page settings, then edits a draft in the widget sidebar.
-- `__PACKAGE_MANAGER_RUN__ test:e2e` builds the extension, verifies descriptor, script, and stylesheet delivery, then saves page settings through Playwright.
-- `__PACKAGE_MANAGER_RUN__ extension:serve` starts `http://127.0.0.1:4175` after a build. Tests build the concrete manifest URL as `http://127.0.0.1:4175/extension/<uuid>`.
+- `__PACKAGE_MANAGER_RUN__ test:e2e` builds the extension, launches it using a runtime descriptor, verifies script and stylesheet delivery, then saves page settings through Playwright.
+- `__PACKAGE_MANAGER_RUN__ extension:serve` starts `http://127.0.0.1:4175` after a build. Tests build a runtime descriptor from `extensionrc.json` with absolute `/extension/<uuid>/script` and `/extension/<uuid>/stylesheet` URLs. The UUID remains in the URLs, not in a separate runtime field.
+
+The local test servers work without `.env.sandbox`. Use `SANDBOX_BASE_URL` and
+`SANDBOX_EXTENSION_URL` to select already running servers at different addresses.
 
 Before the first browser/e2e run, install Chromium if needed:
 

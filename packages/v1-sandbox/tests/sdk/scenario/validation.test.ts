@@ -21,9 +21,8 @@ const messages: DevPanelValidationMessages = {
 }
 
 const descriptor = {
-  baseUrl: 'https://extension.test/runtime/',
-  code: 'returns-module',
-  entrypoint: 'worker.js',
+  runner: 'worker' as const,
+  entrypoint: 'https://extension.test/runtime/worker.js',
   pages: ['returns'],
   stylesheet: null,
   targets: ['order/card:common.after'],

@@ -60,9 +60,8 @@ test('parses multiple widget targets and page mode', () => {
 
 test('round-trips descriptor and uses its widget targets by default', () => {
   const descriptor = {
-    baseUrl: 'https://extension.test/runtime/',
-    code: 'descriptor-widget',
-    entrypoint: 'worker.js',
+    runner: 'worker' as const,
+    entrypoint: 'https://extension.test/runtime/worker.js',
     pages: [],
     stylesheet: null,
     targets: ['order/card:common.after' as const],
@@ -94,7 +93,6 @@ test('rejects invalid descriptors without falling back to legacy url', () => {
       pages: [],
       stylesheet: null,
       targets: [],
-      uuid: 'demo',
     }),
     manifestUrl: 'http://extension.test/extension/demo',
   }))).toThrow('Invalid extension descriptor')

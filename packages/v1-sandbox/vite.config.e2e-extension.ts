@@ -7,11 +7,9 @@ import path from 'node:path'
 import { defineConfig, mergeConfig } from 'vite'
 
 import basic from './vite.config.basic'
-import promoModule from './tests/__fixtures__/extensions/promoModule/extensionrc.json'
 import {
   resolveReturnsBackendRequest,
 } from './tests/__fixtures__/extensions/returnsModule/backend'
-import returnsModule from './tests/__fixtures__/extensions/returnsModule/extensionrc.json'
 
 type BuildManifestEntry = {
   css?: string[];
@@ -24,10 +22,16 @@ type BuildManifestEntry = {
 const packageRoot = path.dirname(fileURLToPath(import.meta.url))
 const extensionsRoot = path.resolve(packageRoot, 'tests/__fixtures__/extensions')
 const outputRoot = path.resolve(packageRoot, 'artifacts/e2e/extensions')
-const fixtures = new Map([
-  [promoModule.uuid, 'promoModule'],
-  [returnsModule.uuid, 'returnsModule'],
-])
+const fixtures = new Map(fs.readdirSync(extensionsRoot, { withFileTypes: true })
+  .filter(entry => entry.isDirectory())
+  .map(entry => {
+    const descriptor = JSON.parse(fs.readFileSync(
+      path.resolve(extensionsRoot, entry.name, 'extensionrc.json'),
+      'utf8'
+    )) as { uuid: string }
+
+    return [descriptor.uuid, entry.name]
+  }))
 
 const extensionFixtureServer = (): Plugin => ({
   name: 'extension-fixture-server',
@@ -284,9 +288,11 @@ export default mergeConfig(basic, defineConfig({
     },
   },
   plugins: [extensionFixtureServer()],
+  root: packageRoot,
   server: {
+    allowedHosts: true,
     cors: true,
-    port: 4175,
+    port: 4173,
     strictPort: true,
   },
 }))

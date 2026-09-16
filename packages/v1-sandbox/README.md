@@ -43,16 +43,17 @@ embed-ui-v1-sandbox serve --host 0.0.0.0 --port 4173
 
 ```json
 {
-  "code": "returnsModule",
-  "baseUrl": "https://extension.test",
-  "entrypoint": "/build/worker.js",
-  "pages": ["returns"],
-  "stylesheet": "/build/extension.css",
-  "targets": []
+  "entrypoint": "https://extension.test/build/worker.js",
+  "pages": [
+    "returns"
+  ],
+  "stylesheet": "https://extension.test/build/extension.css",
+  "targets": [],
+  "runner": "worker"
 }
 ```
 
-`entrypoint` и `stylesheet` разрешаются относительно `baseUrl`. JSON можно
+`entrypoint` и `stylesheet` задаются абсолютными HTTP(S)-адресами. JSON можно
 вставить целиком либо заполнить те же поля отдельно в DevPanel.
 
 ## Применение в тестах
@@ -82,11 +83,10 @@ test('loads extension page in sandbox', async ({ page }) => {
 
   await launchSandboxExtension(page, {
     descriptor: {
-      code: 'returnsModule',
-      baseUrl: 'https://extension.test',
-      entrypoint: '/build/worker.js',
+      runner: 'worker',
+      entrypoint: 'https://extension.test/build/worker.js',
       pages: ['returns'],
-      stylesheet: '/build/extension.css',
+      stylesheet: 'https://extension.test/build/extension.css',
       targets: [],
     },
     fixture: 'order-basic',

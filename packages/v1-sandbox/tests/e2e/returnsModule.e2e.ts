@@ -1,24 +1,29 @@
 import { expect, test } from '@playwright/test'
 
-import { createSandboxDescriptorPagePath } from '../__utils__/sandbox'
-import { getExtensionPageCodes } from '../__utils__/extensions'
-import { readExtensionFixture } from '../__utils__/extensions'
+import { createSandboxPagePath } from '@/automation/playwright'
+
+import { readExtensionDescriptor } from '../__utils__/extensions'
 import { readSandboxSnapshot } from '../__utils__/sandbox'
 
-const extension = readExtensionFixture('returnsModule')
-const [pageCode] = getExtensionPageCodes(extension)
+const descriptor = readExtensionDescriptor('returnsModule')
+const [pageCode] = descriptor.pages
 
-if (!pageCode) throw new Error('returnsModule fixture has no page descriptor.')
+if (!pageCode) throw new Error('returnsModule runtime descriptor has no page.')
+if (!descriptor.stylesheet) throw new Error('returnsModule delivery test requires a stylesheet.')
 
 test('loads returns page extension, filters, opens and saves return', async ({ page }) => {
   const entrypointResponse = page.waitForResponse(
-    response => response.url().endsWith('/runtime/returnsModule/entrypoint.js')
+    response => response.url() === descriptor.entrypoint
   )
   const stylesheetResponse = page.waitForResponse(
-    response => response.url().endsWith('/runtime/returnsModule/stylesheet.css')
+    response => response.url() === descriptor.stylesheet
   )
 
-  await page.goto(createSandboxDescriptorPagePath(extension, pageCode))
+  await page.goto(createSandboxPagePath({
+    descriptor,
+    pageCode,
+    sandboxPath: '/tests/__bootstrap__/index.html',
+  }))
 
   await expect(page).toHaveURL(/mode=page/u)
   await expect(page).toHaveURL(new RegExp(`pageCode=${pageCode}`, 'u'))

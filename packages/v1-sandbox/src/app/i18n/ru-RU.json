@@ -74,7 +74,7 @@
       },
       "fixture": "Выберите существующую фикстуру.",
       "manifestUrl": {
-        "descriptor": "Введите валидный дескриптор с полями code, baseUrl, entrypoint, stylesheet, pages и targets. Адреса ресурсов могут быть относительными к абсолютному http/https baseUrl.",
+        "descriptor": "Введите дескриптор с полями runner, entrypoint, stylesheet, pages и targets. Runner должен быть worker, адреса ресурсов — абсолютными HTTP(S)-адресами.",
         "required": "Укажите дескриптор расширения."
       },
       "mode": "Выберите режим запуска.",

@@ -5,10 +5,6 @@
         :aria-labelledby="uid + '-extension-onboarding-title'"
     >
         <div :class="$style['extension-onboarding__content']">
-            <p :class="$style['extension-onboarding__eyebrow']">
-                {{ t('extensionOnboarding.eyebrow') }}
-            </p>
-
             <h1
                 :id="uid + '-extension-onboarding-title'"
                 :class="$style['extension-onboarding__title']"
@@ -25,7 +21,24 @@
             <div :class="$style['extension-onboarding__descriptor']">
                 <span>{{ t('extensionOnboarding.descriptor') }}</span>
 
-                <pre :class="$style['extension-onboarding__example']"><code>{{ descriptorExample }}</code></pre>
+                <div :class="$style['extension-onboarding__code-block']">
+                    <pre :class="$style['extension-onboarding__example']"><code>{{ descriptorExample }}</code></pre>
+
+                    <VCopyButton
+                        :label="t('extensionOnboarding.actions.copy')"
+                        :text="descriptorExample"
+                        :class="$style['extension-onboarding__copy']"
+                        size="xs"
+                    >
+                        <template #hint>
+                            {{ t('extensionOnboarding.actions.copy') }}
+                        </template>
+
+                        <template #hint-copied>
+                            {{ t('extensionOnboarding.actions.copied') }}
+                        </template>
+                    </VCopyButton>
+                </div>
             </div>
 
             <p :class="$style['extension-onboarding__note']">
@@ -53,6 +66,8 @@ import { useId } from 'vue'
 
 import { UiButton } from '@retailcrm/embed-ui-v1-components/host'
 
+import VCopyButton from '@/components/VCopyButton.vue'
+
 const props = defineProps<{
   openDevPanel(): void;
 }>()
@@ -61,10 +76,9 @@ const { t } = useI18n()
 
 const uid = useId()
 const descriptorExample = JSON.stringify({
-  code: 'promoModule',
-  baseUrl: 'http://web-extensions-server.simla.local',
-  entrypoint: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script',
-  stylesheet: '/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet',
+  runner: 'worker',
+  entrypoint: 'http://web-extensions-server.simla.local/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script',
+  stylesheet: 'http://web-extensions-server.simla.local/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet',
   targets: [],
   pages: ['settings'],
 }, null, 2)
@@ -76,10 +90,11 @@ const openDevPanel = () => props.openDevPanel()
 {
     "extensionOnboarding": {
         "actions": {
-            "openSandbox": "Open developer panel"
+            "openSandbox": "Open developer panel",
+            "copy": "Copy",
+            "copied": "Copied"
         },
         "description": "Use the sandbox to test JS module pages and widgets locally before installing the module in RetailCRM. Before adding the extension to the sandbox, make sure it is running.",
-        "eyebrow": "Local development",
         "modeNote": "When using the individual fields, then choose a mode: Widgets or Page.",
         "note": "Only two running processes are required: the extension server and the sandbox. You do not need to start an additional server.",
         "title": "Connect an external extension",
@@ -92,10 +107,11 @@ const openDevPanel = () => props.openDevPanel()
 {
     "extensionOnboarding": {
         "actions": {
-            "openSandbox": "Abrir el panel de desarrollo"
+            "openSandbox": "Abrir el panel de desarrollo",
+            "copy": "Copiar",
+            "copied": "Copiado"
         },
         "description": "Utilice la sandbox para probar localmente las páginas y los widgets del módulo JS antes de instalarlo en RetailCRM. Antes de añadir la extensión a la sandbox, asegúrese de que esté en ejecución.",
-        "eyebrow": "Desarrollo local",
         "modeNote": "Si utiliza los campos individuales, elija después un modo: Widgets o Página.",
         "note": "Solo se necesitan dos procesos en ejecución: el servidor de la extensión y la sandbox. No hace falta iniciar un servidor adicional.",
         "title": "Conectar una extensión externa",
@@ -108,10 +124,11 @@ const openDevPanel = () => props.openDevPanel()
 {
     "extensionOnboarding": {
         "actions": {
-            "openSandbox": "Открыть дев-панель"
+            "openSandbox": "Открыть дев-панель",
+            "copy": "Скопировать",
+            "copied": "Скопировано"
         },
         "description": "Используйте песочницу, чтобы локально проверить страницы и виджеты JS-модуля до его установки в RetailCRM. Перед тем как добавлять расширение в песочницу, убедитесь, что расширение запущено",
-        "eyebrow": "Локальная разработка",
         "modeNote": "При заполнении отдельных полей затем выберите режим: Виджеты или Страница.",
         "note": "Для работы нужны только два запущенных процесса: сервер расширения и песочница. Дополнительный сервер запускать не требуется.",
         "title": "Подключите внешнее расширение",
@@ -133,10 +150,11 @@ const openDevPanel = () => props.openDevPanel()
     padding: @spacing-l;
 
     &__content {
+        display: flex;
+        flex-direction: column;
+        gap: @spacing-s;
         border: 1px dashed @grey-600;
         border-radius: @border-radius-lg;
-        display: grid;
-        gap: @spacing-s;
         max-width: 760px;
         padding: @spacing-l;
         width: 100%;
@@ -159,10 +177,24 @@ const openDevPanel = () => props.openDevPanel()
     }
 
     &__description {
+        position: relative;
         color: @grey-900;
         font-size: 15px;
         line-height: 1.45;
         margin: 0;
+    }
+
+    &__code-block {
+        position: relative;
+        min-width: 0;
+    }
+
+    &__copy {
+        position: absolute;
+        top: @spacing-xs;
+        right: @spacing-xs;
+        background: @grey-400;
+        border-radius: @border-radius-md;
     }
 
     &__descriptor {

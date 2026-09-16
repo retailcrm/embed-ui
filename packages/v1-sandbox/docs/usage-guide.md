@@ -41,25 +41,26 @@ and optional stylesheet over HTTP(S). Prepare a runtime descriptor:
 
 ```json
 {
-  "baseUrl": "https://extension.test/build/",
-  "code": "returnsModule",
-  "entrypoint": "worker.js",
-  "pages": ["returns"],
-  "stylesheet": "extension.css",
-  "targets": []
+  "entrypoint": "https://extension.test/build/worker.js",
+  "pages": [
+    "returns"
+  ],
+  "stylesheet": "https://extension.test/build/extension.css",
+  "targets": [],
+  "runner": "worker"
 }
 ```
 
 This descriptor is the runtime contract, not the raw `extensionrc.json` from an
-extension project. `baseUrl` is absolute, while `entrypoint` and `stylesheet`
-may be relative to it. `pages` contains page-code strings, and the descriptor
-has no `runner` or `uuid` field. The sandbox supports worker extensions only.
+extension project. `entrypoint` and `stylesheet` are absolute HTTP(S) URLs.
+`pages` contains page-code strings and `runner` must be `worker`.
+No separate extension UUID is required; resource URLs are used as supplied.
 
 4. In the sandbox, click the `</>` icon in the lower part of the dark rail. The
    sandbox control panel opens.
 
-5. Paste the JSON into `Descriptor JSON`, or fill in `Code`, `Base URL`,
-   `Entrypoint`, and `Stylesheet` separately.
+5. Paste the JSON into `Descriptor JSON`, or fill in `Entrypoint` and
+   `Stylesheet` separately.
 
 6. Select a mode:
 
@@ -107,34 +108,37 @@ separately, and the sandbox receives its runtime descriptor through
 
 ## What to Paste into Descriptor JSON
 
-The value is a JSON object with exactly six fields:
+The value is a JSON object with exactly five fields:
 
 ```json
 {
-  "baseUrl": "https://extension.test/assets/",
-  "code": "returnsModule",
-  "entrypoint": "worker.js",
-  "pages": ["returns"],
-  "stylesheet": "styles.css",
-  "targets": ["order/card:common.after"]
+  "entrypoint": "https://extension.test/assets/worker.js",
+  "pages": [
+    "returns"
+  ],
+  "stylesheet": "https://extension.test/assets/styles.css",
+  "targets": [
+    "order/card:common.after"
+  ],
+  "runner": "worker"
 }
 ```
 
 The sandbox passes `entrypoint` to the worker and connects `stylesheet`
-directly, without fetching or analyzing HTML first. Relative resource paths
-are resolved against `baseUrl`; absolute HTTP(S) resource URLs are also
-accepted. `host.httpCall` uses `baseUrl` as its backend base. `code` and every
-array item must be non-empty strings, while `stylesheet` may be `null`. Extra
-fields, including `runner` and `uuid`, are rejected.
+directly, without fetching or analyzing HTML first. Resource URLs must be
+absolute HTTP(S) URLs. `host.httpCall` uses the origin of `entrypoint` as its
+backend base. Page codes must be non-empty strings; targets must
+belong to `TargetName`. `stylesheet` may be `null`, and `runner` must be
+`worker`. Extra fields, including `code` and `baseUrl`, are rejected.
 
 ## Control Panel Fields
 
 - `Descriptor JSON`: the complete runtime descriptor. It is synchronized with
   the individual descriptor fields below it.
-- `Code`: stable module code used as the worker and Host API identity.
-- `Base URL`: absolute HTTP(S) base address of the extension server.
-- `Entrypoint`: worker script URL, relative to `Base URL` or absolute.
-- `Stylesheet`: optional stylesheet URL, relative to `Base URL` or absolute.
+- `Entrypoint`: absolute HTTP(S) worker script URL.
+- `Stylesheet`: optional absolute HTTP(S) stylesheet URL.
+
+- `Runner`: the field editor sets this to `worker` automatically.
 - `Mode`: selects the runner type. `Widgets` mounts widgets into CRM slots;
   `Page` mounts a page runner by `Page code`.
 - `Selected fixture`: CRM mock state for the next launch: order context, custom
@@ -213,12 +217,14 @@ Example runtime descriptor:
 
 ```json
 {
-  "baseUrl": "https://extension.test/build/",
-  "code": "returnsModule",
-  "entrypoint": "worker.js",
-  "pages": ["board", "summary"],
+  "entrypoint": "https://extension.test/build/worker.js",
+  "pages": [
+    "board",
+    "summary"
+  ],
   "stylesheet": null,
-  "targets": []
+  "targets": [],
+  "runner": "worker"
 }
 ```
 
@@ -377,11 +383,10 @@ import { expect, test } from '@playwright/test'
 
 test('mounts widget extension in sandbox', async ({ page }) => {
   const descriptor = {
-    baseUrl: '%extension-url%/',
-    code: 'returnsModule',
-    entrypoint: 'build/worker.js',
+    runner: 'worker',
+    entrypoint: '%extension-url%/build/worker.js',
     pages: [],
-    stylesheet: 'build/extension.css',
+    stylesheet: '%extension-url%/build/extension.css',
     targets: ['order/card:common.after'],
   }
 
@@ -426,8 +431,8 @@ The test also needs fixture metadata that can be converted to the strict
 runtime descriptor:
 
 - `fixtureName`: local folder name under `tests/__fixtures__/extensions/`;
-- `uuid`: extension id kept in the source fixture metadata when the real module
-  has one; it is not copied to the runtime descriptor;
+- `uuid`: source fixture metadata used by legacy extension URLs; it is not
+  copied to the runtime descriptor;
 - `targets`: widget mount slots, required for `mode=widget`;
 - `pages[].code`: page codes, required for `mode=page`.
 
@@ -464,9 +469,8 @@ await page.goto(createSandboxPagePath({
 ```
 
 Raw `extensionrc.json` is not passed to the sandbox. The helper converts page
-objects to code strings, creates a runtime `baseUrl` with relative
-entrypoint/stylesheet paths, uses the fixture name as `code`, and drops
-project-only fields such as `runner` and `uuid`.
+objects to code strings, creates absolute entrypoint/stylesheet URLs, and
+sets `runner` to `worker`. Project metadata such as `uuid` is omitted.
 
 Use an inline descriptor when the extension source is copied from an external
 project and should not get a local `extensionrc.json`:
@@ -491,7 +495,7 @@ Both variants produce the same strict runtime descriptor. The difference is
 only where the source fixture metadata comes from.
 
 When an extension calls `host.httpCall(action, payload)`, the sandbox uses the
-runtime descriptor's `baseUrl` and proxies the call to
+origin of the runtime descriptor's `entrypoint` and proxies the call to
 `%extension-url%/%action%`. That keeps tests close to the real CRM flow without
 hardcoding backend response shapes in Playwright.
 
@@ -618,28 +622,39 @@ npx @retailcrm/embed-ui-v1-sandbox init-env --output .env.sandbox
 Variables:
 
 - `SANDBOX_BASE_URL`: sandbox shell URL. Empty means the local Playwright config
-  can start the sandbox server itself. Set it when the sandbox is already
+  starts one Vite server for both the sandbox and all test extensions. Set it when this E2E server is already
   running, for example `http://v1.embed-ui-sandbox.local` on OrbStack/macOS or
   `http://v1.embed-ui-sandbox.test` on Linux/Traefik.
-- `SANDBOX_EXTENSION_DESCRIPTOR`: one-line runtime descriptor JSON. When its
-  `code` matches an E2E fixture, Playwright launches that external extension
-  instead. Before running browser scenarios, Playwright checks that its
-  `entrypoint` and non-null `stylesheet` are available. An empty value keeps
-  the repository fixture extension.
 
-Typical local page test values:
+For repository E2E runs, `yarn workspace @retailcrm/embed-ui-v1-sandbox dev:e2e`
+builds all fixtures in `tests/__fixtures__/extensions` and serves them together
+with the sandbox on port 4173. Adding another extension does not require another
+server. An existing server selected through `SANDBOX_BASE_URL` must also serve
+these fixture routes and `tests/__bootstrap__/index.html`.
 
-```dotenv
-SANDBOX_BASE_URL=http://v1.embed-ui-sandbox.local
-SANDBOX_EXTENSION_DESCRIPTOR={"code":"promoModule","baseUrl":"http://web-extensions-server.simla.local","entrypoint":"/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/script","stylesheet":"/extension/8ebe1617-d609-43e4-b35a-fbfae011eee3/stylesheet","targets":[],"pages":["settings"]}
+Extension selection lives in the E2E test code:
+
+```ts
+const descriptor = readExtensionDescriptor('returnsModule')
+
+await page.goto(createSandboxPagePath({
+  descriptor,
+  pageCode: descriptor.pages[0],
+}))
 ```
+
+The helper reads `tests/__fixtures__/extensions/returnsModule/extensionrc.json`
+and creates a runtime descriptor for the fixture server. No separate UUID or
+extension-selection environment variable is required. To test a separately
+running extension, provide its runtime descriptor directly in the test code,
+with absolute `entrypoint` and `stylesheet` URLs.
 
 Playwright covers:
 
 - shell loading;
 - control panel opening;
 - public URL contract updates from the control panel;
-- external extension startup when `SANDBOX_EXTENSION_DESCRIPTOR` is set;
+- extension startup from the descriptor provided by the test;
 - user interaction inside the extension;
 - `host.httpCall` through sandbox proxy middleware;
 - context changes through the JSON editor.

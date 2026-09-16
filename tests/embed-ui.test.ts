@@ -667,16 +667,16 @@ describe('embed-ui CLI', () => {
       'Development environment is ready.'
     )
     expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
-      'const stylesheetResponse = page.waitForResponse(`${extensionUrl}/stylesheet`)'
+      'const scriptResponse = page.waitForResponse(descriptor.entrypoint)'
     )
     expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
-      '? new URL(extensionrc.uuid, extensionBaseURL).href'
+      'const descriptor = parseSandboxExtensionDescriptorJson(JSON.stringify({'
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
-      'Fill SANDBOX_EXTENSION_URL in .env.sandbox before running starter.e2e.ts.'
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).not.toContain(
+      'test.skip('
     )
-    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).toContain(
-      'console.warn(`[sandbox:e2e] ${missingExtensionUrlMessage}`)'
+    expect(fs.readFileSync(path.join(tempDir, 'web/tests/e2e/starter.e2e.ts'), 'utf8')).not.toContain(
+      'manifestUrl:'
     )
     expect(fs.readFileSync(path.join(tempDir, 'README.md'), 'utf8')).toContain(
       '# Фронтенд расширения RetailCRM'

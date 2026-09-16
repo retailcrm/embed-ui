@@ -53,10 +53,9 @@ test('extension onboarding opens sandbox controls', async () => {
   expect(within(onboarding).getByRole('heading', {
     name: 'Подключите внешнее расширение',
   })).toBeInstanceOf(HTMLHeadingElement)
-  expect(within(onboarding).getByText(/"code": "promoModule"/u)).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText(/"baseUrl": "http:\/\/web-extensions-server\.simla\.local"/u)).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText(/"entrypoint": "\/extension\/8ebe1617-d609-43e4-b35a-fbfae011eee3\/script"/u)).toBeInstanceOf(HTMLElement)
-  expect(within(onboarding).getByText(/"stylesheet": "\/extension\/8ebe1617-d609-43e4-b35a-fbfae011eee3\/stylesheet"/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"entrypoint": "http:\/\/web-extensions-server\.simla\.local\/extension\/8ebe1617-d609-43e4-b35a-fbfae011eee3\/script"/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"stylesheet": "http:\/\/web-extensions-server\.simla\.local\/extension\/8ebe1617-d609-43e4-b35a-fbfae011eee3\/stylesheet"/u)).toBeInstanceOf(HTMLElement)
+  expect(within(onboarding).getByText(/"runner": "worker"/u)).toBeInstanceOf(HTMLElement)
   expect(within(onboarding).getByText(/"pages": \[/u)).toBeInstanceOf(HTMLElement)
   expect(within(onboarding).getByText(
     'Формат передаваемого дескриптора'

@@ -24,11 +24,10 @@ export type SandboxLaunchConfig = {
 export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
 
 export type SandboxExtensionDescriptor = {
-  code: string;
-  baseUrl: string;
   entrypoint: string;
-  stylesheet: string | null;
   pages: string[];
+  runner: 'worker';
+  stylesheet: string | null;
   targets: TargetName[];
 }
 

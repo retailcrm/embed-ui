@@ -32,11 +32,21 @@ afterEach(() => {
 })
 
 describe('playwright automation helpers', () => {
+  test('uses the default sandbox URL when the environment value is empty', () => {
+    vi.stubEnv('SANDBOX_BASE_URL', '')
+
+    const path = createSandboxPagePath({ pageCode: 'settings' })
+    const url = new URL(path, 'http://127.0.0.1:4173')
+
+    expect(url.pathname).toBe('/')
+    expect(url.searchParams.get('mode')).toBe('page')
+    expect(url.searchParams.get('pageCode')).toBe('settings')
+  })
+
   test('creates sandbox path from runtime descriptor', () => {
     const descriptor = {
-      baseUrl: 'https://extension.test/runtime/',
-      code: 'settings-extension',
-      entrypoint: 'worker.js',
+      runner: 'worker' as const,
+      entrypoint: 'https://extension.test/runtime/worker.js',
       pages: ['settings'],
       stylesheet: null,
       targets: ['order/card:common.after' as const],
@@ -185,9 +195,8 @@ describe('playwright automation helpers', () => {
 
   test('reads runtime descriptor from environment', () => {
     const descriptor = {
-      baseUrl: 'http://extension.test',
-      code: 'promoModule',
-      entrypoint: '/extension/id/script',
+      runner: 'worker' as const,
+      entrypoint: 'http://extension.test/extension/id/script',
       pages: ['settings'],
       stylesheet: null,
       targets: [],
@@ -280,9 +289,8 @@ describe('playwright automation helpers', () => {
 
   test('waits for a serialized runtime descriptor', async () => {
     const descriptor = {
-      baseUrl: 'https://extension.test/runtime/',
-      code: 'returns-extension',
-      entrypoint: 'worker.js',
+      runner: 'worker' as const,
+      entrypoint: 'https://extension.test/runtime/worker.js',
       pages: ['returns'],
       stylesheet: null,
       targets: [],

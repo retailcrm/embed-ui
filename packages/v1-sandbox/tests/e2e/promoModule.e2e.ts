@@ -2,14 +2,13 @@ import { expect, test } from '@playwright/test'
 
 import { isSandboxOrderTarget } from '@/scenario'
 
-import { createRuntimeExtensionDescriptor } from '../__utils__/extensions'
-import { createSandboxPagePath, createSandboxWidgetPath } from '../__utils__/sandbox'
-import { readExtensionFixture } from '../__utils__/extensions'
+import { createSandboxPagePath, createSandboxWidgetPath } from '@/automation/playwright'
 
-const extension = readExtensionFixture('promoModule')
-const runtimeExtension = createRuntimeExtensionDescriptor(extension)
-const [pageCode] = runtimeExtension.pages
-const target = runtimeExtension.targets.find(isSandboxOrderTarget)
+import { readExtensionDescriptor } from '../__utils__/extensions'
+
+const descriptor = readExtensionDescriptor('promoModule')
+const [pageCode] = descriptor.pages
+const target = descriptor.targets.find(isSandboxOrderTarget)
 
 if (!pageCode) throw new Error('promoModule runtime descriptor has no page.')
 
@@ -39,7 +38,11 @@ test('keeps context actions disabled without a connected extension', async ({ pa
 })
 
 test('loads promo module page extension', async ({ page }) => {
-  await page.goto(createSandboxPagePath(extension, pageCode))
+  await page.goto(createSandboxPagePath({
+    descriptor,
+    pageCode,
+    sandboxPath: '/tests/__bootstrap__/index.html',
+  }))
 
   await expect(page).toHaveURL(/mode=page/u)
   await expect(page).toHaveURL(new RegExp(`pageCode=${pageCode}`, 'u'))
@@ -50,7 +53,11 @@ test('loads promo module page extension', async ({ page }) => {
 test('loads promo module widget extension from target descriptor', async ({ page }) => {
   test.skip(!target, 'promoModule runtime descriptor has no widget target.')
 
-  await page.goto(createSandboxWidgetPath(extension, target))
+  await page.goto(createSandboxWidgetPath({
+    descriptor,
+    targets: target ? [target] : [],
+    sandboxPath: '/tests/__bootstrap__/index.html',
+  }))
 
   const widgetMount = page.getByRole('region', {
     name: `Место встраивания виджета: ${target}`,
@@ -74,7 +81,11 @@ test('loads promo module widget extension from target descriptor', async ({ page
 test('restarts promo widget with manually changed context', async ({ page }) => {
   test.skip(!target, 'promoModule runtime descriptor has no widget target.')
 
-  await page.goto(createSandboxWidgetPath(extension, target))
+  await page.goto(createSandboxWidgetPath({
+    descriptor,
+    targets: target ? [target] : [],
+    sandboxPath: '/tests/__bootstrap__/index.html',
+  }))
   await page.getByRole('button', { name: 'Открыть управление песочницей' }).click()
 
   const dialog = page.getByRole('dialog', { name: 'Управление песочницей' })

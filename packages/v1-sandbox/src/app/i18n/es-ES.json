@@ -74,7 +74,7 @@
       },
       "fixture": "Seleccione unos datos de prueba existentes.",
       "manifestUrl": {
-        "descriptor": "Introduzca un descriptor válido con code, baseUrl, entrypoint, stylesheet, pages y targets. Las URL de recursos pueden ser relativas a un baseUrl http/https absoluto.",
+        "descriptor": "Introduzca un descriptor con runner, entrypoint, stylesheet, pages y targets. Runner debe ser worker y las URL de recursos deben ser HTTP(S) absolutas.",
         "required": "Introduzca el descriptor de la extensión."
       },
       "mode": "Elige un modo de inicio.",

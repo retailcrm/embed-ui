@@ -192,9 +192,8 @@ describe('browser sandbox mounting', () => {
 
   test('launches extension from a runtime descriptor object', async () => {
     const descriptor = {
-      baseUrl: 'http://extension.test/runtime/',
-      code: 'returns-extension',
-      entrypoint: 'worker.js',
+      runner: 'worker' as const,
+      entrypoint: 'http://extension.test/runtime/worker.js',
       pages: ['returns'],
       stylesheet: null,
       targets: [],
