@@ -33,6 +33,7 @@ afterEach(async () => {
   vi.restoreAllMocks()
   window.history.replaceState(null, '', '/')
   window.sessionStorage.clear()
+  window.localStorage.clear()
 })
 
 test('mounts sandbox with default onboarding screen', () => {
@@ -98,7 +99,8 @@ test('opens dev panel and validates launch config input', async () => {
 
   expect(applyButton.disabled).toBe(true)
 
-  const manifestInput = within(dialog).getByLabelText('Манифест / URL расширения') as HTMLInputElement
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
+  const manifestInput = within(dialog).getByLabelText('JSON дескриптора') as HTMLTextAreaElement
 
   await fireEvent.update(manifestInput, 'http://extension.test/not-extension/id')
   await nextTick()
@@ -108,10 +110,10 @@ test('opens dev panel and validates launch config input', async () => {
   await fireEvent.click(applyButton)
 
   expect((await within(dialog).findByRole('alert')).textContent?.trim())
-    .toBe('URL должен быть вида %extension-url%/extension/%extension-id%.')
+    .toBe('Введите дескриптор с полями runner, entrypoint, stylesheet, pages и targets. Runner должен быть worker, адреса ресурсов — абсолютными HTTP(S)-адресами.')
 })
 
-test('installs launch bridge and creates launch urls from current config', () => {
+test('installs and removes the launch bridge', () => {
   mountSandboxApp()
 
   const bridge = readLaunchBridge()
@@ -122,19 +124,6 @@ test('installs launch bridge and creates launch urls from current config', () =>
     mode: 'widget',
     pageCode: 'orders-dashboard',
   })
-
-  const launchUrl = new URL(bridge?.createLaunchUrl({
-    manifestUrl: 'http://extension.test/extension/returns-module',
-    mode: 'page',
-    pageCode: 'returns',
-    targets: ['order/card:payment.before'],
-  }) ?? '')
-
-  expect(launchUrl.searchParams.get('manifestUrl')).toBe('http://extension.test/extension/returns-module')
-  expect(launchUrl.searchParams.get('mode')).toBe('page')
-  expect(launchUrl.searchParams.get('pageCode')).toBe('returns')
-  expect(launchUrl.searchParams.get('target')).toBe('order/card:payment.before')
-  expect(launchUrl.searchParams.get('targets')).toBe('order/card:payment.before')
 
   app?.unmount()
   app = null
@@ -173,21 +162,4 @@ test('keeps context apply disabled without connected extension', async () => {
   expect(applyContextButton.disabled).toBe(true)
   expect(within(dialog).getByText('Расширение не подключено'))
     .toBeInstanceOf(HTMLElement)
-})
-
-test('shows stored inferred page mode launch notice once', async () => {
-  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
-
-  window.sessionStorage.setItem('v1-sandbox:launch-notice', JSON.stringify({
-    pageCode: 'returns',
-    type: 'inferred-page-mode',
-  }))
-
-  mountSandboxApp()
-  await nextTick()
-
-  expect(alertSpy).toHaveBeenCalledWith(
-    'Режим страницы выбран автоматически\n\nВ ссылке не был указан режим. Песочница нашла страницу «returns» в расширении и переключила запуск в режим «Страница».'
-  )
-  expect(window.sessionStorage.getItem('v1-sandbox:launch-notice')).toBeNull()
 })

@@ -84,6 +84,50 @@ else
 endif
 	$(TARGET_OK)
 
+.PHONY: tests-sandbox
+tests-sandbox: .require-compose ## [Tests][docker] Runs jsdom and browser tests for v1-sandbox
+	$(TARGET_HEADER)
+	$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:all
+	$(TARGET_OK)
+
+.PHONY: tests-sandbox-browser
+tests-sandbox-browser: .require-compose ## [Tests][docker] Run browser mod tests for v1-sandbox
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:browser $(cli) --passWithNoTests
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:browser
+endif
+	$(TARGET_OK)
+
+
+.PHONY: tests-sandbox-e2e
+tests-sandbox-e2e: .require-compose ## [Tests][docker] Run e2e tests for v1-sandbox
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:e2e $(cli)
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:e2e
+endif
+	$(TARGET_OK)
+
+.PHONY: tests-sandbox-jsdom
+tests-sandbox-jsdom: .require-compose ## [Tests][docker] Run jsdom tests for v1-sandbox
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:jsdom $(cli) --passWithNoTests
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:jsdom
+endif
+	$(TARGET_OK)
+
 .PHONY: tests-browser
 tests-browser: .require-compose ## [Tests][docker] Runs browser mode tests for all workspaces
 	$(TARGET_HEADER)

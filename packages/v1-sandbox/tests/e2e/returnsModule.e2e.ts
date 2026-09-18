@@ -1,23 +1,43 @@
 import { expect, test } from '@playwright/test'
 
-import { createSandboxPagePath } from '../__utils__/sandbox'
-import { getExtensionPageCodes } from '../__utils__/extensions'
-import { readExtensionFixture } from '../__utils__/extensions'
-import { readSandboxSnapshot } from '../__utils__/sandbox'
+import { launchSandboxExtension, readSandboxSnapshot } from '@/automation/playwright'
 
-const extension = readExtensionFixture('returnsModule')
-const [pageCode] = getExtensionPageCodes(extension)
+import { readExtensionDescriptor } from '../__utils__/extensions'
 
-if (!pageCode) throw new Error('returnsModule fixture has no page descriptor.')
+const descriptor = readExtensionDescriptor('returnsModule')
+const [pageCode] = descriptor.pages
+
+if (!pageCode) throw new Error('returnsModule runtime descriptor has no page.')
+if (!descriptor.stylesheet) throw new Error('returnsModule delivery test requires a stylesheet.')
 
 test('loads returns page extension, filters, opens and saves return', async ({ page }) => {
-  await page.goto(createSandboxPagePath(extension, pageCode))
+  const entrypointResponse = page.waitForResponse(
+    response => response.url() === descriptor.entrypoint
+  )
+  const stylesheetResponse = page.waitForResponse(
+    response => response.url() === descriptor.stylesheet
+  )
 
-  await expect(page).toHaveURL(/mode=page/u)
-  await expect(page).toHaveURL(new RegExp(`pageCode=${pageCode}`, 'u'))
+  await page.goto('/tests/__bootstrap__/index.html')
+  await launchSandboxExtension(page, {
+    mode: 'page',
+    descriptor,
+    pageCode,
+  })
+
+  await expect(page).toHaveURL(url => url.search === '')
+  expect((await entrypointResponse).status()).toBe(200)
+  expect((await stylesheetResponse).status()).toBe(200)
   await expect(page.getByRole('button', { name: 'Возвраты' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Создать возврат' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Список возвратов' })).toBeVisible()
+  await expect.poll(() => page.getByRole('heading', {
+    name: 'Список возвратов',
+  }).evaluate((heading) => {
+    const pageSection = heading.closest('section')
+
+    return pageSection ? getComputedStyle(pageSection).display : null
+  })).toBe('flex')
   await expect.poll(async () => {
     const snapshot = await readSandboxSnapshot(page)
 

@@ -1,14 +1,19 @@
-import type { SandboxLaunchMode, SandboxOrderTarget } from '@/scenario/types'
+import type {
+  SandboxExtensionDescriptor,
+  SandboxLaunchMode,
+  SandboxOrderTarget,
+} from '@/scenario/types'
 
 import { z } from 'zod'
 
 import { isSandboxOrderTarget } from '@/scenario/predicates'
 import { orderSandboxFixtures } from '@/scenario/fixtures'
+import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
 
 export type DevPanelField =
   | 'contextJson'
   | 'fixture'
-  | 'manifestUrl'
+  | 'descriptorJson'
   | 'mode'
   | 'pageCode'
   | 'targets'
@@ -22,9 +27,8 @@ export type DevPanelValidationMessages = {
   contextJsonRootObject: string;
   contextJsonUnknownContext(context: string): string;
   fixture: string;
-  manifestUrlEndpoint: string;
-  manifestUrlFormat: string;
-  manifestUrlRequired: string;
+  descriptorJsonInvalid: string;
+  descriptorJsonRequired: string;
   mode: string;
   pageCodeFormat: string;
   pageCodeRequired: string;
@@ -39,15 +43,15 @@ export const isValidSandboxPageCode = (value: string): boolean =>
 
 export type LaunchConfigValidationInput = {
   fixture: string;
-  manifestUrl: string;
+  descriptorJson: string;
   mode: string;
   pageCode: string;
   targets: string[];
 }
 
 export type ValidatedLaunchConfigInput = {
+  descriptor: SandboxExtensionDescriptor;
   fixture: string;
-  manifestUrl: string;
   mode: SandboxLaunchMode;
   pageCode: string;
   targets: SandboxOrderTarget[];
@@ -76,9 +80,15 @@ export const validateLaunchConfigInput = (
     }
   }
 
+  const source = validateExtensionSourceInput(result.data.descriptorJson, messages)
+
+  if (!source.success) return source
+
   return {
     data: {
-      ...result.data,
+      fixture: result.data.fixture,
+      pageCode: result.data.pageCode,
+      ...source.data,
       mode: result.data.mode as SandboxLaunchMode,
       targets: result.data.targets as SandboxOrderTarget[],
     },
@@ -128,47 +138,9 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
     value => value in orderSandboxFixtures,
     messages.fixture
   ),
-  manifestUrl: z.string()
+  descriptorJson: z.string()
     .transform(value => value.trim())
-    .superRefine((value, context) => {
-      if (!value) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlRequired,
-        })
-
-        return
-      }
-
-      let url: URL
-
-      try {
-        url = new URL(value)
-      } catch {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlFormat,
-        })
-
-        return
-      }
-
-      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlFormat,
-        })
-
-        return
-      }
-
-      if (!hasExtensionEndpoint(url)) {
-        context.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: messages.manifestUrlEndpoint,
-        })
-      }
-    }),
+    .refine(value => value.length > 0, messages.descriptorJsonRequired),
   mode: z.enum(['page', 'widget'], {
     invalid_type_error: messages.mode,
     required_error: messages.mode,
@@ -208,6 +180,25 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
     })
   }
 })
+
+const validateExtensionSourceInput = (
+  value: string,
+  messages: DevPanelValidationMessages
+): ValidationResult<Pick<ValidatedLaunchConfigInput, 'descriptor'>> => {
+  try {
+    return {
+      data: {
+        descriptor: parseSandboxExtensionDescriptorJson(value),
+      },
+      success: true,
+    }
+  } catch {
+    return {
+      errors: { descriptorJson: messages.descriptorJsonInvalid },
+      success: false,
+    }
+  }
+}
 
 const createContextJsonSchema = (
   contextNames: readonly string[],
@@ -266,17 +257,10 @@ const getIssueField = (issue: z.ZodIssue): DevPanelField => {
 const isDevPanelField = (value: unknown): value is DevPanelField =>
   value === 'contextJson'
   || value === 'fixture'
-  || value === 'manifestUrl'
+  || value === 'descriptorJson'
   || value === 'mode'
   || value === 'pageCode'
   || value === 'targets'
-
-const hasExtensionEndpoint = (url: URL): boolean => {
-  const parts = url.pathname.split('/').filter(Boolean)
-  const extensionIndex = parts.indexOf('extension')
-
-  return extensionIndex >= 0 && Boolean(parts[extensionIndex + 1])
-}
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)

@@ -107,13 +107,15 @@ export const launchSandboxExtension = async (
   config: SandboxLaunchInput,
   options: MountSandboxOptions = {}
 ): Promise<MountedSandbox> => {
-  const sandbox = await mountSandbox(options)
-  const launchUrl = sandbox.bridge.createLaunchUrl(config)
+  const mounted = await mountSandbox(options)
 
-  sandbox.unmount()
-  window.history.replaceState(null, '', launchUrl)
-
-  return mountSandbox(options.root ? { root: options.root } : {})
+  try {
+    await mounted.bridge.launch(config)
+    return mounted
+  } catch (error) {
+    mounted.unmount()
+    throw error
+  }
 }
 
 export const waitForSandboxLaunchBridge = async (

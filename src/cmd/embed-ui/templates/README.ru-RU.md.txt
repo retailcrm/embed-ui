@@ -84,8 +84,12 @@ __PACKAGE_MANAGER_RUN__ sandbox:serve
 ## Тестирование
 
 - `__PACKAGE_MANAGER_RUN__ test:browser` запускает реальный Worker в Chromium: изменяет и сохраняет настройки страницы, затем редактирует черновик в шторке виджета.
-- `__PACKAGE_MANAGER_RUN__ test:e2e` собирает расширение, проверяет доставку descriptor, script и stylesheet, затем сохраняет настройки страницы через Playwright.
-- `__PACKAGE_MANAGER_RUN__ extension:serve` после сборки запускает `http://127.0.0.1:4175`. Тесты собирают конкретный manifest URL как `http://127.0.0.1:4175/extension/<uuid>`.
+- `__PACKAGE_MANAGER_RUN__ test:e2e` собирает расширение, запускает его по runtime-дескриптору, проверяет загрузку скрипта и стилей, затем сохраняет настройки страницы через Playwright.
+- `__PACKAGE_MANAGER_RUN__ extension:serve` после сборки запускает `http://127.0.0.1:4175`. Тесты собирают runtime-дескриптор из `extensionrc.json` с абсолютными URL `/extension/<uuid>/script` и `/extension/<uuid>/stylesheet`. UUID остаётся в URL, отдельного поля в runtime-дескрипторе нет.
+
+Песочница запускается по адресу `http://127.0.0.1:4173`; вне CI Playwright повторно
+использует уже запущенный сервер. Локальные тесты работают без `.env.sandbox`.
+Переменная `SANDBOX_EXTENSION_URL` позволяет указать другой адрес сервера расширения.
 
 Перед первым browser/e2e запуском может потребоваться установить Chromium:
 

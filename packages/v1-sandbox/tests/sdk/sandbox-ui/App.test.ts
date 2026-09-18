@@ -1,5 +1,7 @@
+import type { SandboxLaunchConfig } from '@/scenario/types'
+
 import type SandboxApp from '@/app/App.vue'
-import type { SandboxExtensionSource } from '@/scenario/manifest'
+import type { SandboxExtensionSource } from '@/scenario/extension'
 
 import type * as HostComponents from '@retailcrm/embed-ui-v1-components/host'
 
@@ -79,7 +81,6 @@ const endpointHttpCallMock = vi.fn()
 const forceUpdateMock = vi.fn()
 const fakeWorkers: FakeWorker[] = []
 let controllerOptions: {
-  getDescriptorUuid: () => string | undefined;
   getHttpCallBaseUrl: () => string | null;
 } | null = null
 let App: typeof SandboxApp
@@ -87,7 +88,7 @@ let renderedApp: ReturnType<typeof render> | null = null
 let currentEndpoint: FakeEndpoint
 let workerReadyMode: WorkerReadyMode = 'ready'
 
-vi.mock('@/scenario/manifest', () => ({
+vi.mock('@/scenario/extension', () => ({
   resolveSandboxExtensionSource: resolveSandboxExtensionSourceMock,
 }))
 
@@ -159,7 +160,6 @@ vi.mock('@/runtime/mount', () => ({
     mode: 'page' | 'widget';
     pageCode: string;
     targets: string[];
-    widgetId: string;
   }) => {
     if (config.mode === 'page') {
       return [{
@@ -177,15 +177,15 @@ vi.mock('@/runtime/mount', () => ({
     }
 
     return config.targets.map(target => ({
-      id: `${config.widgetId}:${target.replace(/[^a-z0-9]+/giu, '-')}`,
+      id: `sandbox-widget:${target.replace(/[^a-z0-9]+/giu, '-')}`,
       label: target,
       receiver: {
         flush: vi.fn(async () => undefined),
         receive: vi.fn(),
       },
-      releaseConfig: { id: `${config.widgetId}:${target.replace(/[^a-z0-9]+/giu, '-')}` },
+      releaseConfig: { id: `sandbox-widget:${target.replace(/[^a-z0-9]+/giu, '-')}` },
       runConfig: {
-        id: `${config.widgetId}:${target.replace(/[^a-z0-9]+/giu, '-')}`,
+        id: `sandbox-widget:${target.replace(/[^a-z0-9]+/giu, '-')}`,
         target,
       },
       tree: null,
@@ -292,18 +292,21 @@ const createExtensionSource = (
   descriptor: Partial<SandboxExtensionSource['descriptor']> = {}
 ): SandboxExtensionSource => ({
   descriptor: {
+    runner: 'worker' as const,
     entrypoint: 'http://extension.test/extension/demo/script',
     pages: [],
-    runner: 'worker',
     stylesheet: null,
-    targets: ['order/card:common.before'],
-    uuid: 'demo-extension',
+    targets: [
+      'order/card:common.before',
+      'order/card:common.after',
+    ],
     ...descriptor,
   },
   entrypoint: new URL('http://extension.test/extension/demo/script'),
   httpBaseUrl: 'http://extension.test/',
-  manifestUrl: 'http://extension.test/extension/demo',
 })
+
+const descriptor = createExtensionSource({ pages: ['settings'] }).descriptor
 
 const createTestI18n = () => createI18n({
   fallbackLocale: 'en-GB',
@@ -320,10 +323,18 @@ beforeAll(async () => {
   App = (await import('@/app/App.vue')).default
 })
 
-const renderAppWithRuntime = (query: string, endpoint = createEndpoint()) => {
+const renderAppWithRuntime = (config?: Partial<SandboxLaunchConfig>, endpoint = createEndpoint()) => {
   currentEndpoint = endpoint
   createEndpointMock.mockReturnValue(currentEndpoint)
-  window.history.replaceState(null, '', query)
+  if (config?.descriptor) {
+    window.localStorage.setItem('v1-sandbox:launch-config:v1', JSON.stringify({
+      fixture: 'order-basic',
+      mode: 'widget',
+      pageCode: 'orders-dashboard',
+      targets: config.descriptor.targets,
+      ...config,
+    }))
+  }
 
   renderedApp = render(App, {
     global: {
@@ -351,6 +362,7 @@ afterEach(async () => {
   vi.restoreAllMocks()
   window.history.replaceState(null, '', '/')
   window.sessionStorage.clear()
+  window.localStorage.clear()
 })
 
 const openDevPanel = async (): Promise<HTMLElement> => {
@@ -381,14 +393,36 @@ const selectOption = async (
   await fireEvent.click(screen.getByRole('option', { name: option }))
 }
 
+const openDescriptorJsonEditor = async (
+  dialog: HTMLElement
+): Promise<HTMLTextAreaElement> => {
+  const toggle = within(dialog).getByRole('button', { name: 'JSON' })
+
+  if (toggle.getAttribute('aria-pressed') !== 'true') {
+    await fireEvent.click(toggle)
+  }
+
+  return within(dialog).getByRole('textbox', {
+    name: 'JSON дескриптора',
+  }) as HTMLTextAreaElement
+}
+
 const configurePageLaunch = async (
   dialog: HTMLElement,
-  manifestUrl: string,
+  baseUrl: string,
   pageCode: string
 ) => {
+  const descriptor = {
+    runner: 'worker',
+    entrypoint: new URL('/extension/demo/script', baseUrl).href,
+    pages: [pageCode],
+    stylesheet: null,
+    targets: [],
+  }
+
   await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Манифест / URL расширения',
-  }), manifestUrl)
+    name: 'Entrypoint',
+  }), descriptor.entrypoint)
   await selectOption(dialog, 'Режим', 'Страница')
   await fireEvent.update(within(dialog).getByRole('textbox', {
     name: 'Код страницы',
@@ -396,7 +430,7 @@ const configurePageLaunch = async (
 }
 
 test('toggles the navigation sidebar', async () => {
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
   const collapseButton = screen.getByRole('button', {
     name: 'Свернуть боковую панель',
   })
@@ -414,10 +448,7 @@ test('shows the applied fixture and targets in widget mode', async () => {
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
 
   await renderAppWithRuntime(
-    '/?fixture=order-with-delivery'
-    + '&manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo'
-    + '&mode=widget'
-    + '&targets=order%2Fcard%3Acommon.before%2Corder%2Fcard%3Acommon.after'
+    { descriptor, fixture: 'order-with-delivery', mode: 'widget', targets: ['order/card:common.before', 'order/card:common.after'] }
   )
   const summary = await screen.findByRole('region', {
     name: 'Текущий запуск',
@@ -451,11 +482,83 @@ test('shows the applied fixture and targets in widget mode', async () => {
 })
 
 test('does not show the widget run summary on onboarding', async () => {
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
 
   expect(screen.queryByRole('region', {
     name: 'Текущий запуск',
   })).toBeNull()
+})
+
+test('loads and preserves a runtime descriptor without a separate uuid', async () => {
+  const descriptor = {
+    runner: 'worker' as const,
+    entrypoint: 'http://extension.test/runtime/worker.js',
+    pages: ['settings'],
+    stylesheet: 'http://cdn.extension.test/runtime/extension.css',
+    targets: ['order/card:common.after' as const],
+  }
+  const source = createExtensionSource({
+    ...descriptor,
+  })
+
+  source.entrypoint = new URL(descriptor.entrypoint)
+  source.httpBaseUrl = 'http://extension.test/'
+  resolveSandboxExtensionSourceMock.mockResolvedValue(source)
+
+  const { endpoint } = await renderAppWithRuntime(
+    { descriptor, mode: 'page', pageCode: 'settings' }
+  )
+
+  await waitFor(() => {
+    expect(endpoint.call.run).toHaveBeenCalledOnce()
+  })
+  expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
+    descriptor,
+  }))
+  expect(fakeWorkers[0]?.options.name).toBe('sandbox:extension')
+  expect(fakeWorkers[0]?.postMessage).toHaveBeenCalledWith(expect.objectContaining({
+    entrypoint: descriptor.entrypoint,
+  }), expect.any(Array))
+
+  const dialog = await openDevPanel()
+  const descriptorInput = await openDescriptorJsonEditor(dialog)
+
+  expect(JSON.parse(descriptorInput.value)).toEqual(descriptor)
+  await selectOption(dialog, 'Выбранная фикстура', 'Заказ с доставкой')
+  expect(JSON.parse(descriptorInput.value)).toEqual(descriptor)
+
+  await window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.launch({ fixture: 'order-with-delivery' })
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.getLaunchConfig()).toMatchObject({
+    descriptor,
+    fixture: 'order-with-delivery',
+  })
+  expect(window.location.search).toBe('')
+})
+
+test('uses descriptor widget targets when the dev panel targets were not changed', async () => {
+  await renderAppWithRuntime({ mode: 'widget' })
+
+  const dialog = await openDevPanel()
+  const descriptor = {
+    runner: 'worker' as const,
+    entrypoint: 'http://extension.test/runtime/worker.js',
+    pages: [],
+    stylesheet: null,
+    targets: ['order/card:common.after'],
+  }
+
+  const descriptorInput = await openDescriptorJsonEditor(dialog)
+
+  await fireEvent.update(descriptorInput, JSON.stringify(descriptor))
+  expect(within(dialog).getByPlaceholderText('Выберите места встраивания')).toBeInstanceOf(HTMLInputElement)
+
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
+
+  const targets = within(dialog).getByPlaceholderText(
+    'Выберите места встраивания'
+  ) as HTMLInputElement
+
+  expect(targets.value).toBe('order/card:common.after')
 })
 
 test('does not show the widget run summary in page mode', async () => {
@@ -465,9 +568,7 @@ test('does not show the widget run summary in page mode', async () => {
   }))
 
   await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo'
-    + '&mode=page'
-    + '&pageCode=settings'
+    { descriptor, mode: 'page', pageCode: 'settings' }
   )
 
   expect(screen.queryByRole('region', {
@@ -487,7 +588,7 @@ test('blocks page extension with unknown page code', async () => {
   }))
 
   const { endpoint } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=returns'
+    { descriptor, mode: 'page', pageCode: 'returns' }
   )
 
   await waitFor(() => {
@@ -498,7 +599,31 @@ test('blocks page extension with unknown page code', async () => {
   expect(endpoint.call.run).not.toHaveBeenCalled()
 })
 
-test('warns about page-only descriptor in explicit widget mode and continues mounting', async () => {
+test('blocks page launch when runtime descriptor exposes no pages', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+  const descriptor = {
+    runner: 'worker' as const,
+    entrypoint: 'http://extension.test/runtime/worker.js',
+    pages: [],
+    stylesheet: null,
+    targets: ['order/card:common.after' as const],
+  }
+
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource(descriptor))
+
+  const { endpoint } = await renderAppWithRuntime(
+    { descriptor, mode: 'page', pageCode: 'returns' }
+  )
+
+  await waitFor(() => {
+    expect(alertSpy).toHaveBeenCalledWith(
+      'Страница расширения не найдена\n\nВ расширении нет страницы «returns». Доступные страницы: —.'
+    )
+  })
+  expect(endpoint.call.run).not.toHaveBeenCalled()
+})
+
+test('blocks page-only descriptor in explicit widget mode', async () => {
   const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
@@ -507,15 +632,15 @@ test('warns about page-only descriptor in explicit widget mode and continues mou
   }))
 
   const { endpoint } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget&pageCode=orders-dashboard'
+    { descriptor, mode: 'widget', pageCode: 'orders-dashboard' }
   )
 
   await waitFor(() => {
     expect(alertSpy).toHaveBeenCalledWith(
-      'Проверьте режим запуска\n\nРасширение содержит страницы: settings. Сейчас выбран режим «Виджеты»; если ожидается страница, выберите режим «Страница».'
+      'Место встраивания расширения не найдено\n\nРасширение не поддерживает выбранные места встраивания: order/card:common.before, order/card:common.after.'
     )
-    expect(endpoint.call.run).toHaveBeenCalled()
   })
+  expect(endpoint.call.run).not.toHaveBeenCalled()
 })
 
 test('shows runtime error when worker bootstrap reports failure', async () => {
@@ -525,7 +650,7 @@ test('shows runtime error when worker bootstrap reports failure', async () => {
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
 
   const { endpoint } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
+    { descriptor, mode: 'widget' }
   )
 
   await waitFor(() => {
@@ -544,7 +669,7 @@ test('shows runtime error and disposes worker when endpoint run fails', async ()
   currentEndpoint = createEndpoint()
   currentEndpoint.call.run.mockRejectedValueOnce(new Error('run failed'))
   await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget',
+    { descriptor, mode: 'widget' },
     currentEndpoint
   )
 
@@ -565,7 +690,7 @@ test('shows validation error for invalid context json with connected worker', as
   }))
 
   const { endpoint } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+    { descriptor, mode: 'page', pageCode: 'settings' }
   )
 
   await waitFor(() => {
@@ -596,7 +721,7 @@ test('applies context json through dev panel with connected worker', async () =>
   }))
 
   const { endpoint } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+    { descriptor, mode: 'page', pageCode: 'settings' }
   )
 
   await waitFor(() => {
@@ -660,7 +785,7 @@ test('ignores repeated context apply while the worker is restarting', async () =
   resolveSandboxExtensionSourceMock.mockResolvedValue(extensionSource)
 
   const { endpoint } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+    { descriptor, mode: 'page', pageCode: 'settings' }
   )
 
   await waitFor(() => {
@@ -708,7 +833,7 @@ test('keeps edited context and dev panel open when the worker restart fails', as
   resolveSandboxExtensionSourceMock.mockResolvedValue(extensionSource)
 
   const { endpoint } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+    { descriptor, mode: 'page', pageCode: 'settings' }
   )
 
   await waitFor(() => {
@@ -760,7 +885,7 @@ test('does not create another worker after unmount during context restart', asyn
   resolveSandboxExtensionSourceMock.mockResolvedValue(extensionSource)
 
   const { endpoint, unmount } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+    { descriptor, mode: 'page', pageCode: 'settings' }
   )
 
   await waitFor(() => {
@@ -804,7 +929,7 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
   }))
 
   const { endpoint, unmount } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=page&pageCode=settings'
+    { descriptor, mode: 'page', pageCode: 'settings' }
   )
 
   await waitFor(() => {
@@ -822,7 +947,6 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
 
   expect(stylesheet?.href).toBe('http://extension.test/extension/demo/stylesheet')
   expect(stylesheet?.rel).toBe('stylesheet')
-  expect(options.getDescriptorUuid()).toBe('demo-extension')
   expect(options.getHttpCallBaseUrl()).toBe('http://extension.test/')
 
   exposedApi.get('settings', 'system.locale')
@@ -837,14 +961,6 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
     mode: 'page',
     pageCode: 'settings',
   })
-  expect(bridge?.createLaunchUrl({
-    mode: 'widget',
-    targets: ['order/card:common.after'],
-  })).toContain('mode=widget')
-  expect(bridge?.createLaunchUrl({
-    pageCode: 'returns',
-  })).toContain('pageCode=returns')
-
   await fireEvent.click(screen.getByRole('region', {
     name: 'Область расширения',
   }))
@@ -860,20 +976,56 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
   })
 })
 
+test('keeps explicit widget targets when launching a new descriptor', async () => {
+  await renderAppWithRuntime({})
+  const descriptor = createExtensionSource().descriptor
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
+  await window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.launch({
+    descriptor,
+    mode: 'widget',
+    targets: ['order/card:common.after'],
+  })
+
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.getLaunchConfig().targets).toEqual(['order/card:common.after'])
+})
+
+test('keeps selected targets when updating launch configuration without a new descriptor', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
+  await renderAppWithRuntime({ descriptor, mode: 'widget', targets: ['order/card:common.after'] })
+
+  await window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.launch({
+    fixture: 'order-with-delivery',
+  })
+
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.getLaunchConfig().targets).toEqual(['order/card:common.after'])
+})
+
+test('rejects a widget launch with no targets without saving it', async () => {
+  await renderAppWithRuntime({})
+  const bridge = window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]
+
+  await expect(bridge?.launch({
+    descriptor: createExtensionSource().descriptor,
+    mode: 'widget',
+    targets: [],
+  })).rejects.toThrow('Select at least one widget target.')
+  expect(window.localStorage.getItem('v1-sandbox:launch-config:v1')).toBeNull()
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]).toBe(bridge)
+})
+
 test('updates dev panel launch fields and reports validation errors', async () => {
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
 
   const dialog = await openDevPanel()
   const applyButton = within(dialog).getByRole('button', {
     name: 'Применить',
   }) as HTMLButtonElement
-  const manifestInput = within(dialog).getByRole('textbox', {
-    name: 'Манифест / URL расширения',
-  })
 
   expect(applyButton.disabled).toBe(true)
 
-  await fireEvent.update(manifestInput, 'http://extension.test/extension/demo')
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Entrypoint',
+  }), 'http://extension.test/extension/demo/script')
   await selectOption(dialog, 'Режим', 'Страница')
 
   const pageCodeInput = within(dialog).getByRole('textbox', {
@@ -913,7 +1065,7 @@ test('formats, resets and downloads context json without applying it', async () 
   const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
     clickedAnchors.push(this)
   })
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
 
   const dialog = await openDevPanel()
   const contextEditor = within(dialog).getByRole('textbox', {
@@ -990,7 +1142,7 @@ test('keeps dev panel open and shows available pages when page code is missing',
     targets: [],
   }))
 
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
 
   const dialog = await openDevPanel()
 
@@ -1005,7 +1157,9 @@ test('keeps dev panel open and shows available pages when page code is missing',
 
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledOnce()
   expect(resolveSandboxExtensionSourceMock).toHaveBeenCalledWith(expect.objectContaining({
-    manifestUrl: 'http://extension.test/extension/demo',
+    descriptor: expect.objectContaining({
+      runner: 'worker',
+    }),
     mode: 'page',
     pageCode: 'returns',
   }))
@@ -1017,7 +1171,7 @@ test('keeps dev panel open and shows available pages when page code is missing',
     name: 'Управление песочницей',
   })).toBeInstanceOf(HTMLElement)
   expect(fakeWorkers).toHaveLength(0)
-  expect(window.location.search).toBe('?manifestUrl=&mode=widget')
+  expect(window.location.search).toBe('')
 
   const pageCodeInput = within(dialog).getByRole('textbox', {
     name: 'Код страницы',
@@ -1031,12 +1185,19 @@ test('keeps dev panel open and shows available pages when page code is missing',
     name: 'Применить',
   }))
   await within(dialog).findByRole('alert')
-  await fireEvent.update(within(dialog).getByRole('textbox', {
-    name: 'Манифест / URL расширения',
-  }), 'http://extension.test/extension/changed')
+  const descriptorInput = await openDescriptorJsonEditor(dialog)
+
+  await fireEvent.update(descriptorInput, JSON.stringify({
+    runner: 'worker' as const,
+    entrypoint: 'http://extension.test/extension/changed/script',
+    pages: ['returns'],
+    stylesheet: null,
+    targets: [],
+  }))
 
   expect(within(dialog).queryByRole('alert')).toBeNull()
 
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
   await fireEvent.click(within(dialog).getByRole('combobox', { name: 'Режим' }))
   await fireEvent.click(screen.getByRole('option', { name: 'Виджеты' }))
 
@@ -1049,7 +1210,7 @@ test('shows an empty available pages marker when extension has no pages', async 
     targets: [],
   }))
 
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
 
   const dialog = await openDevPanel()
 
@@ -1071,6 +1232,89 @@ test('shows an empty available pages marker when extension has no pages', async 
   })).toBeInstanceOf(HTMLElement)
 })
 
+test.each(['page', 'widget'] as const)(
+  'launches %s from JSON without changing the descriptor capabilities',
+  async mode => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const descriptor: SandboxExtensionSource['descriptor'] = {
+      runner: 'worker',
+      entrypoint: 'http://extension.test/extension/demo/script',
+      stylesheet: null,
+      pages: ['returns', 'settings'],
+      targets: ['order/card:common.before', 'order/card:common.after'],
+    }
+    resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+      pages: descriptor.pages,
+      targets: descriptor.targets,
+    }))
+    await renderAppWithRuntime({ mode: 'widget' })
+    const dialog = await openDevPanel()
+    const editor = await openDescriptorJsonEditor(dialog)
+    const json = JSON.stringify(descriptor, null, 2)
+
+    await fireEvent.update(editor, json)
+    await selectOption(dialog, 'Режим', 'Страница')
+    await selectOption(dialog, 'Код страницы', 'settings')
+    await selectOption(dialog, 'Режим', 'Виджеты')
+    await selectOption(dialog, 'Места встраивания виджетов', 'order/card:common.after')
+    if (mode === 'page') await selectOption(dialog, 'Режим', 'Страница')
+
+    expect(editor.value).toBe(json)
+    await fireEvent.click(within(dialog).getByRole('button', { name: 'Применить' }))
+    await waitFor(() => {
+      expect(JSON.parse(window.localStorage.getItem('v1-sandbox:launch-config:v1') ?? '{}'))
+        .toMatchObject({ descriptor, mode, pageCode: 'settings' })
+    })
+  }
+)
+
+test('editing a page code preserves other pages and widget targets without retaining input prefixes', async () => {
+  await renderAppWithRuntime({ mode: 'widget' })
+  const dialog = await openDevPanel()
+  const editor = await openDescriptorJsonEditor(dialog)
+  const descriptor = {
+    runner: 'worker',
+    entrypoint: 'http://extension.test/script',
+    stylesheet: null,
+    pages: ['settings'],
+    targets: ['order/card:common.after'],
+  }
+
+  await fireEvent.update(editor, JSON.stringify(descriptor))
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
+  await selectOption(dialog, 'Режим', 'Страница')
+  const pageCode = within(dialog).getByRole('textbox', { name: 'Код страницы' })
+  await fireEvent.update(pageCode, 'r')
+  await fireEvent.update(pageCode, 're')
+  await fireEvent.update(pageCode, 'returns')
+  await selectOption(dialog, 'Режим', 'Виджеты')
+
+  expect(JSON.parse((await openDescriptorJsonEditor(dialog)).value)).toEqual({
+    ...descriptor,
+    pages: ['settings', 'returns'],
+  })
+})
+
+test('preserves page configuration when the current mode is selected again', async () => {
+  await renderAppWithRuntime({ mode: 'widget' })
+
+  const dialog = await openDevPanel()
+
+  await configurePageLaunch(dialog, 'http://extension.test', 'settings')
+  await selectOption(dialog, 'Режим', 'Страница')
+
+  expect((within(dialog).getByRole('textbox', {
+    name: 'Код страницы',
+  }) as HTMLInputElement).value).toBe('settings')
+  const editor = await openDescriptorJsonEditor(dialog)
+
+  expect(JSON.parse(editor.value)).toMatchObject({
+    entrypoint: 'http://extension.test/extension/demo/script',
+    pages: ['settings'],
+    targets: ['order/card:common.before', 'order/card:common.after'],
+  })
+})
+
 test('closes dev panel after successful page preflight without starting worker', async () => {
   vi.spyOn(console, 'error').mockImplementation(() => {})
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
@@ -1078,7 +1322,7 @@ test('closes dev panel after successful page preflight without starting worker',
     targets: [],
   }))
 
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
 
   const dialog = await openDevPanel()
 
@@ -1108,7 +1352,7 @@ test('keeps dev panel open on page preflight failure and ignores repeated apply'
 
   resolveSandboxExtensionSourceMock.mockReturnValue(pendingSource)
 
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  await renderAppWithRuntime({ mode: 'widget' })
 
   const dialog = await openDevPanel()
 
@@ -1147,7 +1391,7 @@ test('reports worker error event and non-error manifest rejection', async () => 
   workerReadyMode = 'worker-error'
   resolveSandboxExtensionSourceMock.mockResolvedValueOnce(createExtensionSource())
   const firstRender = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
+    { descriptor, mode: 'widget' }
   )
 
   await waitFor(() => {
@@ -1161,7 +1405,7 @@ test('reports worker error event and non-error manifest rejection', async () => 
   cleanup()
   resolveSandboxExtensionSourceMock.mockRejectedValueOnce('manifest unavailable')
   await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget'
+    { descriptor, mode: 'widget' }
   )
 
   await waitFor(() => {
@@ -1179,7 +1423,7 @@ test('continues runtime disposal when release fails', async () => {
   resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
 
   const { unmount } = await renderAppWithRuntime(
-    '/?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Fdemo&mode=widget',
+    { descriptor, mode: 'widget' },
     endpoint
   )
 
@@ -1192,33 +1436,117 @@ test('continues runtime disposal when release fails', async () => {
 
   await waitFor(() => {
     expect(warnSpy).toHaveBeenCalledWith(
-      '[sandbox:manifest] Failed to release extension runtime',
+      '[sandbox:extension] Failed to release extension runtime',
       expect.any(Error)
     )
     expect(endpoint.terminate).toHaveBeenCalledOnce()
   })
 })
 
-test('ignores malformed stored launch notice', async () => {
-  window.sessionStorage.setItem('v1-sandbox:launch-notice', '{')
+test('restores the launch configuration from storage with a clean URL', async () => {
+  const descriptor = createExtensionSource({ pages: ['settings'] }).descriptor
 
-  await renderAppWithRuntime('/?manifestUrl=&mode=widget')
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource(descriptor))
+  const { unmount } = renderAppWithRuntime(
+    { descriptor, mode: 'page', pageCode: 'settings' }
+  )
 
-  expect(window.sessionStorage.getItem('v1-sandbox:launch-notice')).toBeNull()
-  expect(screen.queryByText('Режим страницы выбран автоматически')).toBeNull()
+  await screen.findByRole('region', { name: 'Страница расширения: settings' })
+  expect(window.location.search).toBe('')
+  expect(Object.keys(JSON.parse(window.localStorage.getItem('v1-sandbox:launch-config:v1') ?? '')).sort())
+    .toEqual(['descriptor', 'fixture', 'mode', 'pageCode', 'targets'])
+  unmount()
+  await new Promise(resolve => window.setTimeout(resolve, 0))
+
+  const { endpoint } = renderAppWithRuntime({})
+
+  await waitFor(() => expect(endpoint.call.run).toHaveBeenCalledOnce())
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.getLaunchConfig()).toMatchObject({
+    descriptor,
+    mode: 'page',
+    pageCode: 'settings',
+  })
+  expect(screen.queryByRole('heading', { name: 'Подключите внешнее расширение' })).toBeNull()
 })
 
-test('shows stored inferred page mode notice', async () => {
+test.each(['{', 'null', '{"mode":"page"}', '{"targets":null}', JSON.stringify({ descriptor: { ...descriptor, runner: 'iframe' } })])(
+  'shows onboarding when saved launch configuration is invalid: %s',
+  async (value) => {
+    window.localStorage.setItem('v1-sandbox:launch-config:v1', value)
+    renderAppWithRuntime({})
+
+    expect(await screen.findByRole('heading', {
+      name: 'Подключите внешнее расширение',
+    })).toBeInstanceOf(HTMLHeadingElement)
+    expect(fakeWorkers).toHaveLength(0)
+  }
+)
+
+test('keeps the form open when localStorage cannot save the configuration', async () => {
   const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
 
-  window.sessionStorage.setItem('v1-sandbox:launch-notice', JSON.stringify({
-    pageCode: 'settings',
-    type: 'inferred-page-mode',
-  }))
+  renderAppWithRuntime({})
+  const dialog = await openDevPanel()
 
-  await renderAppWithRuntime('/?manifestUrl=&mode=page&pageCode=settings')
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Entrypoint',
+  }), 'http://extension.test/extension/demo/script')
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new DOMException('Storage quota exceeded', 'QuotaExceededError')
+  })
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'Применить' }))
 
-  expect(alertSpy).toHaveBeenCalledWith(
-    'Режим страницы выбран автоматически\n\nВ ссылке не был указан режим. Песочница нашла страницу «settings» в расширении и переключила запуск в режим «Страница».'
-  )
+  expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to save launch configuration'))
+  expect(screen.getByRole('dialog', { name: 'Управление песочницей' })).toBe(dialog)
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]).toBeDefined()
+  expect(window.location.search).toBe('')
+})
+
+test('ignores launch query parameters and preserves the stored configuration', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
+  window.history.replaceState(null, '', '/?descriptor=invalid&mode=page&pageCode=other&debug=true#preview')
+  const { endpoint } = renderAppWithRuntime({
+    descriptor,
+    fixture: 'order-with-delivery',
+    mode: 'widget',
+    targets: ['order/card:common.after'],
+  })
+
+  await waitFor(() => expect(endpoint.call.run).toHaveBeenCalledOnce())
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.getLaunchConfig()).toMatchObject({
+    fixture: 'order-with-delivery',
+    mode: 'widget',
+  })
+  expect(window.location.search).toBe('?descriptor=invalid&mode=page&pageCode=other&debug=true')
+  expect(window.location.hash).toBe('#preview')
+})
+
+test('keeps onboarding usable when browser storage access is denied', async () => {
+  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+
+  vi.spyOn(window, 'localStorage', 'get').mockImplementation(() => {
+    throw new DOMException('Storage access denied', 'SecurityError')
+  })
+  renderAppWithRuntime({})
+  expect(screen.getByRole('heading', { name: 'Подключите внешнее расширение' })).toBeInstanceOf(HTMLElement)
+
+  const dialog = await openDevPanel()
+
+  await fireEvent.update(within(dialog).getByRole('textbox', {
+    name: 'Entrypoint',
+  }), 'http://extension.test/extension/demo/script')
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'Применить' }))
+
+  expect(alertSpy).toHaveBeenCalledWith(expect.stringContaining('Failed to save launch configuration'))
+  expect(screen.getByRole('dialog', { name: 'Управление песочницей' })).toBe(dialog)
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]).toBeDefined()
+})
+
+test('ignores a descriptor in the URL when no configuration is saved', async () => {
+  window.history.replaceState(null, '', `/?descriptor=${encodeURIComponent(JSON.stringify(descriptor))}&mode=widget`)
+  renderAppWithRuntime({})
+
+  expect(screen.getByRole('heading', { name: 'Подключите внешнее расширение' })).toBeInstanceOf(HTMLElement)
+  expect(resolveSandboxExtensionSourceMock).not.toHaveBeenCalled()
+  expect(fakeWorkers).toHaveLength(0)
 })
