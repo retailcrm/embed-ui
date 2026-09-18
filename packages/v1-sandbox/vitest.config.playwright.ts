@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
 const baseURL = 'http://127.0.0.1:4173'
-process.env.SANDBOX_EXTENSION_URL = new URL('/extension/', baseURL).href
-process.env.SANDBOX_RUNTIME_EXTENSION_URL = baseURL
+const extensionBaseURL = 'http://127.0.0.1:4175'
+process.env.SANDBOX_EXTENSION_URL = new URL('/extension/', extensionBaseURL).href
+process.env.SANDBOX_RUNTIME_EXTENSION_URL = extensionBaseURL
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -24,9 +25,16 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'yarn dev:e2e',
-    url: baseURL,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: 'yarn vite --host 127.0.0.1 --port 4173 --strictPort',
+      url: baseURL,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'yarn build:e2e-extensions && yarn serve:e2e-extensions',
+      url: new URL('/runtime/promoModule/entrypoint.js', extensionBaseURL).href,
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 })

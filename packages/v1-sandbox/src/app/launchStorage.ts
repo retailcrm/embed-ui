@@ -20,7 +20,10 @@ const launchConfigSchema = z.object({
   fixture: z.string().min(1),
   mode: z.enum(['page', 'widget']),
   pageCode: z.string(),
-  targets: z.array(z.string().refine(isSandboxOrderTarget)).min(1),
+  targets: z.array(z.string().refine(isSandboxOrderTarget)),
+}).refine(config => config.mode !== 'widget' || config.targets.length > 0, {
+  message: 'Select at least one widget target.',
+  path: ['targets'],
 })
 
 export const hasSandboxLaunchQuery = (params: URLSearchParams): boolean =>

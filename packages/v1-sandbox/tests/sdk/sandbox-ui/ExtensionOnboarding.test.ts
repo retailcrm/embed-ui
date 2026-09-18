@@ -62,7 +62,7 @@ test('extension onboarding opens sandbox controls', async () => {
   )).toBeInstanceOf(HTMLSpanElement)
   expect(within(onboarding).getByText(/Дополнительный сервер запускать не требуется\./u)).toBeInstanceOf(HTMLElement)
   expect(within(onboarding).getByText(
-    'При заполнении отдельных полей затем выберите режим: Виджеты или Страница.'
+    'Выберите, что запустить: Виджеты или Страницу. Переключатель доступен и при заполнении отдельных полей, и в режиме JSON.'
   )).toBeInstanceOf(HTMLElement)
 
   expect(within(onboarding).queryByText('Легаси-шаблон URL запуска')).toBeNull()

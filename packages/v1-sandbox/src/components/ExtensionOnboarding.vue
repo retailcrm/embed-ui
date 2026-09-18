@@ -95,7 +95,7 @@ const openDevPanel = () => props.openDevPanel()
             "copied": "Copied"
         },
         "description": "Use the sandbox to test JS module pages and widgets locally before installing the module in RetailCRM. Before adding the extension to the sandbox, make sure it is running.",
-        "modeNote": "When using the individual fields, then choose a mode: Widgets or Page.",
+        "modeNote": "Choose what to launch: Widgets or Page. The mode selector is available in both the field editor and JSON view.",
         "note": "Only two running processes are required: the extension server and the sandbox. You do not need to start an additional server.",
         "title": "Connect an external extension",
         "descriptor": "Runtime descriptor format"
@@ -112,7 +112,7 @@ const openDevPanel = () => props.openDevPanel()
             "copied": "Copiado"
         },
         "description": "Utilice la sandbox para probar localmente las páginas y los widgets del módulo JS antes de instalarlo en RetailCRM. Antes de añadir la extensión a la sandbox, asegúrese de que esté en ejecución.",
-        "modeNote": "Si utiliza los campos individuales, elija después un modo: Widgets o Página.",
+        "modeNote": "Elija qué iniciar: Widgets o Página. El selector de modo está disponible tanto en el editor de campos como en la vista JSON.",
         "note": "Solo se necesitan dos procesos en ejecución: el servidor de la extensión y la sandbox. No hace falta iniciar un servidor adicional.",
         "title": "Conectar una extensión externa",
         "descriptor": "Formato del descriptor de ejecución"
@@ -129,7 +129,7 @@ const openDevPanel = () => props.openDevPanel()
             "copied": "Скопировано"
         },
         "description": "Используйте песочницу, чтобы локально проверить страницы и виджеты JS-модуля до его установки в RetailCRM. Перед тем как добавлять расширение в песочницу, убедитесь, что расширение запущено",
-        "modeNote": "При заполнении отдельных полей затем выберите режим: Виджеты или Страница.",
+        "modeNote": "Выберите, что запустить: Виджеты или Страницу. Переключатель доступен и при заполнении отдельных полей, и в режиме JSON.",
         "note": "Для работы нужны только два запущенных процесса: сервер расширения и песочница. Дополнительный сервер запускать не требуется.",
         "title": "Подключите внешнее расширение",
         "descriptor": "Формат передаваемого дескриптора"
@@ -146,6 +146,7 @@ const openDevPanel = () => props.openDevPanel()
 .extension-onboarding {
     align-items: center;
     display: flex;
+    justify-content: center;
     min-height: calc(100vh - 112px);
     padding: @spacing-l;
 

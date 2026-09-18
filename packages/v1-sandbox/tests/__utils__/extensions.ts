@@ -6,6 +6,8 @@ import path from 'node:path'
 
 import { isSandboxOrderTarget } from '@/scenario'
 
+import { createFixtureRuntimeDescriptor } from './runtimeDescriptor'
+
 export type SandboxExtensionFixturePage = {
   code: string
   menu?: string
@@ -74,16 +76,11 @@ export const createRuntimeExtensionDescriptor = (
     throw new Error('[sandbox:test] Extension fixture name is required for runtime descriptor.')
   }
 
-  const baseUrl = new URL(extensionBaseUrl)
-  const runtimeUrl = new URL(`/runtime/${descriptor.fixtureName}/`, baseUrl)
-
-  return {
-    runner: 'worker',
-    entrypoint: new URL('entrypoint.js', runtimeUrl).href,
+  return createFixtureRuntimeDescriptor({
+    baseUrl: extensionBaseUrl,
+    fixtureName: descriptor.fixtureName,
     pages: getExtensionPageCodes(descriptor),
-    stylesheet: descriptor.stylesheet
-      ? new URL('stylesheet.css', runtimeUrl).href
-      : null,
+    stylesheet: Boolean(descriptor.stylesheet),
     targets: getExtensionTargets(descriptor),
-  }
+  })
 }

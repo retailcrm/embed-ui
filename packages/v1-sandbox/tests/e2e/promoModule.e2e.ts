@@ -133,10 +133,10 @@ test('applies DevPanel configuration and restores it on reload with a clean URL'
   const dialog = page.getByRole('dialog', { name: 'Управление песочницей' })
 
   await dialog.getByRole('button', { name: 'JSON', exact: true }).click()
-  await dialog.getByLabel('JSON дескриптора', { exact: true }).fill(JSON.stringify({
-    ...descriptor,
-    targets: [],
-  }))
+  await dialog.getByLabel('JSON дескриптора', { exact: true }).fill(JSON.stringify(descriptor))
+  await dialog.getByRole('combobox', { name: 'Режим', exact: true }).click()
+  await page.getByRole('option', { name: 'Страница', exact: true }).click()
+  await expect(dialog.getByLabel('JSON дескриптора', { exact: true })).toHaveValue(JSON.stringify(descriptor))
   await dialog.getByRole('button', { name: 'Применить', exact: true }).click()
 
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
@@ -156,10 +156,27 @@ test('applies DevPanel configuration and restores it on reload with a clean URL'
 
 test('launches through the public bridge when the URL stays unchanged', async ({ page }) => {
   await page.goto('/tests/__bootstrap__/index.html')
-  await launchSandboxExtension(page, { descriptor, mode: 'page', pageCode })
+  await launchSandboxExtension(page, { descriptor, mode: 'page', pageCode, targets: [] })
+  await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
+  await page.reload()
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
 
-  await launchSandboxExtension(page, { descriptor, mode: 'page', pageCode })
+  await launchSandboxExtension(page, { descriptor, mode: 'page', pageCode, targets: [] })
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
+  await expect(page).toHaveURL(url => url.search === '')
+})
+
+test('launches widgets through the public bridge using descriptor targets', async ({ page }) => {
+  await page.goto('/tests/__bootstrap__/index.html')
+  await launchSandboxExtension(page, { descriptor, mode: 'widget' })
+
+  const widget = page.getByRole('region', {
+    name: 'Место встраивания виджета: order/card:common.after',
+  })
+
+  await expect(widget.getByRole('button', { name: 'Акции' })).toBeVisible()
+  await expect(page.getByRole('region', {
+    name: 'Место встраивания виджета: order/card:common.before',
+  })).toHaveCount(0)
   await expect(page).toHaveURL(url => url.search === '')
 })

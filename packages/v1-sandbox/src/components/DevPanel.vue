@@ -146,10 +146,7 @@
                 small
             />
 
-            <div
-                v-if="!isDescriptorJsonVisible"
-                :class="$style['dev-panel__field']"
-            >
+            <div :class="$style['dev-panel__field']">
                 <div :class="$style['dev-panel__field-heading']">
                     <label
                         :id="uid + '-dev-panel-mode-label'"
@@ -180,7 +177,7 @@
                     :labelled-by="uid + '-dev-panel-mode-label'"
                     :options="modeOptions"
                     :value="props.mode"
-                    @update:value="setDescriptorMode"
+                    @update:value="setLaunchMode"
                 />
 
                 <span
@@ -194,11 +191,12 @@
             </div>
 
             <div
-                v-if="!isDescriptorJsonVisible && props.mode === 'page'"
+                v-if="props.mode === 'page'"
                 :class="$style['dev-panel__field']"
             >
                 <div :class="$style['dev-panel__field-heading']">
                     <label
+                        :id="uid + '-dev-panel-page-code-label'"
                         :class="$style['dev-panel__field-label']"
                         :for="uid + '-dev-panel-page-code'"
                     >
@@ -220,7 +218,18 @@
                     </UiPopperConnector>
                 </div>
 
+                <VSelect
+                    v-if="isDescriptorJsonVisible"
+                    :id="uid + '-dev-panel-page-code'"
+                    :aria-describedby="getErrorDescribedBy('pageCode')"
+                    :labelled-by="uid + '-dev-panel-page-code-label'"
+                    :options="pageOptions"
+                    :value="props.pageCode"
+                    @update:value="props.setPageCode(String($event))"
+                />
+
                 <UiTextbox
+                    v-else
                     :id="uid + '-dev-panel-page-code'"
                     :aria-describedby="getErrorDescribedBy('pageCode')"
                     :class="$style['dev-panel__control']"
@@ -242,7 +251,7 @@
             </div>
 
             <div
-                v-else-if="!isDescriptorJsonVisible"
+                v-else
                 :class="$style['dev-panel__field']"
             >
                 <div :class="$style['dev-panel__field-heading']">
@@ -558,19 +567,20 @@ const defaultDescriptor = JSON.stringify({
   targets: [],
   pages: ['settings'],
 }, null, 2)
-const modeOptions = computed<Array<{
-  label: string;
-  value: SandboxLaunchMode;
-}>>(() => [
-  {
-    label: t('devPanel.modeOptions.widgets'),
-    value: 'widget',
-  },
-  {
-    label: t('devPanel.modeOptions.page'),
-    value: 'page',
-  },
-])
+const modeOptions = computed(() => {
+  const options: Array<{ label: string; value: SandboxLaunchMode }> = [
+    { label: t('devPanel.modeOptions.widgets'), value: 'widget' },
+    { label: t('devPanel.modeOptions.page'), value: 'page' },
+  ]
+  if (!isDescriptorJsonVisible.value || !parsedDescriptor.value) return options
+
+  const { pages, targets } = parsedDescriptor.value
+  if (!pages.length && !targets.length) return options
+
+  return options.filter(option => option.value === 'page'
+    ? pages.length > 0
+    : targets.some(isSandboxOrderTarget))
+})
 const fixturePresentations = computed(() => getOrderSandboxFixturePresentations(tGlobal))
 const activeFixturePresentation = computed(() => fixturePresentations.value.find(
   fixture => fixture.code === props.activeFixture
@@ -587,10 +597,21 @@ const fixtureTooltip = computed(() => fixturePresentations.value
   .map(fixture => `${fixture.name}: ${fixture.description}`)
   .join(' ')
 )
-const targetOptions = ORDER_SANDBOX_SLOTS.map(slot => ({
-  label: slot.target,
-  value: slot.target,
-}))
+const parsedDescriptor = computed(() => {
+  try {
+    return parseSandboxExtensionDescriptorJson(props.descriptorJson)
+  } catch {
+    return null
+  }
+})
+const pageOptions = computed(() => (parsedDescriptor.value?.pages ?? []).map(code => ({
+  label: code,
+  value: code,
+})))
+const targetOptions = computed(() => ORDER_SANDBOX_SLOTS
+  .filter(slot => !isDescriptorJsonVisible.value
+    || parsedDescriptor.value?.targets.includes(slot.target))
+  .map(slot => ({ label: slot.target, value: slot.target })))
 type EditableDescriptorField = 'entrypoint' | 'stylesheet'
 
 type DescriptorFields = Record<EditableDescriptorField, string>
@@ -648,36 +669,30 @@ const updateDescriptorField = (
 const updateDescriptorEntrypoint = (value: string | number) => updateDescriptorField('entrypoint', value)
 const updateDescriptorStylesheet = (value: string | number) => updateDescriptorField('stylesheet', value)
 
-const updateDescriptorCapabilities = (
-  pages: string[],
-  targets: SandboxOrderTarget[]
-): void => {
+const addDescriptorCapabilities = (field: 'pages' | 'targets', values: string[]) => {
+  if (isDescriptorJsonVisible.value) return
+
   const descriptor = readDescriptorDraft()
   if (!descriptor) return
 
-  descriptor.pages = pages
-  descriptor.targets = targets
+  const current = Array.isArray(descriptor[field]) ? descriptor[field] : []
+  if (values.every(value => current.includes(value))) return
+
+  descriptor[field] = [...new Set([...current, ...values])]
   props.setDescriptorJson(JSON.stringify(descriptor, null, 2))
 }
 
-const setDescriptorMode = (value: string | string[]) => {
+const setLaunchMode = (value: string | string[]) => {
   const mode = value as SandboxLaunchMode
 
   if (mode === props.mode) return
 
   props.setMode(mode)
-  updateDescriptorCapabilities(
-    [],
-    mode === 'widget' ? [...props.selectedTargets] : []
-  )
+  syncLaunchSelectionFromDescriptor(props.descriptorJson, mode)
 }
 
 const toggleDescriptorView = () => {
   isDescriptorJsonVisible.value = !isDescriptorJsonVisible.value
-
-  if (isDescriptorJsonVisible.value) {
-    syncLaunchSelectionFromDescriptor(props.descriptorJson)
-  }
 }
 
 const isApplyDisabled = computed(() => {
@@ -701,28 +716,33 @@ const isApplyContextDisabled = computed(() =>
   || props.applyingLaunchConfig
 )
 
+let editedPageCode: string | null = null
+
 const updateDescriptorJson = (value: string | number) => {
+  editedPageCode = null
   const descriptorJson = String(value)
 
   props.setDescriptorJson(descriptorJson)
   syncLaunchSelectionFromDescriptor(descriptorJson)
 }
 
-const syncLaunchSelectionFromDescriptor = (value: string): void => {
+const syncLaunchSelectionFromDescriptor = (
+  value: string,
+  selectedMode?: SandboxLaunchMode
+): void => {
   try {
     const descriptor = parseSandboxExtensionDescriptorJson(value)
     const descriptorTargets = descriptor.targets.filter(isSandboxOrderTarget)
     const hasPages = descriptor.pages.length > 0
     const hasTargets = descriptorTargets.length > 0
-    const nextMode = hasPages && !hasTargets
+    const nextMode = selectedMode ?? (hasPages && !hasTargets
       ? 'page'
       : hasTargets && !hasPages
         ? 'widget'
-        : props.mode
+        : props.mode)
 
     if (nextMode === 'page') {
-      const canKeepPageCode = props.mode === 'page'
-        && descriptor.pages.includes(props.pageCode)
+      const canKeepPageCode = descriptor.pages.includes(props.pageCode)
       const nextPageCode = canKeepPageCode
         ? props.pageCode
         : descriptor.pages[0]
@@ -737,8 +757,11 @@ const syncLaunchSelectionFromDescriptor = (value: string): void => {
 
     if (props.mode !== 'widget') props.setMode('widget')
 
+    const matchingTargets = props.selectedTargets.filter(target => descriptorTargets.includes(target))
+    const nextTargets = matchingTargets.length > 0 ? matchingTargets : descriptorTargets
+
     ORDER_SANDBOX_SLOTS.forEach(({ target }) => {
-      const selected = descriptorTargets.includes(target)
+      const selected = nextTargets.includes(target)
 
       if (props.selectedTargets.includes(target) !== selected) {
         props.setTargetSelected(target, selected)
@@ -753,7 +776,18 @@ const updatePageCode = (value: string | number) => {
   const pageCode = String(value)
 
   props.setPageCode(pageCode)
-  updateDescriptorCapabilities(pageCode ? [pageCode] : [], [])
+  const descriptor = readDescriptorDraft()
+  if (!descriptor) return
+
+  const currentPages = Array.isArray(descriptor.pages) ? descriptor.pages : []
+  const pages = currentPages.filter(page => page !== editedPageCode)
+  editedPageCode = isValidSandboxPageCode(pageCode) && !pages.includes(pageCode) ? pageCode : null
+  if (editedPageCode) pages.push(editedPageCode)
+
+  if (JSON.stringify(pages) !== JSON.stringify(currentPages)) {
+    descriptor.pages = pages
+    props.setDescriptorJson(JSON.stringify(descriptor, null, 2))
+  }
 }
 
 const updateTargets = (value: string | string[]) => {
@@ -767,7 +801,7 @@ const updateTargets = (value: string | string[]) => {
     }
   })
 
-  updateDescriptorCapabilities([], targets)
+  addDescriptorCapabilities('targets', targets)
 }
 
 const getErrorId = (field: DevPanelField): string => `${uid}-dev-panel-${field}-error`

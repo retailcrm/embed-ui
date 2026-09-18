@@ -569,7 +569,7 @@ test('uses descriptor widget targets when the dev panel targets were not changed
   const descriptorInput = await openDescriptorJsonEditor(dialog)
 
   await fireEvent.update(descriptorInput, JSON.stringify(descriptor))
-  expect(within(dialog).queryByPlaceholderText('Выберите места встраивания')).toBeNull()
+  expect(within(dialog).getByPlaceholderText('Выберите места встраивания')).toBeInstanceOf(HTMLInputElement)
 
   await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
 
@@ -1006,6 +1006,42 @@ test('mounts page runtime with stylesheet, host api and launch bridge', async ()
   })
 })
 
+test('keeps explicit widget targets when creating a launch URL for a new descriptor', async () => {
+  await renderAppWithRuntime('/')
+  const descriptor = createExtensionSource().descriptor
+  const url = window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.createLaunchUrl({
+    descriptor,
+    mode: 'widget',
+    targets: ['order/card:common.after'],
+  })
+
+  expect(new URL(url ?? '').searchParams.get('targets')).toBe('order/card:common.after')
+})
+
+test('keeps selected targets when updating launch configuration without a new descriptor', async () => {
+  resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource())
+  await renderAppWithRuntime(`/?${descriptorQuery}&mode=widget&targets=order/card:common.after`)
+
+  const url = window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]?.createLaunchUrl({
+    fixture: 'order-with-delivery',
+  })
+
+  expect(new URL(url ?? '').searchParams.get('targets')).toBe('order/card:common.after')
+})
+
+test('rejects a widget launch with no targets without saving it', async () => {
+  await renderAppWithRuntime('/')
+  const bridge = window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]
+
+  expect(() => bridge?.launch({
+    descriptor: createExtensionSource().descriptor,
+    mode: 'widget',
+    targets: [],
+  })).toThrow('Select at least one widget target.')
+  expect(window.localStorage.getItem('v1-sandbox:launch-config:v1')).toBeNull()
+  expect(window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]).toBe(bridge)
+})
+
 test('updates dev panel launch fields and reports validation errors', async () => {
   await renderAppWithRuntime('/?mode=widget')
 
@@ -1225,6 +1261,69 @@ test('shows an empty available pages marker when extension has no pages', async 
   })).toBeInstanceOf(HTMLElement)
 })
 
+test.each(['page', 'widget'] as const)(
+  'launches %s from JSON without changing the descriptor capabilities',
+  async mode => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const descriptor: SandboxExtensionSource['descriptor'] = {
+      runner: 'worker',
+      entrypoint: 'http://extension.test/extension/demo/script',
+      stylesheet: null,
+      pages: ['returns', 'settings'],
+      targets: ['order/card:common.before', 'order/card:common.after'],
+    }
+    resolveSandboxExtensionSourceMock.mockResolvedValue(createExtensionSource({
+      pages: descriptor.pages,
+      targets: descriptor.targets,
+    }))
+    await renderAppWithRuntime('/?mode=widget')
+    const dialog = await openDevPanel()
+    const editor = await openDescriptorJsonEditor(dialog)
+    const json = JSON.stringify(descriptor, null, 2)
+
+    await fireEvent.update(editor, json)
+    await selectOption(dialog, 'Режим', 'Страница')
+    await selectOption(dialog, 'Код страницы', 'settings')
+    await selectOption(dialog, 'Режим', 'Виджеты')
+    await selectOption(dialog, 'Места встраивания виджетов', 'order/card:common.after')
+    if (mode === 'page') await selectOption(dialog, 'Режим', 'Страница')
+
+    expect(editor.value).toBe(json)
+    await fireEvent.click(within(dialog).getByRole('button', { name: 'Применить' }))
+    await waitFor(() => {
+      expect(JSON.parse(window.localStorage.getItem('v1-sandbox:launch-config:v1') ?? '{}'))
+        .toMatchObject({ descriptor, mode, pageCode: 'settings' })
+    })
+  }
+)
+
+test('editing a page code preserves other pages and widget targets without retaining input prefixes', async () => {
+  await renderAppWithRuntime('/?mode=widget')
+  const dialog = await openDevPanel()
+  const editor = await openDescriptorJsonEditor(dialog)
+  const descriptor = {
+    runner: 'worker',
+    entrypoint: 'http://extension.test/script',
+    stylesheet: null,
+    pages: ['settings'],
+    targets: ['order/card:common.after'],
+  }
+
+  await fireEvent.update(editor, JSON.stringify(descriptor))
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
+  await selectOption(dialog, 'Режим', 'Страница')
+  const pageCode = within(dialog).getByRole('textbox', { name: 'Код страницы' })
+  await fireEvent.update(pageCode, 'r')
+  await fireEvent.update(pageCode, 're')
+  await fireEvent.update(pageCode, 'returns')
+  await selectOption(dialog, 'Режим', 'Виджеты')
+
+  expect(JSON.parse((await openDescriptorJsonEditor(dialog)).value)).toEqual({
+    ...descriptor,
+    pages: ['settings', 'returns'],
+  })
+})
+
 test('preserves page configuration when the current mode is selected again', async () => {
   await renderAppWithRuntime('/?mode=widget')
 
@@ -1241,7 +1340,7 @@ test('preserves page configuration when the current mode is selected again', asy
   expect(JSON.parse(editor.value)).toMatchObject({
     entrypoint: 'http://extension.test/extension/demo/script',
     pages: ['settings'],
-    targets: [],
+    targets: ['order/card:common.before', 'order/card:common.after'],
   })
 })
 

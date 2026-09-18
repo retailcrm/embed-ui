@@ -140,14 +140,20 @@ belong to `TargetName`. `stylesheet` may be `null`, and `runner` must be
 
 - `Runner`: the field editor sets this to `worker` automatically.
 - `Mode`: selects the runner type. `Widgets` mounts widgets into CRM slots;
-  `Page` mounts a page runner by `Page code`.
+  `Page` mounts a page runner by `Page code`. The selector is also visible in
+  JSON view. When the descriptor supports both pages and widgets, choose which
+  to launch; switching modes preserves both capability lists in the descriptor.
 - `Selected fixture`: CRM mock state for the next launch: order context, custom
   fields, dictionaries, location, and initial HostAPI state. The panel also
   shows the fixture used by the current connected run.
 - `Page code`: `code` from the extension `pages` registration. For example,
-  `board`, `summary`, or `returns`. It is not the extension UUID.
+  `board`, `summary`, or `returns`. It is not the extension UUID. In JSON view,
+  select a page from the descriptor's `pages` list.
 - `Widget targets`: targets/CRM slots for widget runners, for example
-  `order/card:common.after`. They are used only in `Widgets` mode.
+  `order/card:common.after`. They are used only in `Widgets` mode. In JSON view,
+  choose from the descriptor's supported targets; the selection does not rewrite
+  the descriptor. Selecting a page or targets in JSON view changes only the
+  launch settings, which are saved together with the descriptor in localStorage.
 - `Current run Context JSON`: the context exposed to the currently connected
   extension. Selecting another fixture does not replace this JSON until the
   main `Apply` action starts a new run.
@@ -158,9 +164,8 @@ The control panel validates launch values when you click `Apply` and validates
 the context editor when you click `Apply context`. It does not check network
 availability.
 
-- `Descriptor JSON` is required and validated strictly. `Base URL` must be an
-  absolute HTTP(S) URL; `Entrypoint` and non-null `Stylesheet` must resolve to
-  HTTP(S) URLs.
+- `Descriptor JSON` is required and validated strictly. `Entrypoint` and
+  non-null `Stylesheet` must be absolute HTTP(S) URLs.
 - `Mode` must be `Widgets` or `Page`.
 - `Selected fixture` must be one of the sandbox fixtures.
 - `Page code` is required only in `Page` mode.
@@ -605,14 +610,45 @@ tests/e2e/*.e2e.ts
 
 ## E2E Server
 
-Playwright uses `http://127.0.0.1:4173` and starts `yarn dev:e2e` automatically.
-No sandbox environment file is needed. Outside CI, Playwright reuses an existing
-server at this address.
+Run `yarn test:e2e` from the repository root. Playwright starts two servers
+through its `webServer` configuration:
 
-`yarn workspace @retailcrm/embed-ui-v1-sandbox dev:e2e` builds all fixtures in
-`tests/__fixtures__/extensions` and serves them together with the sandbox on port
-4173. Adding another extension does not require another server. A reused server
-must also serve these fixture routes and `tests/__bootstrap__/index.html`.
+- the sandbox at `http://127.0.0.1:4173`;
+- the test extensions at `http://127.0.0.1:4175`, after building all fixtures in
+  `tests/__fixtures__/extensions`.
+
+No sandbox environment file is needed. Outside CI, Playwright reuses existing
+servers at these addresses. All test extensions share the server on port 4175;
+adding another extension does not require another server.
+
+To start the servers manually, run these commands from the repository root in
+separate terminals:
+
+```bash
+yarn workspace @retailcrm/embed-ui-v1-sandbox dev:e2e
+```
+
+```bash
+yarn workspace @retailcrm/embed-ui-v1-sandbox build:e2e-extensions && yarn workspace @retailcrm/embed-ui-v1-sandbox serve:e2e-extensions
+```
+
+`dev:e2e` starts only the sandbox. `serve:e2e-extensions` serves the previously
+built extension fixtures.
+
+Building the fixtures also creates ready-to-copy runtime descriptors:
+
+```text
+packages/v1-sandbox/artifacts/e2e/extensions/descriptors/returnsModule.json
+packages/v1-sandbox/artifacts/e2e/extensions/descriptors/promoModule.json
+```
+
+Paste a file's contents into DevPanel's descriptor JSON editor and apply it.
+These files contain runtime descriptors. The fixtures' `extensionrc.json` files
+are build configuration and cannot be pasted directly: the build converts page
+objects to codes, resolves resource URLs, and omits registration metadata.
+The extension server must be running. Starting `serve:e2e-extensions` refreshes
+these files with its actual port and prints the descriptors directory in the
+terminal. The URLs use `127.0.0.1` for access from the same computer.
 
 Extension selection lives in the E2E test code:
 

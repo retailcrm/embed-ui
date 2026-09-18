@@ -113,8 +113,8 @@ test('dev panel updates launch fields and context', async () => {
   await fireEvent.click(descriptorViewToggle)
   expect(descriptorViewToggle.getAttribute('aria-pressed')).toBe('true')
   expect(screen.queryByLabelText('UUID расширения')).toBeNull()
-  expect(screen.queryByRole('combobox', { name: 'Режим' })).toBeNull()
-  expect(screen.queryByText('Места встраивания виджетов', { exact: true })).toBeNull()
+  expect(screen.getByRole('combobox', { name: 'Режим' })).toBeInstanceOf(HTMLInputElement)
+  expect(screen.getByText('Места встраивания виджетов', { exact: true })).toBeInstanceOf(HTMLDivElement)
   expect(screen.getByRole('button', {
     name: 'Дескриптор содержит runner, entrypoint, stylesheet, pages и targets. Entrypoint и stylesheet должны быть абсолютными HTTP(S)-адресами. Runner — worker.',
   })).toBeInstanceOf(HTMLButtonElement)

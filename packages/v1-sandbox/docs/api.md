@@ -81,7 +81,7 @@ Use `scenario` for the ready-made order sandbox:
 - order fixtures and context schemas;
 - supported widget targets;
 - launch URL helpers;
-- manifest resolution helpers;
+- runtime descriptor parsing and extension source resolution;
 - validation helpers;
 - default HTTP middleware that proxies extension `host.httpCall` requests.
 

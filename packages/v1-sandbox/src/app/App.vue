@@ -812,7 +812,9 @@ const getCurrentLaunchConfig = (): SandboxLaunchConfig => ({
 const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchConfig => ({
   ...getCurrentLaunchConfig(),
   ...input,
-  targets: input.targets ? [...input.targets] : [...launchConfig.targets],
+  targets: [...(input.targets
+    ?? input.descriptor?.targets.filter(isSandboxOrderTarget)
+    ?? launchConfig.targets)],
 })
 
 const saveAndReloadLaunchConfig = (config: SandboxLaunchConfig) => {

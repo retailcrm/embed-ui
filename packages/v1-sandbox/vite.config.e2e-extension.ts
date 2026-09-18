@@ -1,5 +1,7 @@
 import type { Plugin } from 'vite'
 
+import type { SandboxExtensionDescriptor } from '@/scenario'
+
 import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -7,6 +9,7 @@ import path from 'node:path'
 import { defineConfig, mergeConfig } from 'vite'
 
 import basic from './vite.config.basic'
+import { createFixtureRuntimeDescriptor } from './tests/__utils__/runtimeDescriptor'
 import {
   resolveReturnsBackendRequest,
 } from './tests/__fixtures__/extensions/returnsModule/backend'
@@ -19,24 +22,65 @@ type BuildManifestEntry = {
   src?: string;
 }
 
+type ExtensionFixtureConfig = {
+  uuid: string;
+  pages?: { code: string }[];
+  stylesheet?: boolean | string;
+  targets?: SandboxExtensionDescriptor['targets'];
+}
+
 const packageRoot = path.dirname(fileURLToPath(import.meta.url))
 const extensionsRoot = path.resolve(packageRoot, 'tests/__fixtures__/extensions')
 const outputRoot = path.resolve(packageRoot, 'artifacts/e2e/extensions')
-const fixtures = new Map(fs.readdirSync(extensionsRoot, { withFileTypes: true })
+const descriptorsRoot = path.resolve(packageRoot, `${outputRoot}/descriptors`)
+const extensionServerPort = 4175
+const fixtureConfigs = new Map(fs.readdirSync(extensionsRoot, { withFileTypes: true })
   .filter(entry => entry.isDirectory())
   .map(entry => {
     const descriptor = JSON.parse(fs.readFileSync(
       path.resolve(extensionsRoot, entry.name, 'extensionrc.json'),
       'utf8'
-    )) as { uuid: string }
+    )) as ExtensionFixtureConfig
 
-    return [descriptor.uuid, entry.name]
+    return [entry.name, descriptor]
   }))
+const fixtures = new Map([...fixtureConfigs].map(([name, descriptor]) => [descriptor.uuid, name]))
+
+const writeDescriptors = (entries: Map<string, BuildManifestEntry>, baseUrl: string) => {
+  fs.mkdirSync(descriptorsRoot, { recursive: true })
+
+  for (const [fixture, config] of fixtureConfigs) {
+    const descriptor = createFixtureRuntimeDescriptor({
+      baseUrl,
+      fixtureName: fixture,
+      pages: config.pages?.map(page => page.code).filter(Boolean) ?? [],
+      stylesheet: Boolean(config.stylesheet && entries.get(fixture)?.css?.length),
+      targets: config.targets ?? [],
+    })
+
+    fs.writeFileSync(
+      path.join(descriptorsRoot, `${fixture}.json`),
+      `${JSON.stringify(descriptor, null, 2)}\n`
+    )
+  }
+}
 
 const extensionFixtureServer = (): Plugin => ({
   name: 'extension-fixture-server',
+  writeBundle() {
+    writeDescriptors(readBuildEntries(), `http://127.0.0.1:${extensionServerPort}`)
+  },
   configureServer(server) {
     const entries = readBuildEntries()
+
+    server.httpServer?.once('listening', () => {
+      const address = server.httpServer?.address()
+
+      if (address && typeof address !== 'string') {
+        writeDescriptors(entries, `http://127.0.0.1:${address.port}`)
+        server.config.logger.info(`Extension descriptors: ${descriptorsRoot}`)
+      }
+    })
 
     server.middlewares.use((request, response, next) => {
       if (!request.url || !request.method) {
@@ -271,6 +315,7 @@ const send = (
 }
 
 export default mergeConfig(basic, defineConfig({
+  cacheDir: path.resolve(packageRoot, 'node_modules/.vite-e2e-extensions'),
   build: {
     emptyOutDir: true,
     manifest: true,
@@ -292,7 +337,7 @@ export default mergeConfig(basic, defineConfig({
   server: {
     allowedHosts: true,
     cors: true,
-    port: 4173,
+    port: extensionServerPort,
     strictPort: true,
   },
 }))
