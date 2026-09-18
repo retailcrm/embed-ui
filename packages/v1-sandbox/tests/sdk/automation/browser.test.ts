@@ -70,14 +70,13 @@ class WorkerStub extends EventTarget {
 }
 
 const createLaunchBridge = (): SandboxLaunchBridge => ({
-  createLaunchUrl: config => `/?fixture=${config.fixture ?? 'order-basic'}&mode=${config.mode ?? 'widget'}`,
   getLaunchConfig: () => ({
     fixture: 'order-basic',
     mode: 'widget',
     pageCode: 'returns',
     targets: ['order/card:common.before'],
   }),
-  launch: vi.fn(),
+  launch: vi.fn(async () => {}),
 })
 
 const createEndpoint = () => ({
@@ -137,6 +136,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
+  window.localStorage.clear()
 })
 
 describe('browser sandbox mounting', () => {
@@ -154,40 +154,9 @@ describe('browser sandbox mounting', () => {
     expect(document.body.contains(sandbox.root)).toBe(false)
   })
 
-  test('keeps provided root and remounts extension into it', async () => {
+  test('launches through the mounted host without persisting configuration', async () => {
     const app = installSandboxAppMock(createLaunchBridge())
     const root = document.createElement('div')
-
-    document.body.append(root)
-
-    const sandbox = await launchSandboxExtension({
-      fixture: 'order-with-delivery',
-      mode: 'page',
-    }, { root })
-
-    expect(window.location.search).toBe('?fixture=order-with-delivery&mode=page')
-    expect(sandbox.root).toBe(root)
-    expect(mocks.createSandbox).toHaveBeenCalledTimes(2)
-    expect(app.unmount).toHaveBeenCalledOnce()
-
-    sandbox.unmount()
-
-    expect(document.body.contains(root)).toBe(true)
-  })
-
-  test('launches extension with default mount options', async () => {
-    installSandboxAppMock(createLaunchBridge())
-
-    const sandbox = await launchSandboxExtension({})
-
-    expect(sandbox.root.id).toBe('app')
-
-    sandbox.unmount()
-
-    expect(document.querySelector('#app')).toBeNull()
-  })
-
-  test('launches extension from a runtime descriptor object', async () => {
     const descriptor = {
       runner: 'worker' as const,
       entrypoint: 'http://extension.test/runtime/worker.js',
@@ -195,32 +164,41 @@ describe('browser sandbox mounting', () => {
       stylesheet: null,
       targets: [],
     }
-    const bridge = createLaunchBridge()
-    const createLaunchUrl = vi.fn((config) => {
-      const params = new URLSearchParams({
-        descriptor: JSON.stringify(config.descriptor),
-        mode: config.mode ?? 'widget',
-      })
 
-      return `/?${params.toString()}`
-    })
-
-    bridge.createLaunchUrl = createLaunchUrl
-    installSandboxAppMock(bridge)
-
+    document.body.append(root)
     const sandbox = await launchSandboxExtension({
       descriptor,
+      fixture: 'order-with-delivery',
       mode: 'page',
-    })
+      pageCode: 'returns',
+    }, { root })
 
-    expect(createLaunchUrl).toHaveBeenCalledWith({
+    expect(window.location.search).toBe('')
+    expect(sandbox.bridge.launch).toHaveBeenCalledWith({
       descriptor,
+      fixture: 'order-with-delivery',
       mode: 'page',
+      pageCode: 'returns',
     })
-    expect(JSON.parse(new URLSearchParams(window.location.search).get('descriptor') ?? ''))
-      .toEqual(descriptor)
+    expect(window.localStorage.length).toBe(0)
+    expect(sandbox.root).toBe(root)
+    expect(mocks.createSandbox).toHaveBeenCalledOnce()
+    expect(app.unmount).not.toHaveBeenCalled()
 
     sandbox.unmount()
+    expect(document.body.contains(root)).toBe(true)
+  })
+
+  test('unmounts the host when launching fails', async () => {
+    const bridge = createLaunchBridge()
+    const app = installSandboxAppMock(bridge)
+
+    vi.mocked(bridge.launch).mockRejectedValueOnce(new Error('Worker failed'))
+
+    await expect(launchSandboxExtension({ mode: 'page' })).rejects.toThrow('Worker failed')
+    expect(app.unmount).toHaveBeenCalledOnce()
+    expect(document.querySelector('#app')).toBeNull()
+    expect(window.localStorage.length).toBe(0)
   })
 
   test('waits for bridge and reports timeout', async () => {

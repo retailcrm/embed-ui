@@ -22,7 +22,7 @@ automation helpers for unit, browser, and e2e testing.
 ## How To Import
 
 - For public runtime primitives, import from `@retailcrm/embed-ui-v1-sandbox/core`.
-- For order fixtures, targets, launch helpers, validation, and HostAPI HTTP
+- For order fixtures, targets, launch configuration helpers, validation, and HostAPI HTTP
   middleware, import from `@retailcrm/embed-ui-v1-sandbox/scenario`.
 - For Vitest Browser sandbox automation, import from
   `@retailcrm/embed-ui-v1-sandbox/automation/browser`.
@@ -39,6 +39,8 @@ automation helpers for unit, browser, and e2e testing.
   the clean sandbox URL restores it. Widget instance IDs are generated internally.
 - Browser tests run real worker extensions in Chromium and usually mock
   `host.httpCall`.
+- Automated launch helpers pass descriptors directly to the Host in memory,
+  without localStorage or navigation.
 - E2E tests run the full sandbox app, extension delivery URL, styles, and real
   `host.httpCall` proxy flow.
 - Unit tests cover pure logic, shell components, validation, fixtures, and
@@ -57,7 +59,7 @@ import { launchSandboxExtension } from '@retailcrm/embed-ui-v1-sandbox/automatio
 ```
 
 When manually checking an extension, start the package CLI and use the DevPanel
-or public URL contract:
+to provide the descriptor:
 
 ```bash
 embed-ui-v1-sandbox serve
@@ -74,11 +76,11 @@ Common public API areas include:
   `createSandboxRpc`
 - scenario helpers:
   `createOrderSandboxController`, `createSandboxHttpMiddleware`,
-  `updateSandboxLaunchQuery`, order fixtures, targets, and validation helpers
-- browser automation:
-  `mountSandbox`, `launchSandboxExtension`, `waitForSandboxLaunchBridge`
+  `createSandboxLaunchConfig`, order fixtures, targets, and validation helpers
+- browser extension testing:
+  `createExtensionSourceWorker`, `createSandboxWorkerRuntime`, `SandboxWorkerRuntime`
 - Playwright automation:
-  `createSandboxPagePath`, `createSandboxWidgetPath`, `launchSandboxExtension`,
+  `launchSandboxExtension`,
   `readSandboxSnapshot`, `waitForSandboxLaunchBridge`
 - Node helpers:
   `serveSandbox`

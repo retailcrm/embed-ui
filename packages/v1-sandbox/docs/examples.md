@@ -31,22 +31,6 @@ visits. Storage is scoped to this browser and sandbox origin; sharing the clean
 URL does not share the configuration. Without valid saved settings, the sandbox
 shows onboarding. Unsaved edits and manually changed Context JSON are not persisted.
 
-Explicit launch links take precedence over stored settings. The sandbox imports
-their configuration into storage and removes the launch parameters from the address
-bar. Automation helpers can still generate these entry links.
-
-Page runner entry URL:
-
-```text
-%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=page&pageCode=returns&fixture=order-basic
-```
-
-Widget runner entry URL:
-
-```text
-%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=widget&targets=order/card:common.after&fixture=order-basic
-```
-
 Use the DevPanel to switch fixtures, edit Context JSON, or change page/widget
 configuration without changing extension code.
 
@@ -84,106 +68,85 @@ Browser tests run in a real Chromium browser through Vitest Browser. Use them
 when a real worker extension must render UI, but backend responses can be
 mocked.
 
-In an extension project, use the browser automation helpers when you want to
-mount the sandbox app:
+Use `createExtensionSourceWorker()` and `createSandboxWorkerRuntime()` to run
+the extension with fixture-backed HostAPI. Always tear down the runtime after
+each test.
 
 ```ts
+import type { SandboxWorkerRuntime } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
+
 import { afterEach, expect, test } from 'vitest'
 import { screen } from '@testing-library/dom'
 
 import {
-  launchSandboxExtension,
-  type MountedSandbox,
+  createExtensionSourceWorker,
+  createSandboxWorkerRuntime,
 } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
 
-let sandbox: MountedSandbox | null = null
+let runtime: SandboxWorkerRuntime | null = null
 
-afterEach(() => {
-  sandbox?.unmount()
-  sandbox = null
+afterEach(async () => {
+  await runtime?.teardown()
+  runtime = null
   document.body.innerHTML = ''
 })
 
-test('mounts page extension in browser mode', async () => {
-  sandbox = await launchSandboxExtension({
-    descriptor: {
-      runner: 'worker',
-      entrypoint: new URL('/tests/fixtures/extensions/returnsModule/index.ts', window.location.href).href,
-      pages: ['returns'],
-      stylesheet: null,
-      targets: [],
-    },
+test('opens the extension settings page', async () => {
+  const source = createExtensionSourceWorker(
+    new URL('/web/endpoint/endpoint.worker.ts', window.location.href)
+  )
+
+  runtime = await createSandboxWorkerRuntime({
     fixture: 'order-basic',
-    mode: 'page',
-    pageCode: 'returns',
+    ready: source.ready,
+    worker: source.worker,
   })
 
-  expect(await screen.findByRole('heading', { name: 'Returns' })).toBeInstanceOf(HTMLElement)
+  await runtime.runPage('settings')
+
+  expect(await screen.findByRole('heading', {
+    name: 'Настройки расширения',
+  })).toBeInstanceOf(HTMLElement)
+  expect(screen.getByRole('button', { name: 'Сохранить' })).toBeInstanceOf(HTMLButtonElement)
 })
 ```
 
-When the extension calls `host.httpCall`, prefer a deterministic browser test
-runtime that injects a sandbox HostAPI middleware. The `v1-sandbox` repository
-contains examples of that pattern:
+Adjust the entrypoint, page code, and visible text to match your extension.
+Use `runtime.runWidget(target)` for widget scenarios. Pass `httpMiddleware` to
+`createSandboxWorkerRuntime()` when the extension needs deterministic backend
+responses. Use `runtime.snapshot()` to inspect HostAPI activity.
 
-```text
-tests/sdk/automation/returnsModule.test.browser.ts
-tests/sdk/automation/promoModule.test.browser.ts
-```
-
-Those examples run real worker extension entrypoints in Chromium, mock HostAPI
-responses, interact with the extension UI, and assert the HostAPI snapshot.
+Full sandbox app and external delivery checks belong in Playwright E2E tests.
 
 ## Playwright E2E Test
 
-Use e2e tests for the full sandbox app and real extension delivery path.
-
 ```ts
 import { expect, test } from '@playwright/test'
+import { launchSandboxExtension } from '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
 
 test('loads returns page extension', async ({ page }) => {
-  await page.goto(
-    '/?descriptor='
-    + encodeURIComponent(JSON.stringify({
+  await page.goto('/')
+  await launchSandboxExtension(page, {
+    descriptor: {
       runner: 'worker',
       entrypoint: 'https://extension.test/build/worker.js',
       pages: ['returns'],
       stylesheet: 'https://extension.test/build/extension.css',
       targets: [],
-    }))
-    + '&mode=page'
-    + '&pageCode=returns'
-    + '&fixture=order-basic'
-  )
+    },
+    mode: 'page',
+    pageCode: 'returns',
+    fixture: 'order-basic',
+  })
 
+  await expect(page).toHaveURL(url => url.search === '')
   await expect(page.getByRole('heading', { name: 'Returns' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Create return' })).toBeVisible()
 })
 ```
 
-You can also use the Playwright automation helper after opening the sandbox:
-
-```ts
-import {
-  launchSandboxExtension,
-  readSandboxSnapshot,
-} from '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
-
-await page.goto('/')
-
-await launchSandboxExtension(page, {
-  descriptor: {
-    runner: 'worker',
-    entrypoint: 'https://extension.test/build/worker.js',
-    pages: [],
-    stylesheet: null,
-    targets: ['order/card:common.after'],
-  },
-  fixture: 'order-basic',
-  mode: 'widget',
-  targets: ['order/card:common.after'],
-})
-```
+The helper passes configuration directly to the running Host and waits for the
+extension to mount. It does not write to `localStorage` or reload the page.
+Launch parameters are never placed in the URL.
 
 ## Snapshot Assertions
 

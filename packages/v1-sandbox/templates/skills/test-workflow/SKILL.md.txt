@@ -28,7 +28,7 @@ Observable contracts include:
 - accessible roles, names, labels, descriptions, and states;
 - Vue props, slots, events, callbacks, and emitted payloads;
 - Host API calls and payloads;
-- launch URLs, extension delivery, browser storage, and proxy effects.
+- launch configuration, extension delivery, browser storage, and proxy effects.
 
 Do not assert private component state, `vm`, refs, private helpers, incidental DOM nesting, generated CSS classes, or internal component selectors.
 
@@ -52,7 +52,7 @@ Use Vitest Browser for:
 - exercising primary component interactions;
 - checking Host API actions and payloads through mocked responses.
 
-Create the source worker through the public `automation/browser` API and tear down every runtime after the test. Browser tests do not prove external descriptor, stylesheet, or proxy delivery.
+Use `createExtensionSourceWorker()` and `createSandboxWorkerRuntime()` from the public `automation/browser` API. Test the extension through `runtime.runPage()` or `runtime.runWidget()` and tear down every runtime after the test. Browser tests do not prove external descriptor, stylesheet, or proxy delivery.
 
 ### Delivery e2e: `test:e2e`
 

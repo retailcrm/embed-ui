@@ -1,10 +1,6 @@
 {
   "app": {
     "alerts": {
-      "inferredPageMode": {
-        "message": "La URL no incluía el modo. La zona de pruebas encontró la página «{pageCode}» en la extensión y cambió el inicio al modo «Página».",
-        "title": "El modo página se seleccionó automáticamente"
-      },
       "missingPageCode": {
         "message": "La extensión no expone la página «{pageCode}». Páginas disponibles: {pages}.",
         "title": "No se encontró la página de la extensión"
@@ -16,10 +12,6 @@
       "runtimeError": {
         "message": "{message}",
         "title": "No se pudo iniciar la extensión"
-      },
-      "workerPageInWidgetMode": {
-        "message": "La extensión expone páginas: {pages}. Ahora está seleccionado el modo «Widgets»; seleccione el modo «Página» si esperaba una página.",
-        "title": "Revisa el modo de inicio"
       }
     },
     "contextEditor": {

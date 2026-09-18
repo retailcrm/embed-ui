@@ -18,14 +18,13 @@ describe('sandbox launch bridge', () => {
 
   test('reads installed bridge from provided host', () => {
     const bridge = {
-      createLaunchUrl: () => 'http://sandbox.test/',
       getLaunchConfig: () => ({
         fixture: 'order-basic',
         mode: 'widget' as const,
         pageCode: 'returns',
         targets: ['order/card:common.before' as const],
       }),
-      launch: () => {},
+      launch: async () => {},
     }
     const host = {
       [SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]: bridge,
@@ -47,14 +46,13 @@ describe('sandbox launch bridge', () => {
 
   test('reads bridge from default global host', () => {
     const bridge = {
-      createLaunchUrl: () => 'http://sandbox.test/',
       getLaunchConfig: () => ({
         fixture: 'order-basic',
         mode: 'widget' as const,
         pageCode: 'returns',
         targets: ['order/card:common.before' as const],
       }),
-      launch: () => {},
+      launch: async () => {},
     }
 
     const host = globalThis as typeof globalThis & Record<string, unknown>

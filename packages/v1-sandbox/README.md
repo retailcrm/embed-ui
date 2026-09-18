@@ -64,9 +64,8 @@ embed-ui-v1-sandbox serve --host 0.0.0.0 --port 4173
 экран подключения. Несохранённые правки DevPanel и ручные изменения контекста
 не сохраняются.
 
-Входные ссылки с параметрами запуска по-прежнему поддерживаются для автоматизации:
-их конфигурация имеет приоритет над сохранённой, переносится в `localStorage`,
-а параметры запуска удаляются из адресной строки.
+В тестах откройте чистый адрес песочницы и передайте настройки через
+`launchSandboxExtension()`. Параметры адресной строки не используются для запуска.
 
 ## Применение в тестах
 
@@ -118,7 +117,7 @@ test('loads extension page in sandbox', async ({ page }) => {
   целевом проекте или тестовом наборе.
 - [`docs/index.md`](./docs/index.md) - точка входа в документацию sandbox.
 - [`docs/usage-guide.md`](./docs/usage-guide.md) - ручное использование sandbox,
-  CLI, DevPanel, URL contract, fixtures, context и симуляция HostAPI.
+  CLI, DevPanel, localStorage, fixtures, context и симуляция HostAPI.
 - [`docs/strategy.md`](./docs/strategy.md) - выбор между unit, browser и e2e
   тестами, semantic HTML и ARIA principles.
 - [`docs/examples.md`](./docs/examples.md) - практические примеры unit, browser,
@@ -133,10 +132,9 @@ test('loads extension page in sandbox', async ({ page }) => {
 - CLI: `embed-ui-v1-sandbox serve`.
 - `core`: `createSandboxController`, `createSandboxState`, `createSandboxHostApi`, `createSandboxRpc`.
 - `scenario`: `createOrderSandboxController`, `createSandboxHttpMiddleware`,
-  `updateSandboxLaunchQuery`, fixtures, targets и validation helpers.
-- `automation/browser`: `mountSandbox`, `launchSandboxExtension`, `waitForSandboxLaunchBridge`.
-- `automation/playwright`: `createSandboxPagePath`, `createSandboxWidgetPath`,
-  `launchSandboxExtension`, `readSandboxSnapshot`, `waitForSandboxLaunchBridge`.
+  `createSandboxLaunchConfig`, fixtures, targets и validation helpers.
+- `automation/browser`: `createExtensionSourceWorker`, `createSandboxWorkerRuntime` — запуск расширения в Browser Mode.
+- `automation/playwright`: `launchSandboxExtension`, `readSandboxSnapshot`, `waitForSandboxLaunchBridge`.
 - `node`: `serveSandbox`.
 
 См. [`docs/api.md`](./docs/api.md) для полного обзора публичного API.

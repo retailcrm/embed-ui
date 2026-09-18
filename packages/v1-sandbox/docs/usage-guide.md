@@ -67,7 +67,7 @@ No separate extension UUID is required; resource URLs are used as supplied.
 - `Widgets`: mount widget runners into one or more `order/card:*` targets.
 - `Page`: mount a page runner by `pageCode`.
 
-7. Click `Apply`. The sandbox updates the URL contract and starts the extension.
+7. Click `Apply`. The sandbox saves the configuration in `localStorage` and starts the extension.
 
 ## Running The Built Package App
 
@@ -197,12 +197,6 @@ Control panel flow:
 Widget targets are CRM slots. If two targets are selected, the sandbox creates
 two widget instances and calls the runner for each selected slot.
 
-Example direct URL:
-
-```text
-%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
-```
-
 ## Running a Page
 
 Use `Page` mode when an extension registers `pages` with `defineRunner`.
@@ -244,12 +238,6 @@ or:
 
 ```text
 Page code = summary
-```
-
-Example direct URL:
-
-```text
-%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=page&pageCode=%page-code%&fixture=order-basic
 ```
 
 ## Fixtures and Context JSON
@@ -385,22 +373,24 @@ Then open the sandbox with the extension descriptor in the test:
 
 ```ts
 import { expect, test } from '@playwright/test'
+import { launchSandboxExtension } from '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
 
 test('mounts widget extension in sandbox', async ({ page }) => {
   const descriptor = {
-    runner: 'worker',
+    runner: 'worker' as const,
     entrypoint: '%extension-url%/build/worker.js',
     pages: [],
     stylesheet: '%extension-url%/build/extension.css',
-    targets: ['order/card:common.after'],
+    targets: ['order/card:common.after' as const],
   }
 
-  await page.goto(
-    `/?descriptor=${encodeURIComponent(JSON.stringify(descriptor))}`
-    + '&mode=widget'
-    + '&fixture=order-basic'
-    + '&targets=order/card:common.after'
-  )
+  await page.goto('/')
+  await launchSandboxExtension(page, {
+    descriptor,
+    mode: 'widget',
+    fixture: 'order-basic',
+    targets: ['order/card:common.after' as const],
+  })
 
   await expect(page.getByText('ORDER/CARD:COMMON.AFTER')).toBeVisible()
 })
@@ -467,10 +457,12 @@ const extension = readExtensionFixture('returnsModule')
 const [pageCode] = getExtensionPageCodes(extension)
 const descriptor = createRuntimeExtensionDescriptor(extension)
 
-await page.goto(createSandboxPagePath({
+await page.goto('/')
+await launchSandboxExtension(page, {
+  mode: 'page',
   descriptor,
   pageCode,
-}))
+})
 ```
 
 Raw `extensionrc.json` is not passed to the sandbox. The helper converts page
@@ -490,10 +482,12 @@ const extension = {
 
 const [target] = getExtensionTargets(extension)
 
-await page.goto(createSandboxWidgetPath({
+await page.goto('/')
+await launchSandboxExtension(page, {
+  mode: 'widget',
   descriptor: createRuntimeExtensionDescriptor(extension),
   targets: [target],
-}))
+})
 ```
 
 Both variants produce the same strict runtime descriptor. The difference is
@@ -525,13 +519,12 @@ Use them when you need to verify that:
 
 The standard pattern is:
 
-1. Create a worker from `tests/__fixtures__/workers/extension.worker.ts`.
-2. Pass the real extension entrypoint URL, for example
+1. Call `createExtensionSourceWorker()` with the real extension entrypoint URL, for example
    `tests/__fixtures__/extensions/promoModule/index.ts`.
-3. Create `createSandboxWorkerRuntime(...)`.
-4. Call `runtime.runPage(pageCode)` or `runtime.runWidget(target)`.
-5. Use Testing Library queries and events to verify the extension UI.
-6. Inspect `runtime.snapshot()` when the test needs HostAPI activity.
+2. Create `createSandboxWorkerRuntime(...)`.
+3. Call `runtime.runPage(pageCode)` or `runtime.runWidget(target)`.
+4. Use Testing Library queries and events to verify the extension UI.
+5. Inspect `runtime.snapshot()` when the test needs HostAPI activity.
 
 Example:
 
@@ -576,9 +569,8 @@ sandbox app:
 
 1. Read the extension fixture descriptor or provide a small descriptor in the
    test when the fixture intentionally has no local config.
-2. Convert it to a strict runtime descriptor and build a sandbox URL with
-   `descriptor`, `mode`, `fixture`, and either `pageCode` or `targets`.
-3. Open that URL with `page.goto(...)`.
+2. Open the clean sandbox URL with `page.goto('/')`.
+3. Pass the runtime descriptor and launch options to `launchSandboxExtension(page, config)`.
 4. Verify that the extension UI is mounted.
 5. Exercise the primary user path of the extension, not only the mount smoke.
    For example: fill a filter, apply it, open an item, save the form, or send a
@@ -655,10 +647,12 @@ Extension selection lives in the E2E test code:
 ```ts
 const descriptor = readExtensionDescriptor('returnsModule')
 
-await page.goto(createSandboxPagePath({
+await page.goto('/')
+await launchSandboxExtension(page, {
+  mode: 'page',
   descriptor,
   pageCode: descriptor.pages[0],
-}))
+})
 ```
 
 The helper reads `tests/__fixtures__/extensions/returnsModule/extensionrc.json`
@@ -671,7 +665,7 @@ Playwright covers:
 
 - shell loading;
 - control panel opening;
-- public URL contract updates from the control panel;
+- configuration persistence through the control panel;
 - extension startup from the descriptor provided by the test;
 - user interaction inside the extension;
 - `host.httpCall` through sandbox proxy middleware;
@@ -684,43 +678,26 @@ Playwright covers:
 - Use `tests/__fixtures__/extensions/` for extension code that should look like
   real extension code.
 - Use `tests/__bootstrap__/` and `tests/__utils__/` for reusable test
-  infrastructure: static servers, URL builders, descriptor readers, and
+  infrastructure: static servers, descriptor readers, and
   snapshot helpers.
-- Prefer shared URL helpers from `tests/__utils__/` over hand-written query
-  strings.
+- Use `launchSandboxExtension()` to pass configuration to the sandbox. Never
+  build launch query strings or write private storage keys in E2E tests.
 - Prefer `window.__CRM_EMBED_SANDBOX__.snapshot()` through the shared snapshot
   helper for assertions about HostAPI state.
 - Do not test the control panel for its own sake in Playwright tests. Prefer
-  direct sandbox URLs built from fixture descriptors and test the path
-  "sandbox URL opened -> extension mounted -> user action -> sandbox state
-  changed".
+  the public launch helper with fixture descriptors and test the path
+  "sandbox opened -> descriptor passed to Host -> extension mounted -> user action ->
+  sandbox state changed".
 
-## Useful URL Templates
+## Launch Configuration Storage
 
-Widget:
+The clean sandbox URL identifies the app. DevPanel saves validated configuration
+in `localStorage` for manual use. Refreshing restores those saved settings.
 
-```text
-%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=widget&targets=order/card:common.after&fixture=order-basic
-```
+Automated tests pass configuration directly to the Host through
+`launchSandboxExtension()`. Both Playwright and browser helpers launch in memory,
+without writing storage or reloading the Host. The configuration lasts until the
+Host is destroyed. A repeated launch releases the previous runtime first.
 
-Multiple widgets:
-
-```text
-%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=widget&targets=order/card:common.before,order/card:common.after&fixture=order-basic
-```
-
-Page:
-
-```text
-%sandbox-url%/?descriptor=%url-encoded-descriptor-json%&mode=page&pageCode=%page-code%&fixture=order-basic
-```
-
-Placeholders:
-
-- `%sandbox-url%`: sandbox shell URL in the current local container/DNS setup.
-  Linux Docker usually uses Traefik and `.test`; OrbStack on macOS uses
-  `.local` from its domain namespace.
-- `%extension-url%`: external extension server base URL.
-- `%url-encoded-descriptor-json%`: the complete runtime descriptor serialized
-  as JSON and encoded for a query parameter.
-- `%page-code%`: page code from the extension manifest/runner.
+Launch query parameters are not supported. To share a configuration, copy the
+runtime descriptor JSON and select the launch mode in DevPanel.

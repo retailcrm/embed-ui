@@ -17,10 +17,7 @@ export type {
   SandboxWorkerApi,
 } from '@/app/types'
 
-export const DEFAULT_SANDBOX_TARGETS: SandboxOrderTarget[] = [
-  'order/card:common.before',
-  'order/card:common.after',
-]
+export { DEFAULT_SANDBOX_TARGETS } from '@/scenario/targets'
 
 export const createMounts = (config: SandboxLaunchConfig): SandboxMount[] => {
   if (config.mode === 'page') {

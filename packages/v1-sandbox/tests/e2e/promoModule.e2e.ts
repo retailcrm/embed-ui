@@ -2,11 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { isSandboxOrderTarget } from '@/scenario'
 
-import {
-  createSandboxPagePath,
-  createSandboxWidgetPath,
-  launchSandboxExtension,
-} from '@/automation/playwright'
+import { launchSandboxExtension } from '@/automation/playwright'
 
 import { readExtensionDescriptor } from '../__utils__/extensions'
 
@@ -42,11 +38,12 @@ test('keeps context actions disabled without a connected extension', async ({ pa
 })
 
 test('loads promo module page extension', async ({ page }) => {
-  await page.goto(createSandboxPagePath({
+  await page.goto('/tests/__bootstrap__/index.html')
+  await launchSandboxExtension(page, {
+    mode: 'page',
     descriptor,
     pageCode,
-    sandboxPath: '/tests/__bootstrap__/index.html',
-  }))
+  })
 
   await expect(page).toHaveURL(url => url.search === '')
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
@@ -56,10 +53,11 @@ test('loads promo module page extension', async ({ page }) => {
 test('loads promo module widget extension from target descriptor', async ({ page }) => {
   test.skip(!target, 'promoModule runtime descriptor has no widget target.')
 
-  await page.goto(createSandboxWidgetPath({
+  await page.goto('/tests/__bootstrap__/index.html')
+  await launchSandboxExtension(page, {
+    mode: 'widget',
     descriptor,
-    sandboxPath: '/tests/__bootstrap__/index.html',
-  }))
+  })
 
   const widgetMount = page.getByRole('region', {
     name: `Место встраивания виджета: ${target}`,
@@ -83,11 +81,12 @@ test('loads promo module widget extension from target descriptor', async ({ page
 test('restarts promo widget with manually changed context', async ({ page }) => {
   test.skip(!target, 'promoModule runtime descriptor has no widget target.')
 
-  await page.goto(createSandboxWidgetPath({
+  await page.goto('/tests/__bootstrap__/index.html')
+  await launchSandboxExtension(page, {
+    mode: 'widget',
     descriptor,
     targets: target ? [target] : [],
-    sandboxPath: '/tests/__bootstrap__/index.html',
-  }))
+  })
   await page.getByRole('button', { name: 'Открыть управление песочницей' }).click()
 
   const dialog = page.getByRole('dialog', { name: 'Управление песочницей' })
@@ -126,7 +125,7 @@ test('restarts promo widget with manually changed context', async ({ page }) => 
 })
 
 test('applies DevPanel configuration and restores it on reload with a clean URL', async ({ page }) => {
-  await page.goto('/tests/__bootstrap__/index.html')
+  await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Подключите внешнее расширение' })).toBeVisible()
   await page.getByRole('button', { name: 'Открыть управление песочницей' }).click()
 
@@ -140,7 +139,7 @@ test('applies DevPanel configuration and restores it on reload with a clean URL'
   await dialog.getByRole('button', { name: 'Применить', exact: true }).click()
 
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
-  await expect(page).toHaveURL(url => url.pathname === '/tests/__bootstrap__/index.html' && url.search === '')
+  await expect(page).toHaveURL(url => url.pathname === '/' && url.search === '')
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
   await expect(page).toHaveURL(url => url.search === '')
@@ -154,16 +153,25 @@ test('applies DevPanel configuration and restores it on reload with a clean URL'
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
 })
 
-test('launches through the public bridge when the URL stays unchanged', async ({ page }) => {
+test('launches and replaces an extension without persisting configuration or navigation', async ({ page }) => {
+  const navigationUrls: string[] = []
+
+  page.on('request', request => {
+    if (request.isNavigationRequest()) navigationUrls.push(request.url())
+  })
   await page.goto('/tests/__bootstrap__/index.html')
   await launchSandboxExtension(page, { descriptor, mode: 'page', pageCode, targets: [] })
   await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
-  await page.reload()
-  await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
 
-  await launchSandboxExtension(page, { descriptor, mode: 'page', pageCode, targets: [] })
-  await expect(page.getByRole('heading', { name: 'Настройки акций' })).toBeVisible()
+  await launchSandboxExtension(page, { descriptor, mode: 'widget' })
+  await expect(page.getByRole('button', { name: 'Акции', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Настройки акций' })).toHaveCount(0)
+  expect(navigationUrls).toHaveLength(1)
+  expect(await page.evaluate(() => window.localStorage.length)).toBe(0)
   await expect(page).toHaveURL(url => url.search === '')
+
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Подключите внешнее расширение' })).toBeVisible()
 })
 
 test('launches widgets through the public bridge using descriptor targets', async ({ page }) => {

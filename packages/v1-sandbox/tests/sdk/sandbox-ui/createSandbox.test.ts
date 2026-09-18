@@ -113,7 +113,7 @@ test('opens dev panel and validates launch config input', async () => {
     .toBe('Введите дескриптор с полями runner, entrypoint, stylesheet, pages и targets. Runner должен быть worker, адреса ресурсов — абсолютными HTTP(S)-адресами.')
 })
 
-test('installs launch bridge and creates launch urls from current config', () => {
+test('installs and removes the launch bridge', () => {
   mountSandboxApp()
 
   const bridge = readLaunchBridge()
@@ -124,19 +124,6 @@ test('installs launch bridge and creates launch urls from current config', () =>
     mode: 'widget',
     pageCode: 'orders-dashboard',
   })
-
-  const launchUrl = new URL(bridge?.createLaunchUrl({
-    descriptor: { runner: 'worker', entrypoint: 'http://extension.test/script', stylesheet: null, pages: ['returns'], targets: [] },
-    mode: 'page',
-    pageCode: 'returns',
-    targets: ['order/card:payment.before'],
-  }) ?? '')
-
-  expect(JSON.parse(launchUrl.searchParams.get('descriptor') ?? '').entrypoint).toBe('http://extension.test/script')
-  expect(launchUrl.searchParams.get('mode')).toBe('page')
-  expect(launchUrl.searchParams.get('pageCode')).toBe('returns')
-  expect(launchUrl.searchParams.get('target')).toBe('order/card:payment.before')
-  expect(launchUrl.searchParams.get('targets')).toBe('order/card:payment.before')
 
   app?.unmount()
   app = null
@@ -175,21 +162,4 @@ test('keeps context apply disabled without connected extension', async () => {
   expect(applyContextButton.disabled).toBe(true)
   expect(within(dialog).getByText('Расширение не подключено'))
     .toBeInstanceOf(HTMLElement)
-})
-
-test('shows stored inferred page mode launch notice once', async () => {
-  const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
-
-  window.sessionStorage.setItem('v1-sandbox:launch-notice', JSON.stringify({
-    pageCode: 'returns',
-    type: 'inferred-page-mode',
-  }))
-
-  mountSandboxApp()
-  await nextTick()
-
-  expect(alertSpy).toHaveBeenCalledWith(
-    'Режим страницы выбран автоматически\n\nВ ссылке не был указан режим. Песочница нашла страницу «returns» в расширении и переключила запуск в режим «Страница».'
-  )
-  expect(window.sessionStorage.getItem('v1-sandbox:launch-notice')).toBeNull()
 })

@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-import { createSandboxPagePath } from '@/automation/playwright'
+import { launchSandboxExtension, readSandboxSnapshot } from '@/automation/playwright'
 
 import { readExtensionDescriptor } from '../__utils__/extensions'
-import { readSandboxSnapshot } from '../__utils__/sandbox'
 
 const descriptor = readExtensionDescriptor('returnsModule')
 const [pageCode] = descriptor.pages
@@ -19,11 +18,12 @@ test('loads returns page extension, filters, opens and saves return', async ({ p
     response => response.url() === descriptor.stylesheet
   )
 
-  await page.goto(createSandboxPagePath({
+  await page.goto('/tests/__bootstrap__/index.html')
+  await launchSandboxExtension(page, {
+    mode: 'page',
     descriptor,
     pageCode,
-    sandboxPath: '/tests/__bootstrap__/index.html',
-  }))
+  })
 
   await expect(page).toHaveURL(url => url.search === '')
   expect((await entrypointResponse).status()).toBe(200)

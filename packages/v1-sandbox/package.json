@@ -93,11 +93,11 @@
     }
   },
   "files": [
-    "AGENTS.md",
+    "./AGENTS.md",
     "bin",
     "docs",
     "dist",
-    "README.md",
+    "./README.md",
     "templates"
   ],
   "scripts": {

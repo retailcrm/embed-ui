@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 
-import { parseSandboxLaunchConfig, resolveSandboxExtensionSource } from '@/scenario'
+import { createSandboxLaunchConfig, resolveSandboxExtensionSource } from '@/scenario'
 
 const descriptor = {
   runner: 'worker' as const,
@@ -11,8 +11,8 @@ const descriptor = {
 }
 
 test('resolves the entrypoint, stylesheet and backend from the descriptor', async () => {
-  const source = await resolveSandboxExtensionSource(parseSandboxLaunchConfig(
-    new URLSearchParams(), { descriptor }
+  const source = await resolveSandboxExtensionSource(createSandboxLaunchConfig(
+    { descriptor }
   ))
 
   expect(source).toEqual({
@@ -23,13 +23,13 @@ test('resolves the entrypoint, stylesheet and backend from the descriptor', asyn
 })
 
 test('refuses to resolve an extension without a descriptor', async () => {
-  await expect(resolveSandboxExtensionSource(parseSandboxLaunchConfig(new URLSearchParams())))
+  await expect(resolveSandboxExtensionSource(createSandboxLaunchConfig()))
     .rejects.toThrow('Invalid extension descriptor')
 })
 
 test('rejects invalid descriptor resource URLs', async () => {
   await expect(resolveSandboxExtensionSource({
-    ...parseSandboxLaunchConfig(new URLSearchParams()),
+    ...createSandboxLaunchConfig(),
     descriptor: { ...descriptor, entrypoint: '/relative/script.js' },
   })).rejects.toThrow('Invalid extension descriptor')
 })

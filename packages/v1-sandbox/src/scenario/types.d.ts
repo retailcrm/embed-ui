@@ -18,8 +18,6 @@ export type SandboxLaunchConfig = {
   targets: SandboxOrderTarget[];
 }
 
-export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
-
 export type SandboxExtensionDescriptor = {
   entrypoint: string;
   pages: string[];

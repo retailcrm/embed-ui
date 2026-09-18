@@ -4,7 +4,7 @@ import path from 'node:path'
 import { expect, test } from '@playwright/test'
 
 import {
-  createSandboxPagePath,
+  launchSandboxExtension,
 } from '@retailcrm/embed-ui-v1-sandbox/automation/playwright'
 import {
   parseSandboxExtensionDescriptorJson,
@@ -33,17 +33,18 @@ const descriptor = parseSandboxExtensionDescriptorJson(JSON.stringify({
 }))
 const [pageCode] = descriptor.pages
 
-test('loads generated settings page extension and saves settings', async ({ baseURL, page }) => {
+test('loads generated settings page extension and saves settings', async ({ page }) => {
   if (!descriptor.stylesheet) throw new Error('The settings page requires a stylesheet.')
 
   const scriptResponse = page.waitForResponse(descriptor.entrypoint)
   const stylesheetResponse = page.waitForResponse(descriptor.stylesheet)
 
-  await page.goto(createSandboxPagePath({
+  await page.goto('/')
+  await launchSandboxExtension(page, {
+    mode: 'page',
     descriptor,
     pageCode,
-    sandboxBaseUrl: baseURL,
-  }))
+  })
 
   expect((await scriptResponse).status()).toBe(200)
   expect((await stylesheetResponse).status()).toBe(200)

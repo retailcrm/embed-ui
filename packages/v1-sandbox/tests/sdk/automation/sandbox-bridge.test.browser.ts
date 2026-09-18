@@ -31,25 +31,22 @@ afterEach(() => {
 })
 
 const createLaunchBridge = (): SandboxLaunchBridge => ({
-  createLaunchUrl: () => 'http://sandbox.test/',
   getLaunchConfig: () => ({
     fixture: 'order-basic',
     mode: 'widget',
     pageCode: 'returns',
     targets: ['order/card:common.before'],
   }),
-  launch: () => {},
+  launch: async () => {},
 })
 
 const createPage = (): {
   evaluated: unknown[];
   page: SandboxPlaywrightPage;
   waitForFunctionCalls: unknown[];
-  waitForUrlCalls: Array<Parameters<SandboxPlaywrightPage['waitForURL']>[0]>;
 } => {
   const evaluated: unknown[] = []
   const waitForFunctionCalls: unknown[] = []
-  const waitForUrlCalls: Array<Parameters<SandboxPlaywrightPage['waitForURL']>[0]> = []
 
   return {
     evaluated,
@@ -65,12 +62,8 @@ const createPage = (): {
         })
         return undefined
       },
-      async waitForURL(matcher) {
-        waitForUrlCalls.push(matcher)
-      },
     },
     waitForFunctionCalls,
-    waitForUrlCalls,
   }
 }
 
@@ -125,7 +118,7 @@ test('mounts sandbox and removes owned root on unmount', async () => {
   expect(document.querySelector('#app')).toBeNull()
 })
 
-test('rejects launching without a descriptor and removes the temporary app', async () => {
+test('cleans up the host when launching without a descriptor', async () => {
   await expect(launchSandboxExtensionInBrowser({ mode: 'page' }))
     .rejects.toThrow('Invalid extension descriptor')
   expect(document.querySelector('#app')).toBeNull()
@@ -147,21 +140,17 @@ test('waits until sandbox launch bridge is available in playwright page', async 
   })
 })
 
-test('launches extension through playwright page bridge without waiting for url when disabled', async () => {
+test('launches extension through the existing playwright page bridge', async () => {
   const {
     evaluated,
     page,
-    waitForUrlCalls,
   } = createPage()
 
   await launchSandboxExtensionInPlaywright(page, {
     mode: 'page',
     pageCode: 'returns',
-  }, {
-    waitForUrl: false,
   })
 
-  expect(waitForUrlCalls).toHaveLength(0)
   expect(evaluated).toEqual([
     {
       key: '__CRM_EMBED_SANDBOX_LAUNCH__',
@@ -173,14 +162,13 @@ test('launches extension through playwright page bridge without waiting for url 
   ])
 })
 
-test('waits for the new launch bridge after launching through playwright', async () => {
-  const { page, waitForFunctionCalls, waitForUrlCalls } = createPage()
+test('waits only for the existing launch bridge before launching through playwright', async () => {
+  const { page, waitForFunctionCalls } = createPage()
 
   await launchSandboxExtensionInPlaywright(page, {
     mode: 'widget',
     targets: ['order/card:common.before', 'order/card:common.after'],
   })
 
-  expect(waitForFunctionCalls).toHaveLength(2)
-  expect(waitForUrlCalls).toHaveLength(0)
+  expect(waitForFunctionCalls).toHaveLength(1)
 })

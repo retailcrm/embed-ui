@@ -1,15 +1,12 @@
-import type { SandboxExtensionDescriptor, SandboxLaunchConfig } from '@/scenario'
+import type { SandboxExtensionDescriptor } from '@/scenario'
 import type { SandboxLaunchInput } from '@/automation/bridge'
 import type { SandboxOrderTarget } from '@/scenario'
 import type { SandboxSnapshot } from '@/core/state'
 
-import { DEFAULT_SANDBOX_TARGET, DefaultSandbox } from '@/scenario'
+import { DEFAULT_SANDBOX_TARGET } from '@/scenario'
 import { isSandboxOrderTarget } from '@/scenario'
 import { parseSandboxExtensionDescriptorJson } from '@/scenario'
 import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
-import { updateSandboxLaunchQuery } from '@/scenario'
-
-const DEFAULT_SANDBOX_BASE_URL = 'http://127.0.0.1:4173'
 
 export type SandboxPlaywrightPage = {
   evaluate<R, A>(
@@ -20,9 +17,6 @@ export type SandboxPlaywrightPage = {
     pageFunction: (arg: A) => R,
     arg: A,
   ): Promise<unknown>;
-  waitForURL(
-    url: string | RegExp | ((url: URL) => boolean),
-  ): Promise<unknown>;
 }
 
 export type SandboxPlaywrightSnapshotPage = {
@@ -31,27 +25,10 @@ export type SandboxPlaywrightSnapshotPage = {
   ): Promise<R>;
 }
 
-export type LaunchSandboxExtensionOptions = {
-  /** Wait for the launch bridge after reloading. The launch URL now stays clean. */
-  waitForUrl?: boolean;
-}
-
 export type SandboxExtensionFixtureDescriptor = {
   pages?: Array<{ code: string }>;
   targets?: string[];
   uuid: string;
-}
-
-export type CreateSandboxBrowserPathOptions = {
-  sandboxBaseUrl?: string;
-  sandboxPath?: string;
-}
-
-export type CreateSandboxExtensionPathOptions = CreateSandboxBrowserPathOptions & {
-  descriptor: SandboxExtensionDescriptor;
-  fixture?: string;
-  pageCode?: string;
-  targets?: string[];
 }
 
 type SandboxWindow = Window & typeof globalThis & {
@@ -70,8 +47,7 @@ export const waitForSandboxLaunchBridge = async (
 
 export const launchSandboxExtension = async (
   page: SandboxPlaywrightPage,
-  config: SandboxLaunchInput,
-  options: LaunchSandboxExtensionOptions = {}
+  config: SandboxLaunchInput
 ): Promise<void> => {
   await waitForSandboxLaunchBridge(page)
 
@@ -80,49 +56,12 @@ export const launchSandboxExtension = async (
 
     if (!bridge) throw new Error('[sandbox] Sandbox launch bridge is not installed.')
 
-    bridge.launch(launchConfig)
+    return bridge.launch(launchConfig)
   }, {
     key: SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY,
     launchConfig: config,
   })
-
-  if (options.waitForUrl !== false) {
-    await waitForSandboxLaunchBridge(page)
-  }
 }
-
-export const createSandboxBrowserPath = (
-  config: SandboxLaunchConfig,
-  options: CreateSandboxBrowserPathOptions = {}
-): string => {
-  const baseUrl = new URL(
-    options.sandboxPath ?? '/',
-    options.sandboxBaseUrl ?? DEFAULT_SANDBOX_BASE_URL
-  )
-  const url = updateSandboxLaunchQuery(config, baseUrl.href)
-
-  return `${url.pathname}${url.search}`
-}
-
-export const createSandboxPagePath = (
-  options: CreateSandboxExtensionPathOptions
-): string => createSandboxBrowserPath({
-  descriptor: options.descriptor,
-  fixture: options.fixture ?? DefaultSandbox.Fixture,
-  mode: 'page',
-  pageCode: options.pageCode ?? DefaultSandbox.PageCode,
-  targets: normalizeTargets(options.targets ?? options.descriptor.targets),
-}, options)
-
-export const createSandboxWidgetPath = (
-  options: CreateSandboxExtensionPathOptions
-): string => createSandboxBrowserPath({
-  descriptor: options.descriptor,
-  fixture: options.fixture ?? DefaultSandbox.Fixture,
-  mode: 'widget',
-  pageCode: options.pageCode ?? DefaultSandbox.PageCode,
-  targets: normalizeTargets(options.targets ?? options.descriptor.targets),
-}, options)
 
 export const getExtensionPageCodes = (
   descriptor: SandboxExtensionFixtureDescriptor

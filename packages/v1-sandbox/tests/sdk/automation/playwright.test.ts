@@ -9,12 +9,6 @@ import {
 } from 'vitest'
 
 import {
-  createSandboxBrowserPath,
-  createSandboxPagePath,
-  createSandboxWidgetPath,
-} from '@/automation/playwright'
-import { DefaultSandbox } from '@/scenario'
-import {
   getExtensionPageCodes,
   getExtensionTargets,
   getSandboxExtensionBaseUrl,
@@ -29,128 +23,7 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-const descriptor = {
-  runner: 'worker' as const,
-  entrypoint: 'http://extension.test/script',
-  pages: ['settings'],
-  stylesheet: null,
-  targets: ['order/card:common.after' as const],
-}
-
 describe('playwright automation helpers', () => {
-  test('uses the default sandbox URL', () => {
-    const path = createSandboxPagePath({
-      descriptor,
-      pageCode: 'settings',
-    })
-    const url = new URL(path, 'http://127.0.0.1:4173')
-
-    expect(url.pathname).toBe('/')
-    expect(url.searchParams.get('mode')).toBe('page')
-    expect(url.searchParams.get('pageCode')).toBe('settings')
-  })
-
-  test('creates sandbox path from runtime descriptor', () => {
-    const descriptor = {
-      runner: 'worker' as const,
-      entrypoint: 'https://extension.test/runtime/worker.js',
-      pages: ['settings'],
-      stylesheet: null,
-      targets: ['order/card:common.after' as const],
-    }
-    const path = createSandboxPagePath({
-      descriptor,
-      pageCode: 'settings',
-      sandboxBaseUrl: 'http://127.0.0.1:4173',
-    })
-    const url = new URL(path, 'http://127.0.0.1:4173')
-
-    expect(JSON.parse(url.searchParams.get('descriptor') ?? '')).toEqual(descriptor)
-    expect(url.searchParams.has('manifestUrl')).toBe(false)
-    expect(url.searchParams.has('extensionUrl')).toBe(false)
-  })
-
-  test('creates page sandbox path from direct extension entrypoint', () => {
-    const path = createSandboxPagePath({
-      descriptor,
-
-      pageCode: 'settings',
-      sandboxBaseUrl: 'http://127.0.0.1:4173',
-      targets: ['order/card:common.after'],
-    })
-
-    const url = new URL(path, 'http://127.0.0.1:4173')
-
-    expect(url.pathname).toBe('/')
-    expect(url.searchParams.get('mode')).toBe('page')
-    expect(url.searchParams.get('pageCode')).toBe('settings')
-    expect(url.searchParams.get('targets')).toBe('order/card:common.after')
-    expect(JSON.parse(url.searchParams.get('descriptor') ?? '')).toEqual(descriptor)
-  })
-
-  test.each([createSandboxWidgetPath, createSandboxPagePath])(
-    'uses descriptor targets when no override is provided (%#)',
-    createPath => {
-      const url = new URL(createPath({ descriptor }), 'http://127.0.0.1:4173')
-
-      expect(url.searchParams.get('target')).toBe('order/card:common.after')
-      expect(url.searchParams.get('targets')).toBe('order/card:common.after')
-    }
-  )
-
-  test('creates widget sandbox path and filters invalid targets', () => {
-    const path = createSandboxWidgetPath({
-      descriptor,
-      targets: ['unknown', 'order/card:common.before'],
-    })
-
-    const url = new URL(path, 'http://127.0.0.1:4173')
-
-    expect(url.searchParams.get('mode')).toBe('widget')
-    expect(url.searchParams.get('target')).toBe('order/card:common.before')
-    expect(url.searchParams.get('targets')).toBe('order/card:common.before')
-  })
-
-  test('creates sandbox paths with defaults and custom path', () => {
-    const path = createSandboxBrowserPath({
-      descriptor,
-      fixture: DefaultSandbox.Fixture,
-      mode: 'widget',
-      pageCode: DefaultSandbox.PageCode,
-      targets: [],
-    }, {
-      sandboxBaseUrl: 'http://sandbox.test/base/',
-      sandboxPath: '/preview',
-    })
-    const pagePath = createSandboxPagePath({
-      descriptor,
-      sandboxBaseUrl: 'http://sandbox.test',
-    })
-    const widgetPath = createSandboxWidgetPath({
-      descriptor,
-      sandboxBaseUrl: 'http://sandbox.test',
-      targets: ['unknown'],
-    })
-
-    expect(new URL(path, 'http://sandbox.test').pathname).toBe('/preview')
-    expect(new URL(pagePath, 'http://sandbox.test').searchParams.get('pageCode'))
-      .toBe(DefaultSandbox.PageCode)
-    expect(new URL(widgetPath, 'http://sandbox.test').searchParams.get('target'))
-      .toBe('order/card:common.before')
-  })
-
-  test('creates browser path with default options', () => {
-    const path = createSandboxBrowserPath({
-      descriptor,
-      fixture: DefaultSandbox.Fixture,
-      mode: 'widget',
-      pageCode: DefaultSandbox.PageCode,
-      targets: [],
-    })
-
-    expect(new URL(path, 'http://127.0.0.1:4173').pathname).toBe('/')
-  })
-
   test('reads fixture descriptor values', () => {
     const descriptor = {
       pages: [{ code: 'settings' }],
@@ -218,7 +91,6 @@ describe('playwright automation helpers', () => {
         globalThis.window = previousWindow
       }
     })
-    const waitForURL = vi.fn(async () => undefined)
     const evaluate = vi.fn(async (callback, arg) => {
       const launch = vi.fn()
       const previousWindow = globalThis.window
@@ -228,7 +100,7 @@ describe('playwright automation helpers', () => {
           [arg.key]: { launch },
         } as unknown as Window & typeof globalThis
 
-        callback(arg)
+        await callback(arg)
         expect(launch).toHaveBeenCalledWith(arg.launchConfig)
       } finally {
         globalThis.window = previousWindow
@@ -237,7 +109,6 @@ describe('playwright automation helpers', () => {
     const page = {
       evaluate,
       waitForFunction,
-      waitForURL,
     } as unknown as SandboxPlaywrightPage
 
     await waitForSandboxLaunchBridge(page)
@@ -250,25 +121,8 @@ describe('playwright automation helpers', () => {
       ],
     })
 
-    expect(waitForFunction).toHaveBeenCalledTimes(3)
-    expect(waitForURL).not.toHaveBeenCalled()
+    expect(waitForFunction).toHaveBeenCalledTimes(2)
     expect(evaluate).toHaveBeenCalledOnce()
-  })
-
-  test('launches extension without waiting for URL', async () => {
-    const page = {
-      evaluate: vi.fn(async () => undefined),
-      waitForFunction: vi.fn(async () => undefined),
-      waitForURL: vi.fn(async () => undefined),
-    } as unknown as SandboxPlaywrightPage
-
-    await launchSandboxExtension(page, {
-      mode: 'page',
-    }, {
-      waitForUrl: false,
-    })
-
-    expect(page.waitForURL).not.toHaveBeenCalled()
   })
 
   test('reads sandbox snapshot from page global', async () => {
