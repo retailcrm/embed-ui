@@ -1,5 +1,7 @@
 import type { Plugin } from 'vite'
 
+import type { SandboxExtensionDescriptor } from '@/scenario'
+
 import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -7,11 +9,10 @@ import path from 'node:path'
 import { defineConfig, mergeConfig } from 'vite'
 
 import basic from './vite.config.basic'
-import promoModule from './tests/__fixtures__/extensions/promoModule/extensionrc.json'
+import { createFixtureRuntimeDescriptor } from './tests/__utils__/runtimeDescriptor'
 import {
   resolveReturnsBackendRequest,
 } from './tests/__fixtures__/extensions/returnsModule/backend'
-import returnsModule from './tests/__fixtures__/extensions/returnsModule/extensionrc.json'
 
 type BuildManifestEntry = {
   css?: string[];
@@ -21,18 +22,65 @@ type BuildManifestEntry = {
   src?: string;
 }
 
+type ExtensionFixtureConfig = {
+  uuid: string;
+  pages?: { code: string }[];
+  stylesheet?: boolean | string;
+  targets?: SandboxExtensionDescriptor['targets'];
+}
+
 const packageRoot = path.dirname(fileURLToPath(import.meta.url))
 const extensionsRoot = path.resolve(packageRoot, 'tests/__fixtures__/extensions')
 const outputRoot = path.resolve(packageRoot, 'artifacts/e2e/extensions')
-const fixtures = new Map([
-  [promoModule.uuid, 'promoModule'],
-  [returnsModule.uuid, 'returnsModule'],
-])
+const descriptorsRoot = path.resolve(packageRoot, `${outputRoot}/descriptors`)
+const extensionServerPort = 4175
+const fixtureConfigs = new Map(fs.readdirSync(extensionsRoot, { withFileTypes: true })
+  .filter(entry => entry.isDirectory())
+  .map(entry => {
+    const descriptor = JSON.parse(fs.readFileSync(
+      path.resolve(extensionsRoot, entry.name, 'extensionrc.json'),
+      'utf8'
+    )) as ExtensionFixtureConfig
+
+    return [entry.name, descriptor]
+  }))
+const fixtures = new Map([...fixtureConfigs].map(([name, descriptor]) => [descriptor.uuid, name]))
+
+const writeDescriptors = (entries: Map<string, BuildManifestEntry>, baseUrl: string) => {
+  fs.mkdirSync(descriptorsRoot, { recursive: true })
+
+  for (const [fixture, config] of fixtureConfigs) {
+    const descriptor = createFixtureRuntimeDescriptor({
+      baseUrl,
+      fixtureName: fixture,
+      pages: config.pages?.map(page => page.code).filter(Boolean) ?? [],
+      stylesheet: Boolean(config.stylesheet && entries.get(fixture)?.css?.length),
+      targets: config.targets ?? [],
+    })
+
+    fs.writeFileSync(
+      path.join(descriptorsRoot, `${fixture}.json`),
+      `${JSON.stringify(descriptor, null, 2)}\n`
+    )
+  }
+}
 
 const extensionFixtureServer = (): Plugin => ({
   name: 'extension-fixture-server',
+  writeBundle() {
+    writeDescriptors(readBuildEntries(), `http://127.0.0.1:${extensionServerPort}`)
+  },
   configureServer(server) {
     const entries = readBuildEntries()
+
+    server.httpServer?.once('listening', () => {
+      const address = server.httpServer?.address()
+
+      if (address && typeof address !== 'string') {
+        writeDescriptors(entries, `http://127.0.0.1:${address.port}`)
+        server.config.logger.info(`Extension descriptors: ${descriptorsRoot}`)
+      }
+    })
 
     server.middlewares.use((request, response, next) => {
       if (!request.url || !request.method) {
@@ -41,19 +89,75 @@ const extensionFixtureServer = (): Plugin => ({
       }
 
       const url = new URL(request.url, 'http://extension.test')
+      const returnsRuntimePath = '/runtime/returnsModule'
+      const returnsAction = url.pathname.startsWith(`${returnsRuntimePath}/`)
+        ? url.pathname.slice(returnsRuntimePath.length)
+        : url.pathname
       const isReturnsAction = [
         '/return',
         '/returns',
         '/returns/save',
-      ].includes(url.pathname)
+      ].includes(returnsAction)
 
       if (request.method === 'POST' && isReturnsAction) {
         setCorsHeaders(request.headers.origin, response)
         readPayload(request).then(payload => {
-          const result = resolveReturnsBackendRequest(url.pathname, payload)
+          const result = resolveReturnsBackendRequest(returnsAction, payload)
 
           send(response, result.status, JSON.stringify(result.body), 'application/json; charset=utf-8')
         }).catch(next)
+        return
+      }
+
+      const runtimeMatch = url.pathname.match(
+        /^\/runtime\/([^/]+)\/(entrypoint\.js|stylesheet\.css|assets\/.*)$/u
+      )
+
+      if (runtimeMatch) {
+        const fixture = runtimeMatch[1]
+        const action = runtimeMatch[2]
+        const entry = entries.get(fixture)
+
+        if (!entry) {
+          send(response, 404, 'Not found', 'text/plain; charset=utf-8')
+          return
+        }
+
+        setCorsHeaders(request.headers.origin, response)
+
+        if (request.method === 'OPTIONS') {
+          response.writeHead(204)
+          response.end()
+          return
+        }
+
+        if (request.method !== 'GET' && request.method !== 'HEAD') {
+          send(response, 405, 'Method not allowed', 'text/plain; charset=utf-8')
+          return
+        }
+
+        if (action === 'entrypoint.js') {
+          sendFile(response, path.resolve(outputRoot, entry.file), request.method === 'HEAD')
+          return
+        }
+
+        if (action === 'stylesheet.css') {
+          const stylesheet = entry.css?.[0]
+
+          if (!stylesheet) {
+            send(response, 404, 'Not found', 'text/plain; charset=utf-8')
+            return
+          }
+
+          sendFile(response, path.resolve(outputRoot, stylesheet), request.method === 'HEAD')
+          return
+        }
+
+        sendFile(
+          response,
+          path.resolve(outputRoot, action),
+          request.method === 'HEAD'
+        )
         return
       }
 
@@ -82,6 +186,10 @@ const extensionFixtureServer = (): Plugin => ({
 
       const action = match[2] ?? ''
       const entry = entries.get(fixture)
+
+      if (!entry) {
+        throw new Error(`E2E extension build not found ${fixture}`)
+      }
 
       if ((request.method === 'GET' || request.method === 'HEAD') && action === '') {
         const manifest = [
@@ -207,6 +315,7 @@ const send = (
 }
 
 export default mergeConfig(basic, defineConfig({
+  cacheDir: path.resolve(packageRoot, 'node_modules/.vite-e2e-extensions'),
   build: {
     emptyOutDir: true,
     manifest: true,
@@ -224,9 +333,11 @@ export default mergeConfig(basic, defineConfig({
     },
   },
   plugins: [extensionFixtureServer()],
+  root: packageRoot,
   server: {
+    allowedHosts: true,
     cors: true,
-    port: 4175,
+    port: extensionServerPort,
     strictPort: true,
   },
 }))

@@ -44,16 +44,13 @@ afterEach(() => {
 test('widget target list renders every provided mount', () => {
   renderWidgetTargetList({
     mounts: createMounts({
-      extensionUrl: '',
       fixture: 'order-basic',
-      manifestUrl: '',
       mode: 'widget',
       pageCode: 'returns',
       targets: [
         'order/card:common.before',
         'order/card:common.after',
       ],
-      widgetId: 'sandbox-widget',
     }),
     setTree: vi.fn(),
   })

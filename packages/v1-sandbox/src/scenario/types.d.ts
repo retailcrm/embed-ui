@@ -11,37 +11,23 @@ export type SandboxSlotDefinition = {
 export type SandboxLaunchMode = 'page' | 'widget'
 
 export type SandboxLaunchConfig = {
-  extensionUrl: string;
+  descriptor?: SandboxExtensionDescriptor;
   fixture: string;
-  manifestUrl: string;
   mode: SandboxLaunchMode;
   pageCode: string;
   targets: SandboxOrderTarget[];
-  widgetId: string;
 }
-
-export type ParseSandboxLaunchConfigOptions = Partial<SandboxLaunchConfig>
-
-export type SandboxExtensionRunner = 'worker'
 
 export type SandboxExtensionDescriptor = {
   entrypoint: string;
   pages: string[];
-  runner: SandboxExtensionRunner;
+  runner: 'worker';
   stylesheet: string | null;
   targets: TargetName[];
-  uuid: string;
 }
 
 export type SandboxExtensionSource = {
   descriptor: SandboxExtensionDescriptor;
   entrypoint: URL;
   httpBaseUrl: string | null;
-  manifestUrl: string | null;
-}
-
-export type FetchLike = typeof fetch
-
-export type ResolveSandboxExtensionSourceOptions = {
-  fetch?: FetchLike;
 }

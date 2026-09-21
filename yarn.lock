@@ -2074,10 +2074,12 @@ __metadata:
     "@vitest/browser-playwright": "npm:4.1.10"
     "@vitest/coverage-istanbul": "npm:4.1.10"
     "@vue/test-utils": "npm:^2.4.6"
+    "@vueuse/core": "npm:^15.0.0"
     dotenv: "npm:^17.4.2"
     less: "npm:^4.4.2"
     nyc: "npm:^18.0.0"
     playwright: "npm:1.58.2"
+    tslib: "npm:^2.8.1"
     typescript: "npm:^5.9.3"
     vite: "npm:^7.3.5"
     vite-plugin-dts: "npm:^4.5.4"
@@ -2932,6 +2934,13 @@ __metadata:
   version: 3.0.3
   resolution: "@types/unist@npm:3.0.3"
   checksum: 10/96e6453da9e075aaef1dc22482463898198acdc1eeb99b465e65e34303e2ec1e3b1ed4469a9118275ec284dc98019f63c3f5d49422f0e4ac707e5ab90fb3b71a
+  languageName: node
+  linkType: hard
+
+"@types/web-bluetooth@npm:^0.0.21":
+  version: 0.0.21
+  resolution: "@types/web-bluetooth@npm:0.0.21"
+  checksum: 10/f8796dc9f67ee556a2c895ee7d6c4f62b2a8c52963c3d5e81a2938d3313130f9f7330ff82a6a3dceb63217ba615020e1d4cca8842d469ba6d8ac782853d47d0d
   languageName: node
   linkType: hard
 
@@ -3968,6 +3977,35 @@ __metadata:
     "@vue/shared": "npm:^3.5.0"
     path-browserify: "npm:^1.0.1"
   checksum: 10/252514dd9f41308cab0fb45216488a46b3e2a15a7385b836acd39c6f92389561c90b1c0a77b43ea8e1c3ec5f1de86bfb4d3804ebb5622226a12c9fe37c186e8b
+  languageName: node
+  linkType: hard
+
+"@vueuse/core@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "@vueuse/core@npm:15.0.0"
+  dependencies:
+    "@types/web-bluetooth": "npm:^0.0.21"
+    "@vueuse/metadata": "npm:15.0.0"
+    "@vueuse/shared": "npm:15.0.0"
+  peerDependencies:
+    vue: ^3.5.0
+  checksum: 10/7fb273ae99f72b8f8bb9e845de032afe37996adf85dd0c8e20a3f464cd9ec336e2c105bda65c5d6a26726f54cb387c32ff04395df66f215e590566d3abb36f51
+  languageName: node
+  linkType: hard
+
+"@vueuse/metadata@npm:15.0.0":
+  version: 15.0.0
+  resolution: "@vueuse/metadata@npm:15.0.0"
+  checksum: 10/1c59a0a58820d4067337d3eb68c215336e6a5da17df9314263aca6ba14ea70ecc0d16656300fc8cad5bafc93bb7a6c9854bdec75a6013cc196f31fc1af3183c4
+  languageName: node
+  linkType: hard
+
+"@vueuse/shared@npm:15.0.0":
+  version: 15.0.0
+  resolution: "@vueuse/shared@npm:15.0.0"
+  peerDependencies:
+    vue: ^3.5.0
+  checksum: 10/075af135629bcc0a4d69570709af44a17d6f1c4fa8270d5731b01c87cfef8730d73b1307f8f8c2728d87121b0ae36bba8d4b9199aaec4b72fdbf586dd39ccf2c
   languageName: node
   linkType: hard
 
@@ -11171,7 +11209,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.1":
+"tslib@npm:^2.0.1, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10/3e2e043d5c2316461cb54e5c7fe02c30ef6dccb3384717ca22ae5c6b5bc95232a6241df19c622d9c73b809bea33b187f6dbc73030963e29950c2141bc32a79f7

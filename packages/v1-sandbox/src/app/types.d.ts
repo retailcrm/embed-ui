@@ -63,11 +63,6 @@ export type SandboxLaunchDiagnostic = {
   title: string;
 }
 
-export type StoredLaunchNotice = {
-  pageCode?: string;
-  type: 'inferred-page-mode';
-}
-
 export type WorkerReadyMessage = {
   error?: string;
   type: string;

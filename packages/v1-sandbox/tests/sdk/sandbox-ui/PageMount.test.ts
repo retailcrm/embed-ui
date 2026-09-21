@@ -42,13 +42,10 @@ afterEach(() => {
 test('page mount exposes accessible region', () => {
   const setTree = vi.fn()
   const [mount] = createMounts({
-    extensionUrl: '',
     fixture: 'order-basic',
-    manifestUrl: '',
     mode: 'page',
     pageCode: 'returns',
     targets: [],
-    widgetId: 'sandbox-widget',
   })
   const { unmount } = renderPageMount({
     mount,

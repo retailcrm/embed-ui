@@ -41,6 +41,11 @@ storybook.serve: .require-compose ## [Build][docker] Runs Storybook for v1-compo
 	$(TARGET_HEADER)
 	$(COMPOSE) up v1-components
 
+.PHONY: sandbox.extensions.serve
+sandbox.extensions.serve: .require-compose ## [Build][docker] Builds and serves sandbox test extensions on port 4175
+	$(TARGET_HEADER)
+	$(COMPOSE) up v1-sandbox-extensions
+
 .PHONY: storybook.shot
 storybook.shot: .require-compose ## [Research][docker] Captures a Storybook screenshot for v1-components docs/story page
 	$(TARGET_HEADER)
@@ -81,6 +86,50 @@ ifdef cli
 	$(YARN) test $(cli) --passWithNoTests
 else
 	$(YARN) test
+endif
+	$(TARGET_OK)
+
+.PHONY: tests-sandbox
+tests-sandbox: .require-compose ## [Tests][docker] Runs jsdom and browser tests for v1-sandbox
+	$(TARGET_HEADER)
+	$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:all
+	$(TARGET_OK)
+
+.PHONY: tests-sandbox-browser
+tests-sandbox-browser: .require-compose ## [Tests][docker] Run browser mod tests for v1-sandbox
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:browser $(cli) --passWithNoTests
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:browser
+endif
+	$(TARGET_OK)
+
+
+.PHONY: tests-sandbox-e2e
+tests-sandbox-e2e: .require-compose ## [Tests][docker] Run e2e tests for v1-sandbox
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:e2e $(cli)
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:e2e
+endif
+	$(TARGET_OK)
+
+.PHONY: tests-sandbox-jsdom
+tests-sandbox-jsdom: .require-compose ## [Tests][docker] Run jsdom tests for v1-sandbox
+	$(TARGET_HEADER)
+ifdef cli
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:jsdom $(cli) --passWithNoTests
+else
+	@$(COMPOSE) run --rm --user "$$(id -u):$$(id -g)" playwright \
+		yarn workspace @retailcrm/embed-ui-v1-sandbox test:jsdom
 endif
 	$(TARGET_OK)
 

@@ -1,21 +1,17 @@
 {
   "app": {
     "alerts": {
-      "inferredPageMode": {
-        "message": "La URL no incluía el modo. La zona de pruebas encontró la página «{pageCode}» en la extensión y cambió el inicio al modo «Página».",
-        "title": "El modo página se seleccionó automáticamente"
-      },
       "missingPageCode": {
         "message": "La extensión no expone la página «{pageCode}». Páginas disponibles: {pages}.",
         "title": "No se encontró la página de la extensión"
       },
+      "missingWidgetTargets": {
+        "message": "La extensión no expone los puntos de montaje seleccionados: {targets}.",
+        "title": "No se encontró el punto de montaje de la extensión"
+      },
       "runtimeError": {
         "message": "{message}",
         "title": "No se pudo iniciar la extensión"
-      },
-      "workerPageInWidgetMode": {
-        "message": "La extensión expone páginas: {pages}. Ahora está seleccionado el modo «Widgets»; seleccione el modo «Página» si esperaba una página.",
-        "title": "Revisa el modo de inicio"
       }
     },
     "contextEditor": {
@@ -69,10 +65,9 @@
         "unknownContext": "Contexto desconocido «{context}»."
       },
       "fixture": "Seleccione unos datos de prueba existentes.",
-      "manifestUrl": {
-        "endpoint": "La URL debe tener el formato %extension-url%/extension/%extension-id%.",
-        "format": "Introduce una URL http/https absoluta. Ejemplo: http://127.0.0.1:4175/extension/{open}uuid{close}",
-        "required": "Introduce la URL de la extensión."
+      "descriptorJson": {
+        "invalid": "Introduzca un descriptor con runner, entrypoint, stylesheet, pages y targets. Runner debe ser worker y las URL de recursos deben ser HTTP(S) absolutas.",
+        "required": "Introduzca el descriptor de la extensión."
       },
       "mode": "Elige un modo de inicio.",
       "pageCodeFormat": "El código de página solo puede contener letras latinas (A–Z, a–z) y guiones.",
