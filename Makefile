@@ -41,6 +41,11 @@ storybook.serve: .require-compose ## [Build][docker] Runs Storybook for v1-compo
 	$(TARGET_HEADER)
 	$(COMPOSE) up v1-components
 
+.PHONY: sandbox.extensions.serve
+sandbox.extensions.serve: .require-compose ## [Build][docker] Builds and serves sandbox test extensions on port 4175
+	$(TARGET_HEADER)
+	$(COMPOSE) up v1-sandbox-extensions
+
 .PHONY: storybook.shot
 storybook.shot: .require-compose ## [Research][docker] Captures a Storybook screenshot for v1-components docs/story page
 	$(TARGET_HEADER)

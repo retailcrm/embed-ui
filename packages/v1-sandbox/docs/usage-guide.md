@@ -613,19 +613,27 @@ No sandbox environment file is needed. Outside CI, Playwright reuses existing
 servers at these addresses. All test extensions share the server on port 4175;
 adding another extension does not require another server.
 
-To start the servers manually, run these commands from the repository root in
-separate terminals:
+To start the servers manually, run the sandbox from the repository root in one
+terminal:
 
 ```bash
 yarn workspace @retailcrm/embed-ui-v1-sandbox dev:e2e
 ```
 
+In a second terminal, build the extension fixtures first. Once the build succeeds,
+start their server:
+
 ```bash
-yarn workspace @retailcrm/embed-ui-v1-sandbox build:e2e-extensions && yarn workspace @retailcrm/embed-ui-v1-sandbox serve:e2e-extensions
+yarn workspace @retailcrm/embed-ui-v1-sandbox build:e2e-extensions
+yarn workspace @retailcrm/embed-ui-v1-sandbox serve:e2e-extensions
 ```
 
-`dev:e2e` starts only the sandbox. `serve:e2e-extensions` serves the previously
-built extension fixtures.
+`dev:e2e` starts only the sandbox. `build:e2e-extensions` builds all extension
+fixtures without starting a server. `serve:e2e-extensions` serves those build
+artifacts; it does not build or watch the fixture sources. After changing an
+extension, stop its server, rebuild the fixtures, and start the server again.
+Playwright runs the build and server commands in sequence automatically when
+it needs to start the extension server.
 
 Building the fixtures also creates ready-to-copy runtime descriptors:
 

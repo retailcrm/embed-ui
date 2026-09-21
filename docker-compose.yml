@@ -35,6 +35,13 @@ services:
       traefik.http.services.embed-ui-v1-sandbox.loadbalancer.server.port: '4173'
       dev.orbstack.domains: 'v1.embed-ui-sandbox.local'
 
+  v1-sandbox-extensions:
+    <<: *node
+    command: sh -c 'yarn build:e2e-extensions && yarn serve:e2e-extensions --host 0.0.0.0'
+    working_dir: /project/packages/v1-sandbox
+    ports:
+      - "127.0.0.1:4175:4175"
+
   playwright:
     build:
       context: ./
