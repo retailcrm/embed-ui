@@ -10,7 +10,6 @@ const PACKAGE_NAME = '@retailcrm/embed-ui-v1-sandbox'
 const DEFAULT_NEWLINE = '\n'
 const DEFAULT_HOST = '0.0.0.0'
 const DEFAULT_PORT = 4173
-const DEFAULT_ENV_OUTPUT = '.env.sandbox'
 const AGENTS_SECTION_HEADER = '## @retailcrm/embed-ui-v1-sandbox'
 const AGENTS_SECTION_START = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-sandbox:start -->'
 const AGENTS_SECTION_END = '<!-- embed-ui-agents:@retailcrm/embed-ui-v1-sandbox:end -->'
@@ -18,23 +17,18 @@ const SKILL_NAME = 'test-workflow'
 const SKILL_TEMPLATE_PATH = `templates/skills/${SKILL_NAME}/SKILL.md.txt`
 const HELP_TEXT = `Usage:
   npx ${PACKAGE_NAME} serve [--host 0.0.0.0] [--port 4173]
-  npx ${PACKAGE_NAME} init-env [target] [--output .env.sandbox] [--force]
   npx ${PACKAGE_NAME} init-agents [target] [--force]
   npx ${PACKAGE_NAME} init-skills [target] [--force]
 
 Options:
   --host <host>        Host to listen on. Default: ${DEFAULT_HOST}
   --port <port>        Port to listen on. Default: ${DEFAULT_PORT}
-  --output <path>      Env file path for init-env. Default: ${DEFAULT_ENV_OUTPUT}
-  --force              Overwrite env file or refresh managed AGENTS.md section or skill
+  --force              Refresh managed AGENTS.md section or skill
   -h, --help           Show this help
 
 Examples:
   npx ${PACKAGE_NAME} serve
   npx ${PACKAGE_NAME} serve --host 127.0.0.1 --port 4174
-  npx ${PACKAGE_NAME} init-env
-  npx ${PACKAGE_NAME} init-env ./my-project
-  npx ${PACKAGE_NAME} init-env --output .env.sandbox.local --force
   npx ${PACKAGE_NAME} init-agents
   npx ${PACKAGE_NAME} init-agents ./my-project --force
   npx ${PACKAGE_NAME} init-skills
@@ -59,7 +53,6 @@ const currentFile = fileURLToPath(import.meta.url)
 const packageRoot = path.resolve(path.dirname(currentFile), '..')
 const appDir = path.join(packageRoot, 'dist/app')
 const indexPath = path.join(appDir, 'index.html')
-const envDistPath = path.join(packageRoot, '.env.sandbox.dist')
 const skillTemplatePath = path.join(packageRoot, SKILL_TEMPLATE_PATH)
 
 const printUsage = () => {
@@ -74,7 +67,6 @@ const parseArgs = (rawArgs) => {
     command,
     force: false,
     host: DEFAULT_HOST,
-    output: DEFAULT_ENV_OUTPUT,
     port: DEFAULT_PORT,
   }
 
@@ -93,11 +85,6 @@ const parseArgs = (rawArgs) => {
       index += 1
     } else if (arg.startsWith('--port=')) {
       options.port = Number(arg.slice('--port='.length))
-    } else if (arg === '--output') {
-      options.output = args[index + 1] ?? options.output
-      index += 1
-    } else if (arg.startsWith('--output=')) {
-      options.output = arg.slice('--output='.length)
     } else if (arg === '--force') {
       options.force = true
     } else if (arg === '-f') {
@@ -116,7 +103,6 @@ const parseArgs = (rawArgs) => {
   if (
     positionals.length === 1
     && command !== 'init-agents'
-    && command !== 'init-env'
     && command !== 'init-skills'
   ) {
     throw new Error(`Unexpected positional argument for ${command}: ${positionals[0]}`)
@@ -365,30 +351,6 @@ const serve = ({ host, port }) => {
   })
 }
 
-const initEnv = ({ force, output, target }) => {
-  if (!fs.existsSync(envDistPath)) {
-    throw new Error(`Env template was not found at ${envDistPath}.`)
-  }
-
-  if (!fs.existsSync(target)) {
-    throw new Error(`Target path does not exist: ${target}`)
-  }
-
-  if (!fs.statSync(target).isDirectory()) {
-    throw new Error(`Target path is not a directory: ${target}`)
-  }
-
-  const outputPath = path.resolve(target, output)
-
-  if (fs.existsSync(outputPath) && !force) {
-    console.log(`Env file already exists at ${outputPath}. Nothing was changed. Re-run with --force to overwrite it.`)
-    return
-  }
-
-  fs.copyFileSync(envDistPath, outputPath)
-  console.log(`Created ${outputPath}`)
-}
-
 const initAgents = ({ force, target }) => {
   if (!fs.existsSync(target)) {
     throw new Error(`Target path does not exist: ${target}`)
@@ -463,8 +425,6 @@ try {
     printUsage()
   } else if (options.command === 'init-agents') {
     initAgents(options)
-  } else if (options.command === 'init-env') {
-    initEnv(options)
   } else if (options.command === 'init-skills') {
     initSkills(options)
   } else if (options.command === 'serve') {

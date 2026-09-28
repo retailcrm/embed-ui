@@ -15,10 +15,6 @@ import type {
 
 import type { SandboxState } from '@/core/state'
 
-import type {
-  RegisterHandlerCleanup,
-} from '@retailcrm/embed-ui-v1-testing/lib/createHandler'
-
 import { release, retain } from '@remote-ui/rpc'
 import { watch } from 'vue'
 
@@ -29,6 +25,8 @@ import { createSetter, LogicalError } from '@retailcrm/embed-ui-v1-contexts/host
 
 import { clone } from '@/lib/clone'
 import { keysOf } from '@/lib/keysOf'
+
+type RegisterHandlerCleanup = (cleanup: () => void) => void
 
 export const createSandboxContextAccessor = <M extends ContextSchemaList>(
   schemas: M,

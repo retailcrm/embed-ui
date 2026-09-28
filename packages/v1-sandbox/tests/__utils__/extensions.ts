@@ -1,10 +1,12 @@
-import type { SandboxOrderTarget } from '@/scenario'
+import type { SandboxExtensionDescriptor, SandboxOrderTarget } from '@/scenario'
 
 import { fileURLToPath } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
 
 import { isSandboxOrderTarget } from '@/scenario'
+
+import { createFixtureRuntimeDescriptor } from './runtimeDescriptor'
 
 export type SandboxExtensionFixturePage = {
   code: string
@@ -56,3 +58,29 @@ export const getExtensionTargets = (
   descriptor: SandboxExtensionFixtureDescriptor
 ): SandboxOrderTarget[] =>
   descriptor.targets?.filter(isSandboxOrderTarget) ?? []
+
+export const readExtensionDescriptor = (
+  extensionName: string
+): SandboxExtensionDescriptor => createRuntimeExtensionDescriptor(readExtensionFixture(extensionName))
+
+export const createRuntimeExtensionDescriptor = (
+  descriptor: SandboxExtensionFixtureDescriptor,
+  extensionBaseUrl = process.env.SANDBOX_RUNTIME_EXTENSION_URL
+    ?? process.env.SANDBOX_EXTENSION_URL
+): SandboxExtensionDescriptor => {
+  if (!extensionBaseUrl) {
+    throw new Error('[sandbox:test] SANDBOX_EXTENSION_URL is required for extension browser tests.')
+  }
+
+  if (!descriptor.fixtureName) {
+    throw new Error('[sandbox:test] Extension fixture name is required for runtime descriptor.')
+  }
+
+  return createFixtureRuntimeDescriptor({
+    baseUrl: extensionBaseUrl,
+    fixtureName: descriptor.fixtureName,
+    pages: getExtensionPageCodes(descriptor),
+    stylesheet: Boolean(descriptor.stylesheet),
+    targets: getExtensionTargets(descriptor),
+  })
+}

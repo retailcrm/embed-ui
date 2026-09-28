@@ -5,9 +5,8 @@ export const SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY = '__CRM_EMBED_SANDBOX_LAUNCH__' a
 export type SandboxLaunchInput = Partial<SandboxLaunchConfig>
 
 export type SandboxLaunchBridge = {
-  createLaunchUrl(config: SandboxLaunchInput): string;
   getLaunchConfig(): SandboxLaunchConfig;
-  launch(config: SandboxLaunchInput): void;
+  launch(config: SandboxLaunchInput): Promise<void>;
 }
 
 export type SandboxLaunchBridgeHost = typeof globalThis & {

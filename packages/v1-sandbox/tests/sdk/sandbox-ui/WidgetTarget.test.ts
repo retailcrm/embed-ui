@@ -44,13 +44,10 @@ afterEach(() => {
 test('widget target exposes accessible region', () => {
   const setTree = vi.fn()
   const [mount] = createMounts({
-    extensionUrl: '',
     fixture: 'order-basic',
-    manifestUrl: '',
     mode: 'widget',
     pageCode: 'returns',
     targets: ['order/card:common.after'],
-    widgetId: 'sandbox-widget',
   })
   const { unmount } = renderWidgetTarget({
     mount,

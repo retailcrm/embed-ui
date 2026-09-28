@@ -23,6 +23,23 @@ API и компоненты для создания расширений инт�
 npx @retailcrm/embed-ui-v1-components init-agents
 ```
 
+## Сервер тестовых расширений песочницы в Docker
+
+После установки зависимостей (`make node_modules`) запустите из корня репозитория:
+
+```bash
+make sandbox.extensions.serve
+```
+
+Команда собирает все тестовые расширения и запускает общий сервер на
+`http://127.0.0.1:4175`. Например, `returnsModule` доступен по адресу
+`http://127.0.0.1:4175/runtime/returnsModule/entrypoint.js`.
+Готовые дескрипторы находятся в `packages/v1-sandbox/artifacts/e2e/extensions/descriptors/`.
+
+Песочница запускается отдельно: `docker compose up v1-sandbox`.
+Остановить сервер расширений можно через `Ctrl+C` или
+`docker compose stop v1-sandbox-extensions`.
+
 ## CLI `@retailcrm/embed-ui`
 
 Пакет поставляет бинарник `embed-ui`, который можно запускать через `npx`.

@@ -5,13 +5,10 @@ import { expect, test } from 'vitest'
 import { createMounts, DEFAULT_SANDBOX_TARGETS } from '@/runtime'
 
 const baseConfig: SandboxLaunchConfig = {
-  extensionUrl: '',
   fixture: 'order-basic',
-  manifestUrl: '',
   mode: 'widget',
   pageCode: 'returns',
   targets: DEFAULT_SANDBOX_TARGETS,
-  widgetId: 'sandbox-widget',
 }
 
 test('creates widget mounts from selected targets', () => {

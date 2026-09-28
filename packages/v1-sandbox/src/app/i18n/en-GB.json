@@ -1,21 +1,17 @@
 {
   "app": {
     "alerts": {
-      "inferredPageMode": {
-        "message": "The URL did not include mode. Sandbox found the \"{pageCode}\" page in the extension and switched the launch to page mode.",
-        "title": "Page mode was selected automatically"
-      },
       "missingPageCode": {
         "message": "The extension does not expose the \"{pageCode}\" page. Available pages: {pages}.",
         "title": "Extension page was not found"
       },
+      "missingWidgetTargets": {
+        "message": "The extension does not expose the selected mount targets: {targets}.",
+        "title": "Extension mount target was not found"
+      },
       "runtimeError": {
         "message": "{message}",
         "title": "Failed to start extension"
-      },
-      "workerPageInWidgetMode": {
-        "message": "The extension exposes pages: {pages}. Widgets mode is selected now; switch mode to page if you expected a page extension.",
-        "title": "Check launch mode"
       }
     },
     "contextEditor": {
@@ -69,10 +65,9 @@
         "unknownContext": "Unknown context \"{context}\"."
       },
       "fixture": "Choose an existing fixture.",
-      "manifestUrl": {
-        "endpoint": "URL must match %extension-url%/extension/%extension-id%.",
-        "format": "Enter an absolute http/https URL. Example: http://127.0.0.1:4175/extension/{open}uuid{close}",
-        "required": "Enter the extension URL."
+      "descriptorJson": {
+        "invalid": "Enter a descriptor with runner, entrypoint, stylesheet, pages, and targets. Runner must be worker and resource URLs must be absolute HTTP(S) URLs.",
+        "required": "Enter the extension descriptor."
       },
       "mode": "Choose a launch mode.",
       "pageCodeFormat": "The page code may contain only Latin letters (A–Z, a–z) and hyphens.",
