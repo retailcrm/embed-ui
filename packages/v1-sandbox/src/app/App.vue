@@ -47,6 +47,7 @@
 
                 <PageMount
                     v-else-if="launchConfig.mode === 'page' && mounts[0]"
+                    :key="launchGeneration"
                     :mount="mounts[0]"
                     :set-tree="setMountTree"
                 />
@@ -59,6 +60,7 @@
                     />
 
                     <WidgetTargetList
+                        :key="launchGeneration"
                         :mounts="mounts"
                         :set-tree="setMountTree"
                     />
@@ -98,14 +100,14 @@
                 :fixture="fixture"
                 :format-context-json="formatContextJsonEditor"
                 :launch-config-changed="launchConfigChanged"
-                :manifest-url="manifestUrl"
+                :descriptor-json="descriptorJson"
                 :mode="mode"
                 :page-code="pageCode"
                 :reset-context-json="resetContextJson"
                 :selected-targets="selectedTargets"
                 :set-context-json="setContextJson"
                 :set-fixture="setFixture"
-                :set-manifest-url="setManifestUrl"
+                :set-descriptor-json="setDescriptorJson"
                 :set-mode="setMode"
                 :set-page-code="setPageCode"
                 :set-target-selected="setTargetSelected"
@@ -141,11 +143,13 @@ import type { SandboxLaunchInput } from '@/automation/bridge'
 import type { SandboxLaunchMode } from '@/scenario/types'
 import type { SandboxMount } from '@/app/types'
 import type { SandboxOrderTarget } from '@/scenario/types'
-import type { SandboxRuntime, SandboxWorkerApi, StoredLaunchNotice } from '@/app/types'
+import type { SandboxRuntime, SandboxWorkerApi } from '@/app/types'
 
 import { computed } from 'vue'
 import { createEndpoint as createRpcEndpoint, fromWebWorker } from '@remote-ui/rpc'
+import { nextTick } from 'vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { shallowReactive, shallowRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 import { watch } from 'vue'
@@ -165,43 +169,41 @@ import WidgetTargetList from '@/components/WidgetTargetList.vue'
 import RemoteBootstrapWorker from '@/runtime/remoteBootstrap.worker.ts?worker'
 
 import { areJsonValuesEqual } from '@/app/contextJson'
-import { createDefaultSandboxManifestUrl } from '@/scenario/launch'
 import { createMounts } from '@/runtime/mount'
 import { createOrderSandboxController } from '@/scenario/fixtures'
+import { createSandboxLaunchConfig } from '@/scenario/launch'
 import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
 import { getOrderSandboxFixture } from '@/scenario/fixtures'
 import { isContextJsonEqual } from '@/app/contextJson'
-import { isContextName, isWorkerReadyMessage } from '@/app/predicates'
+import { isContextName } from '@/app/predicates'
+import { isSandboxOrderTarget } from '@/scenario/predicates'
+import { isWorkerReadyMessage } from '@/app/predicates'
+import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
 import { parseSandboxLaunchConfig } from '@/scenario/launch'
-import { resolveSandboxExtensionSource } from '@/scenario/manifest'
+import { resolveSandboxExtensionSource } from '@/scenario/extension'
 import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
-import { updateSandboxLaunchQuery } from '@/scenario/launch'
+import { serializeSandboxExtensionDescriptor } from '@/scenario/descriptor'
+import { useSandboxLaunchStorage } from '@/app/launchStorage'
 import {
   validateContextJsonInput,
   validateLaunchConfigInput,
 } from '@/scenario/validation'
 
-const searchParams = new URLSearchParams(window.location.search)
-const hasExplicitExtensionUrl = Boolean(searchParams.get('extensionUrl')?.trim())
-const hasExplicitLaunchMode = searchParams.has('mode')
-const launchConfig = parseSandboxLaunchConfig(searchParams, {
-  manifestUrl: createDefaultSandboxManifestUrl(),
-  targets: DEFAULT_SANDBOX_TARGETS,
-})
-const LAUNCH_NOTICE_STORAGE_KEY = 'v1-sandbox:launch-notice'
+const launchStorage = useSandboxLaunchStorage()
+const launchConfig = shallowReactive(createSandboxLaunchConfig({}, launchStorage.config.value ?? undefined))
 const fixture = ref(launchConfig.fixture)
-const manifestUrl = ref(launchConfig.manifestUrl)
+const descriptorJson = ref(formatExtensionSource(launchConfig))
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
 const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
 const extensionHttpBaseUrl = ref<string | null>(null)
-const extensionDescriptorUuid = ref<string | undefined>()
-const sandbox = createOrderSandboxController(launchConfig.fixture, {
-  getDescriptorUuid: () => extensionDescriptorUuid.value,
+const createController = () => createOrderSandboxController(launchConfig.fixture, {
   getHttpCallBaseUrl: () => extensionHttpBaseUrl.value,
   globalBridge: {},
 })
-const mounts = createMounts(launchConfig)
+const sandbox = shallowRef(createController())
+const mounts = shallowRef(createMounts(launchConfig))
+const launchGeneration = ref(0)
 const runtime = ref<SandboxRuntime | null>(null)
 const isApplyingContext = ref(false)
 const isApplyingLaunchConfig = ref(false)
@@ -213,21 +215,29 @@ const contextJson = ref(formatContextJson())
 const contextApplySucceeded = ref(false)
 const contextHasManualChanges = ref(false)
 const devPanelValidationErrors = ref<DevPanelValidationErrors>({})
+let initialLaunch: Promise<boolean> | null = null
 let isAppMounted = false
+let targetsManuallyChanged = false
 
-const shouldShowOnboarding = computed(() => !launchConfig.manifestUrl && !hasExplicitExtensionUrl)
+function formatExtensionSource(config: SandboxLaunchConfig): string {
+  return config.descriptor
+    ? serializeSandboxExtensionDescriptor(config.descriptor, 2)
+    : ''
+}
+
+const shouldShowOnboarding = computed(() => !launchConfig.descriptor)
 const runModeLabel = computed(() => launchConfig.mode === 'page'
   ? t('app.runMode.page', { pageCode: launchConfig.pageCode })
   : t('app.runMode.widgets', { count: launchConfig.targets.length }))
 const contextJsonChanged = computed(() => !isContextJsonEqual(
   contextJson.value,
-  sandbox.snapshot().contexts
+  sandbox.value.snapshot().contexts
 ))
 const isExtensionConnected = computed(() => runtime.value !== null)
 const launchConfigChanged = computed(() => {
   if (
     fixture.value !== launchConfig.fixture
-    || manifestUrl.value.trim() !== launchConfig.manifestUrl
+    || descriptorJson.value.trim() !== formatExtensionSource(launchConfig)
     || mode.value !== launchConfig.mode
   ) {
     return true
@@ -243,44 +253,41 @@ const launchConfigChanged = computed(() => {
   )
 })
 
-watch(() => sandbox.state.contexts.settings['system.locale'], (systemLocale) => {
+watch(() => sandbox.value.state.contexts.settings['system.locale'], (systemLocale) => {
   if (systemLocale) {
     locale.value = systemLocale
   }
 }, { immediate: true })
 
 const flushReceiver = async () => {
-  await Promise.all(mounts.map(async (mount) => {
+  await Promise.all(mounts.value.map(async (mount) => {
     await mount.receiver.flush()
     mount.tree?.forceUpdate()
   }))
 }
 
-const mountExtension = async (): Promise<boolean> => {
+const mountExtension = async (throwOnError = false): Promise<boolean> => {
   let stylesheet: HTMLLinkElement | null = null
 
   try {
     const extensionSource = await resolveSandboxExtensionSource(launchConfig)
 
     if (!isAppMounted) return false
-    if (redirectToInferredPageMode(extensionSource.descriptor)) return false
 
     extensionHttpBaseUrl.value = extensionSource.httpBaseUrl
-    extensionDescriptorUuid.value = extensionSource.descriptor.uuid
 
     const diagnostic = createLaunchDiagnostic(extensionSource.descriptor)
 
     if (diagnostic) {
+      if (throwOnError && diagnostic.blocking) throw new Error(diagnostic.message)
+
       showSandboxAlert(diagnostic.title, diagnostic.message)
 
       if (diagnostic.blocking) return false
     }
 
     stylesheet = mountExtensionStylesheet(extensionSource.descriptor.stylesheet)
-    const connections = await mountWorkerExtension(
-      extensionSource.descriptor.uuid,
-      extensionSource.entrypoint
-    )
+    const connections = await mountWorkerExtension(extensionSource.entrypoint)
 
     if (!isAppMounted) {
       connections.forEach(disposeRuntimeConnection)
@@ -296,7 +303,7 @@ const mountExtension = async (): Promise<boolean> => {
       flushTimer: window.setInterval(() => {
         void flushReceiver()
       }, 100),
-      mounts,
+      mounts: mounts.value,
       stylesheet,
     }
 
@@ -304,6 +311,7 @@ const mountExtension = async (): Promise<boolean> => {
   } catch (error) {
     stylesheet?.remove()
 
+    if (throwOnError) throw error
     if (!isAppMounted) return false
 
     showSandboxAlert(
@@ -315,43 +323,18 @@ const mountExtension = async (): Promise<boolean> => {
   }
 }
 
-const redirectToInferredPageMode = (descriptor: SandboxExtensionDescriptor): boolean => {
-  const pageCode = descriptor.pages[0]
-
-  if (
-    hasExplicitLaunchMode
-    || launchConfig.mode !== 'widget'
-    || !pageCode
-  ) {
-    return false
-  }
-
-  storeLaunchNotice({
-    pageCode,
-    type: 'inferred-page-mode',
-  })
-  window.location.replace(updateSandboxLaunchQuery({
-    ...launchConfig,
-    mode: 'page',
-    pageCode,
-  }).toString())
-
-  return true
-}
-
 const createLaunchDiagnostic = (
   descriptor: SandboxExtensionDescriptor
 ): SandboxLaunchDiagnostic | null => {
   if (
     launchConfig.mode === 'page'
-    && descriptor.pages.length > 0
     && !descriptor.pages.includes(launchConfig.pageCode)
   ) {
     return {
       blocking: true,
       message: t('app.alerts.missingPageCode.message', {
         pageCode: launchConfig.pageCode,
-        pages: descriptor.pages.join(', '),
+        pages: descriptor.pages.join(', ') || '—',
       }),
       title: t('app.alerts.missingPageCode.title'),
     }
@@ -359,16 +342,19 @@ const createLaunchDiagnostic = (
 
   if (
     launchConfig.mode === 'widget'
-    && hasExplicitLaunchMode
-    && descriptor.pages.length > 0
-    && descriptor.targets.length === 0
   ) {
-    return {
-      blocking: false,
-      message: t('app.alerts.workerPageInWidgetMode.message', {
-        pages: descriptor.pages.join(', '),
-      }),
-      title: t('app.alerts.workerPageInWidgetMode.title'),
+    const missingTargets = launchConfig.targets.filter(
+      target => !descriptor.targets.includes(target)
+    )
+
+    if (missingTargets.length > 0) {
+      return {
+        blocking: true,
+        message: t('app.alerts.missingWidgetTargets.message', {
+          targets: missingTargets.join(', '),
+        }),
+        title: t('app.alerts.missingWidgetTargets.title'),
+      }
     }
   }
 
@@ -376,15 +362,14 @@ const createLaunchDiagnostic = (
 }
 
 const mountWorkerExtension = async (
-  uuid: string,
   entrypoint: URL
 ): Promise<SandboxRuntime['connections']> => {
   const readyChannel = new MessageChannel()
-  const worker = createExtensionWorker(uuid, entrypoint, readyChannel.port2)
+  const worker = createExtensionWorker(entrypoint, readyChannel.port2)
   const endpoint = createRpcEndpoint<SandboxWorkerApi>(fromWebWorker(worker))
 
   try {
-    await waitForExtensionWorkerReady(readyChannel.port1, worker, uuid)
+    await waitForExtensionWorkerReady(readyChannel.port1, worker)
   } catch (error) {
     endpoint.terminate()
     throw error
@@ -399,7 +384,7 @@ const mountWorkerExtension = async (
     return []
   }
 
-  const endpointApi = sandbox.endpointApi
+  const endpointApi = sandbox.value.endpointApi
 
   endpoint.expose({
     ...endpointApi,
@@ -408,11 +393,11 @@ const mountWorkerExtension = async (
   } as unknown as SandboxWorkerApi)
 
   try {
-    for (const mount of mounts) {
+    for (const mount of mounts.value) {
       await endpoint.call.run(mount.receiver.receive, mount.runConfig)
     }
   } catch (error) {
-    sandbox.disposeContextSubscriptions()
+    sandbox.value.disposeContextSubscriptions()
     endpoint.terminate()
     worker.terminate()
     throw error
@@ -421,7 +406,7 @@ const mountWorkerExtension = async (
   return [{
     endpoint,
     kind: 'worker',
-    mounts,
+    mounts: mounts.value,
     worker,
   }]
 }
@@ -445,7 +430,7 @@ const disposeRuntime = async () => {
   const current = runtime.value
 
   if (!current) {
-    sandbox.disposeContextSubscriptions()
+    sandbox.value.disposeContextSubscriptions()
     return
   }
 
@@ -457,11 +442,11 @@ const disposeRuntime = async () => {
       try {
         await releaseRuntimeConnection(connection)
       } catch (error) {
-        console.warn('[sandbox:manifest] Failed to release extension runtime', error)
+        console.warn('[sandbox:extension] Failed to release extension runtime', error)
       }
     }
 
-    sandbox.disposeContextSubscriptions()
+    sandbox.value.disposeContextSubscriptions()
     await flushReceiver()
   } finally {
     current.connections.forEach(disposeRuntimeConnection)
@@ -484,7 +469,7 @@ const applyLaunchConfig = async () => {
 
   const validationResult = validateLaunchConfigInput({
     fixture: fixture.value,
-    manifestUrl: manifestUrl.value,
+    descriptorJson: descriptorJson.value,
     mode: mode.value,
     pageCode: pageCode.value,
     targets: selectedTargets.value,
@@ -499,28 +484,23 @@ const applyLaunchConfig = async () => {
   devPanelValidationErrors.value = {}
 
   const config: SandboxLaunchConfig = {
-    extensionUrl: '',
+    descriptor: validationResult.data.descriptor,
     fixture: validationResult.data.fixture,
-    manifestUrl: validationResult.data.manifestUrl,
     mode: validationResult.data.mode,
     pageCode: validationResult.data.pageCode,
     targets: validationResult.data.targets.length > 0
       ? validationResult.data.targets
       : DEFAULT_SANDBOX_TARGETS,
-    widgetId: launchConfig.widgetId,
-  }
-
-  if (config.mode === 'widget') {
-    window.location.href = updateSandboxLaunchQuery(config).toString()
-    return
   }
 
   isApplyingLaunchConfig.value = true
 
   try {
-    const extensionSource = await resolveSandboxExtensionSource(config)
+    const extensionSource = config.mode === 'page'
+      ? await resolveSandboxExtensionSource(config)
+      : null
 
-    if (!extensionSource.descriptor.pages.includes(config.pageCode)) {
+    if (extensionSource && !extensionSource.descriptor.pages.includes(config.pageCode)) {
       devPanelValidationErrors.value = {
         ...devPanelValidationErrors.value,
         pageCode: t('app.alerts.missingPageCode.message', {
@@ -532,8 +512,10 @@ const applyLaunchConfig = async () => {
       return
     }
 
+    launchStorage.save(config)
+    delete window[SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY]
+    window.location.reload()
     isDevPanelOpen.value = false
-    window.location.href = updateSandboxLaunchQuery(config).toString()
   } catch (error) {
     isDevPanelOpen.value = true
     showSandboxAlert(
@@ -561,7 +543,7 @@ const applyContextJson = async () => {
 
   const validationResult = validateContextJsonInput(
     contextJson.value,
-    Object.keys(sandbox.state.contexts),
+    Object.keys(sandbox.value.state.contexts),
     createDevPanelValidationMessages()
   )
 
@@ -590,7 +572,7 @@ const applyContextJson = async () => {
 
     const appliedContextJson = formatContextJson()
     const hasManualChanges = !areJsonValuesEqual(
-      sandbox.snapshot().contexts,
+      sandbox.value.snapshot().contexts,
       getOrderSandboxFixture(launchConfig.fixture).contexts
     )
     const mounted = await mountExtension()
@@ -624,7 +606,7 @@ const formatContextJsonEditor = () => {
   } catch {
     const validationResult = validateContextJsonInput(
       contextJson.value,
-      Object.keys(sandbox.state.contexts),
+      Object.keys(sandbox.value.state.contexts),
       createDevPanelValidationMessages()
     )
 
@@ -665,7 +647,7 @@ const setFixture = (value: string) => {
 const getPageCodeValidationError = (value: string): string | undefined => {
   const validationResult = validateLaunchConfigInput({
     fixture: fixture.value,
-    manifestUrl: manifestUrl.value,
+    descriptorJson: descriptorJson.value,
     mode: mode.value,
     pageCode: value,
     targets: selectedTargets.value,
@@ -676,11 +658,30 @@ const getPageCodeValidationError = (value: string): string | undefined => {
     : validationResult.errors.pageCode
 }
 
-const setManifestUrl = (value: string) => {
-  manifestUrl.value = value
+const setDescriptorJson = (value: string) => {
+  descriptorJson.value = value
   contextApplySucceeded.value = false
-  clearDevPanelValidationError('manifestUrl')
+  clearDevPanelValidationError('descriptorJson')
   clearDevPanelValidationError('pageCode')
+
+  if (
+    !targetsManuallyChanged
+    && value.trim() !== formatExtensionSource(launchConfig)
+    && value.trim().startsWith('{')
+  ) {
+    try {
+      const descriptorTargets = parseSandboxExtensionDescriptorJson(value)
+        .targets
+        .filter(isSandboxOrderTarget)
+
+      if (descriptorTargets.length > 0) {
+        selectedTargets.value = descriptorTargets
+        clearDevPanelValidationError('targets')
+      }
+    } catch {
+      // The regular launch validation reports incomplete or invalid descriptor JSON.
+    }
+  }
 
   const pageCodeError = getPageCodeValidationError(pageCode.value)
 
@@ -723,6 +724,7 @@ const setPageCode = (value: string) => {
 }
 
 const setTargetSelected = (target: SandboxOrderTarget, checked: boolean) => {
+  targetsManuallyChanged = true
   selectedTargets.value = checked
     ? Array.from(new Set([...selectedTargets.value, target]))
     : selectedTargets.value.filter(item => item !== target)
@@ -739,25 +741,55 @@ const getCurrentLaunchConfig = (): SandboxLaunchConfig => ({
   targets: [...launchConfig.targets],
 })
 
-const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchConfig => ({
-  ...getCurrentLaunchConfig(),
-  ...input,
-  targets: input.targets
-    ? [...input.targets]
-    : [...launchConfig.targets],
-})
+const createLaunchConfigFromInput = (input: SandboxLaunchInput): SandboxLaunchConfig =>
+  createSandboxLaunchConfig(input, getCurrentLaunchConfig())
+
+const startExtension = async (config: SandboxLaunchConfig): Promise<void> => {
+  await initialLaunch
+  initialLaunch = null
+  await disposeRuntime()
+
+  if (!isAppMounted) throw new Error('[sandbox] Sandbox host is not mounted.')
+
+  sandbox.value.dispose()
+  Object.assign(launchConfig, config)
+  sandbox.value = createController()
+  mounts.value = createMounts(launchConfig)
+  launchGeneration.value += 1
+  fixture.value = config.fixture
+  descriptorJson.value = formatExtensionSource(config)
+  mode.value = config.mode
+  pageCode.value = config.pageCode
+  selectedTargets.value = [...config.targets]
+  contextJson.value = formatContextJson()
+  contextApplySucceeded.value = false
+  contextHasManualChanges.value = false
+  targetsManuallyChanged = false
+  devPanelValidationErrors.value = {}
+  await nextTick()
+
+  if (!await mountExtension(true)) {
+    throw new Error('[sandbox] Sandbox host was unmounted during launch.')
+  }
+}
 
 const createLaunchBridge = (): SandboxLaunchBridge => ({
-  createLaunchUrl(config) {
-    return updateSandboxLaunchQuery(createLaunchConfigFromInput(config)).toString()
-  },
-
   getLaunchConfig() {
     return getCurrentLaunchConfig()
   },
 
-  launch(config) {
-    window.location.href = this.createLaunchUrl(config)
+  async launch(config) {
+    if (isApplyingContext.value || isApplyingLaunchConfig.value) {
+      throw new Error('[sandbox] Another launch or context update is in progress.')
+    }
+
+    isApplyingLaunchConfig.value = true
+
+    try {
+      await startExtension(parseSandboxLaunchConfig(createLaunchConfigFromInput(config)))
+    } finally {
+      isApplyingLaunchConfig.value = false
+    }
   },
 })
 
@@ -776,17 +808,16 @@ const installSandboxLaunchBridge = (): (() => void) => {
 const uninstallSandboxLaunchBridge = installSandboxLaunchBridge()
 
 const createExtensionWorker = (
-  uuid: string,
   entrypoint: URL,
   readyPort: MessagePort
 ): Worker => {
   const worker = new RemoteBootstrapWorker({
-    name: `sandbox:${uuid}`,
+    name: 'sandbox:extension',
     type: 'module',
   })
 
   worker.postMessage({
-    extensionUrl: entrypoint.href,
+    entrypoint: entrypoint.href,
     readyPort,
   }, [readyPort])
 
@@ -807,7 +838,7 @@ const mountExtensionStylesheet = (href: string | null): HTMLLinkElement | null =
   return link
 }
 
-type OrderContextName = Extract<keyof typeof sandbox.state.contexts, string>
+type OrderContextName = Extract<keyof typeof sandbox.value.state.contexts, string>
 
 enum ExtensionWorkerMessageType {
   Ready = 'sandbox:extension-worker-ready',
@@ -817,13 +848,12 @@ enum ExtensionWorkerMessageType {
 const waitForExtensionWorkerReady = async (
   readyPort: MessagePort,
   worker: Worker,
-  uuid: string,
   timeoutMs = 10_000
 ): Promise<void> => {
   await new Promise<void>((resolve, reject) => {
     const timerId = window.setTimeout(() => {
       cleanup()
-      reject(new Error(`[sandbox:manifest] Worker bootstrap timed out for '${uuid}'`))
+      reject(new Error('[sandbox:extension] Worker bootstrap timed out'))
     }, timeoutMs)
 
     const cleanup = () => {
@@ -844,14 +874,14 @@ const waitForExtensionWorkerReady = async (
       if (event.data.type === ExtensionWorkerMessageType.ReadyError) {
         cleanup()
         reject(new Error(
-          event.data.error ?? `[sandbox:manifest] Worker bootstrap failed for '${uuid}'`
+          event.data.error ?? '[sandbox:extension] Worker bootstrap failed'
         ))
       }
     }
 
     const onError = (event: ErrorEvent) => {
       cleanup()
-      reject(event.error ?? new Error(event.message || `[sandbox:manifest] Worker error for '${uuid}'`))
+      reject(event.error ?? new Error(event.message || '[sandbox:extension] Worker error'))
     }
 
     readyPort.addEventListener('message', onMessage)
@@ -876,21 +906,21 @@ const showSandboxAlert = (title: string, message: string) => {
 }
 
 function formatContextJson(): string {
-  return JSON.stringify(sandbox.snapshot().contexts, null, 2)
+  return JSON.stringify(sandbox.value.snapshot().contexts, null, 2)
 }
 
 const applyContextJsonValue = (contexts: Record<string, Record<string, unknown>>) => {
   Object.entries(contexts).forEach(([context, contextValue]) => {
     if (!isOrderContextName(context)) return
 
-    sandbox.setContext(context, contextValue as never)
+    sandbox.value.setContext(context, contextValue as never)
   })
 }
 
 const isOrderContextName = (
   value: string
 ): value is OrderContextName =>
-  isContextName(sandbox.state.contexts, value)
+  isContextName(sandbox.value.state.contexts, value)
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) return error.message
@@ -918,12 +948,8 @@ const createDevPanelValidationMessages = (): DevPanelValidationMessages => ({
   contextJsonRootObject: t('app.validation.contextJson.rootObject'),
   contextJsonUnknownContext: context => t('app.validation.contextJson.unknownContext', { context }),
   fixture: t('app.validation.fixture'),
-  manifestUrlEndpoint: t('app.validation.manifestUrl.endpoint'),
-  manifestUrlFormat: t('app.validation.manifestUrl.format', {
-    close: '>',
-    open: '<',
-  }),
-  manifestUrlRequired: t('app.validation.manifestUrl.required'),
+  descriptorJsonInvalid: t('app.validation.descriptorJson.invalid'),
+  descriptorJsonRequired: t('app.validation.descriptorJson.required'),
   mode: t('app.validation.mode'),
   pageCodeFormat: t('app.validation.pageCodeFormat'),
   pageCodeRequired: t('app.validation.pageCodeRequired'),
@@ -931,43 +957,11 @@ const createDevPanelValidationMessages = (): DevPanelValidationMessages => ({
   targetUnknown: target => t('app.validation.targetUnknown', { target }),
 })
 
-const readLaunchNotice = (): StoredLaunchNotice | null => {
-  const rawNotice = window.sessionStorage.getItem(LAUNCH_NOTICE_STORAGE_KEY)
-
-  window.sessionStorage.removeItem(LAUNCH_NOTICE_STORAGE_KEY)
-
-  if (!rawNotice) return null
-
-  try {
-    return JSON.parse(rawNotice) as StoredLaunchNotice
-  } catch {
-    return null
-  }
-}
-
-const storeLaunchNotice = (notice: StoredLaunchNotice) => {
-  window.sessionStorage.setItem(LAUNCH_NOTICE_STORAGE_KEY, JSON.stringify(notice))
-}
-
-const showStoredLaunchNotice = () => {
-  const notice = readLaunchNotice()
-
-  if (notice?.type !== 'inferred-page-mode') return
-
-  showSandboxAlert(
-    t('app.alerts.inferredPageMode.title'),
-    t('app.alerts.inferredPageMode.message', {
-      pageCode: notice.pageCode ?? launchConfig.pageCode,
-    })
-  )
-}
-
 onMounted(() => {
   isAppMounted = true
-  showStoredLaunchNotice()
 
   if (!shouldShowOnboarding.value) {
-    void mountExtension()
+    initialLaunch = mountExtension()
   }
 })
 
@@ -975,7 +969,7 @@ onBeforeUnmount(() => {
   isAppMounted = false
   uninstallSandboxLaunchBridge()
   void disposeRuntime()
-  sandbox.dispose()
+  sandbox.value.dispose()
 })
 </script>
 

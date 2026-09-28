@@ -1,21 +1,17 @@
 {
   "app": {
     "alerts": {
-      "inferredPageMode": {
-        "message": "В ссылке не был указан режим. Песочница нашла страницу «{pageCode}» в расширении и переключила запуск в режим «Страница».",
-        "title": "Режим страницы выбран автоматически"
-      },
       "missingPageCode": {
         "message": "В расширении нет страницы «{pageCode}». Доступные страницы: {pages}.",
         "title": "Страница расширения не найдена"
       },
+      "missingWidgetTargets": {
+        "message": "Расширение не поддерживает выбранные места встраивания: {targets}.",
+        "title": "Место встраивания расширения не найдено"
+      },
       "runtimeError": {
         "message": "{message}",
         "title": "Не удалось запустить расширение"
-      },
-      "workerPageInWidgetMode": {
-        "message": "Расширение содержит страницы: {pages}. Сейчас выбран режим «Виджеты»; если ожидается страница, выберите режим «Страница».",
-        "title": "Проверьте режим запуска"
       }
     },
     "contextEditor": {
@@ -69,10 +65,9 @@
         "unknownContext": "Неизвестный контекст «{context}»."
       },
       "fixture": "Выберите существующую фикстуру.",
-      "manifestUrl": {
-        "endpoint": "URL должен быть вида %extension-url%/extension/%extension-id%.",
-        "format": "Введите абсолютный http/https URL. Например: http://127.0.0.1:4175/extension/{open}uuid{close}",
-        "required": "Укажите URL расширения."
+      "descriptorJson": {
+        "invalid": "Введите дескриптор с полями runner, entrypoint, stylesheet, pages и targets. Runner должен быть worker, адреса ресурсов — абсолютными HTTP(S)-адресами.",
+        "required": "Укажите дескриптор расширения."
       },
       "mode": "Выберите режим запуска.",
       "pageCodeFormat": "Код страницы может содержать только латинские буквы (A–Z, a–z) и дефисы.",

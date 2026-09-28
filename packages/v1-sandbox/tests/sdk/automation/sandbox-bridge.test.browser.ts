@@ -27,31 +27,26 @@ afterEach(() => {
   document.body.innerHTML = ''
   window.history.replaceState(null, '', '/')
   window.sessionStorage.clear()
+  window.localStorage.clear()
 })
 
 const createLaunchBridge = (): SandboxLaunchBridge => ({
-  createLaunchUrl: () => 'http://sandbox.test/',
   getLaunchConfig: () => ({
-    extensionUrl: '',
     fixture: 'order-basic',
-    manifestUrl: '',
     mode: 'widget',
     pageCode: 'returns',
     targets: ['order/card:common.before'],
-    widgetId: 'sandbox-widget',
   }),
-  launch: () => {},
+  launch: async () => {},
 })
 
 const createPage = (): {
   evaluated: unknown[];
   page: SandboxPlaywrightPage;
   waitForFunctionCalls: unknown[];
-  waitForUrlCalls: Array<Parameters<SandboxPlaywrightPage['waitForURL']>[0]>;
 } => {
   const evaluated: unknown[] = []
   const waitForFunctionCalls: unknown[] = []
-  const waitForUrlCalls: Array<Parameters<SandboxPlaywrightPage['waitForURL']>[0]> = []
 
   return {
     evaluated,
@@ -67,12 +62,8 @@ const createPage = (): {
         })
         return undefined
       },
-      async waitForURL(matcher) {
-        waitForUrlCalls.push(matcher)
-      },
     },
     waitForFunctionCalls,
-    waitForUrlCalls,
   }
 }
 
@@ -127,27 +118,11 @@ test('mounts sandbox and removes owned root on unmount', async () => {
   expect(document.querySelector('#app')).toBeNull()
 })
 
-test('launches sandbox extension by replacing browser url and remounting', async () => {
-  const root = document.createElement('div')
-
-  document.body.append(root)
-
-  const sandbox = await launchSandboxExtensionInBrowser({
-    fixture: 'order-with-delivery',
-    manifestUrl: '',
-    mode: 'page',
-    pageCode: 'returns',
-  }, {
-    root,
-  })
-
-  expect(window.location.search).toContain('fixture=order-with-delivery')
-  expect(window.location.search).toContain('mode=page')
-  expect(window.location.search).toContain('pageCode=returns')
-  expect(sandbox.root).toBe(root)
-  expect(sandbox.bridge.getLaunchConfig().fixture).toBe('order-with-delivery')
-
-  sandbox.unmount()
+test('cleans up the host when launching without a descriptor', async () => {
+  await expect(launchSandboxExtensionInBrowser({ mode: 'page' }))
+    .rejects.toThrow('Invalid extension descriptor')
+  expect(document.querySelector('#app')).toBeNull()
+  expect(getSandboxLaunchBridge()).toBeUndefined()
 })
 
 test('waits until sandbox launch bridge is available in playwright page', async () => {
@@ -165,27 +140,21 @@ test('waits until sandbox launch bridge is available in playwright page', async 
   })
 })
 
-test('launches extension through playwright page bridge without waiting for url when disabled', async () => {
+test('launches extension through the existing playwright page bridge', async () => {
   const {
     evaluated,
     page,
-    waitForUrlCalls,
   } = createPage()
 
   await launchSandboxExtensionInPlaywright(page, {
-    manifestUrl: 'http://extension.test/extension/returns',
     mode: 'page',
     pageCode: 'returns',
-  }, {
-    waitForUrl: false,
   })
 
-  expect(waitForUrlCalls).toHaveLength(0)
   expect(evaluated).toEqual([
     {
       key: '__CRM_EMBED_SANDBOX_LAUNCH__',
       launchConfig: {
-        manifestUrl: 'http://extension.test/extension/returns',
         mode: 'page',
         pageCode: 'returns',
       },
@@ -193,35 +162,13 @@ test('launches extension through playwright page bridge without waiting for url 
   ])
 })
 
-test('waits for launch query params when launching extension through playwright page', async () => {
-  const {
-    page,
-    waitForUrlCalls,
-  } = createPage()
+test('waits only for the existing launch bridge before launching through playwright', async () => {
+  const { page, waitForFunctionCalls } = createPage()
 
   await launchSandboxExtensionInPlaywright(page, {
-    manifestUrl: 'http://extension.test/extension/returns',
     mode: 'widget',
-    targets: [
-      'order/card:common.before',
-      'order/card:common.after',
-    ],
+    targets: ['order/card:common.before', 'order/card:common.after'],
   })
 
-  expect(waitForUrlCalls).toHaveLength(1)
-  expect(waitForUrlCalls[0]).toBeInstanceOf(Function)
-
-  const matcher = waitForUrlCalls[0] as (url: URL) => boolean
-
-  expect(matcher(new URL(
-    'http://sandbox.test/'
-    + '?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Freturns'
-    + '&mode=widget'
-    + '&targets=order%2Fcard%3Acommon.before%2Corder%2Fcard%3Acommon.after'
-  ))).toBe(true)
-  expect(matcher(new URL(
-    'http://sandbox.test/'
-    + '?manifestUrl=http%3A%2F%2Fextension.test%2Fextension%2Freturns'
-    + '&mode=page'
-  ))).toBe(false)
+  expect(waitForFunctionCalls).toHaveLength(1)
 })

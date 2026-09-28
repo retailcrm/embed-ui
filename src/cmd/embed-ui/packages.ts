@@ -131,12 +131,6 @@ export const INSTALLABLE_PACKAGES: InstallablePackage[] = [
         command: 'init-skills',
         failureMode: 'advisory',
       },
-      {
-        type: 'config',
-        binName: 'embed-ui-v1-sandbox',
-        command: 'init-env',
-        failureMode: 'advisory',
-      },
     ],
   },
 ]

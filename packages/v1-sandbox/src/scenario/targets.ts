@@ -2,6 +2,11 @@ import type { SandboxOrderTarget, SandboxSlotDefinition } from '@/scenario/types
 
 export type { SandboxOrderTarget, SandboxSlotDefinition } from '@/scenario/types'
 
+export const DEFAULT_SANDBOX_TARGETS: SandboxOrderTarget[] = [
+  'order/card:common.before',
+  'order/card:common.after',
+]
+
 export const ORDER_SANDBOX_TARGETS = [
   'order/card:common.before',
   'order/card:common.after',

@@ -39,8 +39,33 @@ npx @retailcrm/embed-ui-v1-sandbox serve
 embed-ui-v1-sandbox serve --host 0.0.0.0 --port 4173
 ```
 
-Откройте URL из вывода команды, укажите URL расширения
-`%extension-url%/extension/%extension-id%`, выберите режим и fixture, затем нажмите `Apply`.
+Откройте URL из вывода команды и вставьте runtime-дескриптор расширения:
+
+```json
+{
+  "entrypoint": "https://extension.test/build/worker.js",
+  "pages": [
+    "returns"
+  ],
+  "stylesheet": "https://extension.test/build/extension.css",
+  "targets": [],
+  "runner": "worker"
+}
+```
+
+`entrypoint` и `stylesheet` задаются абсолютными HTTP(S)-адресами. JSON можно
+вставить целиком либо заполнить те же поля отдельно в DevPanel. Запуск возможен
+только по дескриптору; ID экземпляров виджетов создаёт сама песочница.
+
+После «Применить» проверенная конфигурация сохраняется в `localStorage` и
+восстанавливается при обновлении страницы. Адрес остаётся без параметров запуска.
+Настройки принадлежат текущему браузеру и origin песочницы (протокол, хост, порт):
+копирование чистого URL их не передаёт. Без сохранённой конфигурации открывается
+экран подключения. Несохранённые правки DevPanel и ручные изменения контекста
+не сохраняются.
+
+В тестах откройте чистый адрес песочницы и передайте настройки через
+`launchSandboxExtension()`. Параметры адресной строки не используются для запуска.
 
 ## Применение в тестах
 
@@ -68,8 +93,14 @@ test('loads extension page in sandbox', async ({ page }) => {
   await page.goto('/')
 
   await launchSandboxExtension(page, {
+    descriptor: {
+      runner: 'worker',
+      entrypoint: 'https://extension.test/build/worker.js',
+      pages: ['returns'],
+      stylesheet: 'https://extension.test/build/extension.css',
+      targets: [],
+    },
     fixture: 'order-basic',
-    manifestUrl: '%extension-url%/extension/%extension-id%',
     mode: 'page',
     pageCode: 'returns',
   })
@@ -86,7 +117,7 @@ test('loads extension page in sandbox', async ({ page }) => {
   целевом проекте или тестовом наборе.
 - [`docs/index.md`](./docs/index.md) - точка входа в документацию sandbox.
 - [`docs/usage-guide.md`](./docs/usage-guide.md) - ручное использование sandbox,
-  CLI, DevPanel, URL contract, fixtures, context и симуляция HostAPI.
+  CLI, DevPanel, localStorage, fixtures, context и симуляция HostAPI.
 - [`docs/strategy.md`](./docs/strategy.md) - выбор между unit, browser и e2e
   тестами, semantic HTML и ARIA principles.
 - [`docs/examples.md`](./docs/examples.md) - практические примеры unit, browser,
@@ -101,10 +132,9 @@ test('loads extension page in sandbox', async ({ page }) => {
 - CLI: `embed-ui-v1-sandbox serve`.
 - `core`: `createSandboxController`, `createSandboxState`, `createSandboxHostApi`, `createSandboxRpc`.
 - `scenario`: `createOrderSandboxController`, `createSandboxHttpMiddleware`,
-  `updateSandboxLaunchQuery`, fixtures, targets и validation helpers.
-- `automation/browser`: `mountSandbox`, `launchSandboxExtension`, `waitForSandboxLaunchBridge`.
-- `automation/playwright`: `createSandboxPagePath`, `createSandboxWidgetPath`,
-  `launchSandboxExtension`, `readSandboxSnapshot`, `waitForSandboxLaunchBridge`.
+  `createSandboxLaunchConfig`, fixtures, targets и validation helpers.
+- `automation/browser`: `createExtensionSourceWorker`, `createSandboxWorkerRuntime` — запуск расширения в Browser Mode.
+- `automation/playwright`: `launchSandboxExtension`, `readSandboxSnapshot`, `waitForSandboxLaunchBridge`.
 - `node`: `serveSandbox`.
 
 См. [`docs/api.md`](./docs/api.md) для полного обзора публичного API.

@@ -10,7 +10,7 @@ CRM. Pick the smallest test layer that still covers the behavior you need.
 Use unit tests for pure logic and isolated UI:
 
 - validation and formatting;
-- launch URL helpers;
+- launch configuration helpers;
 - fixture/context transformations;
 - shell components;
 - controller and HostAPI state behavior.

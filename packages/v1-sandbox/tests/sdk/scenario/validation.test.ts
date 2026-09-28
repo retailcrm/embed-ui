@@ -11,9 +11,8 @@ const messages: DevPanelValidationMessages = {
   contextJsonRootObject: 'Context JSON must be an object.',
   contextJsonUnknownContext: context => `Unknown context "${context}".`,
   fixture: 'Unknown fixture.',
-  manifestUrlEndpoint: 'Manifest URL must include /extension/%extension-id%.',
-  manifestUrlFormat: 'Manifest URL must be an absolute http/https URL.',
-  manifestUrlRequired: 'Manifest URL is required.',
+  descriptorJsonInvalid: 'Extension descriptor is invalid.',
+  descriptorJsonRequired: 'Extension descriptor is required.',
   mode: 'Unknown mode.',
   pageCodeFormat: 'Page code has an invalid format.',
   pageCodeRequired: 'Page code is required.',
@@ -21,9 +20,17 @@ const messages: DevPanelValidationMessages = {
   targetUnknown: target => `Unknown target "${target}".`,
 }
 
+const descriptor = {
+  runner: 'worker' as const,
+  entrypoint: 'https://extension.test/runtime/worker.js',
+  pages: ['returns'],
+  stylesheet: null,
+  targets: ['order/card:common.after'],
+}
+
 const validLaunchInput = {
   fixture: 'order-basic',
-  manifestUrl: 'http://extension.test/extension/module-id',
+  descriptorJson: JSON.stringify(descriptor),
   mode: 'widget',
   pageCode: 'returns',
   targets: ['order/card:common.after'],
@@ -32,50 +39,79 @@ const validLaunchInput = {
 test('rejects empty manifest urls', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: '',
+    descriptorJson: '',
   }, messages)
 
   expect(result).toEqual({
     errors: {
-      manifestUrl: 'Manifest URL is required.',
+      descriptorJson: 'Extension descriptor is required.',
     },
     success: false,
   })
 })
 
-test('rejects malformed manifest urls', () => {
+test('rejects direct extension urls', () => {
   const invalidUrl = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: 'extension.test/module-id',
+    descriptorJson: 'extension.test/module-id',
   }, messages)
-  const missingEndpoint = validateLaunchConfigInput({
-    ...validLaunchInput,
-    manifestUrl: 'http://extension.test/module-id',
-  }, messages)
-
   expect(invalidUrl).toEqual({
     errors: {
-      manifestUrl: 'Manifest URL must be an absolute http/https URL.',
-    },
-    success: false,
-  })
-  expect(missingEndpoint).toEqual({
-    errors: {
-      manifestUrl: 'Manifest URL must include /extension/%extension-id%.',
+      descriptorJson: 'Extension descriptor is invalid.',
     },
     success: false,
   })
 })
 
-test('rejects manifest urls with unsupported protocols', () => {
+test('accepts a strict extension descriptor', () => {
   const result = validateLaunchConfigInput({
     ...validLaunchInput,
-    manifestUrl: 'ftp://extension.test/extension/module-id',
+    descriptorJson: JSON.stringify(descriptor),
+  }, messages)
+
+  expect(result).toEqual({
+    data: {
+      descriptor,
+      fixture: validLaunchInput.fixture,
+      mode: validLaunchInput.mode,
+      pageCode: validLaunchInput.pageCode,
+      targets: validLaunchInput.targets,
+    },
+    success: true,
+  })
+})
+
+test('rejects malformed or non-strict extension descriptors', () => {
+  const result = validateLaunchConfigInput({
+    ...validLaunchInput,
+    descriptorJson: JSON.stringify({
+      entrypoint: 'https://extension.test/runtime/worker.js',
+      baseUrl: 'https://extension.test/',
+      code: 'returns-module',
+      pages: [],
+      runner: 'worker',
+      stylesheet: null,
+      targets: [],
+    }),
   }, messages)
 
   expect(result).toEqual({
     errors: {
-      manifestUrl: 'Manifest URL must be an absolute http/https URL.',
+      descriptorJson: 'Extension descriptor is invalid.',
+    },
+    success: false,
+  })
+})
+
+test('rejects non-json direct urls with unsupported protocols', () => {
+  const result = validateLaunchConfigInput({
+    ...validLaunchInput,
+    descriptorJson: 'ftp://extension.test/extension/module-id',
+  }, messages)
+
+  expect(result).toEqual({
+    errors: {
+      descriptorJson: 'Extension descriptor is invalid.',
     },
     success: false,
   })

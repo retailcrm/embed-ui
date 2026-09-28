@@ -11,6 +11,7 @@ export default mergeConfig(basic as ViteUserConfig, defineConfig({
     exclude: ['tests/**/*.test.browser.ts'],
     include: ['tests/**/*.test.ts'],
     reporters: ['dot'],
+    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'istanbul',
       include: ['src/**/*.{ts,tsx,vue}'],
