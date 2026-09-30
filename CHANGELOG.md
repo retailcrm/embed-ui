@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.32
+
+### Bug Fixes
+
+* **v1-contexts:** Type declaration subpaths were exported ([baff78f](https://github.com/retailcrm/embed-ui/commit/baff78f409081cc1e4cbae3edabeed6f326b5c95))
+* **v1-types:** Directory declarations were resolved ([a9ef6fe](https://github.com/retailcrm/embed-ui/commit/a9ef6fe2e7d8c3cc312b4ed0aa93a1e2e40ac438))
+* **v1-components:** Host declarations were made consumable ([5141712](https://github.com/retailcrm/embed-ui/commit/51417122dfb9111066752c34eb39f8425092a2cb))
+* Public type exports were made consumable ([5f58af4](https://github.com/retailcrm/embed-ui/commit/5f58af44991f3db5903e62009bb29e2f22d489e1))
+
 ## 0.9.32-beta.2
 
 ### Features
