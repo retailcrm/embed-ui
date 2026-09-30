@@ -1905,6 +1905,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@omnicajs/vue-remote@npm:^0.2.27":
+  version: 0.2.27
+  resolution: "@omnicajs/vue-remote@npm:0.2.27"
+  dependencies:
+    "@remote-ui/rpc": "npm:^1.4.5"
+  peerDependencies:
+    vue: ^3.4
+  checksum: 10/bf0bd52af04b5b126a607cec5a9d05f8880f9bd417cc5b27ae7884954cdc90eec236c81965698dd5db47427f5d834e0a29d40dcb725ee9d4411f3f0cbcb8fb6c
+  languageName: node
+  linkType: hard
+
 "@one-ini/wasm@npm:0.1.1":
   version: 0.1.1
   resolution: "@one-ini/wasm@npm:0.1.1"
@@ -1955,7 +1966,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-components@workspace:packages/v1-components"
   dependencies:
-    "@omnicajs/vue-remote": "npm:^0.2.26"
+    "@omnicajs/vue-remote": "npm:^0.2.27"
     "@remote-ui/rpc": "npm:^1.4.7"
     "@retailcrm/image-preview": "npm:^1.0.2"
     "@storybook/addon-a11y": "npm:^10.3.5"
