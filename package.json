@@ -20,7 +20,13 @@
       "default": "./dist/index.mjs"
     },
     "./dist/*": "./dist/*",
-    "./types/*": "./types/*"
+    "./types/*": {
+      "types": [
+        "./types/*.d.ts",
+        "./types/*/index.d.ts"
+      ],
+      "default": "./types/*"
+    }
   },
   "bin": "bin/embed-ui.mjs",
   "files": [
