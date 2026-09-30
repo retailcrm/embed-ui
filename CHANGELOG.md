@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.32-beta.2
+
+### Features
+
+* **v1-sandbox:** Descriptor-based extension launches were added ([1653174](https://github.com/retailcrm/embed-ui/commit/16531746eeaabd5d77202397c089548a9c4eba11))
+
+### Bug Fixes
+
+* **v1-types:** Type declaration subpaths were exported ([5ff07dc](https://github.com/retailcrm/embed-ui/commit/5ff07dc6b1577826b5702fe9abe9d1ec2b6a02e5))
+* **v1-components:** UiModalWindow declaration casing was corrected ([c777572](https://github.com/retailcrm/embed-ui/commit/c7775726ccc9e436e53b0750927f23b01fc53fc9))
+
 ## 0.9.32-beta.1
 
 ### Features
