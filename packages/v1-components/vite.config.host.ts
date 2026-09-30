@@ -1,11 +1,13 @@
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { writeFileSync } from 'node:fs'
 
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import { mergeConfig } from 'vite'
 
 import basic from './vite.config.basic'
-import { formatDeclarationFile } from './vite.dts-format'
+import { fixHostDeclarationFile, formatDeclarationFile } from './vite.dts-format'
 
 import { dependencies, name, peerDependencies } from './package.json'
 
@@ -53,6 +55,12 @@ export default mergeConfig(basic, defineConfig({
           filePath,
           content: formatDeclarationFile(content),
         }
+      },
+      afterBuild: () => {
+        const declarationPath = resolve(__dirname, './dist/host.d.ts')
+        const content = readFileSync(declarationPath, 'utf8')
+
+        writeFileSync(declarationPath, fixHostDeclarationFile(content))
       },
     }),
   ],

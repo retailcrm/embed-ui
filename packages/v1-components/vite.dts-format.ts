@@ -16,3 +16,20 @@ export const formatDeclarationFile = (content: string): string => {
 
   return `${printer.printFile(sourceFile)}\n`
 }
+
+export const fixHostDeclarationFile = (content: string): string => formatDeclarationFile(
+  content
+    .replace(
+      'import { Attrs } from \'vue\';',
+      'type Attrs = Record<string, unknown>;'
+    )
+    .replace(
+      'import { GlobalComponents } from \'vue\';',
+      'import { GlobalComponents as VueGlobalComponents } from \'vue\';\ntype GlobalComponents = { [K in keyof VueGlobalComponents]: VueGlobalComponents[K] };'
+    )
+    .replace(
+      'import { GlobalDirectives } from \'vue\';',
+      'import { GlobalDirectives as VueGlobalDirectives } from \'vue\';\ntype GlobalDirectives = { [K in keyof VueGlobalDirectives]: VueGlobalDirectives[K] };'
+    )
+    .replaceAll('$nextTick: nextTick;', '$nextTick: typeof nextTick;')
+)
