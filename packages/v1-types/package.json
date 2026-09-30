@@ -13,7 +13,10 @@
     ".": null,
     "./*.d.ts": "./*.d.ts",
     "./*": {
-      "types": "./*.d.ts",
+      "types": [
+        "./*.d.ts",
+        "./*/index.d.ts"
+      ],
       "default": "./*"
     }
   }
