@@ -63,7 +63,17 @@
       "require": "./dist/remote/custom.cjs",
       "default": "./dist/remote/custom.js"
     },
-    "./*": "./*"
+    "./*": "./*",
+    "./types/*": {
+      "types": [
+        "./types/*.d.ts",
+        "./types/*/index.d.ts"
+      ],
+      "default": "./types/*"
+    },
+    "./types": {
+      "types": "./types/index.d.ts"
+    }
   },
   "typesVersions": {
     "*": {
