@@ -24,4 +24,11 @@ export const pageListDocumentation: Array<{
     'es-ES': 'Página con el formulario de creación/edición de pedidos en los chats',
     'ru-RU': 'Страница с формой создания/редактирования заказа в чатах',
   },
+}, {
+  id: 'ticket/view',
+  description: {
+    'en-GB': 'Ticket viewer',
+    'es-ES': 'Visor de solicitudes',
+    'ru-RU': 'Просмотр обращения',
+  },
 }]
