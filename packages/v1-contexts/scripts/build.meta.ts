@@ -1,3 +1,4 @@
+import type { ActionSchema } from '@retailcrm/embed-ui-v1-types/context'
 import type { ActionSchemaList } from '~types/index'
 import type { ContextSchema } from '@retailcrm/embed-ui-v1-types/context'
 import type { ContextSchemaDescription } from '@retailcrm/embed-ui-v1-types/context-doc'
@@ -19,6 +20,8 @@ import * as customerPhone from '@/common/customer/card-phone'
 import * as order from '@/common/order/card'
 import * as orderSettings from '@/common/order/card-settings'
 import * as settings from '@/common/settings'
+import * as ticket from '@/common/ticket/view'
+import * as ticketSettings from '@/common/ticket/view-settings'
 import * as user from '@/common/user/current'
 
 const schema: SchemaList = {
@@ -28,6 +31,8 @@ const schema: SchemaList = {
   [orderSettings.id]: orderSettings.schema,
   [user.id]: user.schema,
   [settings.id]: settings.schema,
+  [ticket.id]: ticket.schema,
+  [ticketSettings.id]: ticketSettings.schema,
 }
 
 const description: {
@@ -39,6 +44,8 @@ const description: {
   [orderSettings.id]: orderSettings.description,
   [user.id]: user.description,
   [settings.id]: settings.description,
+  [ticket.id]: ticket.description,
+  [ticketSettings.id]: ticketSettings.description,
 }
 
 const usage: {
@@ -50,16 +57,20 @@ const usage: {
   [orderSettings.id]: orderSettings.usage,
   [user.id]: user.usage,
   [settings.id]: settings.usage,
+  [ticket.id]: ticket.usage,
+  [ticketSettings.id]: ticketSettings.usage,
 }
 
 const actions: ActionSchemaList = {
   [order.id]: order.actions,
+  [ticket.id]: ticket.actions,
 }
 
 const actionsDescription: {
   [K in keyof ActionSchemaList]: ObjectDescription<ActionSchemaList[K]>;
 } = {
   [order.id]: order.actionsDescription,
+  [ticket.id]: ticket.actionsDescription,
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -164,14 +175,26 @@ fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
       })
 
       return meta
-    }, [] as Array<{ name: string; fields: ObjectFieldMeta[]; }>), ...types,
+    }, [] as Array<{ name: string; fields: ObjectFieldMeta[]; }>),
+    ...keysOf(ticket.typesDescription).map(name => ({
+      name,
+      fields: keysOf(ticket.typesDescription[name]).map(field => ({
+        name: field as string,
+        type: (ticket.types[name] as Record<string, string>)[field as string],
+        description: ticket.typesDescription[name][field],
+      })),
+    })),
+    ...types,
   ],
   actions: keysOf(actions).reduce((meta, scope) => {
-    meta[scope] = keysOf(actions[scope]).map(name => ({
+    const scopeActions = actions[scope] as ActionSchema
+    const scopeDescription = actionsDescription[scope] as ObjectDescription<ActionSchema>
+
+    meta[scope] = Object.keys(scopeActions).map(name => ({
       name,
-      arguments: actions[scope][name].accepts.members,
-      returns: `Promise<${actions[scope][name].expects.type}>`,
-      description: actionsDescription[scope][name],
+      arguments: scopeActions[name].accepts.members,
+      returns: `Promise<${scopeActions[name].expects.type}>`,
+      description: scopeDescription[name],
     }))
 
     return meta

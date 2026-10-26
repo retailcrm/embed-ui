@@ -45,6 +45,15 @@ test('supports Codex startup probes without tools or prompts', async () => {
         uri: 'embed-ui-v1-contexts://actions/order%2Fcard',
       }),
       expect.objectContaining({
+        uri: 'embed-ui-v1-contexts://contexts/ticket%2Fview',
+      }),
+      expect.objectContaining({
+        uri: 'embed-ui-v1-contexts://contexts/ticket%2Fview%3Asettings',
+      }),
+      expect.objectContaining({
+        uri: 'embed-ui-v1-contexts://actions/ticket%2Fview',
+      }),
+      expect.objectContaining({
         uri: 'embed-ui-v1-contexts://custom-contexts',
       }),
       expect.objectContaining({
@@ -75,6 +84,30 @@ test('supports Codex startup probes without tools or prompts', async () => {
     contents: [{
       mimeType: 'application/yaml',
       text: expect.stringContaining('"action_scope": "order/card"'),
+    }],
+  })
+  await expect(client.readResource({
+    uri: 'embed-ui-v1-contexts://contexts/ticket%2Fview',
+  })).resolves.toMatchObject({
+    contents: [{
+      mimeType: 'application/yaml',
+      text: expect.stringContaining('TicketResponsible'),
+    }],
+  })
+  await expect(client.readResource({
+    uri: 'embed-ui-v1-contexts://actions/ticket%2Fview',
+  })).resolves.toMatchObject({
+    contents: [{
+      mimeType: 'application/yaml',
+      text: expect.stringContaining('changeIssueResponsible'),
+    }],
+  })
+  await expect(client.readResource({
+    uri: 'embed-ui-v1-contexts://contexts/ticket%2Fview%3Asettings',
+  })).resolves.toMatchObject({
+    contents: [{
+      mimeType: 'application/yaml',
+      text: expect.stringContaining('statuses'),
     }],
   })
 })

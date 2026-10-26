@@ -62,6 +62,113 @@ export type CustomContextDocumentation = {
 }
 
 export const contextDocumentation: Record<string, ContextDocumentation> = {
+  'ticket/view': {
+    summary: {
+      'en-GB': 'Readonly ticket viewer context with questions, customer, contact, company, SLA and per-ticket action availability. Shared settings are in ticket/view:settings. Paginated lists are excluded.',
+    },
+    aiNotes: [{
+      'en-GB': 'This package defines the contract. Ticket viewer targets are declared by v1-endpoint; actual availability requires the CRM host to implement those targets and contexts.',
+    }, {
+      'en-GB': 'Dates are ISO 8601 strings or null. SLA durations are snapshots in seconds, not a live countdown.',
+    }, {
+      'en-GB': 'All data belongs to the current viewer instance. Closing it must release subscriptions and reject subsequent actions.',
+    }],
+    fields: {
+      'customer.id': {
+        sourceOfTruth: {
+          'en-GB': 'CRM customer selected for this ticket; null means no customer is selected.',
+        },
+      },
+      'customer.type': {
+        aiNotes: [{
+          'en-GB': 'Uses the same CustomerType and meaning as order/card: customer or customer_corporate. The default is customer; use customer.id to determine whether a customer is present.',
+        }],
+      },
+      'customer.name': {
+        aiNotes: [{
+          'en-GB': 'Display name from the ticket viewer. This slice does not expose the editable name parts available in order/card.',
+        }],
+      },
+      company: {
+        aiNotes: [{
+          'en-GB': 'Company selected in the ticket; it can differ from the corporate customer main company.',
+        }],
+      },
+      issues: {
+        mutation: {
+          mode: 'action',
+          action: 'changeIssueStatus / changeIssueResponsible',
+          notes: {
+            'en-GB': 'Status and responsible belong to each question. Pass the question id, not the ticket id, and never substitute the first question for the whole ticket.',
+          },
+        },
+        relatedActions: ['changeIssueStatus', 'changeIssueResponsible'],
+      },
+      canCreateEmail: {
+        aiNotes: [{
+          'en-GB': 'Allows opening the new email editor via openEmailEditor, depending on this ticket customer, contact and user permissions. Actual sending availability is checked separately by the email form; this flag does not guarantee that sending is available.',
+        }],
+      },
+      canCreateOrder: {
+        aiNotes: [{
+          'en-GB': 'Depends on this ticket customer type and user permissions. Availability can change when the selected customer changes.',
+        }],
+      },
+      loadFailed: {
+        aiNotes: [{
+          'en-GB': 'Previously loaded values may remain visible after a refresh failure. Do not treat them as freshly confirmed data.',
+        }],
+      },
+    },
+    fieldGroups: {
+      customer: {
+        fields: [
+          'customer.id',
+          'customer.type',
+          'customer.name',
+          'customer.email',
+          'customer.phones',
+          'customer.vip',
+          'customer.bad',
+        ],
+        aiNotes: [{
+          'en-GB': 'A readonly slice of the same customer entity used in order/card. Shared fields keep their names and meaning; available fields and mutation capabilities differ by context.',
+        }],
+      },
+    },
+  },
+  'ticket/view:settings': {
+    summary: {
+      'en-GB': 'Readonly settings for the ticket viewer: shared status catalog and user permissions. None depends on a particular ticket.',
+    },
+    aiNotes: [{
+      'en-GB': 'Requires an explicit CRM host implementation and target profile. Initialize separately from ticket/view. Only ticket/view provides the action scope.',
+    }, {
+      'en-GB': 'Settings are reactive and can change with the user session. Permission flags do not include temporary loading or mutation locks; these remain in ticket/view.',
+    }, {
+      'en-GB': 'Host actions must recheck permissions, viewer lifecycle, arguments and conflicting operations, even when the corresponding flag is true.',
+    }],
+    fields: {
+      statuses: {
+        sourceOfTruth: {
+          'en-GB': 'The active ticketIssueStatuses catalog, excluding inactive groups, loaded without a ticket identifier.',
+        },
+        aiNotes: [{
+          'en-GB': 'Not a list of allowed transitions for an individual issue. Check editable before offering status changes; the catalog itself does not imply edit permission.',
+        }],
+      },
+      editable: {
+        aiNotes: [{
+          'en-GB': 'Derived from the current user TicketEdit permission. Does not depend on ticket customer or content.',
+        }],
+      },
+      commentable: {
+        aiNotes: [{
+          'en-GB': 'Permission to add ticket comments. The current CRM viewer uses TicketEdit for this operation.',
+        }],
+      },
+    },
+  },
   'customer/card': {
     summary: {
       'en-GB': 'Readonly customer card context with customer identifiers, primary email, and phone list.',
@@ -354,6 +461,45 @@ export const contextDocumentation: Record<string, ContextDocumentation> = {
 }
 
 export const actionDocumentation: Record<string, ActionScopeDocumentation> = {
+  'ticket/view': {
+    summary: {
+      'en-GB': 'Host-mediated ticket viewer actions. Mutations resolve after persistence and context reconciliation; failures reject instead of silently succeeding. UI-opening actions resolve when the requested interface opens.',
+    },
+    actions: {
+      createComment: {
+        aiNotes: [{
+          'en-GB': 'Returns the saved comment id. Comment lists are not part of this context.',
+        }],
+      },
+      changeIssueResponsible: {
+        mutates: ['issues[].responsible'],
+        aiNotes: [{
+          'en-GB': 'Pass { kind: "user" | "group", id: number }. The host maps this reference to its transport contract and preserves other questions.',
+        }],
+      },
+      changeIssueStatus: {
+        mutates: ['issues[].status', 'issues[].closedAt', 'issues[].sla', 'sla'],
+        aiNotes: [{
+          'en-GB': 'Use an issue id from ticket/view.issues and a status id from ticket/view:settings.statuses. Check settings.editable. Host updates must preserve other questions.',
+        }],
+      },
+      openTicketHistory: {
+        aiNotes: [{
+          'en-GB': 'Opens the standard CRM history interface for the current ticket. The CRM uses the ordinary ticket view permission; there is no separate history visibility setting or history list in this context.',
+        }],
+      },
+      openEmailEditor: {
+        aiNotes: [{
+          'en-GB': 'Opens the standard email editor with ticket context and the appropriate recipient; sending remains a user action in CRM.',
+        }],
+      },
+      openOrderForm: {
+        aiNotes: [{
+          'en-GB': 'Opens the standard new order form in a sidebar. It does not navigate to an order page. Resolution does not mean an order was saved. CRM owns linking the saved order to the ticket and reporting a linking failure.',
+        }],
+      },
+    },
+  },
   'order/card': {
     summary: {
       'en-GB': 'Order card actions for mutating order items through the host form contract.',

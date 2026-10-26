@@ -23,6 +23,7 @@ type SchemaName = string
 
 const schemas: Record<SchemaName, Path[]> = {
   'order/card': [ path.resolve(__root, 'types/order/card.d.ts') ],
+  'ticket/view': [ path.resolve(__root, 'types/ticket/view.d.ts') ],
 }
 
 const code = {} as Record<SchemaName, string>
