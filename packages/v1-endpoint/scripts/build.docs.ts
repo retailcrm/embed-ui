@@ -19,6 +19,7 @@ const pageLabels: Record<string, string> = {
   'customer/card': 'customer card',
   'order/card': 'full order form',
   'order/mg': 'chat order form',
+  'ticket/view': 'ticket viewer',
 }
 
 const quote = (value: string): string => JSON.stringify(value)
@@ -107,7 +108,9 @@ ai_notes:
   - ${quote('Do not duplicate target context lists in generated widget code.')}
 ${target.startsWith('order/')
     ? `  - ${quote('Order card and chat order form targets share the same order form data contract.')}\n`
-    : ''}`
+    : ''}${'notes' in documentation
+  ? documentation.notes.map(note => `  - ${quote(note['en-GB'])}\n`).join('')
+  : ''}`
 }
 
 fs.rmSync(docs, { recursive: true, force: true })

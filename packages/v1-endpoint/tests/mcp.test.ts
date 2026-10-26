@@ -35,6 +35,10 @@ test('supports Codex startup probes without tools or prompts', async () => {
       expect.objectContaining({
         uri: 'embed-ui-v1-endpoint://targets',
       }),
+      expect.objectContaining({ uri: 'embed-ui-v1-endpoint://targets/ticket%2Fview%3Aheader.after' }),
+      expect.objectContaining({ uri: 'embed-ui-v1-endpoint://targets/ticket%2Fview%3Acommon.before' }),
+      expect.objectContaining({ uri: 'embed-ui-v1-endpoint://targets/ticket%2Fview%3Acustomer.after' }),
+      expect.objectContaining({ uri: 'embed-ui-v1-endpoint://targets/ticket%2Fview%3Aissues.after' }),
     ]),
   })
 
@@ -54,4 +58,16 @@ test('supports Codex startup probes without tools or prompts', async () => {
       text: expect.stringContaining('embed-ui-v1-contexts://actions/order%2Fcard'),
     }],
   })
+  const ticketProfile = await client.readResource({
+    uri: 'embed-ui-v1-endpoint://targets/ticket%2Fview%3Aissues.after',
+  })
+
+  expect(ticketProfile).toMatchObject({
+    contents: [{
+      mimeType: 'application/yaml',
+      text: expect.stringContaining('embed-ui-v1-contexts://contexts/ticket%2Fview%3Asettings'),
+    }],
+  })
+  expect(ticketProfile.contents[0].text).toContain('embed-ui-v1-contexts://actions/ticket%2Fview')
+  expect(ticketProfile.contents[0].text).toContain('One slot for the entire questions section, not one per issue')
 })
