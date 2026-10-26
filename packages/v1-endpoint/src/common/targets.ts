@@ -86,6 +86,17 @@ const orderFormTarget = {
   actions: ['order/card'],
 } as const
 
+const ticketViewerTarget = {
+  contexts: [
+    'ticket/view',
+    'ticket/view:settings',
+    'user/current',
+    'settings',
+  ],
+  customContexts: [],
+  actions: ['ticket/view'],
+} as const
+
 export const targets = {
   'customer/card:phone': defineTarget('customer/card:phone', {
     ...customerCardTarget,
@@ -120,6 +131,10 @@ export const targets = {
   'order/mg:delivery.after': defineTarget('order/mg:delivery.after', orderFormTarget),
   'order/mg:payment.before': defineTarget('order/mg:payment.before', orderFormTarget),
   'order/mg:payment.after': defineTarget('order/mg:payment.after', orderFormTarget),
+  'ticket/view:header.after': defineTarget('ticket/view:header.after', ticketViewerTarget),
+  'ticket/view:common.before': defineTarget('ticket/view:common.before', ticketViewerTarget),
+  'ticket/view:customer.after': defineTarget('ticket/view:customer.after', ticketViewerTarget),
+  'ticket/view:issues.after': defineTarget('ticket/view:issues.after', ticketViewerTarget),
 } as const
 
 export type TargetName = keyof typeof targets
