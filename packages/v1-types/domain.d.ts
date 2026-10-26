@@ -1,3 +1,5 @@
+export type CustomerType = 'customer' | 'customer_corporate'
+
 export type Dimensions = {
   L: number | null;
   W: number | null;
