@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.33-alpha.1
+
+### Features
+
+* **v1-types:** Shared customer type was added ([fa4818d](https://github.com/retailcrm/embed-ui/commit/fa4818d061bba7153438df88ed5a85236c8a401e))
+* **v1-contexts:** Ticket viewer contexts and actions were added ([5facf86](https://github.com/retailcrm/embed-ui/commit/5facf8697015e30c71b01ea05d7c4239be10b0f1))
+* **v1-endpoint:** Ticket viewer targets were added ([c230e3e](https://github.com/retailcrm/embed-ui/commit/c230e3e964183979e51e2a52cbb542b40186f6b8))
+* Ticket viewer metadata and public contracts were registered ([f00376b](https://github.com/retailcrm/embed-ui/commit/f00376bbdfcf88b427558116f6770625b1688423))
+
 ## 0.9.32
 
 ### Bug Fixes
