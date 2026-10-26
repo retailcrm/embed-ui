@@ -17,6 +17,8 @@ import * as customerPhone from '@/common/customer/card-phone'
 import * as order from '@/common/order/card'
 import * as orderSettings from '@/common/order/card-settings'
 import * as settings from '@/common/settings'
+import * as ticket from '@/common/ticket/view'
+import * as ticketSettings from '@/common/ticket/view-settings'
 import * as user from '@/common/user/current'
 
 import {
@@ -53,12 +55,18 @@ const contextSources = [
   orderSettings,
   user,
   settings,
+  ticket,
+  ticketSettings,
 ] as unknown as ContextSource[]
 
 const actionSources = [{
   scope: order.id,
   actions: order.actions,
   description: order.actionsDescription,
+}, {
+  scope: ticket.id,
+  actions: ticket.actions,
+  description: ticket.actionsDescription,
 }] as unknown as ActionSource[]
 
 const quote = (value: string): string => JSON.stringify(value)

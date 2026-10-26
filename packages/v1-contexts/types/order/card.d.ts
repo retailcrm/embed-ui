@@ -1,4 +1,4 @@
-import type { Dimensions } from '@retailcrm/embed-ui-v1-types/domain'
+import type { CustomerType, Dimensions } from '@retailcrm/embed-ui-v1-types/domain'
 import type { Money } from '@retailcrm/embed-ui-v1-types/domain'
 import type { Weight } from '@retailcrm/embed-ui-v1-types/domain'
 
@@ -14,7 +14,7 @@ export type Schema = {
   'currency': ReadonlyField<string>;
   'customer.id': ReadonlyField<number | null>;
   'customer.externalId': ReadonlyField<string | null>;
-  'customer.type': ReadonlyField<'customer' | 'customer_corporate'>;
+  'customer.type': ReadonlyField<CustomerType>;
   'customer.lastName': Field<string | null>;
   'customer.firstName': Field<string | null>;
   'customer.patronymic': Field<string | null>;

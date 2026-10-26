@@ -51,6 +51,12 @@
       "require": "./dist/remote/user/current.cjs",
       "default": "./dist/uremote/ser/current.js"
     },
+    "./remote/ticket/*": {
+      "types": "./dist/remote/ticket/*.d.ts",
+      "import": "./dist/remote/ticket/*.js",
+      "require": "./dist/remote/ticket/*.cjs",
+      "default": "./dist/remote/ticket/*.js"
+    },
     "./remote/settings": {
       "types": "./dist/remote/settings.d.ts",
       "import": "./dist/remote/settings.js",
@@ -100,6 +106,12 @@
       ],
       "remote/user/current": [
         "./dist/remote/user/current.d.ts"
+      ],
+      "remote/ticket/view": [
+        "./dist/remote/ticket/view.d.ts"
+      ],
+      "remote/ticket/view-settings": [
+        "./dist/remote/ticket/view-settings.d.ts"
       ],
       "remote/settings": [
         "./dist/remote/settings.d.ts"

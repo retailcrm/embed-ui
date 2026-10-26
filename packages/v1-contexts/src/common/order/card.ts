@@ -34,6 +34,8 @@ import {
   isStatus,
 } from '@/predicates/order/card'
 
+import { isCustomerType } from '@/predicates/customer'
+
 export const id = 'order/card'
 
 export const schema: Schema = {
@@ -83,10 +85,7 @@ export const schema: Schema = {
     readonly: true,
   },
   'customer.type': {
-    accepts: oneOf(
-      isExactly('customer'),
-      isExactly('customer_corporate')
-    ),
+    accepts: isCustomerType,
     defaults: () => 'customer',
     readonly: true,
   },
