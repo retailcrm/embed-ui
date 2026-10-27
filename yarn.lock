@@ -1769,7 +1769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.29.0":
+"@modelcontextprotocol/sdk@npm:^1.29.0, @modelcontextprotocol/sdk@npm:^1.32.0":
   version: 1.32.2
   resolution: "@modelcontextprotocol/sdk@npm:1.32.2"
   dependencies:
@@ -2395,7 +2395,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-contexts@workspace:packages/v1-contexts"
   dependencies:
-    "@modelcontextprotocol/sdk": "npm:^1.29.0"
+    "@modelcontextprotocol/sdk": "npm:^1.32.0"
     "@omnicajs/symfony-router": "npm:^1.0.0"
     "@remote-ui/rpc": "npm:^1.4.7"
     "@retailcrm/embed-ui-v1-testing": "npm:^0.9.33-alpha.1"
@@ -2405,7 +2405,7 @@ __metadata:
     vite: "npm:^7.3.5"
     vite-plugin-dts: "npm:^4.5.4"
     vitest: "npm:4.1.10"
-    vue: "npm:^3.5.32"
+    vue: "npm:^3.5.42"
   peerDependencies:
     "@remote-ui/rpc": ^1.4
     pinia: ^2.2
