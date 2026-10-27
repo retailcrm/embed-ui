@@ -55,6 +55,7 @@ export default mergeConfig(basic, defineConfig({
     },
   },
   plugins: [dts({
+    aliasesExclude: [/^@retailcrm\//],
     beforeWriteFile: (filePath, content) => {
       const fileName = path.basename(filePath)
 

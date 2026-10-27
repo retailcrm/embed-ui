@@ -1,6 +1,6 @@
-import type { SandboxOrderTarget } from '@/scenario/types'
+import type { SandboxOrderTarget, SandboxTarget } from '@/scenario/types'
 
-import { ORDER_SANDBOX_TARGETS } from '@/scenario/targets'
+import { ORDER_SANDBOX_TARGETS, SANDBOX_SLOTS } from '@/scenario/targets'
 
 export const isObjectKey = <T extends object>(
   object: T,
@@ -10,3 +10,6 @@ export const isObjectKey = <T extends object>(
 
 export const isSandboxOrderTarget = (value: string): value is SandboxOrderTarget =>
   ORDER_SANDBOX_TARGETS.includes(value as (typeof ORDER_SANDBOX_TARGETS)[number])
+
+export const isSandboxTarget = (value: string): value is SandboxTarget =>
+  SANDBOX_SLOTS.some(slot => slot.target === value)

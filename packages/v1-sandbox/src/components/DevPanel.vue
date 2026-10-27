@@ -502,7 +502,7 @@
 
 <script setup lang="ts">
 import type { DevPanelField, DevPanelValidationErrors } from '@/scenario/validation'
-import type { SandboxLaunchMode, SandboxOrderTarget } from '@/scenario/types'
+import type { SandboxLaunchMode, SandboxTarget } from '@/scenario/types'
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -521,11 +521,13 @@ import VSelect from '@/components/VSelect.vue'
 
 import HelpOutlined from '@retailcrm/embed-ui-v1-components/assets/sprites/actions/help-outlined.svg'
 
-import { getOrderSandboxFixturePresentations } from '@/app/fixturePresentation'
-import { isSandboxOrderTarget } from '@/scenario/predicates'
+import { createSandboxLaunchConfig } from '@/scenario/launch'
+import { getSandboxFixturePresentations } from '@/app/fixturePresentation'
+import { isSandboxTarget } from '@/scenario/predicates'
+import { isTargetForSandboxFixture } from '@/scenario/fixtures'
 import { isValidSandboxPageCode } from '@/scenario/validation'
-import { ORDER_SANDBOX_SLOTS } from '@/scenario/targets'
 import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
+import { SANDBOX_SLOTS } from '@/scenario/targets'
 
 const props = defineProps<{
   activeFixture: string;
@@ -546,13 +548,13 @@ const props = defineProps<{
   mode: SandboxLaunchMode;
   pageCode: string;
   resetContextJson(): void;
-  selectedTargets: SandboxOrderTarget[];
+  selectedTargets: SandboxTarget[];
   setContextJson(value: string | number): void;
   setFixture(value: string | string[]): void;
   setDescriptorJson(value: string): void;
   setMode(value: SandboxLaunchMode): void;
   setPageCode(value: string): void;
-  setTargetSelected(target: SandboxOrderTarget, checked: boolean): void;
+  setTargetSelected(target: SandboxTarget, checked: boolean): void;
   validationErrors: DevPanelValidationErrors;
 }>()
 
@@ -579,9 +581,9 @@ const modeOptions = computed(() => {
 
   return options.filter(option => option.value === 'page'
     ? pages.length > 0
-    : targets.some(isSandboxOrderTarget))
+    : targets.some(isSandboxTarget))
 })
-const fixturePresentations = computed(() => getOrderSandboxFixturePresentations(tGlobal))
+const fixturePresentations = computed(() => getSandboxFixturePresentations(tGlobal))
 const activeFixturePresentation = computed(() => fixturePresentations.value.find(
   fixture => fixture.code === props.activeFixture
 ))
@@ -608,7 +610,8 @@ const pageOptions = computed(() => (parsedDescriptor.value?.pages ?? []).map(cod
   label: code,
   value: code,
 })))
-const targetOptions = computed(() => ORDER_SANDBOX_SLOTS
+const targetOptions = computed(() => SANDBOX_SLOTS
+  .filter(slot => isTargetForSandboxFixture(slot.target, props.fixture))
   .filter(slot => !isDescriptorJsonVisible.value
     || parsedDescriptor.value?.targets.includes(slot.target))
   .map(slot => ({ label: slot.target, value: slot.target })))
@@ -732,7 +735,12 @@ const syncLaunchSelectionFromDescriptor = (
 ): void => {
   try {
     const descriptor = parseSandboxExtensionDescriptorJson(value)
-    const descriptorTargets = descriptor.targets.filter(isSandboxOrderTarget)
+    const next = createSandboxLaunchConfig({ descriptor }, {
+      fixture: props.fixture, mode: props.mode, pageCode: props.pageCode, targets: props.selectedTargets,
+    })
+    const descriptorTargets = descriptor.targets.filter(isSandboxTarget)
+      .filter(target => isTargetForSandboxFixture(target, next.fixture))
+    if (next.fixture !== props.fixture) props.setFixture(next.fixture)
     const hasPages = descriptor.pages.length > 0
     const hasTargets = descriptorTargets.length > 0
     const nextMode = selectedMode ?? (hasPages && !hasTargets
@@ -760,7 +768,7 @@ const syncLaunchSelectionFromDescriptor = (
     const matchingTargets = props.selectedTargets.filter(target => descriptorTargets.includes(target))
     const nextTargets = matchingTargets.length > 0 ? matchingTargets : descriptorTargets
 
-    ORDER_SANDBOX_SLOTS.forEach(({ target }) => {
+    SANDBOX_SLOTS.forEach(({ target }) => {
       const selected = nextTargets.includes(target)
 
       if (props.selectedTargets.includes(target) !== selected) {
@@ -791,9 +799,9 @@ const updatePageCode = (value: string | number) => {
 }
 
 const updateTargets = (value: string | string[]) => {
-  const targets = (Array.isArray(value) ? value : []).filter(isSandboxOrderTarget)
+  const targets = (Array.isArray(value) ? value : []).filter(isSandboxTarget)
 
-  ORDER_SANDBOX_SLOTS.forEach(({ target }) => {
+  SANDBOX_SLOTS.forEach(({ target }) => {
     const selected = targets.includes(target)
 
     if (props.selectedTargets.includes(target) !== selected) {

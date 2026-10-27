@@ -1,10 +1,10 @@
 import type { SandboxExtensionDescriptor } from '@/scenario'
 import type { SandboxLaunchInput } from '@/automation/bridge'
-import type { SandboxOrderTarget } from '@/scenario'
 import type { SandboxSnapshot } from '@/core/state'
+import type { SandboxTarget } from '@/scenario'
 
 import { DEFAULT_SANDBOX_TARGET } from '@/scenario'
-import { isSandboxOrderTarget } from '@/scenario'
+import { isSandboxTarget } from '@/scenario'
 import { parseSandboxExtensionDescriptorJson } from '@/scenario'
 import { SANDBOX_LAUNCH_BRIDGE_GLOBAL_KEY } from '@/automation/bridge'
 
@@ -69,7 +69,7 @@ export const getExtensionPageCodes = (
 
 export const getExtensionTargets = (
   descriptor: SandboxExtensionFixtureDescriptor
-): SandboxOrderTarget[] => normalizeTargets(descriptor.targets)
+): SandboxTarget[] => normalizeTargets(descriptor.targets)
 
 export const getSandboxExtensionBaseUrl = (): string | null => {
   const value = process.env.SANDBOX_EXTENSION_URL
@@ -112,8 +112,8 @@ export const readSandboxSnapshot = async (
   return snapshot as SandboxSnapshot
 }
 
-const normalizeTargets = (targets: string[] | undefined): SandboxOrderTarget[] => {
-  const normalizedTargets = targets?.filter(isSandboxOrderTarget) ?? []
+const normalizeTargets = (targets: string[] | undefined): SandboxTarget[] => {
+  const normalizedTargets = targets?.filter(isSandboxTarget) ?? []
 
   return normalizedTargets.length > 0 ? normalizedTargets : [DEFAULT_SANDBOX_TARGET]
 }

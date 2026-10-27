@@ -131,7 +131,7 @@ test('loads extension page in sandbox', async ({ page }) => {
 
 - CLI: `embed-ui-v1-sandbox serve`.
 - `core`: `createSandboxController`, `createSandboxState`, `createSandboxHostApi`, `createSandboxRpc`.
-- `scenario`: `createOrderSandboxController`, `createSandboxHttpMiddleware`,
+- `scenario`: `createOrderSandboxController`, `createTicketSandboxController`, `createSandboxHttpMiddleware`,
   `createSandboxLaunchConfig`, fixtures, targets и validation helpers.
 - `automation/browser`: `createExtensionSourceWorker`, `createSandboxWorkerRuntime` — запуск расширения в Browser Mode.
 - `automation/playwright`: `launchSandboxExtension`, `readSandboxSnapshot`, `waitForSandboxLaunchBridge`.

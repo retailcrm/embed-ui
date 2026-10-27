@@ -1,3 +1,4 @@
+import type * as SandboxFixtures from '@/scenario/fixtures'
 import type { SandboxLaunchBridge } from '@/automation/bridge'
 
 import {
@@ -61,8 +62,9 @@ vi.mock('@omnicajs/vue-remote/host', () => ({
   },
 }))
 
-vi.mock('@/scenario/fixtures', () => ({
-  createOrderSandboxController: mocks.createController,
+vi.mock('@/scenario/fixtures', async importOriginal => ({
+  ...await importOriginal<typeof SandboxFixtures>(),
+  createFixtureSandboxController: mocks.createController,
 }))
 
 class WorkerStub extends EventTarget {

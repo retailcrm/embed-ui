@@ -2,10 +2,14 @@ import type { TargetName } from '@retailcrm/embed-ui-v1-endpoint/common/targets'
 
 export type SandboxOrderTarget = Extract<TargetName, `order/card:${string}`>
 
-export type SandboxSlotDefinition = {
+export type SandboxTicketTarget = Extract<TargetName, `ticket/view:${string}`>
+
+export type SandboxTarget = SandboxOrderTarget | SandboxTicketTarget
+
+export type SandboxSlotDefinition<T extends SandboxTarget = SandboxTarget> = {
   id: string;
   label: string;
-  target: SandboxOrderTarget;
+  target: T;
 }
 
 export type SandboxLaunchMode = 'page' | 'widget'
@@ -15,7 +19,7 @@ export type SandboxLaunchConfig = {
   fixture: string;
   mode: SandboxLaunchMode;
   pageCode: string;
-  targets: SandboxOrderTarget[];
+  targets: SandboxTarget[];
 }
 
 export type SandboxExtensionDescriptor = {

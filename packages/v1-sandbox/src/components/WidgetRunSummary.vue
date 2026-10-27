@@ -49,24 +49,24 @@
 </template>
 
 <script setup lang="ts">
-import type { SandboxOrderTarget } from '@/scenario/types'
+import type { SandboxTarget } from '@/scenario/types'
 
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useId } from 'vue'
 
-import { getOrderSandboxFixturePresentation } from '@/app/fixturePresentation'
+import { getSandboxFixturePresentation } from '@/app/fixturePresentation'
 
 const props = defineProps<{
   contextChanged: boolean;
   fixture: string;
-  targets: SandboxOrderTarget[];
+  targets: SandboxTarget[];
 }>()
 
 const { t } = useI18n()
 const uid = useId()
 const fixturePresentation = computed(() =>
-  getOrderSandboxFixturePresentation(props.fixture, t)
+  getSandboxFixturePresentation(props.fixture, t)
 )
 const componentLabel = computed(() => props.targets.length === 1
   ? t('app.widgetRunSummary.widget')

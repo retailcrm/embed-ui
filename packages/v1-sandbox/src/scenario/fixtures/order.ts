@@ -1,4 +1,15 @@
-import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
+import type {
+  Schema as CurrentUserSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/user/current'
+import type {
+  Schema as OrderCardSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/order/card'
+import type {
+  Schema as OrderSettingsSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/order/card-settings'
+import type {
+  Schema as SettingsSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/settings'
 
 import type { CreateSandboxControllerOptions } from '@/core/controller'
 import type { SandboxContextOverrides } from '@/core/state'
@@ -27,14 +38,19 @@ const [
   settingsContextId,
 ] = targets['order/card:common.before'].contexts
 
-export const orderSandboxSchemas = {
+export type OrderSandboxSchemas = {
+  'order/card': OrderCardSchema;
+  'order/card:settings': OrderSettingsSchema;
+  'user/current': CurrentUserSchema;
+  settings: SettingsSchema;
+}
+
+export const orderSandboxSchemas: OrderSandboxSchemas = {
   [orderCardContextId]: orderCardSchema,
   [orderCardSettingsContextId]: orderCardSettingsSchema,
   [currentUserContextId]: currentUserSchema,
   [settingsContextId]: settingsSchema,
-} satisfies ContextSchemaList
-
-export type OrderSandboxSchemas = typeof orderSandboxSchemas
+}
 
 export type OrderSandboxFixture = {
   contexts: SandboxContextOverrides<OrderSandboxSchemas>;

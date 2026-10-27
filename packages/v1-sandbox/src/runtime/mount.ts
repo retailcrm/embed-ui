@@ -1,11 +1,11 @@
 import type { SandboxLaunchConfig } from '@/scenario/types'
 import type { SandboxMount } from '@/app/types'
-import type { SandboxOrderTarget, SandboxSlotDefinition } from '@/scenario/types'
+import type { SandboxSlotDefinition, SandboxTarget } from '@/scenario/types'
 
 import { createReceiver } from '@omnicajs/vue-remote/host'
 import { markRaw } from 'vue'
 
-import { ORDER_SANDBOX_SLOTS } from '@/scenario/targets'
+import { SANDBOX_SLOTS } from '@/scenario/targets'
 
 export type {
   HostedTreeRef,
@@ -24,7 +24,7 @@ export const createMounts = (config: SandboxLaunchConfig): SandboxMount[] => {
     return [createPageMount(config)]
   }
 
-  return ORDER_SANDBOX_SLOTS
+  return SANDBOX_SLOTS
     .filter(slot => config.targets.includes(slot.target))
     .map(slot => createWidgetTargetMount(slot))
 }
@@ -58,5 +58,5 @@ const createWidgetTargetMount = (
   }
 }
 
-const createWidgetInstanceId = (target: SandboxOrderTarget): string =>
+const createWidgetInstanceId = (target: SandboxTarget): string =>
   `sandbox-widget:${target.replace(/[^a-z0-9]+/gi, '-')}`

@@ -1,6 +1,10 @@
-import type { SandboxOrderTarget, SandboxSlotDefinition } from '@/scenario/types'
+import type {
+  SandboxOrderTarget,
+  SandboxSlotDefinition,
+  SandboxTicketTarget,
+} from '@/scenario/types'
 
-export type { SandboxOrderTarget, SandboxSlotDefinition } from '@/scenario/types'
+export type { SandboxOrderTarget, SandboxSlotDefinition, SandboxTicketTarget } from '@/scenario/types'
 
 export const DEFAULT_SANDBOX_TARGETS: SandboxOrderTarget[] = [
   'order/card:common.before',
@@ -25,7 +29,7 @@ export const ORDER_SANDBOX_TARGETS = [
   'order/card:comment.manager.before',
 ] as const satisfies readonly SandboxOrderTarget[]
 
-export const ORDER_SANDBOX_SLOTS: SandboxSlotDefinition[] = [
+export const ORDER_SANDBOX_SLOTS: SandboxSlotDefinition<SandboxOrderTarget>[] = [
   {
     id: 'common-before',
     label: 'Before common data',
@@ -104,3 +108,19 @@ export const ORDER_SANDBOX_SLOTS: SandboxSlotDefinition[] = [
 ]
 
 export const DEFAULT_SANDBOX_TARGET = ORDER_SANDBOX_TARGETS[0]
+
+export const TICKET_SANDBOX_TARGETS = [
+  'ticket/view:header.after',
+  'ticket/view:common.before',
+  'ticket/view:customer.after',
+  'ticket/view:issues.after',
+] as const satisfies readonly SandboxTicketTarget[]
+
+export const TICKET_SANDBOX_SLOTS: SandboxSlotDefinition<SandboxTicketTarget>[] = [
+  { id: 'ticket-header-after', label: 'After ticket header', target: 'ticket/view:header.after' },
+  { id: 'ticket-common-before', label: 'Before ticket common data', target: 'ticket/view:common.before' },
+  { id: 'ticket-customer-after', label: 'After ticket customer', target: 'ticket/view:customer.after' },
+  { id: 'ticket-issues-after', label: 'After ticket questions', target: 'ticket/view:issues.after' },
+]
+
+export const SANDBOX_SLOTS = [...ORDER_SANDBOX_SLOTS, ...TICKET_SANDBOX_SLOTS]

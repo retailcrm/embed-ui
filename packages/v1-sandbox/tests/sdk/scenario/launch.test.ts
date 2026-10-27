@@ -26,3 +26,13 @@ test('does not mutate the selected targets of the current launch', () => {
   next.targets.length = 0
   expect(current.targets).toEqual(['order/card:common.after'])
 })
+
+test('selects a compatible ticket fixture for ticket descriptors and rejects mixed widget contexts', async () => {
+  const { parseSandboxLaunchConfig } = await import('@/scenario')
+  const ticketDescriptor = { ...descriptor, targets: ['ticket/view:header.after' as const, 'ticket/view:issues.after' as const] }
+  const config = createSandboxLaunchConfig({ descriptor: ticketDescriptor })
+  expect(config.fixture).toBe('ticket-basic')
+  expect(parseSandboxLaunchConfig(config).targets).toEqual(ticketDescriptor.targets)
+  expect(() => parseSandboxLaunchConfig({ ...config, fixture: 'order-basic' })).toThrow('must match')
+  expect(() => parseSandboxLaunchConfig({ ...config, fixture: 'unknown' })).toThrow()
+})

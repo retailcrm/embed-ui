@@ -208,3 +208,62 @@ Use `extensionrc.json` when the fixture owns its metadata:
 
 Use inline metadata in a test when the fixture mirrors an external extension
 and should stay config-free.
+
+## Ticket Viewer Widgets
+
+Ticket widgets can be developed with local workspace packages before publishing
+an SDK version. In an extension project, use a sandbox build containing the ticket
+contexts and targets.
+
+```ts
+import type { SandboxWorkerRuntime } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
+import type { TicketSandboxSchemas } from '@retailcrm/embed-ui-v1-sandbox/scenario'
+
+import {
+  createExtensionSourceWorker,
+  createSandboxWorkerRuntime,
+} from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
+
+const source = createExtensionSourceWorker('%extension-url%/ticket.worker.js')
+const runtime: SandboxWorkerRuntime<TicketSandboxSchemas> = await createSandboxWorkerRuntime({
+  fixture: 'ticket-basic',
+  ready: source.ready,
+  worker: source.worker,
+})
+
+try {
+  await runtime.runWidget('ticket/view:header.after')
+  runtime.patchContext('ticket/view:settings', { editable: false })
+  // Interact with the extension UI, then inspect host effects.
+  const actions = runtime.snapshot().host.actions
+  console.log(actions)
+} finally {
+  await runtime.teardown()
+}
+```
+
+For manual preview, paste a descriptor with ticket targets in the DevPanel. The
+sandbox selects the matching ticket fixture; the target picker shows placements
+compatible with that fixture. `ticket-basic` has two questions, and
+`ticket-readonly` has no mutation or creation permissions. A ticket fixture exposes
+`ticket/view`, `ticket/view:settings`, `user/current` and `settings`, with no order
+context or custom ticket entities.
+
+All four placements are supported: `ticket/view:header.after`,
+`ticket/view:common.before`, `ticket/view:customer.after` and
+`ticket/view:issues.after`. The questions placement is mounted once per ticket.
+Use one fixture family per launch; a descriptor may advertise both order and ticket
+targets, but each launch uses only the selected family's placements.
+
+The ticket scenario implements comment IDs, question assignment and status
+changes, and publishes updated context values to the worker. The fixture status
+`resolved` closes a question; SLA is a deterministic fixture snapshot, not the
+CRM backend's SLA calculation. `refresh()` clears loading/error flags while
+preserving the current simulated data.
+
+`openTicketEditor`, `openTicketHistory`, `openEmailEditor` and `openOrderForm`
+check permissions and record successful requests in `snapshot().host.actions`.
+They do not open real CRM forms, send email or create orders. Invalid or denied
+calls return a rejection, so public `useActions()` promises reject. Use Context
+JSON or `patchContext()` to exercise loading, failure and permission changes.
+`reset()` restores fixture data and clears the action log.

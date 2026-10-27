@@ -8,7 +8,7 @@ import type {
   WidgetRunIdentity,
 } from '@retailcrm/embed-ui-v1-endpoint/remote'
 
-import type { OrderSandboxSchemas } from '@/scenario/fixtures'
+import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 import type { SandboxEndpointApi } from '@/core/controller'
 
 export type HostComponent = DefineComponent<Record<string, unknown>>
@@ -21,7 +21,7 @@ export type SandboxRemoteApi = {
   run(channel: Channel, config: PageRunIdentity | WidgetRunConfig): Promise<void>;
 }
 
-export type SandboxWorkerApi = SandboxRemoteApi & SandboxEndpointApi<OrderSandboxSchemas>
+export type SandboxWorkerApi = SandboxRemoteApi & SandboxEndpointApi<ContextSchemaList>
 
 export type SandboxRuntimeConnection = {
   endpoint: Endpoint<SandboxWorkerApi>;
