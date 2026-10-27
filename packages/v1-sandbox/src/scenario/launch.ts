@@ -1,4 +1,5 @@
-import type { SandboxLaunchConfig } from '@/scenario/types'
+import type { SandboxFixtureCode } from '@/scenario/fixtures/registry'
+import type { SandboxLaunchConfig, SandboxTarget } from '@/scenario/types'
 
 import { z } from 'zod'
 
@@ -38,10 +39,14 @@ export const createSandboxLaunchConfig = (
 
 const launchConfigSchema = z.object({
   descriptor: z.unknown().transform(parseSandboxExtensionDescriptor),
-  fixture: z.string().refine(isSandboxFixtureCode),
+  fixture: z.custom<SandboxFixtureCode>(
+    value => typeof value === 'string' && isSandboxFixtureCode(value)
+  ),
   mode: z.enum(['page', 'widget']),
   pageCode: z.string(),
-  targets: z.array(z.string().refine(isSandboxTarget)),
+  targets: z.array(z.custom<SandboxTarget>(
+    value => typeof value === 'string' && isSandboxTarget(value)
+  )),
 }).refine(config => config.mode !== 'widget' || config.targets.every(target => isTargetForSandboxFixture(target, config.fixture)), {
   message: 'Widget targets must match the selected fixture.',
   path: ['targets'],

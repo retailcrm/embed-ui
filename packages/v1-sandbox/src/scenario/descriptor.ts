@@ -22,9 +22,9 @@ const sandboxExtensionDescriptorSchema = z.object({
   pages: z.array(nonEmptyString),
   runner: z.literal('worker'),
   stylesheet: z.union([absoluteHttpUrl, z.null()]),
-  targets: z.array(nonEmptyString.refine(
-    (value): value is TargetName => Object.hasOwn(targets, value)
-  )),
+  targets: z.array(nonEmptyString.pipe(z.custom<TargetName>(
+    value => typeof value === 'string' && Object.hasOwn(targets, value)
+  ))),
 }).strict()
 
 export const parseSandboxExtensionDescriptor = (

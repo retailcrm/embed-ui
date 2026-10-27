@@ -143,8 +143,7 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
     .transform(value => value.trim())
     .refine(value => value.length > 0, messages.descriptorJsonRequired),
   mode: z.enum(['page', 'widget'], {
-    invalid_type_error: messages.mode,
-    required_error: messages.mode,
+    error: messages.mode,
   }),
   pageCode: z.string(),
   targets: z.array(z.string().transform(value => value.trim())).superRefine((targets, context) => {
