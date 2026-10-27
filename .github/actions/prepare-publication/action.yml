@@ -1,0 +1,115 @@
+name: Prepare publication
+description: Validate, version, rebuild, and push packages before publishing or staging
+
+inputs:
+  prerelease:
+    description: Prerelease channel or none for a stable release
+    required: true
+  mode:
+    description: Publication mode (publish or stage)
+    required: true
+
+outputs:
+  version:
+    description: Prepared root package version
+    value: ${{ steps.version.outputs.version }}
+  commit:
+    description: Prepared release commit
+    value: ${{ steps.version.outputs.commit }}
+
+runs:
+  using: composite
+  steps:
+    - name: Validate publication inputs
+      shell: bash
+      env:
+        PRERELEASE: ${{ inputs.prerelease }}
+        PUBLICATION_MODE: ${{ inputs.mode }}
+      run: |
+        case "$PRERELEASE" in
+          alpha|beta|rc|none) ;;
+          *) echo "Unsupported prerelease channel"; exit 1 ;;
+        esac
+        case "$PUBLICATION_MODE" in
+          publish|stage) ;;
+          *) echo "Unsupported publication mode"; exit 1 ;;
+        esac
+        if [ "$PRERELEASE" = "none" ] && [ "$GITHUB_REF_NAME" != "master" ]; then
+          echo "Stable release is allowed only from master. Current ref: $GITHUB_REF_NAME"
+          exit 1
+        fi
+
+    - name: Check publication prerequisites before versioning
+      shell: bash
+      env:
+        PUBLICATION_MODE: ${{ inputs.mode }}
+      run: |
+        if [ "$PUBLICATION_MODE" = "stage" ]; then
+          yarn exec tsx scripts/stage.ts --check
+        else
+          yarn exec tsx scripts/publish.ts --check
+        fi
+
+    - name: Configure Git
+      shell: bash
+      run: |
+        git config --global user.email "integration@retailcrm.ru"
+        git config --global user.name "RetailCRM.CI"
+
+    - name: Build worktree
+      shell: bash
+      run: yarn workspaces foreach -A --topological-dev run build
+
+    - name: Ensure root bin is generated
+      shell: bash
+      run: test -s bin/embed-ui.mjs
+
+    - name: Run eslint
+      shell: bash
+      run: yarn eslint
+
+    - name: Run tests
+      shell: bash
+      run: yarn test
+
+    - name: Run typecheck tests
+      shell: bash
+      run: yarn test:typecheck
+
+    - name: Install Playwright Chromium
+      shell: bash
+      run: yarn workspace @retailcrm/embed-ui-v1-sandbox exec playwright install --with-deps chromium
+
+    - name: Run browser mode tests
+      shell: bash
+      run: yarn test:browser
+
+    - name: Run end-to-end tests
+      shell: bash
+      run: yarn test:e2e
+
+    - name: Prepare version
+      shell: bash
+      env:
+        PRERELEASE: ${{ inputs.prerelease }}
+      run: |
+        if [ "$PRERELEASE" = "none" ]; then
+          yarn release
+        else
+          yarn "release:$PRERELEASE"
+        fi
+
+    - name: Rebuild packages with prepared versions
+      shell: bash
+      run: yarn workspaces foreach -A --topological-dev run build
+
+    - name: Push current branch with tags
+      shell: bash
+      run: git push --follow-tags origin "HEAD:$GITHUB_REF_NAME"
+
+    - name: Extract prepared version and commit
+      id: version
+      shell: bash
+      run: |
+        node -p "'version=' + require('./package.json').version" >> "$GITHUB_OUTPUT"
+        echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"

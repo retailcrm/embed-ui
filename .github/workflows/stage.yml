@@ -1,0 +1,65 @@
+name: Stage
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        type: choice
+        options:
+          - 'alpha'
+          - 'beta'
+          - 'rc'
+          - 'none'
+        description: Prerelease type
+        default: 'alpha'
+
+concurrency:
+  group: npm-publication
+  cancel-in-progress: false
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-dependencies
+        with:
+          node-version: '24.x'
+
+      - name: Check staging token is configured
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_STAGE_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "Configure the NPM_STAGE_TOKEN secret with npm stage-only access to all repository packages and permission to create new packages in the scope."
+            exit 1
+          fi
+
+      - name: Prepare staged release
+        uses: ./.github/actions/prepare-publication
+        with:
+          prerelease: ${{ inputs.prerelease }}
+          mode: stage
+
+      - name: Stage all packages in npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_STAGE_TOKEN }}
+          NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/npm-stage.npmrc
+        run: |
+          printf '%s\n' "//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}" > "$NPM_CONFIG_USERCONFIG"
+          yarn exec tsx scripts/stage.ts
+
+      - name: Remove staging configuration
+        if: ${{ always() }}
+        env:
+          NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/npm-stage.npmrc
+        run: rm -f "$NPM_CONFIG_USERCONFIG"
