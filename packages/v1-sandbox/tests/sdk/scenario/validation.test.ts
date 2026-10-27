@@ -217,6 +217,20 @@ test('rejects unknown fixture', () => {
   })
 })
 
+test('uses the configured validation message for an unknown mode', () => {
+  const result = validateLaunchConfigInput({
+    ...validLaunchInput,
+    mode: 'unknown',
+  }, messages)
+
+  expect(result).toEqual({
+    errors: {
+      mode: 'Unknown mode.',
+    },
+    success: false,
+  })
+})
+
 test('validates context json overrides', () => {
   const contextNames = ['order/card', 'order/card:settings', 'settings', 'user/current']
 
