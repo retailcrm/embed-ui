@@ -142,8 +142,9 @@ import type { SandboxLaunchDiagnostic } from '@/app/types'
 import type { SandboxLaunchInput } from '@/automation/bridge'
 import type { SandboxLaunchMode } from '@/scenario/types'
 import type { SandboxMount } from '@/app/types'
-import type { SandboxOrderTarget } from '@/scenario/types'
-import type { SandboxRuntime, SandboxWorkerApi } from '@/app/types'
+import type { SandboxRuntime } from '@/app/types'
+import type { SandboxTarget } from '@/scenario/types'
+import type { SandboxWorkerApi } from '@/app/types'
 
 import { computed } from 'vue'
 import { createEndpoint as createRpcEndpoint, fromWebWorker } from '@remote-ui/rpc'
@@ -169,14 +170,14 @@ import WidgetTargetList from '@/components/WidgetTargetList.vue'
 import RemoteBootstrapWorker from '@/runtime/remoteBootstrap.worker.ts?worker'
 
 import { areJsonValuesEqual } from '@/app/contextJson'
+import { createFixtureSandboxController } from '@/scenario/fixtures'
 import { createMounts } from '@/runtime/mount'
-import { createOrderSandboxController } from '@/scenario/fixtures'
 import { createSandboxLaunchConfig } from '@/scenario/launch'
 import { DEFAULT_SANDBOX_TARGETS } from '@/runtime/mount'
-import { getOrderSandboxFixture } from '@/scenario/fixtures'
+import { getSandboxFixture } from '@/scenario/fixtures'
 import { isContextJsonEqual } from '@/app/contextJson'
 import { isContextName } from '@/app/predicates'
-import { isSandboxOrderTarget } from '@/scenario/predicates'
+import { isTargetForSandboxFixture } from '@/scenario/fixtures'
 import { isWorkerReadyMessage } from '@/app/predicates'
 import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
 import { parseSandboxLaunchConfig } from '@/scenario/launch'
@@ -195,9 +196,9 @@ const fixture = ref(launchConfig.fixture)
 const descriptorJson = ref(formatExtensionSource(launchConfig))
 const mode = ref<SandboxLaunchMode>(launchConfig.mode)
 const pageCode = ref(launchConfig.pageCode)
-const selectedTargets = ref<SandboxOrderTarget[]>([...launchConfig.targets])
+const selectedTargets = ref<SandboxTarget[]>([...launchConfig.targets])
 const extensionHttpBaseUrl = ref<string | null>(null)
-const createController = () => createOrderSandboxController(launchConfig.fixture, {
+const createController = () => createFixtureSandboxController(launchConfig.fixture, {
   getHttpCallBaseUrl: () => extensionHttpBaseUrl.value,
   globalBridge: {},
 })
@@ -254,7 +255,7 @@ const launchConfigChanged = computed(() => {
 })
 
 watch(() => sandbox.value.state.contexts.settings['system.locale'], (systemLocale) => {
-  if (systemLocale) {
+  if (typeof systemLocale === 'string' && systemLocale) {
     locale.value = systemLocale
   }
 }, { immediate: true })
@@ -573,7 +574,7 @@ const applyContextJson = async () => {
     const appliedContextJson = formatContextJson()
     const hasManualChanges = !areJsonValuesEqual(
       sandbox.value.snapshot().contexts,
-      getOrderSandboxFixture(launchConfig.fixture).contexts
+      getSandboxFixture(launchConfig.fixture).contexts
     )
     const mounted = await mountExtension()
 
@@ -640,6 +641,7 @@ const downloadContextJson = () => {
 
 const setFixture = (value: string) => {
   fixture.value = value
+  selectedTargets.value = selectedTargets.value.filter(target => isTargetForSandboxFixture(target, value))
   contextApplySucceeded.value = false
   clearDevPanelValidationError('fixture')
 }
@@ -670,12 +672,13 @@ const setDescriptorJson = (value: string) => {
     && value.trim().startsWith('{')
   ) {
     try {
-      const descriptorTargets = parseSandboxExtensionDescriptorJson(value)
-        .targets
-        .filter(isSandboxOrderTarget)
+      const descriptor = parseSandboxExtensionDescriptorJson(value)
+      const next = createSandboxLaunchConfig({ descriptor }, { ...launchConfig, fixture: fixture.value })
+      const descriptorTargets = next.targets
 
       if (descriptorTargets.length > 0) {
         selectedTargets.value = descriptorTargets
+        fixture.value = next.fixture
         clearDevPanelValidationError('targets')
       }
     } catch {
@@ -723,7 +726,7 @@ const setPageCode = (value: string) => {
   clearDevPanelValidationError('pageCode')
 }
 
-const setTargetSelected = (target: SandboxOrderTarget, checked: boolean) => {
+const setTargetSelected = (target: SandboxTarget, checked: boolean) => {
   targetsManuallyChanged = true
   selectedTargets.value = checked
     ? Array.from(new Set([...selectedTargets.value, target]))
@@ -838,7 +841,7 @@ const mountExtensionStylesheet = (href: string | null): HTMLLinkElement | null =
   return link
 }
 
-type OrderContextName = Extract<keyof typeof sandbox.value.state.contexts, string>
+type SandboxContextName = Extract<keyof typeof sandbox.value.state.contexts, string>
 
 enum ExtensionWorkerMessageType {
   Ready = 'sandbox:extension-worker-ready',
@@ -911,15 +914,15 @@ function formatContextJson(): string {
 
 const applyContextJsonValue = (contexts: Record<string, Record<string, unknown>>) => {
   Object.entries(contexts).forEach(([context, contextValue]) => {
-    if (!isOrderContextName(context)) return
+    if (!isSandboxContextName(context)) return
 
     sandbox.value.setContext(context, contextValue as never)
   })
 }
 
-const isOrderContextName = (
+const isSandboxContextName = (
   value: string
-): value is OrderContextName =>
+): value is SandboxContextName =>
   isContextName(sandbox.value.state.contexts, value)
 
 const getErrorMessage = (error: unknown): string => {

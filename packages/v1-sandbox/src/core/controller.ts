@@ -11,6 +11,8 @@ import type {
 
 import type { HostApi, HostLocation } from '@retailcrm/embed-ui-v1-types/host'
 
+import type { SandboxActionAccessor, SandboxActionHandler } from '@/core/actions'
+
 import type { CreateSandboxStateOptions } from '@/core/state'
 import type { SandboxBridge } from '@/core/globalBridge'
 import type { SandboxHostApiOptions } from '@/core/hostApi'
@@ -18,6 +20,7 @@ import type { SandboxSnapshot, SandboxState } from '@/core/state'
 
 import { applySandboxSnapshot, captureSandboxSnapshot } from '@/core/state'
 import { clone } from '@/lib/clone'
+import { createSandboxActionAccessor } from '@/core/actions'
 import { createSandboxBridge } from '@/core/globalBridge'
 import {
   createSandboxContextAccessor,
@@ -32,11 +35,13 @@ export type SandboxEndpointApi<M extends ContextSchemaList> =
   & ContextAccessor<M>
   & CustomContextAccessor
   & HostApi
+  & SandboxActionAccessor
 
 export type CreateSandboxControllerOptions<M extends ContextSchemaList> =
   & CreateSandboxStateOptions<M>
   & SandboxHostApiOptions<M>
   & {
+    actionHandler?: SandboxActionHandler<M>;
     globalBridge?: false | {
       key?: string;
     };
@@ -68,13 +73,15 @@ export const createSandboxController = <const M extends ContextSchemaList>(
   const state = createSandboxState(options)
   const initialSnapshot = captureSandboxSnapshot(state)
   const contextSubscriptionCleanups = new Set<() => void>()
+  let disposed = false
   const endpointApi = Object.assign(
     {},
     createSandboxContextAccessor(options.schemas, state, cleanup => {
       contextSubscriptionCleanups.add(cleanup)
     }),
     createSandboxCustomContextAccessor(state),
-    createSandboxHostApi(state, options)
+    createSandboxHostApi(state, options),
+    createSandboxActionAccessor(state, options.actionHandler, () => disposed)
   ) as SandboxEndpointApi<M>
 
   let removeBridge = () => {}
@@ -83,6 +90,7 @@ export const createSandboxController = <const M extends ContextSchemaList>(
     bridge: null as unknown as SandboxBridge<M>,
 
     dispose() {
+      disposed = true
       controller.disposeContextSubscriptions()
       controller.uninstallGlobalBridge()
     },

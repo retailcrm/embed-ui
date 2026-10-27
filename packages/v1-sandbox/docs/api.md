@@ -70,34 +70,51 @@ fixtures or the browser app shell.
 ```ts
 import {
   createOrderSandboxController,
+  createTicketSandboxController,
+  createFixtureSandboxController,
   createSandboxHttpMiddleware,
   getOrderSandboxFixture,
   createSandboxLaunchConfig,
 } from '@retailcrm/embed-ui-v1-sandbox/scenario'
 ```
 
-Use `scenario` for the ready-made order sandbox:
+Use `scenario` for the ready-made order and ticket sandboxes:
 
-- order fixtures and context schemas;
+- order and ticket fixtures and context schemas;
 - supported widget targets;
 - launch configuration helpers;
 - runtime descriptor parsing and extension source resolution;
 - validation helpers;
 - default HTTP middleware that proxies extension `host.httpCall` requests.
 
+`createTicketSandboxController('ticket-basic')` and `ticket-readonly` provide
+readonly ticket contexts and emulated ticket actions. `createFixtureSandboxController(code)`
+selects the correct scenario for the app. `SandboxTarget` includes order-card and
+ticket-viewer targets; `SandboxOrderTarget` retains its order-only meaning.
+
+`controller.endpointApi.invoke(name, ...args)` returns `{ payload, rejection }`.
+The `actionHandler` core option can implement scenario-specific behavior. Calls
+are captured in `snapshot().host.actions`, including arguments and results.
+The ticket scenario rejects denied actions and calls after controller disposal;
+see [ticket examples](./examples.md#ticket-viewer-widgets) for simulation limits.
+
 ## `automation/browser`
 
 ```ts
+import type { SandboxWorkerRuntime } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
+
 import {
   createExtensionSourceWorker,
   createSandboxWorkerRuntime,
-  type SandboxWorkerRuntime,
 } from '@retailcrm/embed-ui-v1-sandbox/automation/browser'
 ```
 
 Use `createExtensionSourceWorker(entrypoint)` to load the real extension in a
 Worker. Pass its `worker` and `ready` promise to `createSandboxWorkerRuntime()`.
-The runtime supplies fixture-backed contexts and HostAPI, and exposes:
+The runtime supplies fixture-backed contexts and HostAPI. Its result is typed
+from the fixture code: `ticket-basic` and `ticket-readonly` infer ticket contexts;
+omitting the fixture retains the default order scenario. `SandboxWorkerRuntime`
+accepts a schema type parameter when an explicit annotation is needed. It exposes:
 
 - `runPage(code)` and `runWidget(target)` to mount extension UI;
 - `httpMiddleware` as a creation option for deterministic backend responses;

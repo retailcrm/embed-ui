@@ -3,14 +3,17 @@ import '@/app/styles.css'
 
 import type { App as VueApp } from 'vue'
 
+import type { ContextSchemaList } from '@retailcrm/embed-ui-v1-types/context'
 import type { Endpoint } from '@remote-ui/rpc'
 import type { OrderSandboxSchemas } from '@/scenario/fixtures'
 import type { PageRunIdentity } from '@retailcrm/embed-ui-v1-endpoint/remote'
 import type { Receiver } from '@omnicajs/vue-remote/host'
-import type { SandboxController, SandboxHostMiddleware } from '@/core'
+import type { SandboxController } from '@/core'
+import type { SandboxFixtureSchemas } from '@/scenario/fixtures'
+import type { SandboxHostMiddleware } from '@/core'
 import type { SandboxLaunchBridge } from '@/automation/bridge'
 import type { SandboxLaunchInput } from '@/automation/bridge'
-import type { SandboxOrderTarget } from '@/scenario'
+import type { SandboxTarget } from '@/scenario'
 import type { SandboxWorkerApi } from '@/app/types'
 import type { WidgetRunConfig } from '@retailcrm/embed-ui-v1-endpoint/remote'
 
@@ -31,7 +34,8 @@ import { getSandboxLaunchBridge } from '@/automation/bridge'
 
 import SourceWorker from '@/automation/source.worker.ts?worker&inline'
 
-import { createOrderSandboxController } from '@/scenario/fixtures'
+import { createFixtureSandboxController } from '@/scenario/fixtures'
+import { isTargetForSandboxFixture } from '@/scenario/fixtures'
 
 type RunConfig = PageRunIdentity | WidgetRunConfig
 
@@ -56,25 +60,25 @@ export type ExtensionSourceWorker = {
   worker: Worker;
 }
 
-export type CreateSandboxWorkerRuntimeOptions = {
+export type CreateSandboxWorkerRuntimeOptions<F extends string = string> = {
   descriptorUuid?: string;
-  fixture?: string;
-  httpMiddleware?: SandboxHostMiddleware<OrderSandboxSchemas>;
+  fixture?: F;
+  httpMiddleware?: SandboxHostMiddleware<SandboxFixtureSchemas<F>>;
   ready?: Promise<void>;
   worker: Worker;
 }
 
-export type SandboxWorkerRuntime = {
+export type SandboxWorkerRuntime<M extends ContextSchemaList = OrderSandboxSchemas> = {
   container: HTMLElement;
-  controller: SandboxController<OrderSandboxSchemas>;
+  controller: SandboxController<M>;
   flush(): Promise<void>;
   flushOnce(): Promise<void>;
-  patchContext: SandboxController<OrderSandboxSchemas>['patchContext'];
-  read: SandboxController<OrderSandboxSchemas>['snapshot'];
-  reset: SandboxController<OrderSandboxSchemas>['reset'];
+  patchContext: SandboxController<M>['patchContext'];
+  read: SandboxController<M>['snapshot'];
+  reset: SandboxController<M>['reset'];
   runPage(code: string): Promise<HTMLElement>;
-  runWidget(target: SandboxOrderTarget): Promise<HTMLElement>;
-  snapshot: SandboxController<OrderSandboxSchemas>['snapshot'];
+  runWidget(target: SandboxTarget): Promise<HTMLElement>;
+  snapshot: SandboxController<M>['snapshot'];
   teardown(): Promise<void>;
   unmountHost(): void;
 }
@@ -183,23 +187,23 @@ export const createExtensionSourceWorker = (entrypoint: URL | string): Extension
   }
 }
 
-export const createSandboxWorkerRuntime = async ({
+export const createSandboxWorkerRuntime = async <F extends string = 'order-basic'>({
   descriptorUuid,
-  fixture = 'order-basic',
+  fixture,
   httpMiddleware,
   ready,
   worker,
-}: CreateSandboxWorkerRuntimeOptions): Promise<SandboxWorkerRuntime> => {
+}: CreateSandboxWorkerRuntimeOptions<F>): Promise<SandboxWorkerRuntime<SandboxFixtureSchemas<F>>> => {
   await ready
 
   const container = document.createElement('div')
   const endpoint = createRpcEndpoint<SandboxWorkerApi>(fromWebWorker(worker))
   const receiver = markRaw(createReceiver())
-  const controller = createOrderSandboxController(fixture, {
+  const controller = createFixtureSandboxController(fixture ?? 'order-basic', {
     descriptorUuid,
     globalBridge: false,
-    httpMiddleware,
-  })
+    httpMiddleware: httpMiddleware as SandboxHostMiddleware<ContextSchemaList> | undefined,
+  }) as unknown as SandboxController<SandboxFixtureSchemas<F>>
   const endpointApi = controller.endpointApi
 
   document.body.append(container)
@@ -265,10 +269,12 @@ export const createSandboxWorkerRuntime = async ({
     read: controller.snapshot,
     reset: controller.reset,
     runPage: code => run({ code }),
-    runWidget: target => run({
-      id: `browser-widget:${target}`,
-      target,
-    }),
+    runWidget: target => {
+      if (!isTargetForSandboxFixture(target, fixture ?? 'order-basic')) {
+        return Promise.reject(new Error('Widget target does not match the selected fixture.'))
+      }
+      return run({ id: `browser-widget:${target}`, target })
+    },
     snapshot: controller.snapshot,
     async teardown() {
       try {

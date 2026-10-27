@@ -1,23 +1,23 @@
 import type { ComposerTranslation } from 'vue-i18n'
 
-import type { OrderSandboxFixtureCode } from '@/scenario/fixtures'
+import type { SandboxFixtureCode } from '@/scenario/fixtures'
 
-import { isOrderSandboxFixtureCode } from '@/scenario/fixtures'
+import { isSandboxFixtureCode } from '@/scenario/fixtures'
 
-type OrderSandboxFixturePresentationKeys = {
+type SandboxFixturePresentationKeys = {
   description: string;
   name: string;
 }
 
-export type OrderSandboxFixturePresentation = {
-  code: OrderSandboxFixtureCode;
+export type SandboxFixturePresentation = {
+  code: SandboxFixtureCode;
   description: string;
   name: string;
 }
 
 const fixturePresentationKeys: Record<
-  OrderSandboxFixtureCode,
-  OrderSandboxFixturePresentationKeys
+  SandboxFixtureCode,
+  SandboxFixturePresentationKeys
 > = {
   'order-basic': {
     description: 'app.fixtures.orderBasic.description',
@@ -31,13 +31,21 @@ const fixturePresentationKeys: Record<
     description: 'app.fixtures.orderReadonlyError.description',
     name: 'app.fixtures.orderReadonlyError.name',
   },
+  'ticket-basic': {
+    description: 'app.fixtures.ticketBasic.description',
+    name: 'app.fixtures.ticketBasic.name',
+  },
+  'ticket-readonly': {
+    description: 'app.fixtures.ticketReadonly.description',
+    name: 'app.fixtures.ticketReadonly.name',
+  },
 }
 
-export const getOrderSandboxFixturePresentation = (
+export const getSandboxFixturePresentation = (
   code: string,
   t: ComposerTranslation
-): OrderSandboxFixturePresentation | null => {
-  if (!isOrderSandboxFixtureCode(code)) return null
+): SandboxFixturePresentation | null => {
+  if (!isSandboxFixtureCode(code)) return null
 
   const keys = fixturePresentationKeys[code]
 
@@ -48,9 +56,9 @@ export const getOrderSandboxFixturePresentation = (
   }
 }
 
-export const getOrderSandboxFixturePresentations = (
+export const getSandboxFixturePresentations = (
   t: ComposerTranslation
-): OrderSandboxFixturePresentation[] =>
+): SandboxFixturePresentation[] =>
   Object.keys(fixturePresentationKeys).map(code =>
-    getOrderSandboxFixturePresentation(code, t)
-  ).filter((fixture): fixture is OrderSandboxFixturePresentation => fixture !== null)
+    getSandboxFixturePresentation(code, t)
+  ).filter((fixture): fixture is SandboxFixturePresentation => fixture !== null)

@@ -2,32 +2,49 @@ import type { SandboxLaunchConfig } from '@/scenario/types'
 
 import { z } from 'zod'
 
-import { DEFAULT_SANDBOX_TARGETS } from '@/scenario/targets'
 import { DefaultSandbox } from '@/scenario/defaults'
-import { isSandboxOrderTarget } from '@/scenario/predicates'
+import {
+  getDefaultSandboxTargets,
+  isSandboxFixtureCode,
+} from '@/scenario/fixtures/registry'
+import { isSandboxTarget } from '@/scenario/predicates'
+import { isTargetForSandboxFixture } from '@/scenario/fixtures/registry'
 import { parseSandboxExtensionDescriptor } from '@/scenario/descriptor'
 
 export const createSandboxLaunchConfig = (
   input: Partial<SandboxLaunchConfig> = {},
   current?: SandboxLaunchConfig
-): SandboxLaunchConfig => ({
-  fixture: DefaultSandbox.Fixture,
-  mode: DefaultSandbox.Mode,
-  pageCode: DefaultSandbox.PageCode,
-  ...current,
-  ...input,
-  targets: [...(input.targets
-    ?? input.descriptor?.targets.filter(isSandboxOrderTarget)
-    ?? current?.targets
-    ?? DEFAULT_SANDBOX_TARGETS)],
-})
+): SandboxLaunchConfig => {
+  const descriptorTargets = input.descriptor?.targets.filter(isSandboxTarget)
+  const targets = input.targets ?? descriptorTargets ?? current?.targets
+  let fixture = input.fixture ?? current?.fixture ?? DefaultSandbox.Fixture
+
+  if (!input.fixture && targets?.length && !targets.some(target => isTargetForSandboxFixture(target, fixture))) {
+    fixture = targets[0].startsWith('ticket/view:') ? 'ticket-basic' : DefaultSandbox.Fixture
+  }
+
+  return {
+    mode: DefaultSandbox.Mode,
+    pageCode: DefaultSandbox.PageCode,
+    ...current,
+    ...input,
+    fixture,
+    targets: [...(input.targets
+      ?? descriptorTargets?.filter(target => isTargetForSandboxFixture(target, fixture))
+      ?? (current?.targets.every(target => isTargetForSandboxFixture(target, fixture))
+        ? current.targets : getDefaultSandboxTargets(fixture)))],
+  }
+}
 
 const launchConfigSchema = z.object({
   descriptor: z.unknown().transform(parseSandboxExtensionDescriptor),
-  fixture: z.string().min(1),
+  fixture: z.string().refine(isSandboxFixtureCode),
   mode: z.enum(['page', 'widget']),
   pageCode: z.string(),
-  targets: z.array(z.string().refine(isSandboxOrderTarget)),
+  targets: z.array(z.string().refine(isSandboxTarget)),
+}).refine(config => config.mode !== 'widget' || config.targets.every(target => isTargetForSandboxFixture(target, config.fixture)), {
+  message: 'Widget targets must match the selected fixture.',
+  path: ['targets'],
 }).refine(config => config.mode !== 'widget' || config.targets.length > 0, {
   message: 'Select at least one widget target.',
   path: ['targets'],

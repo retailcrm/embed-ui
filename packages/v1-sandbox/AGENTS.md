@@ -22,7 +22,7 @@ automation helpers for unit, browser, and e2e testing.
 ## How To Import
 
 - For public runtime primitives, import from `@retailcrm/embed-ui-v1-sandbox/core`.
-- For order fixtures, targets, launch configuration helpers, validation, and HostAPI HTTP
+- For order and ticket fixtures, targets, launch configuration helpers, validation, and HostAPI HTTP
   middleware, import from `@retailcrm/embed-ui-v1-sandbox/scenario`.
 - For Vitest Browser sandbox automation, import from
   `@retailcrm/embed-ui-v1-sandbox/automation/browser`.
@@ -75,7 +75,7 @@ Common public API areas include:
   `createSandboxController`, `createSandboxState`, `createSandboxHostApi`,
   `createSandboxRpc`
 - scenario helpers:
-  `createOrderSandboxController`, `createSandboxHttpMiddleware`,
+  `createOrderSandboxController`, `createTicketSandboxController`, `createSandboxHttpMiddleware`,
   `createSandboxLaunchConfig`, order fixtures, targets, and validation helpers
 - browser extension testing:
   `createExtensionSourceWorker`, `createSandboxWorkerRuntime`, `SandboxWorkerRuntime`

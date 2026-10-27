@@ -1,4 +1,6 @@
+import type * as SandboxFixtures from '@/scenario/fixtures'
 import type { SandboxLaunchConfig } from '@/scenario/types'
+import type { SandboxTarget } from '@/scenario/types'
 
 import type SandboxApp from '@/app/App.vue'
 import type { SandboxExtensionSource } from '@/scenario/extension'
@@ -194,18 +196,9 @@ vi.mock('@/runtime/mount', () => ({
   },
 }))
 
-vi.mock('@/scenario/fixtures', () => ({
-  orderSandboxFixtures: {
-    'order-basic': {},
-    'order-readonly-error': {},
-    'order-with-delivery': {},
-  },
-  isOrderSandboxFixtureCode: (fixture: string) => [
-    'order-basic',
-    'order-readonly-error',
-    'order-with-delivery',
-  ].includes(fixture),
-  getOrderSandboxFixture: (fixture: string) => ({
+vi.mock('@/scenario/fixtures', async importOriginal => ({
+  ...await importOriginal<typeof SandboxFixtures>(),
+  getSandboxFixture: (fixture: string) => ({
     contexts: fixture === 'order-with-delivery'
       ? {
         'order/card': {
@@ -221,7 +214,7 @@ vi.mock('@/scenario/fixtures', () => ({
         },
       },
   }),
-  createOrderSandboxController: (fixture: string, options: typeof controllerOptions) => {
+  createFixtureSandboxController: (fixture: string, options: typeof controllerOptions) => {
     controllerOptions = options
     const contexts: Record<string, Record<string, unknown>> = fixture === 'order-with-delivery'
       ? {
@@ -1549,4 +1542,26 @@ test('ignores a descriptor in the URL when no configuration is saved', async () 
   expect(screen.getByRole('heading', { name: 'Подключите внешнее расширение' })).toBeInstanceOf(HTMLElement)
   expect(resolveSandboxExtensionSourceMock).not.toHaveBeenCalled()
   expect(fakeWorkers).toHaveLength(0)
+})
+
+const descriptorFixtureCases: Array<{ targets: SandboxTarget[]; fixture: string; selected: SandboxTarget[] }> = [
+  { targets: ['order/card:delivery.before', 'ticket/view:header.after'], fixture: 'order-basic', selected: ['order/card:delivery.before'] },
+  { targets: ['ticket/view:header.after', 'ticket/view:issues.after'], fixture: 'ticket-basic', selected: ['ticket/view:header.after', 'ticket/view:issues.after'] },
+]
+
+test.each(descriptorFixtureCases)('pastes a descriptor and selects only targets compatible with $fixture', async ({ targets, fixture, selected }) => {
+  await renderAppWithRuntime({ mode: 'widget' })
+  const dialog = await openDevPanel()
+  const input = await openDescriptorJsonEditor(dialog)
+  await fireEvent.update(input, JSON.stringify({
+    runner: 'worker', entrypoint: 'http://extension.test/runtime/worker.js',
+    stylesheet: null, pages: [], targets,
+  }))
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'JSON' }))
+  const targetPicker = within(dialog).getByPlaceholderText('Выберите места встраивания') as HTMLInputElement
+  expect(targetPicker.value).toBe(selected.join(', '))
+  await fireEvent.click(within(dialog).getByRole('button', { name: 'Применить' }))
+  await waitFor(() => {
+    expect(JSON.parse(window.localStorage.getItem('v1-sandbox:launch-config:v1') ?? '{}')).toMatchObject({ fixture, targets: selected })
+  })
 })

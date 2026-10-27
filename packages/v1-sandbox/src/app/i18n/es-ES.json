@@ -37,6 +37,14 @@
       "orderWithDelivery": {
         "description": "Un pedido con dirección e importe para comprobar widgets de entrega y pago.",
         "name": "Pedido con entrega"
+      },
+      "ticketBasic": {
+        "name": "Solicitud con dos preguntas",
+        "description": "Una solicitud editable con un cliente y dos preguntas asignadas por separado."
+      },
+      "ticketReadonly": {
+        "name": "Solicitud de solo lectura",
+        "description": "Los datos son visibles; la edición, los comentarios y los formularios de creación no están disponibles."
       }
     },
     "runMode": {

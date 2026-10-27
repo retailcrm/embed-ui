@@ -64,7 +64,7 @@ No separate extension UUID is required; resource URLs are used as supplied.
 
 6. Select a mode:
 
-- `Widgets`: mount widget runners into one or more `order/card:*` targets.
+- `Widgets`: mount widget runners into one or more `order/card:*` or `ticket/view:*` targets matching the selected fixture.
 - `Page`: mount a page runner by `pageCode`.
 
 7. Click `Apply`. The sandbox saves the configuration in `localStorage` and starts the extension.
@@ -144,8 +144,8 @@ belong to `TargetName`. `stylesheet` may be `null`, and `runner` must be
   `Page` mounts a page runner by `Page code`. The selector is also visible in
   JSON view. When the descriptor supports both pages and widgets, choose which
   to launch; switching modes preserves both capability lists in the descriptor.
-- `Selected fixture`: CRM mock state for the next launch: order context, custom
-  fields, dictionaries, location, and initial HostAPI state. The panel also
+- `Selected fixture`: CRM mock state for the next launch: order or ticket contexts,
+  scenario-specific custom fields and dictionaries, location, and initial HostAPI state. The panel also
   shows the fixture used by the current connected run.
 - `Page code`: `code` from the extension `pages` registration. For example,
   `board`, `summary`, or `returns`. It is not the extension UUID. In JSON view,
@@ -244,11 +244,20 @@ Page code = summary
 ## Fixtures and Context JSON
 
 A fixture defines the CRM state exposed to the extension through the context
-API. Current order fixtures:
+API. Available fixtures:
 
 - `order-basic`: a basic order;
 - `order-with-delivery`: an order with delivery data;
-- `order-readonly-error`: a readonly/error-like order.
+- `order-readonly-error`: a readonly/error-like order;
+- `ticket-basic`: a ticket with a customer and two questions;
+- `ticket-readonly`: the same ticket with mutation and creation permissions disabled.
+
+Ticket-only descriptors select `ticket-basic` automatically. The target picker
+shows only placements matching the selected fixture, including all four
+`ticket/view:*` slots. Mixed order/ticket descriptors can be reused across
+launches, with one fixture family active per launch. See the
+[ticket widget example](./examples.md#ticket-viewer-widgets) for action simulation
+and worker automation.
 
 `Current run Context JSON` lets you temporarily replace values in the context
 of the connected run. Contexts included in the JSON are replaced as complete

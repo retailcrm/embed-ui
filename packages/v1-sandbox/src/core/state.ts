@@ -8,6 +8,8 @@ import type {
 
 import type { HostApi, HostLocation } from '@retailcrm/embed-ui-v1-types/host'
 
+import type { SandboxActionResult } from '@/core/actions'
+
 import { reactive } from 'vue'
 
 import { clone } from '@/lib/clone'
@@ -50,6 +52,7 @@ export type SandboxNavigationRecord =
   }
 
 export type SandboxHostState = {
+  actions: Array<{ name: string; args: unknown[]; result: SandboxActionResult }>;
   http: SandboxHttpCallRecord[];
   location: HostLocation;
   navigation: SandboxNavigationRecord[];
@@ -90,6 +93,7 @@ export const createSandboxState = <M extends ContextSchemaList>(
     entities: clone(options.custom?.entities ?? {}),
   },
   host: {
+    actions: [],
     http: [],
     location: createLocation(options.location),
     navigation: [],
@@ -121,6 +125,7 @@ export const applySandboxSnapshot = <M extends ContextSchemaList>(
   syncRecord(state.custom.dictionaries, snapshot.custom.dictionaries)
 
   state.host.location = clone(snapshot.host.location)
+  syncArray(state.host.actions, snapshot.host.actions)
   syncArray(state.host.http, snapshot.host.http)
   syncArray(state.host.navigation, snapshot.host.navigation)
 }

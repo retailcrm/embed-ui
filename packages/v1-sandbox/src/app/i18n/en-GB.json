@@ -37,6 +37,14 @@
       "orderWithDelivery": {
         "description": "An order with an address and amount for testing delivery and payment widgets.",
         "name": "Order with delivery"
+      },
+      "ticketBasic": {
+        "name": "Ticket with two questions",
+        "description": "An editable ticket with a customer and two independently assigned questions."
+      },
+      "ticketReadonly": {
+        "name": "Read-only ticket",
+        "description": "Ticket data is visible; editing, comments and creation forms are unavailable."
       }
     },
     "runMode": {

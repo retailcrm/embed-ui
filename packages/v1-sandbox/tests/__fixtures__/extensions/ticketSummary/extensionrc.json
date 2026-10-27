@@ -1,0 +1,13 @@
+{
+  "uuid": "f4bf02c8-e333-4486-85bc-020e1ba33770",
+  "name": "Ticket summary",
+  "runner": "worker",
+  "entrypoint": "script",
+  "targets": [
+    "ticket/view:header.after",
+    "ticket/view:common.before",
+    "ticket/view:customer.after",
+    "ticket/view:issues.after"
+  ],
+  "pages": []
+}

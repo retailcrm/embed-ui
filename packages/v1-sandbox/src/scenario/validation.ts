@@ -1,14 +1,15 @@
 import type {
   SandboxExtensionDescriptor,
   SandboxLaunchMode,
-  SandboxOrderTarget,
+  SandboxTarget,
 } from '@/scenario/types'
 
 import { z } from 'zod'
 
-import { isSandboxOrderTarget } from '@/scenario/predicates'
-import { orderSandboxFixtures } from '@/scenario/fixtures'
+import { isSandboxTarget } from '@/scenario/predicates'
+import { isTargetForSandboxFixture } from '@/scenario/fixtures'
 import { parseSandboxExtensionDescriptorJson } from '@/scenario/descriptor'
+import { sandboxFixtures } from '@/scenario/fixtures'
 
 export type DevPanelField =
   | 'contextJson'
@@ -54,7 +55,7 @@ export type ValidatedLaunchConfigInput = {
   fixture: string;
   mode: SandboxLaunchMode;
   pageCode: string;
-  targets: SandboxOrderTarget[];
+  targets: SandboxTarget[];
 }
 
 export type ValidationResult<T> =
@@ -90,7 +91,7 @@ export const validateLaunchConfigInput = (
       pageCode: result.data.pageCode,
       ...source.data,
       mode: result.data.mode as SandboxLaunchMode,
-      targets: result.data.targets as SandboxOrderTarget[],
+      targets: result.data.targets as SandboxTarget[],
     },
     success: true,
   }
@@ -135,7 +136,7 @@ export const validateContextJsonInput = (
 
 const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.object({
   fixture: z.string().transform(value => value.trim()).refine(
-    value => value in orderSandboxFixtures,
+    value => value in sandboxFixtures,
     messages.fixture
   ),
   descriptorJson: z.string()
@@ -148,7 +149,7 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
   pageCode: z.string(),
   targets: z.array(z.string().transform(value => value.trim())).superRefine((targets, context) => {
     targets.forEach((target, index) => {
-      if (isSandboxOrderTarget(target)) return
+      if (isSandboxTarget(target)) return
 
       context.addIssue({
         code: z.ZodIssueCode.custom,
@@ -158,6 +159,13 @@ const createLaunchConfigSchema = (messages: DevPanelValidationMessages) => z.obj
     })
   }),
 }).superRefine((value, context) => {
+  if (value.mode === 'widget') {
+    value.targets.forEach((target, index) => {
+      if (!isSandboxTarget(target) || isTargetForSandboxFixture(target, value.fixture)) return
+      context.addIssue({ code: z.ZodIssueCode.custom, message: messages.targetUnknown(target), path: ['targets', index] })
+    })
+  }
+
   if (value.mode === 'page' && !value.pageCode.trim()) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
