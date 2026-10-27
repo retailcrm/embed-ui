@@ -2352,17 +2352,17 @@ __metadata:
     "@omnicajs/vue-remote": "npm:^0.2.27"
     "@remote-ui/rpc": "npm:^1.4.7"
     "@retailcrm/image-preview": "npm:^1.0.2"
-    "@storybook/addon-a11y": "npm:^10.3.5"
-    "@storybook/addon-docs": "npm:^10.3.5"
-    "@storybook/addon-links": "npm:^10.3.5"
-    "@storybook/addon-themes": "npm:^10.3.5"
-    "@storybook/builder-vite": "npm:^10.3.5"
-    "@storybook/vue3": "npm:^10.3.5"
-    "@storybook/vue3-vite": "npm:^10.3.5"
+    "@storybook/addon-a11y": "npm:^10.6.2"
+    "@storybook/addon-docs": "npm:^10.6.2"
+    "@storybook/addon-links": "npm:^10.6.2"
+    "@storybook/addon-themes": "npm:^10.6.2"
+    "@storybook/builder-vite": "npm:^10.6.2"
+    "@storybook/vue3": "npm:^10.6.2"
+    "@storybook/vue3-vite": "npm:^10.6.2"
     "@vitejs/plugin-vue": "npm:^6.0.2"
     "@vitest/browser": "npm:4.1.10"
     "@vitest/browser-playwright": "npm:4.1.10"
-    "@vue/compiler-sfc": "npm:^3.5.25"
+    "@vue/compiler-sfc": "npm:^3.5.42"
     "@vue/test-utils": "npm:^2.4.6"
     "@yandex/ymaps3-types": "npm:^1.0.19072130"
     date-fns: "npm:^4.1.0"
@@ -2373,7 +2373,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     remark-gfm: "npm:^4.0.0"
-    storybook: "npm:^10.3.5"
+    storybook: "npm:^10.6.2"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
     uuid: "npm:^13.0.0"
@@ -2381,7 +2381,7 @@ __metadata:
     vite-plugin-dts: "npm:^4.5.4"
     vite-svg-loader: "npm:^5.1.0"
     vitest: "npm:4.1.10"
-    vue: "npm:^3.5.32"
+    vue: "npm:^3.5.42"
     vue-i18n: "npm:10.0.8"
     vue3-perfect-scrollbar: "npm:^2.0.0"
   peerDependencies:
@@ -2978,7 +2978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-a11y@npm:^10.3.5":
+"@storybook/addon-a11y@npm:^10.6.2":
   version: 10.6.4
   resolution: "@storybook/addon-a11y@npm:10.6.4"
   dependencies:
@@ -2990,7 +2990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-docs@npm:^10.3.5":
+"@storybook/addon-docs@npm:^10.6.2":
   version: 10.6.4
   resolution: "@storybook/addon-docs@npm:10.6.4"
   dependencies:
@@ -3011,7 +3011,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:^10.3.5":
+"@storybook/addon-links@npm:^10.6.2":
   version: 10.6.4
   resolution: "@storybook/addon-links@npm:10.6.4"
   dependencies:
@@ -3029,7 +3029,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-themes@npm:^10.3.5":
+"@storybook/addon-themes@npm:^10.6.2":
   version: 10.6.4
   resolution: "@storybook/addon-themes@npm:10.6.4"
   dependencies:
@@ -3040,7 +3040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/builder-vite@npm:10.6.4, @storybook/builder-vite@npm:^10.3.5":
+"@storybook/builder-vite@npm:10.6.4, @storybook/builder-vite@npm:^10.6.2":
   version: 10.6.4
   resolution: "@storybook/builder-vite@npm:10.6.4"
   dependencies:
@@ -3086,7 +3086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/vue3-vite@npm:^10.3.5":
+"@storybook/vue3-vite@npm:^10.6.2":
   version: 10.6.4
   resolution: "@storybook/vue3-vite@npm:10.6.4"
   dependencies:
@@ -3104,7 +3104,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/vue3@npm:10.6.4, @storybook/vue3@npm:^10.3.5":
+"@storybook/vue3@npm:10.6.4, @storybook/vue3@npm:^10.6.2":
   version: 10.6.4
   resolution: "@storybook/vue3@npm:10.6.4"
   dependencies:
@@ -3975,7 +3975,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/compiler-sfc@npm:3.5.44, @vue/compiler-sfc@npm:^3.2.0, @vue/compiler-sfc@npm:^3.5.25":
+"@vue/compiler-sfc@npm:3.5.44, @vue/compiler-sfc@npm:^3.2.0, @vue/compiler-sfc@npm:^3.5.42":
   version: 3.5.44
   resolution: "@vue/compiler-sfc@npm:3.5.44"
   dependencies:
@@ -11172,7 +11172,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:^10.3.5":
+"storybook@npm:^10.6.2":
   version: 10.6.4
   resolution: "storybook@npm:10.6.4"
   dependencies:

@@ -73,17 +73,17 @@
     "vue3-perfect-scrollbar": "^2.0.0"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^10.3.5",
-    "@storybook/addon-docs": "^10.3.5",
-    "@storybook/addon-links": "^10.3.5",
-    "@storybook/addon-themes": "^10.3.5",
-    "@storybook/builder-vite": "^10.3.5",
-    "@storybook/vue3": "^10.3.5",
-    "@storybook/vue3-vite": "^10.3.5",
+    "@storybook/addon-a11y": "^10.6.2",
+    "@storybook/addon-docs": "^10.6.2",
+    "@storybook/addon-links": "^10.6.2",
+    "@storybook/addon-themes": "^10.6.2",
+    "@storybook/builder-vite": "^10.6.2",
+    "@storybook/vue3": "^10.6.2",
+    "@storybook/vue3-vite": "^10.6.2",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vitest/browser": "4.1.10",
     "@vitest/browser-playwright": "4.1.10",
-    "@vue/compiler-sfc": "^3.5.25",
+    "@vue/compiler-sfc": "^3.5.42",
     "@vue/test-utils": "^2.4.6",
     "@yandex/ymaps3-types": "^1.0.19072130",
     "highlight.js": "^11.11.1",
@@ -92,7 +92,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "remark-gfm": "^4.0.0",
-    "storybook": "^10.3.5",
+    "storybook": "^10.6.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "uuid": "^13.0.0",
@@ -100,7 +100,7 @@
     "vite-plugin-dts": "^4.5.4",
     "vite-svg-loader": "^5.1.0",
     "vitest": "4.1.10",
-    "vue": "^3.5.32",
+    "vue": "^3.5.42",
     "vue-i18n": "10.0.8"
   }
 }
