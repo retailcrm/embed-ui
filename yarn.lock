@@ -1769,7 +1769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.29.0, @modelcontextprotocol/sdk@npm:^1.32.0":
+"@modelcontextprotocol/sdk@npm:^1.32.0":
   version: 1.32.2
   resolution: "@modelcontextprotocol/sdk@npm:1.32.2"
   dependencies:
@@ -2419,7 +2419,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@retailcrm/embed-ui-v1-endpoint@workspace:packages/v1-endpoint"
   dependencies:
-    "@modelcontextprotocol/sdk": "npm:^1.29.0"
+    "@modelcontextprotocol/sdk": "npm:^1.32.0"
     "@remote-ui/rpc": "npm:^1.4.7"
     "@retailcrm/embed-ui-v1-components": "npm:^0.9.33-alpha.1"
     "@retailcrm/embed-ui-v1-contexts": "npm:^0.9.33-alpha.1"
