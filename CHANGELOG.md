@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.33
+
+### Features
+
+* **v1-contexts:** Ticket editor draft contexts and actions were added ([22882ce](https://github.com/retailcrm/embed-ui/commit/22882cef7013899078d396db53d65aa85bd392b7))
+* **v1-endpoint:** Ticket editor widget targets were added ([a790c4f](https://github.com/retailcrm/embed-ui/commit/a790c4f02f1007e827432fc3d444348ab18157bc))
+* Ticket editor page metadata and public API checks were added ([4b9177b](https://github.com/retailcrm/embed-ui/commit/4b9177bcac28ab3313768fea20a6933f35f7d238))
+
 ## 0.9.33-alpha.2
 
 ### Features
