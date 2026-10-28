@@ -1,4 +1,21 @@
 import type {
+  schema as publicEditorSchema,
+} from '@retailcrm/embed-ui-v1-contexts/remote/ticket/edit'
+import type {
+  Schema as TicketEditSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/ticket/edit'
+import type {
+  Schema as TicketEditSettingsSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/ticket/edit-settings'
+import type {
+  useActions as useTicketEditorActions,
+  useContext as useTicketEditor,
+} from '@retailcrm/embed-ui-v1-contexts/remote/ticket/edit'
+import type {
+  useContext as useTicketEditorSettings,
+} from '@retailcrm/embed-ui-v1-contexts/remote/ticket/edit-settings'
+
+import type {
   SchemaList as ContextSchemaList,
 } from '@retailcrm/embed-ui-v1-contexts/types'
 import type { CustomerType } from '@retailcrm/embed-ui-v1-types/domain'
@@ -107,4 +124,47 @@ test('exposes ticket targets with the correct context slices through package dec
   expectTypeOf<TargetList['ticket/view:customer.after']['ticket/view']>().toEqualTypeOf<TicketViewSchema>()
   expectTypeOf(names).toEqualTypeOf<TargetName[]>()
   expectTypeOf(widgetTarget).toMatchTypeOf<WidgetTarget>()
+})
+
+test('exposes editor targets with draft contexts through package declarations', () => {
+  const names: TargetName[] = [
+    'ticket/edit:common.before',
+    'ticket/edit:customer.after',
+    'ticket/edit:issues.after',
+  ]
+  const widgetTarget: WidgetTarget = 'ticket/edit:customer.after'
+
+  expectTypeOf<keyof TargetList['ticket/edit:issues.after']>().toEqualTypeOf<
+    'ticket/edit' | 'ticket/edit:settings' | 'user/current' | 'settings'
+  >()
+  expectTypeOf<TargetList['ticket/edit:customer.after']['ticket/edit']>().toEqualTypeOf<TicketEditSchema>()
+  expectTypeOf<TargetList['ticket/edit:common.before']['ticket/edit:settings']>().toEqualTypeOf<TicketEditSettingsSchema>()
+  expectTypeOf(names).toEqualTypeOf<TargetName[]>()
+  expectTypeOf(widgetTarget).toMatchTypeOf<WidgetTarget>()
+})
+
+test('exposes a typed draft augmentation API without form lifecycle controls', () => {
+  expectTypeOf<ContextSchemaList['ticket/edit']>().toEqualTypeOf<TicketEditSchema>()
+  expectTypeOf<ContextSchemaList['ticket/edit:settings']>().toEqualTypeOf<TicketEditSettingsSchema>()
+  expectTypeOf<typeof publicEditorSchema>().toEqualTypeOf<TicketEditSchema>()
+  expectTypeOf<ReturnType<typeof useTicketEditor>['orderItems'][number]['orderId']>().toEqualTypeOf<number>()
+  expectTypeOf<ReturnType<typeof useTicketEditorSettings>['editable']>().toEqualTypeOf<boolean>()
+  function check(editor: ReturnType<typeof useTicketEditor>, actions: ReturnType<typeof useTicketEditorActions>, schema: typeof publicEditorSchema) {
+    editor.set('description', 'Draft text')
+    // @ts-expect-error Ticket identifiers are owned by CRM.
+    editor.set('id', 123)
+    // @ts-expect-error Items are readonly draft selections.
+    editor.orderItems.push(editor.orderItems[0])
+    // @ts-expect-error Questions are addressed by a local string key.
+    actions.updateIssue(123, { statusId: 1 })
+    // @ts-expect-error Saving remains a user action in CRM.
+    actions.save()
+    // @ts-expect-error Closing remains a user action in CRM.
+    actions.close()
+    // @ts-expect-error Validation remains a user action in CRM.
+    actions.validate()
+    // @ts-expect-error Schema must remain typed through public declarations.
+    void schema.orderProducts
+  }
+  expectTypeOf(check).toBeFunction()
 })

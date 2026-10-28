@@ -31,4 +31,11 @@ export const pageListDocumentation: Array<{
     'es-ES': 'Visor de solicitudes',
     'ru-RU': 'Просмотр обращения',
   },
+}, {
+  id: 'ticket/edit',
+  description: {
+    'en-GB': 'Ticket creation/editing form',
+    'es-ES': 'Formulario de creación/edición de solicitudes',
+    'ru-RU': 'Форма создания/редактирования обращения',
+  },
 }]
