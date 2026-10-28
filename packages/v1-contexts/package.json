@@ -118,6 +118,12 @@
       ],
       "remote/custom": [
         "./dist/remote/custom.d.ts"
+      ],
+      "remote/ticket/edit": [
+        "./dist/remote/ticket/edit.d.ts"
+      ],
+      "remote/ticket/edit-settings": [
+        "./dist/remote/ticket/edit-settings.d.ts"
       ]
     }
   },

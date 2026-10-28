@@ -18,6 +18,8 @@ import * as order from '@/common/order/card'
 import * as orderSettings from '@/common/order/card-settings'
 import * as settings from '@/common/settings'
 import * as ticket from '@/common/ticket/view'
+import * as ticketEdit from '@/common/ticket/edit'
+import * as ticketEditSettings from '@/common/ticket/edit-settings'
 import * as ticketSettings from '@/common/ticket/view-settings'
 import * as user from '@/common/user/current'
 
@@ -55,6 +57,8 @@ const contextSources = [
   orderSettings,
   user,
   settings,
+  ticketEdit,
+  ticketEditSettings,
   ticket,
   ticketSettings,
 ] as unknown as ContextSource[]
@@ -63,6 +67,10 @@ const actionSources = [{
   scope: order.id,
   actions: order.actions,
   description: order.actionsDescription,
+}, {
+  scope: ticketEdit.id,
+  actions: ticketEdit.actions,
+  description: ticketEdit.actionsDescription,
 }, {
   scope: ticket.id,
   actions: ticket.actions,
