@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.33-alpha.2
+
+### Features
+
+* **v1-sandbox:** Ticket viewer scenarios and actions were added ([33f86eb](https://github.com/retailcrm/embed-ui/commit/33f86eba4b6a6d730ccc72cd06540f05098c3136))
+
 ## 0.9.33-alpha.1
 
 ### Features
