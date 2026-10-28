@@ -45,6 +45,12 @@ test('supports Codex startup probes without tools or prompts', async () => {
         uri: 'embed-ui-v1-contexts://actions/order%2Fcard',
       }),
       expect.objectContaining({
+        uri: 'embed-ui-v1-contexts://contexts/ticket%2Fedit',
+      }),
+      expect.objectContaining({ uri: 'embed-ui-v1-contexts://contexts/ticket%2Fedit%3Asettings' }),
+      expect.objectContaining({ uri: 'embed-ui-v1-contexts://actions/ticket%2Fedit' }),
+      expect.objectContaining({ uri: 'embed-ui-v1-contexts://custom-contexts/ticket' }),
+      expect.objectContaining({
         uri: 'embed-ui-v1-contexts://contexts/ticket%2Fview',
       }),
       expect.objectContaining({

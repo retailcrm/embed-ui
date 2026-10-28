@@ -12,6 +12,14 @@ import type {
   Schema as TicketViewSettingsSchema,
 } from '@retailcrm/embed-ui-v1-contexts/types/ticket/view-settings'
 
+import type {
+  MethodList as TicketEditMethodList,
+  Schema as TicketEditSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/ticket/edit'
+import type {
+  Schema as TicketEditSettingsSchema,
+} from '@retailcrm/embed-ui-v1-contexts/types/ticket/edit-settings'
+
 import type { ActionSchema } from '@retailcrm/embed-ui-v1-types/context'
 
 import type { MethodList } from './order/card'
@@ -23,11 +31,14 @@ export type SchemaList = {
   'order/card:settings': OrderCardSettingsSchema;
   'user/current': CurrentUserSchema;
   'settings': SettingsSchema;
+  'ticket/edit': TicketEditSchema;
+  'ticket/edit:settings': TicketEditSettingsSchema;
   'ticket/view': TicketViewSchema;
   'ticket/view:settings': TicketViewSettingsSchema;
 }
 
 export type ActionSchemaList = {
   'order/card': ActionSchema<MethodList>;
+  'ticket/edit': ActionSchema<TicketEditMethodList>;
   'ticket/view': ActionSchema<TicketViewMethodList>;
 }

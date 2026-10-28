@@ -21,6 +21,8 @@ import * as order from '@/common/order/card'
 import * as orderSettings from '@/common/order/card-settings'
 import * as settings from '@/common/settings'
 import * as ticket from '@/common/ticket/view'
+import * as ticketEdit from '@/common/ticket/edit'
+import * as ticketEditSettings from '@/common/ticket/edit-settings'
 import * as ticketSettings from '@/common/ticket/view-settings'
 import * as user from '@/common/user/current'
 
@@ -31,6 +33,8 @@ const schema: SchemaList = {
   [orderSettings.id]: orderSettings.schema,
   [user.id]: user.schema,
   [settings.id]: settings.schema,
+  [ticketEdit.id]: ticketEdit.schema,
+  [ticketEditSettings.id]: ticketEditSettings.schema,
   [ticket.id]: ticket.schema,
   [ticketSettings.id]: ticketSettings.schema,
 }
@@ -44,6 +48,8 @@ const description: {
   [orderSettings.id]: orderSettings.description,
   [user.id]: user.description,
   [settings.id]: settings.description,
+  [ticketEdit.id]: ticketEdit.description,
+  [ticketEditSettings.id]: ticketEditSettings.description,
   [ticket.id]: ticket.description,
   [ticketSettings.id]: ticketSettings.description,
 }
@@ -57,12 +63,15 @@ const usage: {
   [orderSettings.id]: orderSettings.usage,
   [user.id]: user.usage,
   [settings.id]: settings.usage,
+  [ticketEdit.id]: ticketEdit.usage,
+  [ticketEditSettings.id]: ticketEditSettings.usage,
   [ticket.id]: ticket.usage,
   [ticketSettings.id]: ticketSettings.usage,
 }
 
 const actions: ActionSchemaList = {
   [order.id]: order.actions,
+  [ticketEdit.id]: ticketEdit.actions,
   [ticket.id]: ticket.actions,
 }
 
@@ -70,6 +79,7 @@ const actionsDescription: {
   [K in keyof ActionSchemaList]: ObjectDescription<ActionSchemaList[K]>;
 } = {
   [order.id]: order.actionsDescription,
+  [ticketEdit.id]: ticketEdit.actionsDescription,
   [ticket.id]: ticket.actionsDescription,
 }
 
@@ -184,6 +194,16 @@ fs.writeFileSync(join(dist, 'meta.json'), JSON.stringify({
         description: ticket.typesDescription[name][field],
       })),
     })),
+    ...[ticketEdit, ticketEditSettings].flatMap(source => Object.keys(source.typesDescription)
+      .filter(name => !Object.hasOwn(ticket.typesDescription, name))
+      .map(name => ({
+        name,
+        fields: Object.entries((source.typesDescription as Record<string, Record<string, TranslationList>>)[name]).map(([field, description]) => ({
+          name: field,
+          type: (source.types as Record<string, Record<string, string>>)[name][field],
+          description,
+        })),
+      }))),
     ...types,
   ],
   actions: keysOf(actions).reduce((meta, scope) => {

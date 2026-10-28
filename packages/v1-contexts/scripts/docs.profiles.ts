@@ -62,6 +62,46 @@ export type CustomContextDocumentation = {
 }
 
 export const contextDocumentation: Record<string, ContextDocumentation> = {
+  'ticket/edit': {
+    summary: { 'en-GB': 'Ticket creation/editing form augmentation. Reads and writes refer to the current unsaved draft, not persisted ticket data. CRM owns validation, saving and closing.' },
+    aiNotes: [
+      { 'en-GB': 'Declared for ticket/edit:common.before, ticket/edit:customer.after and ticket/edit:issues.after. Requires a CRM editor host implementation. No viewer target supplies this context. Do not use ticket/view actions to mutate this draft.' },
+      { 'en-GB': 'Initialize ticket/edit and ticket/edit:settings separately. Each open editor must have isolated context subscriptions and action scope, including two unsaved tickets with null IDs.' },
+      { 'en-GB': 'All actions only modify the form draft. Successful promises mean the host applied and published the draft change; no entity was saved. Failures and unavailable operations reject.' },
+      { 'en-GB': 'No save, close, validate, reset or refresh methods are exposed. Readonly valid describes local validation only; it does not guarantee saving permission. Read errors without triggering validation.' },
+      { 'en-GB': 'Host rejects conflicting writes while loading, saving or pending and applies the same access, reference hydration and validation rules as the CRM form. A direct field set is optimistic and has no persistence promise.' },
+    ],
+    fields: {
+      'customer.type': { mutation: { mode: 'action', action: 'changeCustomerType', notes: { 'en-GB': 'Uses the same customer/customer_corporate codes as order/card. Host atomically reconciles dependent customer, contact and company fields.' } } },
+      'issues': { mutation: { mode: 'action', action: 'addIssue / updateIssue / removeIssue', notes: { 'en-GB': 'Address every question by its opaque local key. New questions have null database IDs; key formats are private and must not be parsed or persisted across editor sessions.' } } },
+      'orders': { mutation: { mode: 'action', action: 'addOrder / removeOrder', notes: { 'en-GB': 'The finite selection in the draft, not paginated order search. Removing an order also removes its selected items.' } } },
+      'orderItems': { mutation: { mode: 'action', action: 'addOrderItem / removeOrderItem', notes: { 'en-GB': 'Selected order positions in the ticket draft. IDs are order position IDs, not product/offer IDs; quantity and price editing are not supported by the ticket form.' } } },
+      'dirty': { aiNotes: [{ 'en-GB': 'Host publishes the whole sidebar dirty state, including embedded sections; cancelling the form does not revert operations already persisted by separate CRM sections.' }] },
+      'errors': { aiNotes: [{ 'en-GB': 'Paths use public field names: [] is the form, ["description"] is a field, ["issues", key, "subtopic"] identifies one question field, ["customFields", code] identifies a custom field. Each opaque key is one path segment.' }] },
+    },
+    fieldGroups: {
+      customerProfile: {
+        fields: ['customer.lastName', 'customer.firstName', 'customer.patronymic', 'customer.email', 'customer.phone'],
+        aiNotes: [{ 'en-GB': 'Writable only for a new individual customer (customer.type=customer and customer.id=null). Existing customer bindings are not editable profiles; changing these fields never updates an existing customer record.' }],
+      },
+      contactProfile: {
+        fields: ['contact.lastName', 'contact.firstName', 'contact.patronymic', 'contact.email', 'contact.phone'],
+        aiNotes: [{ 'en-GB': 'These values belong to a new contact of a corporate customer (customer.type=customer_corporate and contact.id=null). Do not expose the internal shared CustomerProfile object as customer.* in corporate mode. Host rejects writes for linked contacts or individual customers.' }],
+      },
+      newCorporateNames: {
+        fields: ['customer.name', 'company.name'],
+        aiNotes: [{ 'en-GB': 'customer.name is writable only for a new corporate customer; company.name only for a new company in corporate mode. Host rejects edits to existing bindings. Entity creation remains part of the user-driven CRM save workflow.' }],
+      },
+    },
+  },
+  'ticket/edit:settings': {
+    summary: { 'en-GB': 'Shared readonly catalogs and user permissions for the ticket form. Draft values and transient form state remain in ticket/edit.' },
+    aiNotes: [
+      { 'en-GB': 'topics contains parent topics with subtopics. The selected question exposes topic and subtopic separately; updateIssue receives subtopicId and the host derives its parent.' },
+      { 'en-GB': 'Catalogs are not per-question allowed transitions. Permission flags exclude validity, loading and saving; the host rechecks all conditions before applying changes.' },
+      { 'en-GB': 'No paginated store/customer/responsible search lists are exposed. Existing references selected by actions must be loaded and access-checked by the host.' },
+    ],
+  },
   'ticket/view': {
     summary: {
       'en-GB': 'Readonly ticket viewer context with questions, customer, contact, company, SLA and per-ticket action availability. Shared settings are in ticket/view:settings. Paginated lists are excluded.',
@@ -461,6 +501,25 @@ export const contextDocumentation: Record<string, ContextDocumentation> = {
 }
 
 export const actionDocumentation: Record<string, ActionScopeDocumentation> = {
+  'ticket/edit': {
+    summary: { 'en-GB': 'Draft-only form augmentation. Every action resolves after the host applies and publishes the draft change. No action persists entities, saves the ticket, closes or resets the form.' },
+    actions: {
+      changeCustomerType: { mutates: ['customer.*', 'contact.*', 'company.*'] },
+      selectCustomer: { mutates: ['customer.*', 'contact.*', 'company.*'], aiNotes: [{ 'en-GB': 'Selects an existing entity of the current customer.type; the host hydrates the reference, checks access and follows CRM dependency rules.' }] },
+      unlinkCustomer: { mutates: ['customer.*', 'contact.*', 'company.*'] },
+      selectContact: { mutates: ['contact.*'], aiNotes: [{ 'en-GB': 'Corporate mode only. The host verifies the selected contact belongs to the corporate customer.' }] },
+      unlinkContact: { mutates: ['contact.*'] },
+      selectCompany: { mutates: ['company.*'], aiNotes: [{ 'en-GB': 'Corporate mode only. The host verifies the selected company belongs to the corporate customer.' }] },
+      unlinkCompany: { mutates: ['company.*'] },
+      addIssue: { mutates: ['issues'], aiNotes: [{ 'en-GB': 'Uses CRM form defaults, returns a new local key and does not create a persisted question.' }] },
+      updateIssue: { mutates: ['issues'], aiNotes: [{ 'en-GB': 'Omitted properties preserve the existing value; null clears a selection and may make the draft invalid. Only typeId, subtopicId, responsible and statusId are accepted. Host must preserve all other questions and hydrate labels/group data.' }] },
+      removeIssue: { mutates: ['issues'] },
+      addOrder: { mutates: ['orders'], aiNotes: [{ 'en-GB': 'Host loads an accessible existing order; repeat selection does not add duplicates.' }] },
+      removeOrder: { mutates: ['orders', 'orderItems'] },
+      addOrderItem: { mutates: ['orderItems'], aiNotes: [{ 'en-GB': 'orderItemId identifies an existing position of an order. This action does not create an order, product or offer and does not edit its price or quantity.' }] },
+      removeOrderItem: { mutates: ['orderItems'] },
+    },
+  },
   'ticket/view': {
     summary: {
       'en-GB': 'Host-mediated ticket viewer actions. Mutations resolve after persistence and context reconciliation; failures reject instead of silently succeeding. UI-opening actions resolve when the requested interface opens.',
@@ -551,65 +610,82 @@ export const actionDocumentation: Record<string, ActionScopeDocumentation> = {
   },
 }
 
+const orderCustomContextDocumentation: CustomContextDocumentation = {
+  entity: 'order',
+  summary: {
+    'en-GB': 'Custom fields context for order entity custom fields.',
+  },
+  supportedKinds: [{
+    kind: 'boolean',
+    type: 'boolean|null',
+    requiresDictionary: false,
+  }, {
+    kind: 'date',
+    type: 'string|null',
+    requiresDictionary: false,
+  }, {
+    kind: 'datetime',
+    type: 'string|null',
+    requiresDictionary: false,
+  }, {
+    kind: 'dictionary',
+    type: 'string|null',
+    requiresDictionary: true,
+  }, {
+    kind: 'multiselect_dictionary',
+    type: 'string[]',
+    requiresDictionary: true,
+  }, {
+    kind: 'email',
+    type: 'string|null',
+    requiresDictionary: false,
+  }, {
+    kind: 'integer',
+    type: 'number|null',
+    requiresDictionary: false,
+  }, {
+    kind: 'numeric',
+    type: 'number|null',
+    requiresDictionary: false,
+  }, {
+    kind: 'string',
+    type: 'string|null',
+    requiresDictionary: false,
+  }, {
+    kind: 'text',
+    type: 'string|null',
+    requiresDictionary: false,
+  }],
+  usage: {
+    initialize: 'const custom = useContext(\'order\'); await custom.initialize()',
+    read: 'custom.values[code]',
+    write: 'custom.set(code, value)',
+    dictionary: 'const dictionary = useDictionary(); await dictionary.query(dictionaryCode, { first: 20 })',
+  },
+  aiNotes: [{
+    'en-GB': 'Call initialize before reading custom field values.',
+  }, {
+    'en-GB': 'Do not write readonly custom fields; the remote store rejects writes according to schema.',
+  }, {
+    'en-GB': 'Dictionary and multiselect_dictionary fields require dictionary loading for option labels.',
+  }],
+}
+
 export const customContextDocumentation: Record<string, CustomContextDocumentation> = {
-  order: {
-    entity: 'order',
-    summary: {
-      'en-GB': 'Custom fields context for order entity custom fields.',
-    },
-    supportedKinds: [{
-      kind: 'boolean',
-      type: 'boolean|null',
-      requiresDictionary: false,
-    }, {
-      kind: 'date',
-      type: 'string|null',
-      requiresDictionary: false,
-    }, {
-      kind: 'datetime',
-      type: 'string|null',
-      requiresDictionary: false,
-    }, {
-      kind: 'dictionary',
-      type: 'string|null',
-      requiresDictionary: true,
-    }, {
-      kind: 'multiselect_dictionary',
-      type: 'string[]',
-      requiresDictionary: true,
-    }, {
-      kind: 'email',
-      type: 'string|null',
-      requiresDictionary: false,
-    }, {
-      kind: 'integer',
-      type: 'number|null',
-      requiresDictionary: false,
-    }, {
-      kind: 'numeric',
-      type: 'number|null',
-      requiresDictionary: false,
-    }, {
-      kind: 'string',
-      type: 'string|null',
-      requiresDictionary: false,
-    }, {
-      kind: 'text',
-      type: 'string|null',
-      requiresDictionary: false,
-    }],
+  order: orderCustomContextDocumentation,
+  ticket: {
+    ...orderCustomContextDocumentation,
+    entity: 'ticket',
+    summary: { 'en-GB': 'Custom fields of the current ticket editor draft. Writes augment the form and are persisted only by the CRM save workflow.' },
     usage: {
-      initialize: 'const custom = useContext(\'order\'); await custom.initialize()',
-      read: 'custom.values[code]',
-      write: 'custom.set(code, value)',
-      dictionary: 'const dictionary = useDictionary(); await dictionary.query(dictionaryCode, { first: 20 })',
+      ...orderCustomContextDocumentation.usage,
+      initialize: 'const custom = useContext(\'ticket\'); await custom.initialize()',
     },
-    aiNotes: [{
-      'en-GB': 'Call initialize before reading custom field values.',
-    }, {
-      'en-GB': 'Do not write readonly custom fields; the remote store rejects writes according to schema.',
-    }, {
-      'en-GB': 'Dictionary and multiselect_dictionary fields require dictionary loading for option labels.',
-    }],
+    aiNotes: [
+      ...orderCustomContextDocumentation.aiNotes,
+      { 'en-GB': 'Declared for ticket/edit:common.before, ticket/edit:customer.after and ticket/edit:issues.after. Requires an explicit ticket editor host; ticket viewer targets do not expose this custom context.' },
+      { 'en-GB': 'Map CRM date values to YYYY-MM-DD strings and datetime values to ISO 8601 strings; map dictionary objects to their codes. Never transfer Date instances or raw dictionary objects.' },
+      { 'en-GB': 'Host writes must go through editor custom-field setters, preserving readonly checks and form validation behavior. Schema entity ticket is scoped to this open editor.' },
+    ],
   },
 }
