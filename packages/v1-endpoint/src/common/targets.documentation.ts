@@ -11,6 +11,57 @@ type TargetDocumentation = {
 }
 
 export const targetsDocumentation = {
+  'ticket/edit:common.before': {
+    description: {
+      'en-GB': 'Additional actions and information for the ticket form',
+      'es-ES': 'Acciones e información adicionales para el formulario de la solicitud',
+      'ru-RU': 'Дополнительные действия и информация в форме обращения',
+    },
+    location: {
+      'en-GB': 'At the beginning of the ticket creation/editing form, before the Store field',
+      'es-ES': 'Al principio del formulario de creación/edición de la solicitud, antes del campo Tienda',
+      'ru-RU': 'В начале формы создания/редактирования обращения, перед полем «Магазин»',
+    },
+    notes: [{
+      'en-GB': 'Horizontal row for compact buttons, links and short text. The CRM host owns 32 px horizontal padding, 24 px vertical padding and 16 px gaps between elements. Changes apply to the current draft; CRM owns validation, saving and closing the form.',
+      'es-ES': 'Fila horizontal para botones compactos, enlaces y texto breve. El host del CRM define un margen interior de 32 px horizontal y 24 px vertical, y 16 px entre elementos. Los cambios se aplican al borrador actual; el CRM controla la validación, el guardado y el cierre del formulario.',
+      'ru-RU': 'Горизонтальная строка компактных кнопок, ссылок и короткого текста. Хост CRM задаёт отступы по краям 32 px, сверху и снизу 24 px, расстояние между элементами 16 px. Изменения применяются к текущему черновику; проверка, сохранение и закрытие формы остаются за CRM.',
+    }],
+  },
+  'ticket/edit:customer.after': {
+    description: {
+      'en-GB': 'Additional fields and information about the ticket customer',
+      'es-ES': 'Campos e información adicionales sobre el cliente de la solicitud',
+      'ru-RU': 'Дополнительные поля и информация о клиенте обращения',
+    },
+    location: {
+      'en-GB': 'After the complete Customer section, including contact and company fields, before the questions',
+      'es-ES': 'Después de toda la sección Cliente, incluidos los campos de contacto y empresa, antes de las preguntas',
+      'ru-RU': 'После всего блока «Клиент», включая поля контактного лица и компании, перед вопросами',
+    },
+    notes: [{
+      'en-GB': 'Editable fields, links, text, checkboxes and switches augment the existing form without an extra card wrapper. The CRM host provides 24 px spacing after standard content. Read customer data from ticket/edit. The ticket custom context contains ticket custom fields, not customer custom fields. CRM owns validation, saving and closing; widget changes only update the draft.',
+      'es-ES': 'Los campos editables, enlaces, texto, casillas e interruptores amplían el formulario existente sin una tarjeta adicional. El host del CRM añade 24 px después del contenido estándar. Lea los datos del cliente de ticket/edit. El contexto personalizado ticket contiene campos de la solicitud, no del cliente. El CRM controla la validación, el guardado y el cierre; el widget solo modifica el borrador.',
+      'ru-RU': 'Редактируемые поля, ссылки, текст, чекбоксы и переключатели дополняют существующую форму без дополнительной карточки. Хост CRM задаёт отступ 24 px от штатного содержимого. Данные клиента берутся из ticket/edit. Пользовательский контекст ticket содержит поля обращения, а не клиента. Проверка, сохранение и закрытие остаются за CRM; виджет меняет только черновик.',
+    }],
+  },
+  'ticket/edit:issues.after': {
+    description: {
+      'en-GB': 'Additional fields and information about the ticket questions',
+      'es-ES': 'Campos e información adicionales sobre las preguntas de la solicitud',
+      'ru-RU': 'Дополнительные поля и информация по вопросам обращения',
+    },
+    location: {
+      'en-GB': 'After the channel, ticket description and tags in the ticket creation/editing form',
+      'es-ES': 'Después del canal, la descripción y las etiquetas en el formulario de creación/edición de la solicitud',
+      'ru-RU': 'После канала, содержания обращения и тегов в форме создания/редактирования обращения',
+    },
+    notes: [{
+      'en-GB': 'One slot for the entire form, not one per issue. There is no selected-issue context. Editable fields, links, text, checkboxes and switches augment the form without an extra card wrapper. The CRM host provides 24 px spacing after standard content. CRM owns validation, saving and closing; widget changes only update the draft.',
+      'es-ES': 'Una ubicación para todo el formulario, no una por pregunta. No hay contexto de pregunta seleccionada. Los campos editables, enlaces, texto, casillas e interruptores amplían el formulario sin una tarjeta adicional. El host del CRM añade 24 px después del contenido estándar. El CRM controla la validación, el guardado y el cierre; el widget solo modifica el borrador.',
+      'ru-RU': 'Одна точка на всю форму, а не на каждый вопрос; контекста выбранного вопроса нет. Редактируемые поля, ссылки, текст, чекбоксы и переключатели дополняют форму без дополнительной карточки. Хост CRM задаёт отступ 24 px от штатного содержимого. Проверка, сохранение и закрытие остаются за CRM; виджет меняет только черновик.',
+    }],
+  },
   'ticket/view:header.after': {
     description: {
       'en-GB': 'Additional actions and information concerning the entire ticket',
