@@ -25,6 +25,19 @@ test('defineTarget accepts target config shape', () => {
 })
 
 test.each([
+  'ticket/edit:common.before',
+  'ticket/edit:customer.after',
+  'ticket/edit:issues.after',
+] as const)('provides the ticket editor contract at %s', (id) => {
+  expect(targets[id]).toEqual({
+    id,
+    contexts: ['ticket/edit', 'ticket/edit:settings', 'user/current', 'settings'],
+    customContexts: ['ticket'],
+    actions: ['ticket/edit'],
+  })
+})
+
+test.each([
   'ticket/view:header.after',
   'ticket/view:common.before',
   'ticket/view:customer.after',

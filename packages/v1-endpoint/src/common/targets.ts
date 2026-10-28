@@ -97,6 +97,12 @@ const ticketViewerTarget = {
   actions: ['ticket/view'],
 } as const
 
+const ticketEditorTarget = {
+  contexts: ['ticket/edit', 'ticket/edit:settings', 'user/current', 'settings'],
+  customContexts: ['ticket'],
+  actions: ['ticket/edit'],
+} as const
+
 export const targets = {
   'customer/card:phone': defineTarget('customer/card:phone', {
     ...customerCardTarget,
@@ -135,6 +141,9 @@ export const targets = {
   'ticket/view:common.before': defineTarget('ticket/view:common.before', ticketViewerTarget),
   'ticket/view:customer.after': defineTarget('ticket/view:customer.after', ticketViewerTarget),
   'ticket/view:issues.after': defineTarget('ticket/view:issues.after', ticketViewerTarget),
+  'ticket/edit:common.before': defineTarget('ticket/edit:common.before', ticketEditorTarget),
+  'ticket/edit:customer.after': defineTarget('ticket/edit:customer.after', ticketEditorTarget),
+  'ticket/edit:issues.after': defineTarget('ticket/edit:issues.after', ticketEditorTarget),
 } as const
 
 export type TargetName = keyof typeof targets

@@ -20,6 +20,7 @@ const pageLabels: Record<string, string> = {
   'order/card': 'full order form',
   'order/mg': 'chat order form',
   'ticket/view': 'ticket viewer',
+  'ticket/edit': 'ticket editor',
 }
 
 const quote = (value: string): string => JSON.stringify(value)
@@ -99,8 +100,12 @@ avoid_when:
 
 ai_notes:
   - ${quote('Use the target id as the runner registration key.')}
-  - ${quote('Keep UI rendered directly in the widget target compact and predictable: prefer UiToolbarButton, UiToolbarLink, short text, and icons.')}
-  - ${quote('Move complex widget UI such as forms, tables, maps, filters, summaries, and multi-step flows into UiModalSidebar or UiModalWindow.')}
+  - ${quote(target === 'ticket/edit:customer.after' || target === 'ticket/edit:issues.after'
+    ? 'Extend the CRM form with editable fields, links, text, checkboxes and switches. Keep the controls within the existing section without an extra card wrapper.'
+    : 'Keep UI rendered directly in the widget target compact and predictable: prefer UiToolbarButton, UiToolbarLink, short text, and icons.')}
+  - ${quote(target === 'ticket/edit:customer.after' || target === 'ticket/edit:issues.after'
+    ? 'Move standalone forms, tables, maps, filters and multi-step flows into UiModalSidebar or UiModalWindow. Fields that augment the CRM form can stay in this target.'
+    : 'Move complex widget UI such as forms, tables, maps, filters, summaries, and multi-step flows into UiModalSidebar or UiModalWindow.')}
   - ${quote('Use targets[target].contexts as the source of truth for context availability.')}
   - ${quote('Read linked context_resources, action_resources, and custom_context_resources before reasoning about fields, mutations, or custom data.')}
   - ${quote('Do not infer context field shape from the target id, page name, or widget placement.')}
